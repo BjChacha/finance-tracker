@@ -1,16 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
+import { TransactionForm, useCreateTransaction } from '@/features/transactions';
 import { zh } from '@/i18n/zh';
-import { useTheme } from '@/theme';
 
 export default function AddTransactionScreen() {
-  const theme = useTheme();
+  const router = useRouter();
+  const create = useCreateTransaction();
+
   return (
-    <View style={styles.center}>
-      <Text style={{ color: theme.colors.textSecondary }}>{zh.common.empty}</Text>
-    </View>
+    <TransactionForm
+      submitting={create.isPending}
+      onSubmit={(input) => {
+        create.mutate(input, {
+          onSuccess: () => router.back(),
+          onError: (e) => Alert.alert(zh.common.error, e instanceof Error ? e.message : String(e)),
+        });
+      }}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-});
