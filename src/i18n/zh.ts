@@ -1,0 +1,33 @@
+/** 全部界面文案集中于此，便于统一措辞 */
+export const zh = {
+  tabs: { transactions: '明细', stats: '图表', budgets: '预算', profile: '我的' },
+  common: {
+    save: '保存',
+    cancel: '取消',
+    delete: '删除',
+    edit: '编辑',
+    confirm: '确认',
+    done: '完成',
+    all: '全部',
+    empty: '暂无数据',
+    loading: '加载中…',
+    error: '出错了',
+  },
+  tx: {
+    expense: '支出',
+    income: '收入',
+    transfer: '转账',
+    addTitle: '记一笔',
+    amount: '金额',
+    category: '分类',
+    account: '账户',
+    toAccount: '转入账户',
+    fromAccount: '转出账户',
+    fee: '手续费',
+    date: '日期',
+    note: '备注',
+    notePlaceholder: '点击填写备注',
+    deleteConfirm: '确定删除这笔交易吗？',
+  },
+  db: { migrating: '正在初始化数据库…', migrateError: '数据库初始化失败' },
+} as const;
