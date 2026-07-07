@@ -4,4 +4,9 @@ export {
   useUpdateAccount,
   useArchiveAccount,
 } from './hooks';
-export { totalAssets, type AccountWithBalance, type AccountInput } from './repository';
+export {
+  listAccountsWithBalance,
+  totalAssets,
+  type AccountWithBalance,
+  type AccountInput,
+} from './repository';
