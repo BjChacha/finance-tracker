@@ -67,6 +67,8 @@ export default function RootLayout() {
             name="add-transaction"
             options={{ presentation: 'modal', title: zh.tx.addTitle }}
           />
+          <Stack.Screen name="backup/index" options={{ title: zh.backup.title }} />
+          <Stack.Screen name="import/index" options={{ title: zh.imp.title }} />
         </Stack>
       </DatabaseGate>
     </QueryClientProvider>

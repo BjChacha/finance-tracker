@@ -12,8 +12,8 @@ export default function ProfileScreen() {
   const entries: Entry[] = [
     { icon: '💳', label: zh.profile.accounts, href: '/accounts' },
     { icon: '🏷️', label: zh.profile.categories, href: '/categories' },
-    { icon: '☁️', label: zh.profile.backup, href: null },
-    { icon: '📥', label: zh.profile.import, href: null },
+    { icon: '☁️', label: zh.profile.backup, href: '/backup' },
+    { icon: '📥', label: zh.profile.import, href: '/import' },
     { icon: '🔁', label: zh.profile.recurring, href: null },
   ];
 

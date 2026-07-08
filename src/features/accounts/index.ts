@@ -5,6 +5,7 @@ export {
   useArchiveAccount,
 } from './hooks';
 export {
+  createAccount,
   listAccountsWithBalance,
   totalAssets,
   type AccountWithBalance,
