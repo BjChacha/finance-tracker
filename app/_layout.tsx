@@ -1,12 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, StyleSheet, Text, View } from 'react-native';
 import { db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedIfEmpty } from '@/db/seed';
+import { runCatchUpIfNeeded } from '@/features/recurring';
+import { invalidateTransactionData } from '@/features/transactions';
 import { zh } from '@/i18n/zh';
 import { useTheme } from '@/theme';
 
@@ -49,11 +51,34 @@ function DatabaseGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/** 周期记账补账：迁移+种子完成后跑一次，AppState 回前台再跑（同一天节流） */
+function RecurringCatchUpRunner() {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    const run = () => {
+      void runCatchUpIfNeeded().then((result) => {
+        if (!result) return;
+        if (result.created > 0) void invalidateTransactionData(qc);
+        void qc.invalidateQueries({ queryKey: ['recurring'] });
+      });
+    };
+    run();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') run();
+    });
+    return () => sub.remove();
+  }, [qc]);
+
+  return null;
+}
+
 export default function RootLayout() {
   const theme = useTheme();
   return (
     <QueryClientProvider client={queryClient}>
       <DatabaseGate>
+        <RecurringCatchUpRunner />
         <StatusBar style={theme.dark ? 'light' : 'dark'} />
         <Stack
           screenOptions={{
@@ -69,6 +94,8 @@ export default function RootLayout() {
           />
           <Stack.Screen name="backup/index" options={{ title: zh.backup.title }} />
           <Stack.Screen name="import/index" options={{ title: zh.imp.title }} />
+          <Stack.Screen name="recurring/index" options={{ title: zh.recurring.title }} />
+          <Stack.Screen name="recurring/edit" options={{ title: zh.recurring.add }} />
         </Stack>
       </DatabaseGate>
     </QueryClientProvider>

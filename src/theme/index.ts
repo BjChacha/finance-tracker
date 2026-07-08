@@ -5,6 +5,8 @@ export const palette = {
   expense: '#EF4444',
   income: '#10B981',
   transfer: '#3B82F6',
+  /** 预算达阈值等告警色（黄） */
+  warning: '#EAB308',
 };
 
 export type AppTheme = {
@@ -19,6 +21,7 @@ export type AppTheme = {
     expense: string;
     income: string;
     transfer: string;
+    warning: string;
   };
 };
 

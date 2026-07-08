@@ -14,7 +14,7 @@ export default function ProfileScreen() {
     { icon: '🏷️', label: zh.profile.categories, href: '/categories' },
     { icon: '☁️', label: zh.profile.backup, href: '/backup' },
     { icon: '📥', label: zh.profile.import, href: '/import' },
-    { icon: '🔁', label: zh.profile.recurring, href: null },
+    { icon: '🔁', label: zh.profile.recurring, href: '/recurring' },
   ];
 
   return (
