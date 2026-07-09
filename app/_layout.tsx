@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import { Stack } from 'expo-router';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, AppState, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import { db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedIfEmpty } from '@/db/seed';
@@ -11,6 +11,33 @@ import { runCatchUpIfNeeded } from '@/features/recurring';
 import { invalidateTransactionData } from '@/features/transactions';
 import { zh } from '@/i18n/zh';
 import { useTheme } from '@/theme';
+
+/** 全局错误边界：渲染异常时给出中文提示与重试，避免白屏 */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.center, { backgroundColor: theme.colors.background, padding: 24 }]}>
+      <Text style={{ color: theme.colors.expense, fontSize: 16, fontWeight: '600' }}>
+        {zh.common.error}
+      </Text>
+      <Text style={{ color: theme.colors.textSecondary, marginTop: 8, textAlign: 'center' }}>
+        {error.message}
+      </Text>
+      <Pressable
+        onPress={retry}
+        style={{
+          marginTop: 16,
+          paddingHorizontal: 24,
+          paddingVertical: 10,
+          borderRadius: 8,
+          backgroundColor: theme.colors.primary,
+        }}
+      >
+        <Text style={{ color: '#fff', fontWeight: '600' }}>{zh.common.retry}</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: Infinity, gcTime: 5 * 60 * 1000 } },

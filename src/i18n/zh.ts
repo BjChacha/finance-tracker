@@ -12,6 +12,7 @@ export const zh = {
     empty: '暂无数据',
     loading: '加载中…',
     error: '出错了',
+    retry: '重试',
   },
   tx: {
     expense: '支出',
