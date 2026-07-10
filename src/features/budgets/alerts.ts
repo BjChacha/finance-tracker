@@ -1,4 +1,4 @@
-import * as Notifications from 'expo-notifications';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/client';
@@ -9,15 +9,24 @@ import { formatCents } from '@/lib/money';
 import { budgetStatus, type BudgetStatusItem } from './repository';
 import { crossedTier } from './transform';
 
-// 应用前台时也弹横幅（记完账立即可见）
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+// Expo Go（SDK 53+）移除了 expo-notifications 的推送能力，模块内任何原生访问都会抛错。
+// storeClient = Expo Go；仅在 development/production build 中才真正启用通知。
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+// 懒加载 expo-notifications：Expo Go 下根本不 require（避免原生访问在启动导入链中抛错，
+// 进而拖垮 _layout → 全路由）。真实构建中首次调用时才加载，失败静默降级。
+type NotificationsModule = typeof import('expo-notifications');
+let notificationsModule: NotificationsModule | null | undefined;
+function getNotifications(): NotificationsModule | null {
+  if (isExpoGo) return null;
+  if (notificationsModule !== undefined) return notificationsModule;
+  try {
+    notificationsModule = require('expo-notifications') as NotificationsModule;
+  } catch {
+    notificationsModule = null;
+  }
+  return notificationsModule;
+}
 
 /** settings 表防重复 key：同一预算同一月同一档位只触发一次 */
 function alertKey(budgetId: string, monthKey: string, tier: number): string {
@@ -37,15 +46,33 @@ async function markFired(key: string): Promise<void> {
 }
 
 let channelReady = false;
+let handlerReady = false;
 
-/** 通知权限 + Android 通知渠道就绪；任一失败静默降级（返回 false，不打断记账流程） */
-async function ensureNotificationsReady(): Promise<boolean> {
+/**
+ * 通知就绪：返回可用的 Notifications 模块（含权限+Android 渠道），不可用返回 null。
+ * Expo Go 或任一步骤失败均静默降级（返回 null，不打断记账流程）。
+ */
+async function ensureNotificationsReady(): Promise<NotificationsModule | null> {
+  const Notifications = getNotifications();
+  if (!Notifications) return null;
   try {
+    // 应用前台时也弹横幅（记完账立即可见）——首次调用时设一次
+    if (!handlerReady) {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowBanner: true,
+          shouldShowList: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      });
+      handlerReady = true;
+    }
     let { granted } = await Notifications.getPermissionsAsync();
     if (!granted) {
       granted = (await Notifications.requestPermissionsAsync()).granted;
     }
-    if (!granted) return false;
+    if (!granted) return null;
     if (Platform.OS === 'android' && !channelReady) {
       await Notifications.setNotificationChannelAsync('budget-alerts', {
         name: zh.budgets.notifWarnTitle,
@@ -53,15 +80,15 @@ async function ensureNotificationsReady(): Promise<boolean> {
       });
       channelReady = true;
     }
-    return true;
+    return Notifications;
   } catch {
-    return false;
+    return null;
   }
 }
 
 async function notify(item: BudgetStatusItem, tier: number): Promise<void> {
-  const ok = await ensureNotificationsReady();
-  if (!ok) return;
+  const Notifications = await ensureNotificationsReady();
+  if (!Notifications) return;
   try {
     await Notifications.scheduleNotificationAsync({
       content: {

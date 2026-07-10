@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { invalidateTransactionData } from '@/features/transactions';
+import { invalidateTransactionData } from '@/features/transactions/invalidate';
 import {
   archiveAccount,
   createAccount,
