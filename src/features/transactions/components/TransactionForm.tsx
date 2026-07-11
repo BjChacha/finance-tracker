@@ -1,6 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  Keyboard,
+  Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,13 +11,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { usePreventRemove } from 'expo-router/react-navigation';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { TransactionType } from '@/db/schema';
 import { useAccountBalances } from '@/features/accounts';
 import { useCategoryTree, type CategoryNode } from '@/features/categories';
 import { zh } from '@/i18n/zh';
+import { appendCalcKey, evalMoneyExpr, hasPendingOp } from '@/lib/calc';
 import { dayjs, todayKey } from '@/lib/date';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
+import { CalcKeypad } from './CalcKeypad';
 import type { TxInput } from '../repository';
 
 export type TxFormInitialValues = {
@@ -43,6 +51,7 @@ const TYPE_TABS: { key: TransactionType; label: string }[] = [
 export function TransactionForm({ initialValues, submitting, onSubmit }: Props) {
   const theme = useTheme();
   const { colors } = theme;
+  const insets = useSafeAreaInsets();
 
   const [type, setType] = useState<TransactionType>(initialValues?.type ?? 'expense');
   const [amountText, setAmountText] = useState(
@@ -59,17 +68,43 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
   );
   const [categoryId, setCategoryId] = useState<string | null>(initialValues?.categoryId ?? null);
   const [dateText, setDateText] = useState(initialValues?.dateKey ?? todayKey());
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [tempDate, setTempDate] = useState<Date>(() => new Date());
   const [note, setNote] = useState(initialValues?.note ?? '');
   const [expandedParent, setExpandedParent] = useState<string | null>(null);
+  const [keypadVisible, setKeypadVisible] = useState(!initialValues);
+
+  // 小键盘弹出时，返回键（硬件返回 / header 返回 / modal 滑动）仅收起键盘；收起后恢复默认返回。
+  usePreventRemove(keypadVisible, () => {
+    setKeypadVisible(false);
+  });
 
   const { data: accounts = [] } = useAccountBalances();
   const categoryType = type === 'income' ? 'income' : 'expense';
   const { data: categoryTree = [] } = useCategoryTree(categoryType);
 
+  // 记一笔（新建）默认选一个分类：优先「其他支出/收入」兜底，否则首个；后续替换为智能检测。
+  useEffect(() => {
+    if (!initialValues && categoryId === null && categoryTree.length > 0) {
+      const fallback = categoryTree.find((c) => c.name.startsWith('其他')) ?? categoryTree[0];
+      setCategoryId(fallback.id);
+    }
+  }, [initialValues, categoryId, categoryTree]);
+
   const typeColor =
     type === 'expense' ? colors.expense : type === 'income' ? colors.income : colors.transfer;
 
   const effectiveAccountId = accountId ?? accounts[0]?.id ?? null;
+
+  const evaluated = evalMoneyExpr(amountText);
+  const preview = hasPendingOp(amountText) ? evaluated : null;
+  const canSave =
+    evaluated !== null &&
+    evaluated > 0 &&
+    !!effectiveAccountId &&
+    (type === 'transfer'
+      ? !!toAccountId && toAccountId !== effectiveAccountId
+      : !!categoryId);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
@@ -81,38 +116,37 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
     if (next !== 'transfer') setToAccountId(null);
   }
 
+  function handleKey(key: string) {
+    if (key === 'C') {
+      setAmountText(''); // 清空 → 金额框回占位「0.00」（重置为 0）
+      return;
+    }
+    setAmountText((prev) => appendCalcKey(prev, key));
+  }
+
+  // 完成：求值折叠为结果（非空时），再收起键盘。空 / 10÷0 等仅收起，不丢数据。
+  function handleDone() {
+    const r = evalMoneyExpr(amountText);
+    if (r !== null) setAmountText(formatCents(r, { grouping: false }));
+    setKeypadVisible(false);
+  }
+
   function handleSave() {
-    const amount = parseMoneyToCents(amountText);
-    if (amount === null || amount <= 0) {
-      Alert.alert(zh.txList.invalidAmount);
-      return;
-    }
-    if (!effectiveAccountId) {
-      Alert.alert(zh.txList.needAccount);
-      return;
-    }
+    const amount = evalMoneyExpr(amountText);
+    if (amount === null || amount <= 0 || !effectiveAccountId) return; // canSave 守卫，防御性
     const date = dayjs(dateText, 'YYYY-MM-DD');
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateText) || !date.isValid()) {
       Alert.alert(zh.txList.invalidDate);
       return;
     }
     let fee = 0;
-    if (type === 'transfer') {
-      if (!toAccountId || toAccountId === effectiveAccountId) {
-        Alert.alert(zh.txList.sameAccount);
+    if (type === 'transfer' && feeText.trim() !== '') {
+      const parsedFee = parseMoneyToCents(feeText);
+      if (parsedFee === null || parsedFee < 0) {
+        Alert.alert(zh.txList.invalidFee);
         return;
       }
-      if (feeText.trim() !== '') {
-        const parsedFee = parseMoneyToCents(feeText);
-        if (parsedFee === null || parsedFee < 0) {
-          Alert.alert(zh.txList.invalidFee);
-          return;
-        }
-        fee = parsedFee;
-      }
-    } else if (!categoryId) {
-      Alert.alert(zh.txList.needCategory);
-      return;
+      fee = parsedFee;
     }
     onSubmit({
       type,
@@ -156,8 +190,10 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
   const expandedNode = categoryTree.find((n) => n.id === expandedParent);
 
   return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1 }}>
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1 }}
       contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
       keyboardShouldPersistTaps="handled"
     >
@@ -186,18 +222,23 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
       </View>
 
       {/* 金额 */}
-      <View style={styles.amountBox}>
+      <Pressable
+        style={styles.amountBox}
+        onPress={() => {
+          Keyboard.dismiss();
+          setKeypadVisible(true);
+        }}
+      >
         <Text style={[styles.currencySymbol, { color: typeColor }]}>¥</Text>
-        <TextInput
-          style={[styles.amountInput, { color: typeColor }]}
-          value={amountText}
-          onChangeText={setAmountText}
-          placeholder={zh.txList.amountPlaceholder}
-          placeholderTextColor={colors.border}
-          keyboardType="decimal-pad"
-          autoFocus={!initialValues}
-        />
-      </View>
+        <Text style={[styles.amountInput, { color: amountText ? typeColor : colors.border }]}>
+          {amountText || zh.txList.amountPlaceholder}
+        </Text>
+        {preview !== null && (
+          <Text style={[styles.preview, { color: colors.textSecondary }]}>
+            = {formatCents(preview, { grouping: false })}
+          </Text>
+        )}
+      </Pressable>
 
       {/* 分类（支出/收入） */}
       {type !== 'transfer' && (
@@ -297,6 +338,7 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
               placeholder={zh.txList.feePlaceholder}
               placeholderTextColor={colors.textSecondary}
               keyboardType="decimal-pad"
+              onFocus={() => setKeypadVisible(false)}
             />
           </View>
         </>
@@ -309,13 +351,15 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
           <Pressable style={styles.dateBtn} onPress={() => shiftDate(-1)}>
             <Text style={{ color: colors.text, fontSize: 13 }}>{zh.txList.prevDay}</Text>
           </Pressable>
-          <TextInput
-            style={[styles.textInput, styles.dateInput]}
-            value={dateText}
-            onChangeText={setDateText}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={colors.textSecondary}
-          />
+          <Pressable
+            style={[styles.textInput, styles.dateInput, { alignItems: 'center' }]}
+            onPress={() => {
+              setTempDate(dayjs(dateText, 'YYYY-MM-DD').toDate());
+              setDatePickerOpen(true);
+            }}
+          >
+            <Text style={{ color: colors.text, fontSize: 15 }}>{dateText}</Text>
+          </Pressable>
           <Pressable style={styles.dateBtn} onPress={() => setDateText(todayKey())}>
             <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.txList.today}</Text>
           </Pressable>
@@ -334,17 +378,77 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
           onChangeText={setNote}
           placeholder={zh.tx.notePlaceholder}
           placeholderTextColor={colors.textSecondary}
+          onFocus={() => setKeypadVisible(false)}
         />
       </View>
 
       <Pressable
-        style={[styles.saveBtn, { backgroundColor: typeColor, opacity: submitting ? 0.6 : 1 }]}
+        style={[
+          styles.saveBtn,
+          { backgroundColor: typeColor, opacity: submitting || !canSave ? 0.6 : 1 },
+        ]}
         onPress={handleSave}
-        disabled={submitting}
+        disabled={submitting || !canSave}
       >
         <Text style={styles.saveBtnText}>{zh.common.save}</Text>
       </Pressable>
     </ScrollView>
+    {keypadVisible && (
+      <View
+        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.25)' }]}
+        onStartShouldSetResponder={() => {
+          setKeypadVisible(false);
+          return true;
+        }}
+      />
+    )}
+    </View>
+    {keypadVisible && <CalcKeypad onKey={handleKey} onDone={handleDone} />}
+
+    {/* 日期选择器：Android 系统对话框 / iOS 底部滚轮面板（display=spinner） */}
+    {datePickerOpen && Platform.OS === 'android' && (
+      <DateTimePicker
+        value={tempDate}
+        mode="date"
+        display="spinner"
+        onChange={(e, selected) => {
+          setDatePickerOpen(false);
+          if (e.type === 'set' && selected) setDateText(dayjs(selected).format('YYYY-MM-DD'));
+        }}
+      />
+    )}
+    {datePickerOpen && Platform.OS === 'ios' && (
+      <Modal transparent animationType="slide" onRequestClose={() => setDatePickerOpen(false)}>
+        <Pressable style={styles.pickerMask} onPress={() => setDatePickerOpen(false)}>
+          <Pressable
+            style={[styles.pickerSheet, { backgroundColor: colors.card, paddingBottom: insets.bottom + 8 }]}
+            onPress={() => {}}
+          >
+            <View style={styles.pickerHeader}>
+              <Pressable
+                onPress={() => {
+                  setDateText(dayjs(tempDate).format('YYYY-MM-DD'));
+                  setDatePickerOpen(false);
+                }}
+              >
+                <Text style={{ color: colors.primary, fontSize: 16, fontWeight: '600' }}>
+                  {zh.common.done}
+                </Text>
+              </Pressable>
+            </View>
+            <DateTimePicker
+              value={tempDate}
+              mode="date"
+              display="spinner"
+              onChange={(e, selected) => {
+                if (selected) setTempDate(selected);
+              }}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
+    )}
+    </View>
   );
 }
 
@@ -373,6 +477,7 @@ function makeStyles({ colors }: AppTheme) {
     },
     currencySymbol: { fontSize: 28, fontWeight: '600', marginRight: 8 },
     amountInput: { flex: 1, fontSize: 36, fontWeight: '700', paddingVertical: 14 },
+    preview: { fontSize: 16, fontWeight: '500', flexShrink: 1 },
     card: {
       backgroundColor: colors.card,
       borderRadius: 12,
@@ -432,5 +537,8 @@ function makeStyles({ colors }: AppTheme) {
       marginTop: 4,
     },
     saveBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+    pickerMask: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+    pickerSheet: { borderTopLeftRadius: 14, borderTopRightRadius: 14 },
+    pickerHeader: { flexDirection: 'row', justifyContent: 'flex-end', padding: 12 },
   });
 }
