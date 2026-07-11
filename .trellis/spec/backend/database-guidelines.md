@@ -17,6 +17,7 @@
 
 ## Query Patterns
 
+- **关联子查询引用外层表列必须写 `${accounts}.id`（插值表对象 + 字面 `.id`），禁用 `${accounts.id}`。** 单表 select 时 drizzle 会把 `${accounts.id}` 渲染成不带表限定的 `"id"`，在子查询作用域内被解析为内层表（如 `transactions`）自己的列，使 `WHERE t.account_id = id` 恒不命中、聚合静默返回 0（不报错）。已修于 `listAccountsWithBalance` 的余额聚合。
 - 统计聚合下推 SQL（`sql` 模板 + GROUP BY dateKey/categoryId），JS 只做图表数据变形（变形逻辑放 `transform.ts` 纯函数并写单测）。
 - 批量插入分批 ≤200 行（SQLite 绑定变量上限 999）。
 - 多步写操作用 `db.transaction()` 包裹（恢复备份、导入 commit、周期补账）。

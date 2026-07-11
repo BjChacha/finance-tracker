@@ -27,6 +27,9 @@ export async function listAccountsWithBalance(opts?: {
       archived: accounts.archived,
       createdAt: accounts.createdAt,
       updatedAt: accounts.updatedAt,
+      // 注意：关联子查询里必须写 ${accounts}.id（带表限定）。
+      // 单表 select 时 drizzle 会把 ${accounts.id} 渲染成不带限定的 "id"，
+      // 在子查询作用域内被解析为 transactions 自己的列，聚合恒为 0。
       balance: sql<number>`
         ${accounts.initialBalance}
         + COALESCE((
@@ -35,11 +38,11 @@ export async function listAccountsWithBalance(opts?: {
               WHEN t.type = 'expense' THEN -t.amount
               WHEN t.type = 'transfer' THEN -(t.amount + t.fee)
               ELSE 0 END)
-            FROM transactions t WHERE t.account_id = ${accounts.id}
+            FROM transactions t WHERE t.account_id = ${accounts}.id
           ), 0)
         + COALESCE((
             SELECT SUM(t.amount) FROM transactions t
-            WHERE t.to_account_id = ${accounts.id} AND t.type = 'transfer'
+            WHERE t.to_account_id = ${accounts}.id AND t.type = 'transfer'
           ), 0)
       `.mapWith(Number),
     })
