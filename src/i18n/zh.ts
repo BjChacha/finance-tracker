@@ -37,6 +37,8 @@ export const zh = {
     emptyMonth: '本月还没有记录，点击右下角 ➕ 记一笔',
     detailTitle: '交易详情',
     invalidAmount: '请输入有效金额',
+    negativeAmountTitle: '金额为负',
+    negativeAmountMsg: (target: string) => `金额为负，是否切换为「${target}」？`,
     needCategory: '请选择分类',
     needAccount: '请选择账户',
     sameAccount: '转出与转入账户不能相同',

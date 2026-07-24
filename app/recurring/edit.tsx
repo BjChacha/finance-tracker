@@ -20,6 +20,7 @@ import {
   useUpdateRule,
   type RecurringInput,
 } from '@/features/recurring';
+import { promptSwitchOnNegative } from '@/features/transactions';
 import { zh } from '@/i18n/zh';
 import { todayKey } from '@/lib/date';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
@@ -125,6 +126,15 @@ export default function RecurringEditScreen() {
       return;
     }
     const amount = parseMoneyToCents(amountText);
+    if (amount !== null && amount < 0 && type !== 'transfer') {
+      promptSwitchOnNegative({
+        cents: amount,
+        type,
+        onSwitch: switchType,
+        onAbsAmountText: setAmountText,
+      }); // 提示切换；取消则不保存
+      return;
+    }
     if (amount === null || amount <= 0) {
       Alert.alert(zh.txList.invalidAmount);
       return;

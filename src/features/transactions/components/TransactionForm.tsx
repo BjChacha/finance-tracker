@@ -17,12 +17,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { TransactionType } from '@/db/schema';
 import { useAccountBalances } from '@/features/accounts';
 import { useCategoryTree, type CategoryNode } from '@/features/categories';
+import { orderTree, pickAutoSelect, useCategorySuggestion } from '@/features/suggestions';
 import { zh } from '@/i18n/zh';
 import { appendCalcKey, evalMoneyExpr, hasPendingOp } from '@/lib/calc';
 import { dayjs, todayKey } from '@/lib/date';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
 import { CalcKeypad } from './CalcKeypad';
+import { promptSwitchOnNegative } from '../promptSwitchOnNegative';
 import type { TxInput } from '../repository';
 
 export type TxFormInitialValues = {
@@ -73,6 +75,9 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
   const [note, setNote] = useState(initialValues?.note ?? '');
   const [expandedParent, setExpandedParent] = useState<string | null>(null);
   const [keypadVisible, setKeypadVisible] = useState(!initialValues);
+  // 智能分类推荐:金额确认快照 + 用户手动选过分类的标记(手动选过后不再自动改选)
+  const [confirmedAmountCents, setConfirmedAmountCents] = useState<number | null>(null);
+  const [categoryTouched, setCategoryTouched] = useState(false);
 
   // 小键盘弹出时，返回键（硬件返回 / header 返回 / modal 滑动）仅收起键盘；收起后恢复默认返回。
   usePreventRemove(keypadVisible, () => {
@@ -83,13 +88,42 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
   const categoryType = type === 'income' ? 'income' : 'expense';
   const { data: categoryTree = [] } = useCategoryTree(categoryType);
 
-  // 记一笔（新建）默认选一个分类：优先「其他支出/收入」兜底，否则首个；后续替换为智能检测。
+  // 智能分类推荐:仅新建生效;按确认金额对基线打分 → 网格重排 + 静默自动预选
+  const suggestEnabled = !initialValues;
+  const suggestScores = useCategorySuggestion({
+    type: categoryType,
+    amountCents: confirmedAmountCents,
+    enabled: suggestEnabled && type !== 'transfer',
+  });
+  const orderedTree = useMemo(
+    () => orderTree(categoryTree, suggestScores),
+    [categoryTree, suggestScores],
+  );
+
+  // 键盘收起即视为金额确认(OK / 遮罩 / 返回键 / 切换到其他输入框皆覆盖);只收正数
+  useEffect(() => {
+    if (keypadVisible) return;
+    const cents = evalMoneyExpr(amountText);
+    setConfirmedAmountCents(cents !== null && cents > 0 ? cents : null);
+  }, [keypadVisible, amountText]);
+
+  // 记一笔（新建）默认选一个分类：优先「其他支出/收入」兜底，否则首个。
   useEffect(() => {
     if (!initialValues && categoryId === null && categoryTree.length > 0) {
       const fallback = categoryTree.find((c) => c.name.startsWith('其他')) ?? categoryTree[0];
       setCategoryId(fallback.id);
     }
   }, [initialValues, categoryId, categoryTree]);
+
+  // 静默预选最高分分类(含展开子分类);无命中或手动选过时不动,保留上方「其他」兜底。
+  // 必须声明在兜底 effect 之后:类型切换清空 categoryId 时,两者同帧触发,预选需后执行以覆盖兜底。
+  useEffect(() => {
+    if (!suggestEnabled || categoryTouched) return;
+    const pick = pickAutoSelect(categoryTree, suggestScores);
+    if (!pick) return;
+    setCategoryId(pick.categoryId);
+    setExpandedParent(pick.expandParentId);
+  }, [suggestEnabled, categoryTouched, categoryTree, suggestScores]);
 
   const typeColor =
     type === 'expense' ? colors.expense : type === 'income' ? colors.income : colors.transfer;
@@ -112,6 +146,7 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
     if (next === type) return;
     setType(next);
     setCategoryId(null);
+    setCategoryTouched(false); // 新类型下推荐重新生效
     setExpandedParent(null);
     if (next !== 'transfer') setToAccountId(null);
   }
@@ -129,6 +164,14 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
     const r = evalMoneyExpr(amountText);
     if (r !== null) setAmountText(formatCents(r, { grouping: false }));
     setKeypadVisible(false);
+    if (r !== null && r < 0) {
+      promptSwitchOnNegative({
+        cents: r,
+        type,
+        onSwitch: switchType,
+        onAbsAmountText: setAmountText,
+      });
+    }
   }
 
   function handleSave() {
@@ -172,6 +215,7 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
         key={node.id}
         style={[styles.categoryCell, selected && { backgroundColor: `${typeColor}22` }]}
         onPress={() => {
+          setCategoryTouched(true);
           setCategoryId(node.id);
           setExpandedParent(node.children.length > 0 ? node.id : null);
         }}
@@ -187,7 +231,7 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
     );
   }
 
-  const expandedNode = categoryTree.find((n) => n.id === expandedParent);
+  const expandedNode = orderedTree.find((n) => n.id === expandedParent);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -244,7 +288,7 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
       {type !== 'transfer' && (
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>{zh.tx.category}</Text>
-          <View style={styles.categoryGrid}>{categoryTree.map(renderCategoryCell)}</View>
+          <View style={styles.categoryGrid}>{orderedTree.map(renderCategoryCell)}</View>
           {expandedNode && expandedNode.children.length > 0 && (
             <View style={styles.subRow}>
               {expandedNode.children.map((child) => {
@@ -256,7 +300,10 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
                       styles.chip,
                       selected && { backgroundColor: typeColor, borderColor: typeColor },
                     ]}
-                    onPress={() => setCategoryId(child.id)}
+                    onPress={() => {
+                      setCategoryTouched(true);
+                      setCategoryId(child.id);
+                    }}
                   >
                     <Text style={{ color: selected ? '#FFFFFF' : colors.text, fontSize: 13 }}>
                       {child.name}
