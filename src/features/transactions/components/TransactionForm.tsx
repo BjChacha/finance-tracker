@@ -458,10 +458,11 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
         value={tempDate}
         mode="date"
         display="spinner"
-        onChange={(e, selected) => {
+        onValueChange={(_event, selected) => {
           setDatePickerOpen(false);
-          if (e.type === 'set' && selected) setDateText(dayjs(selected).format('YYYY-MM-DD'));
+          setDateText(dayjs(selected).format('YYYY-MM-DD'));
         }}
+        onDismiss={() => setDatePickerOpen(false)}
       />
     )}
     {datePickerOpen && Platform.OS === 'ios' && (
@@ -487,8 +488,8 @@ export function TransactionForm({ initialValues, submitting, onSubmit }: Props) 
               value={tempDate}
               mode="date"
               display="spinner"
-              onChange={(e, selected) => {
-                if (selected) setTempDate(selected);
+              onValueChange={(_event, selected) => {
+                setTempDate(selected);
               }}
             />
           </Pressable>
