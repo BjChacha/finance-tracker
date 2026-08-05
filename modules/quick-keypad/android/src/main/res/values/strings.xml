@@ -1,0 +1,4 @@
+<resources>
+  <string name="quick_keypad_currency_select_description">Current currency %1$s. Choose another currency.</string>
+  <string name="quick_keypad_currency_fixed_description">Current currency %1$s.</string>
+</resources>

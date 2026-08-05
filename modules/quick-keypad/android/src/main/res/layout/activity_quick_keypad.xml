@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Native keypad shared by launcher shortcuts and in-app amount entry. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Tapping the backdrop cancels the activity. -->
+    <View
+        android:id="@+id/mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000000" />
+
+    <LinearLayout
+        android:id="@+id/keypadPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@drawable/keypad_panel_bg">
+
+        <!-- Currency, amount expression, and evaluated preview. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="10dp">
+            <LinearLayout
+                android:id="@+id/currencySelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/keypad_currency_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp"
+                android:stateListAnimator="@animator/keypad_press_scale">
+
+                <TextView
+                    android:id="@+id/currencySymbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:includeFontPadding="false"
+                    android:text="¥"
+                    android:textColor="@color/quick_keypad_accent"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/currencyChevron"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginStart="4dp"
+                    android:alpha="0.72"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_down"
+                    android:tint="@color/quick_keypad_accent" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/amountText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="0.00"
+                android:textColor="@color/quick_keypad_divider"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:autoSizeMaxTextSize="32sp"
+                app:autoSizeMinTextSize="24sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
+
+            <TextView
+                android:id="@+id/auxText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:includeFontPadding="false"
+                android:text=""
+                android:textColor="?android:textColorSecondary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Display-to-keypad divider. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/quick_keypad_divider" />
+
+        <!-- Operator row. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:divider="@drawable/keypad_divider_v"
+            android:showDividers="middle">
+            <Button android:id="@+id/btnDiv" style="@style/KeypadButton" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:text="÷" />
+            <Button android:id="@+id/btnMul" style="@style/KeypadButton" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:text="×" />
+            <Button android:id="@+id/btnAdd" style="@style/KeypadButton" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:text="+" />
+            <Button android:id="@+id/btnSub" style="@style/KeypadButton" android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1" android:text="−" />
+        </LinearLayout>
+
+        <!-- Digit grid and action column. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:divider="@drawable/keypad_divider_v"
+            android:showDividers="middle">
+
+            <!-- Digit grid. -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:orientation="vertical"
+                android:divider="@drawable/keypad_divider_h"
+                android:showDividers="middle">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/keypad_divider_v"
+                    android:showDividers="middle">
+                    <Button android:id="@+id/btn1" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="1" />
+                    <Button android:id="@+id/btn2" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="2" />
+                    <Button android:id="@+id/btn3" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="3" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/keypad_divider_v"
+                    android:showDividers="middle">
+                    <Button android:id="@+id/btn4" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="4" />
+                    <Button android:id="@+id/btn5" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="5" />
+                    <Button android:id="@+id/btn6" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="6" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/keypad_divider_v"
+                    android:showDividers="middle">
+                    <Button android:id="@+id/btn7" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="7" />
+                    <Button android:id="@+id/btn8" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="8" />
+                    <Button android:id="@+id/btn9" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="9" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/keypad_divider_v"
+                    android:showDividers="middle">
+                    <Button android:id="@+id/btn0" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="2" android:text="0" />
+                    <Button android:id="@+id/btnDot" style="@style/KeypadDigitButton" android:layout_width="0dp" android:layout_height="58dp" android:layout_weight="1" android:text="." />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Action column. -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:divider="@drawable/keypad_divider_h"
+                android:showDividers="middle">
+                <Button
+                    android:id="@+id/btnC"
+                    style="@style/KeypadButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:text="C" />
+                <Button
+                    android:id="@+id/btnBack"
+                    style="@style/KeypadButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:text="⌫" />
+                <Button
+                    android:id="@+id/btnOk"
+                    style="@style/KeypadButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="116dp"
+                    android:background="@drawable/keypad_ok_background"
+                    android:text="OK"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

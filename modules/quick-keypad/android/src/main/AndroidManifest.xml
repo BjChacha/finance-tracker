@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.VIBRATE" />
+
+  <application>
+    <activity
+      android:name="expo.modules.quickkeypad.QuickKeypadActivity"
+      android:exported="true"
+      android:excludeFromRecents="true"
+      android:launchMode="singleTop"
+      android:taskAffinity=""
+      android:theme="@style/Theme.QuickKeypad"
+      android:screenOrientation="portrait" />
+  </application>
+</manifest>

@@ -1,0 +1,11 @@
+<resources>
+  <color name="quick_keypad_panel">#FFFFFF</color>
+  <color name="quick_keypad_divider">#E7E5E4</color>
+  <color name="quick_keypad_key_pressed">#F5F5F4</color>
+  <color name="quick_keypad_ok">#F59E0B</color>
+  <color name="quick_keypad_ok_pressed">#D97706</color>
+  <color name="quick_keypad_accent">#EF4444</color>
+  <color name="quick_handoff_background">#F5F5F4</color>
+  <!-- Match the sheet's 0.38 scrim so the desktop dims while the sheet enters. -->
+  <color name="quick_handoff_scrim">#61000000</color>
+</resources>

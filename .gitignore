@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local Expo module build outputs
+modules/*/android/build/
+
+# local Android handoff verification captures
+/debug/capture/handoff-fix-20260805/

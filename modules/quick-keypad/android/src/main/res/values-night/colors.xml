@@ -1,0 +1,6 @@
+<resources>
+  <color name="quick_keypad_panel">#1C1917</color>
+  <color name="quick_keypad_divider">#292524</color>
+  <color name="quick_keypad_key_pressed">#3C3836</color>
+  <color name="quick_handoff_background">#0C0A09</color>
+</resources>
