@@ -32,6 +32,8 @@ type Props = AddTransactionLaunch & {
 	onCreated: () => void;
 	onInteractive?: () => void;
 	onEntered?: () => void;
+	beforeEntry?: () => void | Promise<void>;
+	initialScrimOpacity?: number;
 	skipEntryAnimation?: boolean;
 	skipExitAnimation?: boolean;
 	renderMode?: "staged-editor" | "editor";
@@ -50,6 +52,8 @@ function AddTransactionFlowComponent(
 		onCreated,
 		onInteractive,
 		onEntered,
+		beforeEntry,
+		initialScrimOpacity,
 		skipEntryAnimation,
 		skipExitAnimation,
 		renderMode,
@@ -189,6 +193,8 @@ function AddTransactionFlowComponent(
 			variant={stage.kind === "keypad" ? "compact" : "large"}
 			title={stage.kind === "form" ? zh.tx.addTitle : undefined}
 			onEntered={onEntered}
+			beforeEntry={beforeEntry}
+			initialScrimOpacity={initialScrimOpacity}
 			skipEntryAnimation={skipEntryAnimation}
 			skipExitAnimation={skipExitAnimation}
 			onBeforeDismiss={onBeforeDismiss}

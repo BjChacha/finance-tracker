@@ -47,6 +47,7 @@ object QuickAddHandoffController {
     val originalContentAlpha: Float,
     val originalContentAccessibility: Int,
     val overlay: View,
+    val presentationState: QuickAddPresentationState,
   )
 
   private data class RetainedSource(
@@ -257,7 +258,7 @@ object QuickAddHandoffController {
       clearPendingLaunch(replacedId)
       abortVisualHandoffOnMain(replacedId, finishSource = true)
     }
-    targetSession?.let { releaseTargetOnMain(it.handoffId) }
+    targetSession?.let { clearTargetOnMain(it.handoffId) }
     applyTranslucency(activity)
 
     val decorView = activity.window.decorView as? ViewGroup
@@ -312,6 +313,7 @@ object QuickAddHandoffController {
         originalContentAlpha = originalContentAlpha,
         originalContentAccessibility = originalContentAccessibility,
         overlay = cover,
+        presentationState = QuickAddPresentationState(handoffId),
       )
     scheduleTimeout()
     releaseInteractiveHandoffOnMain(handoffId)
@@ -401,6 +403,44 @@ object QuickAddHandoffController {
     clearPendingLaunch(handoffId)
   }
 
+  fun revealPresentation(handoffId: String?, completion: (Boolean) -> Unit) {
+    if (handoffId.isNullOrBlank()) {
+      completion(false)
+      return
+    }
+    runOnMainThread {
+      val target = targetSession?.takeIf { it.handoffId == handoffId }
+      if (target == null) {
+        completion(false)
+        return@runOnMainThread
+      }
+      val decision = target.presentationState.reveal(handoffId)
+      if (!decision.accepted) {
+        completion(false)
+        return@runOnMainThread
+      }
+      if (decision.changed) {
+        revealTargetContentOnMain(target)
+      }
+
+      val decorView = target.activityRef.get()?.window?.decorView
+      if (decorView?.isAttachedToWindow != true) {
+        completion(false)
+        return@runOnMainThread
+      }
+      if (!decision.changed) {
+        completion(true)
+        return@runOnMainThread
+      }
+      decorView.postOnAnimation {
+        val stillActive =
+          targetSession?.takeIf { it.handoffId == handoffId }?.presentationState?.phase ==
+            QuickAddPresentationPhase.REVEALED
+        completion(stillActive)
+      }
+    }
+  }
+
   fun completeInteractive(handoffId: String?) {
     if (handoffId.isNullOrBlank()) return
     runOnMainThread {
@@ -454,7 +494,7 @@ object QuickAddHandoffController {
       finishPerformance(handoffId, "activity_destroyed")
       clearPendingLaunch(handoffId)
       finishRetainedSourceOnMain(handoffId, finishSource = true)
-      releaseTargetOnMain(handoffId)
+      clearTargetOnMain(handoffId)
     }
   }
 
@@ -492,7 +532,7 @@ object QuickAddHandoffController {
       }
     }
     finishRetainedSourceOnMain(handoffId, finishSource)
-    releaseTargetOnMain(handoffId)
+    clearTargetOnMain(handoffId)
     targetActivity?.let(::clearTranslucency)
     cancelTimeoutIfIdle()
   }
@@ -510,19 +550,25 @@ object QuickAddHandoffController {
     }
     if (!ready) return
 
+    val releaseDecision = target.presentationState.release(handoffId)
+    if (!releaseDecision.accepted) return
+    if (releaseDecision.revealFirst) {
+      revealTargetContentOnMain(target)
+    }
+
     mainHandler.removeCallbacks(timeoutRunnable)
     val decorView = target.activityRef.get()?.window?.decorView
     if (decorView?.isAttachedToWindow == true) {
       decorView.postOnAnimation {
         if (targetSession?.handoffId == handoffId) {
-          releaseTargetOnMain(handoffId)
+          clearTargetOnMain(handoffId)
           decorView.postOnAnimation {
             finishRetainedSourceOnMain(handoffId, finishSource = true)
           }
         }
       }
     } else {
-      releaseTargetOnMain(handoffId)
+      clearTargetOnMain(handoffId)
       finishRetainedSourceOnMain(handoffId, finishSource = true)
     }
   }
@@ -539,15 +585,22 @@ object QuickAddHandoffController {
     }
   }
 
-  private fun releaseTargetOnMain(handoffId: String) {
-    val target = targetSession?.takeIf { it.handoffId == handoffId } ?: return
-    targetSession = null
+  private fun revealTargetContentOnMain(target: TargetSession) {
     target.contentRef?.get()?.apply {
       visibility = target.originalContentVisibility
       alpha = target.originalContentAlpha
       importantForAccessibility = target.originalContentAccessibility
     }
     (target.overlay.parent as? ViewGroup)?.removeView(target.overlay)
+  }
+
+  private fun clearTargetOnMain(handoffId: String) {
+    val target = targetSession?.takeIf { it.handoffId == handoffId } ?: return
+    targetSession = null
+    val abortDecision = target.presentationState.abort(handoffId)
+    if (abortDecision.revealFirst) {
+      revealTargetContentOnMain(target)
+    }
     cancelTimeoutIfIdle()
   }
 

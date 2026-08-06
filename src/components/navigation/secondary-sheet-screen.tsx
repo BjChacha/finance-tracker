@@ -52,6 +52,8 @@ type Props = {
 	onDismiss?: () => void;
 	onBackPress?: () => boolean;
 	onEntered?: () => void;
+	beforeEntry?: () => void | Promise<void>;
+	initialScrimOpacity?: number;
 	skipEntryAnimation?: boolean;
 	skipExitAnimation?: boolean;
 };
@@ -323,6 +325,8 @@ export function SecondarySheetScreen({
 	onDismiss,
 	onBackPress,
 	onEntered,
+	beforeEntry,
+	initialScrimOpacity = 0,
 	skipEntryAnimation = false,
 	skipExitAnimation = false,
 }: Props) {
@@ -337,7 +341,9 @@ export function SecondarySheetScreen({
 	const entryStartedRef = useRef(false);
 	const entryCompletedRef = useRef(false);
 	const entryFrameRef = useRef<number | null>(null);
+	const entryPreparationRef = useRef(0);
 	const onEnteredRef = useRef(onEntered);
+	const beforeEntryRef = useRef(beforeEntry);
 	const dismissActionRef = useRef<() => void>(onDismiss ?? router.back);
 	const previousVariantRef = useRef(variant);
 	const shouldAnimateLayout = previousVariantRef.current !== variant;
@@ -348,7 +354,8 @@ export function SecondarySheetScreen({
 
 	useEffect(() => {
 		onEnteredRef.current = onEntered;
-	}, [onEntered]);
+		beforeEntryRef.current = beforeEntry;
+	}, [beforeEntry, onEntered]);
 
 	useEffect(() => {
 		previousVariantRef.current = variant;
@@ -356,6 +363,7 @@ export function SecondarySheetScreen({
 
 	useEffect(
 		() => () => {
+			entryPreparationRef.current += 1;
 			if (entryFrameRef.current !== null) {
 				cancelAnimationFrame(entryFrameRef.current);
 			}
@@ -372,22 +380,6 @@ export function SecondarySheetScreen({
 		(event: LayoutChangeEvent) => {
 			const measuredTravelDistance =
 				event.nativeEvent.layout.height + Math.max(insets.bottom, 12);
-			if (skipEntryAnimation) {
-				travelDistance.value = measuredTravelDistance;
-				entryStartedRef.current = true;
-				if (
-					entryCompletedRef.current ||
-					entryFrameRef.current !== null ||
-					closingRef.current
-				) {
-					return;
-				}
-				entryFrameRef.current = requestAnimationFrame(() => {
-					entryFrameRef.current = null;
-					if (!closingRef.current) notifyEntered();
-				});
-				return;
-			}
 			if (entryStartedRef.current) {
 				if (entryCompletedRef.current) {
 					travelDistance.value = measuredTravelDistance;
@@ -397,21 +389,52 @@ export function SecondarySheetScreen({
 			if (closingRef.current) return;
 			travelDistance.value = measuredTravelDistance;
 			entryStartedRef.current = true;
-			entryFrameRef.current = requestAnimationFrame(() => {
-				entryFrameRef.current = null;
-				if (closingRef.current) return;
-				progress.value = withTiming(
-					1,
-					{
-						duration: motion.sheetEnter,
-						easing: sheetEasing,
-						reduceMotion: ReduceMotion.System,
-					},
-					(finished) => {
-						if (finished) runOnJS(notifyEntered)();
-					},
-				);
-			});
+			const preparation = entryPreparationRef.current + 1;
+			entryPreparationRef.current = preparation;
+
+			const startEntry = () => {
+				if (
+					closingRef.current ||
+					entryPreparationRef.current !== preparation
+				) {
+					return;
+				}
+				entryFrameRef.current = requestAnimationFrame(() => {
+					entryFrameRef.current = null;
+					if (
+						closingRef.current ||
+						entryPreparationRef.current !== preparation
+					) {
+						return;
+					}
+					if (skipEntryAnimation) {
+						notifyEntered();
+						return;
+					}
+					progress.value = withTiming(
+						1,
+						{
+							duration: motion.sheetEnter,
+							easing: sheetEasing,
+							reduceMotion: ReduceMotion.System,
+						},
+						(finished) => {
+							if (finished) runOnJS(notifyEntered)();
+						},
+					);
+				});
+			};
+
+			try {
+				const result = beforeEntryRef.current?.();
+				if (result && typeof result.then === "function") {
+					void Promise.resolve(result).then(startEntry, startEntry);
+					return;
+				}
+			} catch {
+				// Entry preparation is fail-open so a native handoff cannot strand the sheet.
+			}
+			startEntry();
 		},
 		[
 			insets.bottom,
@@ -491,7 +514,11 @@ export function SecondarySheetScreen({
 		transform: [{ translateY: (1 - progress.value) * travelDistance.value }],
 	}));
 	const scrimAnimatedStyle = useAnimatedStyle(() => ({
-		opacity: interpolate(progress.value, [0, 1], [0, 0.38]),
+		opacity: interpolate(
+			progress.value,
+			[0, 1],
+			[initialScrimOpacity, 0.38],
+		),
 	}));
 
 	const body =
@@ -508,6 +535,7 @@ export function SecondarySheetScreen({
 		<SheetDismissContext.Provider value={dismiss}>
 			<View style={styles.root}>
 				<Animated.View
+					testID="secondary-sheet-scrim"
 					pointerEvents="none"
 					style={[StyleSheet.absoluteFill, styles.scrim, scrimAnimatedStyle]}
 				/>

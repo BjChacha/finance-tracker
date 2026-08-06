@@ -74,6 +74,12 @@ class QuickKeypadModule : Module() {
       QuickAddHandoffController.complete(handoffId)
     }
 
+    AsyncFunction("revealQuickAddPresentation") { handoffId: String, promise: Promise ->
+      QuickAddHandoffController.revealPresentation(handoffId) { revealed ->
+        promise.resolve(revealed)
+      }
+    }
+
     Function("completeQuickAddInteractive") { handoffId: String ->
       QuickAddHandoffController.completeInteractive(handoffId)
     }

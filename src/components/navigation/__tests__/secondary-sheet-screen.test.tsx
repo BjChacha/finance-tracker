@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { useCallback, useEffect, useState } from "react";
-import { Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import {
 	SecondarySheetScreen,
 	SecondarySheetSurface,
@@ -19,6 +19,8 @@ jest.mock("expo-router", () => {
 
 function DeferredContentHarness(props: {
 	onEntered: () => void;
+	beforeEntry?: () => void | Promise<void>;
+	initialScrimOpacity?: number;
 	skipEntryAnimation?: boolean;
 }) {
 	const [entered, setEntered] = useState(false);
@@ -31,6 +33,8 @@ function DeferredContentHarness(props: {
 		<SecondarySheetScreen
 			title="Details"
 			onEntered={handleEntered}
+			beforeEntry={props.beforeEntry}
+			initialScrimOpacity={props.initialScrimOpacity}
 			skipEntryAnimation={props.skipEntryAnimation}
 		>
 			{entered ? (
@@ -79,6 +83,107 @@ describe("SecondarySheetScreen entry barrier", () => {
 		expect(onEntered).toHaveBeenCalledTimes(1);
 		expect(screen.getByTestId("heavy-content")).toBeTruthy();
 		expect(screen.queryByTestId("business-summary")).toBeNull();
+	});
+
+	it("waits for asynchronous entry preparation before scheduling the animation", async () => {
+		let resolvePreparation: (() => void) | undefined;
+		const beforeEntry = jest.fn(
+			() =>
+				new Promise<void>((resolve) => {
+					resolvePreparation = resolve;
+				}),
+		);
+		const onEntered = jest.fn();
+		render(
+			<DeferredContentHarness
+				onEntered={onEntered}
+				beforeEntry={beforeEntry}
+			/>,
+		);
+
+		expect(beforeEntry).not.toHaveBeenCalled();
+		fireEvent(screen.getByTestId("secondary-sheet-card"), "layout", {
+			nativeEvent: { layout: { x: 0, y: 0, width: 390, height: 700 } },
+		});
+		expect(beforeEntry).toHaveBeenCalledTimes(1);
+
+		act(() => jest.runAllTimers());
+		expect(onEntered).not.toHaveBeenCalled();
+
+		await act(async () => {
+			resolvePreparation?.();
+			await Promise.resolve();
+		});
+		expect(onEntered).not.toHaveBeenCalled();
+
+		act(() => jest.runAllTimers());
+		expect(onEntered).toHaveBeenCalledTimes(1);
+
+		fireEvent(screen.getByTestId("secondary-sheet-card"), "layout", {
+			nativeEvent: { layout: { x: 0, y: 0, width: 390, height: 700 } },
+		});
+		expect(beforeEntry).toHaveBeenCalledTimes(1);
+	});
+
+	it("continues entry when asynchronous preparation rejects", async () => {
+		const onEntered = jest.fn();
+		render(
+			<DeferredContentHarness
+				onEntered={onEntered}
+				beforeEntry={() => Promise.reject(new Error("reveal failed"))}
+			/>,
+		);
+
+		fireEvent(screen.getByTestId("secondary-sheet-card"), "layout", {
+			nativeEvent: { layout: { x: 0, y: 0, width: 390, height: 700 } },
+		});
+		await act(async () => {
+			await Promise.resolve();
+		});
+		act(() => jest.runAllTimers());
+
+		expect(onEntered).toHaveBeenCalledTimes(1);
+	});
+
+	it("ignores entry preparation that resolves after unmount", async () => {
+		let resolvePreparation: (() => void) | undefined;
+		const onEntered = jest.fn();
+		const view = render(
+			<DeferredContentHarness
+				onEntered={onEntered}
+				beforeEntry={() =>
+					new Promise<void>((resolve) => {
+						resolvePreparation = resolve;
+					})
+				}
+			/>,
+		);
+
+		fireEvent(screen.getByTestId("secondary-sheet-card"), "layout", {
+			nativeEvent: { layout: { x: 0, y: 0, width: 390, height: 700 } },
+		});
+		view.unmount();
+		await act(async () => {
+			resolvePreparation?.();
+			await Promise.resolve();
+		});
+		act(() => jest.runAllTimers());
+
+		expect(onEntered).not.toHaveBeenCalled();
+	});
+
+	it("keeps the quick handoff scrim at its final opacity during entry", () => {
+		render(
+			<DeferredContentHarness
+				onEntered={jest.fn()}
+				initialScrimOpacity={0.38}
+			/>,
+		);
+
+		const style = StyleSheet.flatten(
+			screen.getByTestId("secondary-sheet-scrim").props.style,
+		);
+		expect(style.opacity).toBe(0.38);
 	});
 
 	it("does not start a delayed entry after an immediate dismiss", async () => {

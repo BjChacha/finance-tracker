@@ -12,6 +12,7 @@ import { zh } from "@/i18n/zh";
 import {
 	completeQuickAddHandoff,
 	completeQuickAddInteractive,
+	revealQuickAddPresentation,
 } from "@/lib/quickKeypad";
 
 export default function QuickAddTransactionScreen() {
@@ -19,6 +20,8 @@ export default function QuickAddTransactionScreen() {
 	const params = useLocalSearchParams<AddTransactionRouteParams>();
 	const launch = parseAddTransactionLaunch(params);
 	const handoffId = params.handoffId;
+	const hasNativeHandoff =
+		process.env.EXPO_OS === "android" && Boolean(handoffId);
 	const flowKey = `${params.amount ?? ""}:${params.currency ?? ""}:${params.type ?? ""}:${handoffId ?? ""}`;
 	const formRef = useRef<TransactionFormHandle>(null);
 	const completedHandoffId = useRef<string | null>(null);
@@ -80,6 +83,10 @@ export default function QuickAddTransactionScreen() {
 		sheetEnteredHandoffId.current = handoffId;
 		completeHandoffWhenReady();
 	}, [completeHandoffWhenReady, handoffId]);
+	const handleBeforeEntry = useCallback(async () => {
+		if (!handoffId) return;
+		await revealQuickAddPresentation(handoffId);
+	}, [handoffId]);
 
 	useEffect(
 		() => () => {
@@ -89,8 +96,8 @@ export default function QuickAddTransactionScreen() {
 		[],
 	);
 
-	// SecondarySheetScreen owns hardware back handling. The native cover is released only after
-	// both the form is interactive and the sheet entry animation has fully completed.
+	// SecondarySheetScreen owns hardware back handling. The native cover is removed immediately
+	// before entry while the keypad stays retained until the form and sheet are both ready.
 	return (
 		<View
 			key={flowKey}
@@ -109,7 +116,8 @@ export default function QuickAddTransactionScreen() {
 				onCreated={handleCreated}
 				onInteractive={handleFormInteractive}
 				onEntered={handleSheetEntered}
-				skipEntryAnimation
+				beforeEntry={hasNativeHandoff ? handleBeforeEntry : undefined}
+				initialScrimOpacity={hasNativeHandoff ? 0.38 : 0}
 				skipExitAnimation
 			/>
 		</View>

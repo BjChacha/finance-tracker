@@ -38,6 +38,7 @@ declare class QuickKeypadModule extends NativeModule<QuickKeypadModuleEvents> {
   ): Promise<QuickKeypadResult | null>;
 
   completeQuickAddHandoff(handoffId: string): void;
+  revealQuickAddPresentation(handoffId: string): Promise<boolean>;
   completeQuickAddInteractive(handoffId: string): void;
   getPendingQuickAddLaunch(): PendingQuickAddLaunch | null;
 }

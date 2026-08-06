@@ -38,6 +38,20 @@ export function completeQuickAddHandoff(handoffId: string | null | undefined): v
   getNativeModule()?.completeQuickAddHandoff(handoffId);
 }
 
+export async function revealQuickAddPresentation(
+  handoffId: string | null | undefined,
+): Promise<boolean> {
+  if (!handoffId) return false;
+  const mod = getNativeModule();
+  if (!mod) return false;
+  try {
+    return await mod.revealQuickAddPresentation(handoffId);
+  } catch (error) {
+    console.warn('[quick-keypad] Failed to reveal quick-add presentation', error);
+    return false;
+  }
+}
+
 export function completeQuickAddInteractive(handoffId: string | null | undefined): void {
   if (!handoffId) return;
   getNativeModule()?.completeQuickAddInteractive(handoffId);
