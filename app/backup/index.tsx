@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Icon, type IconName } from '@/components/Icon';
+import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import { useExportBackup, useExportCsv, useLastBackupAt, useRestoreBackup } from '@/features/backup';
 import { zh } from '@/i18n/zh';
 import { dayjs } from '@/lib/date';
@@ -77,53 +79,55 @@ export default function BackupScreen() {
     }
   }
 
-  const actions = [
+  const actions: { icon: IconName; title: string; desc: string; onPress: () => void }[] = [
     {
-      icon: '📤',
+      icon: 'upload',
       title: zh.backup.exportJson,
       desc: zh.backup.exportJsonDesc,
       onPress: onExportBackup,
     },
-    { icon: '📄', title: zh.backup.exportCsv, desc: zh.backup.exportCsvDesc, onPress: onExportCsv },
-    { icon: '♻️', title: zh.backup.restore, desc: zh.backup.restoreDesc, onPress: onRestore },
+    { icon: 'file-text', title: zh.backup.exportCsv, desc: zh.backup.exportCsvDesc, onPress: onExportCsv },
+    { icon: 'recycle', title: zh.backup.restore, desc: zh.backup.restoreDesc, onPress: onRestore },
   ];
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: 16 }}
-    >
-      <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
-        <Text style={{ color: colors.textSecondary, fontSize: 13 }}>{zh.backup.lastBackupAt}</Text>
-        <Text style={{ color: colors.text, fontSize: 17, fontWeight: '600', marginTop: 4 }}>
-          {lastBackupAt ? dayjs(lastBackupAt).format('YYYY-MM-DD HH:mm') : zh.backup.never}
+    <SecondarySheetScreen title={zh.backup.title}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        contentContainerStyle={{ padding: 16 }}
+      >
+        <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
+          <Text style={{ color: colors.textSecondary, fontSize: 13 }}>{zh.backup.lastBackupAt}</Text>
+          <Text style={{ color: colors.text, fontSize: 17, fontWeight: '600', marginTop: 4 }}>
+            {lastBackupAt ? dayjs(lastBackupAt).format('YYYY-MM-DD HH:mm') : zh.backup.never}
+          </Text>
+        </View>
+
+        {actions.map((action) => (
+          <Pressable
+            key={action.title}
+            style={[styles.actionCard, { backgroundColor: colors.card, opacity: working ? 0.5 : 1 }]}
+            disabled={working}
+            onPress={action.onPress}
+          >
+            <Icon name={action.icon} size={24} color={colors.primary} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>
+                {action.title}
+              </Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 3, lineHeight: 17 }}>
+                {action.desc}
+              </Text>
+            </View>
+            {working ? <ActivityIndicator color={colors.primary} /> : null}
+          </Pressable>
+        ))}
+
+        <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 12, lineHeight: 18 }}>
+          {zh.backup.hint}
         </Text>
-      </View>
-
-      {actions.map((action) => (
-        <Pressable
-          key={action.title}
-          style={[styles.actionCard, { backgroundColor: colors.card, opacity: working ? 0.5 : 1 }]}
-          disabled={working}
-          onPress={action.onPress}
-        >
-          <Text style={{ fontSize: 24 }}>{action.icon}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>
-              {action.title}
-            </Text>
-            <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 3, lineHeight: 17 }}>
-              {action.desc}
-            </Text>
-          </View>
-          {working ? <ActivityIndicator color={colors.primary} /> : null}
-        </Pressable>
-      ))}
-
-      <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 12, lineHeight: 18 }}>
-        {zh.backup.hint}
-      </Text>
-    </ScrollView>
+      </ScrollView>
+    </SecondarySheetScreen>
   );
 }
 

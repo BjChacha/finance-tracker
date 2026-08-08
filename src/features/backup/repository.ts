@@ -2,6 +2,7 @@ import Constants from 'expo-constants';
 import { asc, eq } from 'drizzle-orm';
 import { alias, type SQLiteTable } from 'drizzle-orm/sqlite-core';
 import Papa from 'papaparse';
+import { normalizeAccountType } from '@/db/account-types';
 import { db, withTransaction } from '@/db/client';
 import { BACKUP_FORMAT, BACKUP_SCHEMA_VERSION } from '@/db/backup-version';
 import {
@@ -10,10 +11,12 @@ import {
   categories,
   importBatches,
   importMappings,
+  projects,
   recurringRules,
   settings,
   transactions,
 } from '@/db/schema';
+import { getSetting, setSetting } from '@/db/settings';
 import { dayjs } from '@/lib/date';
 import { readTextFromUri, shareFile, writeTextToCache } from '@/lib/fs';
 import { formatCents } from '@/lib/money';
@@ -24,24 +27,6 @@ import { runUpgradeChain, type RawBackupPayload } from './upgraders';
 
 const LAST_BACKUP_AT_KEY = 'backup.lastBackupAt';
 
-async function getSetting<T>(key: string): Promise<T | null> {
-  const rows = await db.select().from(settings).where(eq(settings.key, key)).limit(1);
-  const raw = rows[0]?.value;
-  if (raw === undefined) return null;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
-}
-
-async function setSetting(key: string, value: unknown): Promise<void> {
-  await db
-    .insert(settings)
-    .values({ key, value: JSON.stringify(value) })
-    .onConflictDoUpdate({ target: settings.key, set: { value: JSON.stringify(value) } });
-}
-
 /** 上次备份时间（Unix 毫秒），从未备份返回 null */
 export function getLastBackupAt(): Promise<number | null> {
   return getSetting<number>(LAST_BACKUP_AT_KEY);
@@ -49,11 +34,12 @@ export function getLastBackupAt(): Promise<number | null> {
 
 /* ---------------------------------- 导出备份 ---------------------------------- */
 
-/** 读取 8 张表全量数据，组装当前版本的备份对象 */
+/** 读取 9 张表全量数据，组装当前版本的备份对象 */
 export async function buildBackupFile(): Promise<BackupFile> {
   const [
     accountRows,
     categoryRows,
+    projectRows,
     transactionRows,
     budgetRows,
     recurringRuleRows,
@@ -63,6 +49,7 @@ export async function buildBackupFile(): Promise<BackupFile> {
   ] = await Promise.all([
     db.select().from(accounts),
     db.select().from(categories),
+    db.select().from(projects),
     db.select().from(transactions),
     db.select().from(budgets),
     db.select().from(recurringRules),
@@ -76,8 +63,12 @@ export async function buildBackupFile(): Promise<BackupFile> {
     appVersion: Constants.expoConfig?.version ?? '0.0.0',
     exportedAt: new Date().toISOString(),
     data: {
-      accounts: accountRows,
+      accounts: accountRows.map((account) => ({
+        ...account,
+        type: normalizeAccountType(account.type),
+      })),
       categories: categoryRows,
+      projects: projectRows,
       transactions: transactionRows,
       budgets: budgetRows,
       recurringRules: recurringRuleRows,
@@ -167,8 +158,9 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
   );
 
   await withTransaction(async () => {
-    // 先删引用方，再删被引用方（transactions/budgets/recurring 引用 accounts/categories）
+    // 先删引用方，再删被引用方（transactions/budgets/recurring 引用 accounts/categories/projects）
     await db.delete(transactions);
+    await db.delete(projects);
     await db.delete(recurringRules);
     await db.delete(budgets);
     await db.delete(importBatches);
@@ -180,6 +172,7 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
     // 先插被引用方，再插引用方
     await insertInBatches(accounts, data.accounts);
     await insertInBatches(categories, data.categories);
+    await insertInBatches(projects, data.projects);
     await insertInBatches(transactions, data.transactions);
     await insertInBatches(budgets, data.budgets);
     await insertInBatches(recurringRules, data.recurringRules);
@@ -193,6 +186,7 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
     counts: {
       accounts: data.accounts.length,
       categories: data.categories.length,
+      projects: data.projects.length,
       transactions: data.transactions.length,
       budgets: data.budgets.length,
       recurringRules: data.recurringRules.length,

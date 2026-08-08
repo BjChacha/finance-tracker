@@ -13,6 +13,7 @@ import {
 } from '@/db/schema';
 import { dayjs, nextRunDate, todayKey } from '@/lib/date';
 import { newId } from '@/lib/id';
+import { RATE_SCALE } from '@/lib/money';
 import { advanceOneStep, alignToAnchor } from './transform';
 
 const toAccounts = alias(accounts, 'to_accounts');
@@ -182,13 +183,18 @@ export async function toggleRule(id: string, enabled: boolean): Promise<void> {
 /** 由规则生成某运行日的交易行（date 固定为当天 12:00 本地，dateKey=运行日） */
 export function ruleToTxValues(rule: RecurringRule, runDate: string): NewTransaction {
   const now = Date.now();
+  // 周期规则暂不支持多币种：生成交易按本位币 CNY 记账
   return {
     id: newId(),
     type: rule.type,
     amount: rule.amount,
     fee: 0,
+    currency: 'CNY',
+    exchangeRate: RATE_SCALE,
+    amountBaseCents: rule.amount,
     accountId: rule.accountId,
     toAccountId: rule.type === 'transfer' ? rule.toAccountId : null,
+    toAmount: rule.type === 'transfer' ? rule.amount : null,
     categoryId: rule.type === 'transfer' ? null : rule.categoryId,
     date: dayjs(runDate).hour(12).minute(0).second(0).millisecond(0).valueOf(),
     dateKey: runDate,

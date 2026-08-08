@@ -6,9 +6,13 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+import Animated, { SlideInDown } from 'react-native-reanimated';
+import { Icon } from '@/components/Icon';
+import { IconBubble } from '@/components/IconBubble';
+import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
+import { SingleLineTextInput } from '@/components/single-line-text-input';
 import {
   useBudgets,
   useBudgetStatus,
@@ -19,10 +23,13 @@ import {
 import { useCategoryTree } from '@/features/categories';
 import { zh } from '@/i18n/zh';
 import { dayjs, toMonthKey, todayKey } from '@/lib/date';
+import { resolveIconKey } from '@/lib/iconResolvers';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
-import { useTheme, type AppTheme } from '@/theme';
+import { motion, useTheme, type AppTheme } from '@/theme';
 
 const ALERT_PCT_OPTIONS = [50, 80, 90, 100];
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /** 编辑器状态：null=关闭；categoryId undefined 表示新增（待选分类），null 表示总预算 */
 type EditorState = {
@@ -139,19 +146,23 @@ export default function BudgetsScreen() {
       : (expenseTree.find((c) => c.id === editor?.categoryId)?.name ?? '');
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <SecondarySheetScreen title={zh.budgets.title}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* 月份切换 */}
       <View style={styles.monthBar}>
         <Pressable style={styles.monthArrow} onPress={() => shiftMonth(-1)}>
-          <Text style={styles.monthArrowText}>←</Text>
+          <Icon name="chevron-left" size={20} color={colors.primary} />
         </Pressable>
         <Text style={styles.monthTitle}>{dayjs(`${monthKey}-01`).format('YYYY年MM月')}</Text>
         <Pressable style={styles.monthArrow} onPress={() => shiftMonth(1)}>
-          <Text style={styles.monthArrowText}>→</Text>
+          <Icon name="chevron-right" size={20} color={colors.primary} />
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 48 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+      >
         {/* 总预算卡片 */}
         {total ? (
           <Pressable
@@ -189,9 +200,12 @@ export default function BudgetsScreen() {
             style={[styles.card, styles.setTotalBtn, { borderColor: colors.border }]}
             onPress={() => openEditor(null, true)}
           >
-            <Text style={{ color: colors.primary, fontSize: 15, fontWeight: '600' }}>
-              ＋ {zh.budgets.setTotal}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Icon name="plus" size={16} color={colors.primary} />
+              <Text style={{ color: colors.primary, fontSize: 15, fontWeight: '600' }}>
+                {zh.budgets.setTotal}
+              </Text>
+            </View>
           </Pressable>
         )}
 
@@ -199,7 +213,10 @@ export default function BudgetsScreen() {
         <View style={[styles.rowBetween, { marginTop: 8, marginBottom: 8 }]}>
           <Text style={styles.sectionTitle}>{zh.budgets.categorySection}</Text>
           <Pressable onPress={() => openEditor(null)}>
-            <Text style={{ color: colors.primary, fontSize: 14 }}>＋ {zh.budgets.add}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Icon name="plus" size={16} color={colors.primary} />
+              <Text style={{ color: colors.primary, fontSize: 14 }}>{zh.budgets.add}</Text>
+            </View>
           </Pressable>
         </View>
 
@@ -211,7 +228,11 @@ export default function BudgetsScreen() {
           >
             <View style={styles.rowBetween}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ fontSize: 20 }}>{item.icon ?? '📦'}</Text>
+                <IconBubble
+                  name={resolveIconKey(item.icon, 'category')}
+                  color={item.color ?? colors.primary}
+                  size={36}
+                />
                 <Text style={{ color: colors.text, fontSize: 15, fontWeight: '500' }}>
                   {item.name}
                 </Text>
@@ -257,11 +278,13 @@ export default function BudgetsScreen() {
       <Modal
         visible={editor !== null}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setEditor(null)}
       >
         <Pressable style={styles.modalMask} onPress={() => setEditor(null)}>
-          <Pressable
+          {/* 遮罩 fade + 面板上滑分离（业界底部弹层规范） */}
+          <AnimatedPressable
+            entering={SlideInDown.duration(motion.enter)}
             style={[styles.modalCard, { backgroundColor: colors.card }]}
             onPress={(e) => e.stopPropagation()}
           >
@@ -298,9 +321,16 @@ export default function BudgetsScreen() {
                         setEditor((prev) => (prev ? { ...prev, categoryId: c.id } : prev))
                       }
                     >
-                      <Text style={{ color: selected ? '#FFFFFF' : colors.text, fontSize: 13 }}>
-                        {c.icon} {c.name}
-                      </Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <Icon
+                          name={resolveIconKey(c.icon, 'category')}
+                          size={14}
+                          color={selected ? colors.onPrimary : colors.text}
+                        />
+                        <Text style={{ color: selected ? colors.onPrimary : colors.text, fontSize: 13 }}>
+                          {c.name}
+                        </Text>
+                      </View>
                     </Pressable>
                   );
                 })}
@@ -308,7 +338,7 @@ export default function BudgetsScreen() {
             )}
 
             <Text style={styles.fieldLabel}>{zh.budgets.amount}</Text>
-            <TextInput
+            <SingleLineTextInput
               style={[styles.input, { color: colors.text, borderColor: colors.border }]}
               value={editor?.amountText ?? ''}
               onChangeText={(t) => setEditor((prev) => (prev ? { ...prev, amountText: t } : prev))}
@@ -331,7 +361,7 @@ export default function BudgetsScreen() {
                     ]}
                     onPress={() => setEditor((prev) => (prev ? { ...prev, alertPct: pct } : prev))}
                   >
-                    <Text style={{ color: selected ? '#FFFFFF' : colors.text, fontSize: 13 }}>
+                    <Text style={{ color: selected ? colors.onPrimary : colors.text, fontSize: 13 }}>
                       {pct}%
                     </Text>
                   </Pressable>
@@ -355,10 +385,11 @@ export default function BudgetsScreen() {
                 <Text style={{ color: colors.expense, fontSize: 15 }}>{zh.common.delete}</Text>
               </Pressable>
             )}
-          </Pressable>
+          </AnimatedPressable>
         </Pressable>
       </Modal>
-    </View>
+      </View>
+    </SecondarySheetScreen>
   );
 }
 
@@ -401,16 +432,16 @@ function makeStyles({ colors }: AppTheme) {
     },
     fieldLabel: { color: colors.textSecondary, fontSize: 13, marginTop: 14, marginBottom: 8 },
     input: {
+      height: 40,
       borderWidth: 1,
       borderRadius: 8,
       paddingHorizontal: 12,
-      paddingVertical: 9,
       fontSize: 15,
     },
     chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
     chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, borderWidth: 1 },
     saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 20 },
-    saveBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+    saveBtnText: { color: colors.onPrimary, fontSize: 16, fontWeight: '600' },
     deleteBtn: { alignItems: 'center', paddingVertical: 14, marginTop: 4 },
   });
 }

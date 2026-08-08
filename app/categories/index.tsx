@@ -1,4 +1,3 @@
-import { Stack } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
@@ -7,9 +6,13 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+import { SingleLineTextInput } from '@/components/single-line-text-input';
+import {
+  SecondarySheetScreen,
+  SheetHeaderIconButton,
+} from '@/components/navigation/secondary-sheet-screen';
 import type { Category } from '@/db/schema';
 import {
   useArchiveCategory,
@@ -18,10 +21,12 @@ import {
   useUpdateCategory,
   type CategoryNode,
 } from '@/features/categories';
+import { Icon } from '@/components/Icon';
+import { IconBubble } from '@/components/IconBubble';
 import { zh } from '@/i18n/zh';
+import { CATEGORY_ICON_KEYS, resolveIconKey } from '@/lib/iconResolvers';
 import { useTheme } from '@/theme';
 
-const ICON_OPTIONS = ['🍜', '🚌', '🛒', '🏠', '🎮', '💊', '📚', '📱', '🎁', '💰', '📈', '📦'];
 const COLOR_OPTIONS = ['#F97316', '#3B82F6', '#EC4899', '#8B5CF6', '#06B6D4', '#EF4444', '#10B981', '#F59E0B', '#9CA3AF'];
 
 type EditorState = {
@@ -49,13 +54,11 @@ export default function CategoriesScreen() {
   function renderChild(child: Category) {
     return (
       <View key={child.id} style={[styles.childRow, { borderTopColor: colors.border }]}>
-        <Text style={{ fontSize: 16 }}>{child.icon}</Text>
+        <Icon name={resolveIconKey(child.icon, 'category')} size={18} color={child.color} />
         <Text style={{ color: colors.text, fontSize: 14, flex: 1 }}>{child.name}</Text>
-        {child.isPreset === 0 && (
-          <Pressable onPress={() => setEditor({ editing: child, parentId: child.parentId })} hitSlop={8}>
-            <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.common.edit}</Text>
-          </Pressable>
-        )}
+        <Pressable onPress={() => setEditor({ editing: child, parentId: child.parentId })} hitSlop={8}>
+          <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.common.edit}</Text>
+        </Pressable>
         <Pressable onPress={() => confirmArchive(child)} hitSlop={8}>
           <Text style={{ color: colors.expense, fontSize: 13, marginLeft: 14 }}>
             {zh.categories.archive}
@@ -73,24 +76,25 @@ export default function CategoriesScreen() {
           style={styles.parentRow}
           onPress={() => setExpanded(open ? null : node.id)}
         >
-          <View style={[styles.iconBox, { backgroundColor: `${node.color}33` }]}>
-            <Text style={{ fontSize: 18 }}>{node.icon}</Text>
-          </View>
+          <IconBubble name={resolveIconKey(node.icon, 'category')} color={node.color} size={36} />
           <Text style={{ color: colors.text, fontSize: 15, fontWeight: '500', flex: 1 }}>
             {node.name}
             {node.children.length > 0 ? `（${node.children.length}）` : ''}
           </Text>
-          {node.isPreset === 0 && (
-            <Pressable onPress={() => setEditor({ editing: node, parentId: null })} hitSlop={8}>
-              <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.common.edit}</Text>
-            </Pressable>
-          )}
+          <Pressable onPress={() => setEditor({ editing: node, parentId: null })} hitSlop={8}>
+            <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.common.edit}</Text>
+          </Pressable>
           <Pressable onPress={() => confirmArchive(node)} hitSlop={8}>
             <Text style={{ color: colors.expense, fontSize: 13, marginLeft: 14 }}>
               {zh.categories.archive}
             </Text>
           </Pressable>
-          <Text style={{ color: colors.textSecondary, marginLeft: 12 }}>{open ? '▾' : '▸'}</Text>
+          <Icon
+            name={open ? 'chevron-down' : 'chevron-right'}
+            size={16}
+            color={colors.textSecondary}
+            style={{ marginLeft: 12 }}
+          />
         </Pressable>
         {open && (
           <View>
@@ -99,7 +103,10 @@ export default function CategoriesScreen() {
               style={[styles.childRow, { borderTopColor: colors.border }]}
               onPress={() => setEditor({ editing: null, parentId: node.id })}
             >
-              <Text style={{ color: colors.primary, fontSize: 13 }}>＋ {zh.categories.add}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Icon name="plus" size={16} color={colors.primary} />
+                <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.categories.add}</Text>
+              </View>
             </Pressable>
           </View>
         )}
@@ -108,17 +115,16 @@ export default function CategoriesScreen() {
   }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: zh.categories.title,
-          headerRight: () => (
-            <Pressable onPress={() => setEditor({ editing: null, parentId: null })} hitSlop={12}>
-              <Text style={{ color: colors.primary, fontSize: 15 }}>{zh.categories.add}</Text>
-            </Pressable>
-          ),
-        }}
-      />
+    <SecondarySheetScreen
+      title={zh.categories.title}
+      headerRight={
+        <SheetHeaderIconButton
+          icon="plus"
+          label={zh.categories.add}
+          onPress={() => setEditor({ editing: null, parentId: null })}
+        />
+      }
+    >
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         {/* 支出/收入 tab */}
         <View style={[styles.segment, { backgroundColor: colors.card }]}>
@@ -134,7 +140,7 @@ export default function CategoriesScreen() {
                 setExpanded(null);
               }}
             >
-              <Text style={{ color: tab === t ? '#FFFFFF' : colors.textSecondary, fontWeight: '600' }}>
+              <Text style={{ color: tab === t ? colors.onPrimary : colors.textSecondary, fontWeight: '600' }}>
                 {zh.tx[t]}
               </Text>
             </Pressable>
@@ -160,7 +166,7 @@ export default function CategoriesScreen() {
           onClose={() => setEditor(null)}
         />
       )}
-    </>
+    </SecondarySheetScreen>
   );
 }
 
@@ -177,7 +183,7 @@ function CategoryEditor({
 }) {
   const { colors } = useTheme();
   const [name, setName] = useState(editing?.name ?? '');
-  const [icon, setIcon] = useState(editing?.icon ?? ICON_OPTIONS[0]!);
+  const [icon, setIcon] = useState(resolveIconKey(editing?.icon, 'category'));
   const [color, setColor] = useState(editing?.color ?? COLOR_OPTIONS[0]!);
   const create = useCreateCategory();
   const update = useUpdateCategory();
@@ -202,7 +208,7 @@ function CategoryEditor({
           <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>
             {editing ? zh.categories.edit : zh.categories.add}
           </Text>
-          <TextInput
+          <SingleLineTextInput
             style={[styles.input, { color: colors.text, borderColor: colors.border }]}
             value={name}
             onChangeText={setName}
@@ -210,13 +216,13 @@ function CategoryEditor({
             placeholderTextColor={colors.textSecondary}
           />
           <View style={styles.chipRow}>
-            {ICON_OPTIONS.map((i) => (
+            {CATEGORY_ICON_KEYS.map((key) => (
               <Pressable
-                key={i}
-                style={[styles.iconChip, { borderColor: icon === i ? colors.primary : colors.border }]}
-                onPress={() => setIcon(i)}
+                key={key}
+                style={[styles.iconChip, { borderColor: icon === key ? colors.primary : colors.border }]}
+                onPress={() => setIcon(key)}
               >
-                <Text style={{ fontSize: 18 }}>{i}</Text>
+                <Icon name={key} size={20} color={icon === key ? colors.primary : colors.text} />
               </Pressable>
             ))}
           </View>
@@ -241,7 +247,7 @@ function CategoryEditor({
               <Text style={{ color: colors.text, fontWeight: '600' }}>{zh.common.cancel}</Text>
             </Pressable>
             <Pressable style={[styles.btn, { backgroundColor: colors.primary }]} onPress={handleSave}>
-              <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>{zh.common.save}</Text>
+              <Text style={{ color: colors.onPrimary, fontWeight: '600' }}>{zh.common.save}</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -255,13 +261,6 @@ const styles = StyleSheet.create({
   segmentItem: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
   card: { borderRadius: 12, marginBottom: 8, overflow: 'hidden' },
   parentRow: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 10 },
-  iconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 9,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   childRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -279,10 +278,10 @@ const styles = StyleSheet.create({
   },
   sheet: { borderRadius: 14, padding: 16, width: '100%' },
   input: {
+    height: 40,
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 9,
     fontSize: 15,
     marginBottom: 12,
   },

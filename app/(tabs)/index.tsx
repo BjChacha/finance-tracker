@@ -1,160 +1,196 @@
-import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useMemo } from 'react';
+import { Pressable, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Icon } from '@/components/Icon';
+import { useFloatingTabBarInset } from '@/components/navigation/floating-tab-bar';
+import { useBudgetStatus } from '@/features/budgets';
 import {
-  useMonthSummary,
-  useTransactions,
+  TransactionRow,
+  useDaySummary,
+  useRecentTransactions,
   type TxListItem,
 } from '@/features/transactions';
 import { zh } from '@/i18n/zh';
-import { dayjs, formatDayHeader, toMonthKey, todayKey } from '@/lib/date';
+import { toMonthKey, todayKey, yesterdayKey } from '@/lib/date';
 import { formatCents } from '@/lib/money';
+import { isQuickKeypadAvailable, openKeypad } from '@/lib/quickKeypad';
 import { useTheme, type AppTheme } from '@/theme';
 
-type DayHeaderItem = { kind: 'header'; dateKey: string; income: number; expense: number };
-type TxRowItem = { kind: 'row'; tx: TxListItem };
-type ListItem = DayHeaderItem | TxRowItem;
-
-export default function TransactionsScreen() {
+/** 总览首页：今日收支 + 本月预算快照 + 最近交易（查看全部→全量流水）。 */
+export default function OverviewScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const router = useRouter();
-  const [monthKey, setMonthKey] = useState(() => toMonthKey(todayKey()));
+  const tabBarInset = useFloatingTabBarInset();
 
-  const { data: txs = [] } = useTransactions({ monthKey });
-  const { data: summary } = useMonthSummary(monthKey);
+  const todayK = todayKey();
+  const yesterdayK = yesterdayKey();
+  const monthKey = toMonthKey(todayK);
+
+  const { data: day } = useDaySummary(todayK);
+  const { data: budget } = useBudgetStatus(monthKey);
+  const { data: recent = [] } = useRecentTransactions(3);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
-  const listData = useMemo<ListItem[]>(() => {
-    const items: ListItem[] = [];
-    let currentKey = '';
-    let headerIndex = -1;
-    for (const tx of txs) {
-      if (tx.dateKey !== currentKey) {
-        currentKey = tx.dateKey;
-        headerIndex = items.length;
-        items.push({ kind: 'header', dateKey: tx.dateKey, income: 0, expense: 0 });
-      }
-      const header = items[headerIndex] as DayHeaderItem;
-      if (tx.type === 'income') header.income += tx.amount;
-      else if (tx.type === 'expense') header.expense += tx.amount;
-      else header.expense += tx.fee;
-      items.push({ kind: 'row', tx });
+  // 最近交易按 今日 / 昨日 / 近期 分组（近期=更早；条目数上限由 useRecentTransactions 控制）
+  const recentSections = useMemo(() => {
+    const groups: { title: string; items: TxListItem[] }[] = [
+      { title: zh.overview.groupToday, items: [] },
+      { title: zh.overview.groupYesterday, items: [] },
+      { title: zh.overview.groupRecent, items: [] },
+    ];
+    for (const tx of recent) {
+      if (tx.dateKey === todayK) groups[0].items.push(tx);
+      else if (tx.dateKey === yesterdayK) groups[1].items.push(tx);
+      else groups[2].items.push(tx);
     }
-    return items;
-  }, [txs]);
+    return groups.filter((g) => g.items.length > 0);
+  }, [recent, todayK, yesterdayK]);
 
-  const income = summary?.income ?? 0;
-  const expense = summary?.expense ?? 0;
+  const income = day?.income ?? 0;
+  const expense = day?.expense ?? 0;
+  const net = income - expense;
+  const netColor = net > 0 ? colors.income : net < 0 ? colors.expense : colors.text;
 
-  function shiftMonth(delta: number) {
-    setMonthKey(dayjs(`${monthKey}-01`).add(delta, 'month').format('YYYY-MM'));
-  }
+  const total = budget?.total ?? null;
+  const levelColor = !total
+    ? colors.primary
+    : total.level === 'over'
+      ? colors.expense
+      : total.level === 'warn'
+        ? colors.warning
+        : colors.primary;
 
-  function renderItem({ item }: { item: ListItem }) {
-    if (item.kind === 'header') {
-      return (
-        <View style={styles.dayHeader}>
-          <Text style={styles.dayHeaderText}>{formatDayHeader(item.dateKey)}</Text>
-          <Text style={styles.dayHeaderText}>
-            {item.expense > 0 ? `${zh.tx.expense} ${formatCents(item.expense)}` : ''}
-            {item.expense > 0 && item.income > 0 ? '  ' : ''}
-            {item.income > 0 ? `${zh.tx.income} ${formatCents(item.income)}` : ''}
-          </Text>
-        </View>
-      );
+  async function openAddTransaction() {
+    if (Platform.OS !== 'android' || !isQuickKeypadAvailable()) {
+      router.push('/add-transaction');
+      return;
     }
-    const { tx } = item;
-    const isTransfer = tx.type === 'transfer';
-    const amountColor =
-      tx.type === 'expense' ? colors.expense : tx.type === 'income' ? colors.income : colors.transfer;
-    const title = isTransfer
-      ? `${tx.accountName ?? '?'} → ${tx.toAccountName ?? '?'}`
-      : (tx.categoryName ?? zh.common.empty);
-    const sub = isTransfer
-      ? tx.note || zh.tx.transfer
-      : `${tx.accountName ?? ''}${tx.note ? ` · ${tx.note}` : ''}`;
-    const sign = tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : '';
-    return (
-      <Pressable style={styles.row} onPress={() => router.push(`/transaction/${tx.id}`)}>
-        <Text style={styles.rowIcon}>{isTransfer ? '🔁' : (tx.categoryIcon ?? '📦')}</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.rowTitle} numberOfLines={1}>
-            {title}
-          </Text>
-          <Text style={styles.rowSub} numberOfLines={1}>
-            {sub}
-          </Text>
-        </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Text style={[styles.rowAmount, { color: amountColor }]}>
-            {sign}
-            {formatCents(tx.amount)}
-          </Text>
-          {isTransfer && tx.fee > 0 && (
-            <Text style={styles.rowSub}>
-              {zh.tx.fee} {formatCents(tx.fee)}
-            </Text>
-          )}
-        </View>
-      </Pressable>
-    );
+
+    try {
+      const result = await openKeypad();
+      if (!result) return;
+      router.push({
+        pathname: '/add-transaction',
+        params: {
+          amount: String(Math.abs(result.amountCents)),
+          currency: result.currency,
+          type: result.amountCents < 0 ? 'income' : 'expense',
+        },
+      });
+    } catch {
+      router.push('/add-transaction');
+    }
   }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* 月份切换 */}
-      <View style={styles.monthBar}>
-        <Pressable style={styles.monthArrow} onPress={() => shiftMonth(-1)}>
-          <Text style={styles.monthArrowText}>←</Text>
-        </Pressable>
-        <Text style={styles.monthTitle}>{dayjs(`${monthKey}-01`).format('YYYY年MM月')}</Text>
-        <Pressable style={styles.monthArrow} onPress={() => shiftMonth(1)}>
-          <Text style={styles.monthArrowText}>→</Text>
-        </Pressable>
-      </View>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: tabBarInset }]}>
+        {/* 今日收支 */}
+        <View style={[styles.card, { backgroundColor: colors.card }]}>
+          <View style={styles.dayRow}>
+            <View style={styles.dayCol}>
+              <Text style={styles.dayLabel}>{zh.overview.todayIncome}</Text>
+              <Text style={[styles.dayValue, { color: colors.income }]}>{formatCents(income)}</Text>
+            </View>
+            <View style={[styles.dayDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.dayCol}>
+              <Text style={styles.dayLabel}>{zh.overview.todayExpense}</Text>
+              <Text style={[styles.dayValue, { color: colors.expense }]}>{formatCents(expense)}</Text>
+            </View>
+            <View style={[styles.dayDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.dayCol}>
+              <Text style={styles.dayLabel}>{zh.overview.todayNet}</Text>
+              <Text style={[styles.dayValue, { color: netColor }]}>
+                {net > 0 ? '+' : ''}
+                {formatCents(net)}
+              </Text>
+            </View>
+          </View>
+        </View>
 
-      {/* 汇总条 */}
-      <View style={styles.summaryBar}>
-        <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>{zh.txList.monthIncome}</Text>
-          <Text style={[styles.summaryValue, { color: colors.income }]}>
-            {formatCents(income)}
-          </Text>
+        {/* 最近交易 */}
+        <View>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.cardTitle}>{zh.overview.recentTitle}</Text>
+            <Pressable onPress={() => router.push('/transactions')} hitSlop={8}>
+              <Text style={[styles.viewAll, { color: colors.primary }]}>{zh.overview.viewAll}</Text>
+            </Pressable>
+          </View>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
+            {recent.length === 0 ? (
+              <View style={styles.empty}>
+                <Text style={{ color: colors.textSecondary }}>{zh.common.empty}</Text>
+              </View>
+            ) : (
+              recentSections.map((section, si) => (
+                <View key={section.title} style={si > 0 ? styles.groupDivider : undefined}>
+                  <Text style={styles.groupHeader}>{section.title}</Text>
+                {section.items.map((tx, i) => (
+                  <TransactionRow
+                    key={tx.id}
+                    tx={tx}
+                    showDivider={i !== section.items.length - 1}
+                  />
+                ))}
+                </View>
+              ))
+            )}
+          </View>
         </View>
-        <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>{zh.txList.monthExpense}</Text>
-          <Text style={[styles.summaryValue, { color: colors.expense }]}>
-            {formatCents(expense)}
-          </Text>
-        </View>
-        <View style={styles.summaryItem}>
-          <Text style={styles.summaryLabel}>{zh.txList.monthBalance}</Text>
-          <Text style={[styles.summaryValue, { color: colors.text }]}>
-            {formatCents(income - expense)}
-          </Text>
-        </View>
-      </View>
 
-      {listData.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={{ color: colors.textSecondary }}>{zh.txList.emptyMonth}</Text>
-        </View>
-      ) : (
-        <FlashList
-          data={listData}
-          renderItem={renderItem}
-          keyExtractor={(item) => (item.kind === 'header' ? `h-${item.dateKey}` : item.tx.id)}
-          getItemType={(item) => item.kind}
-          contentContainerStyle={{ paddingBottom: 96 }}
-        />
-      )}
+        {/* 本月预算快照 */}
+        <Pressable
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={() => router.push('/budgets')}
+        >
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>{zh.overview.budgetSnapshot}</Text>
+            {total && (
+              <Text style={[styles.pct, { color: levelColor }]}>
+                {total.pct >= 100 ? zh.budgets.overspent : `${total.pct}%`}
+              </Text>
+            )}
+          </View>
+          {total ? (
+            <>
+              <View style={[styles.barTrack, { backgroundColor: colors.border }]}>
+                <View
+                  style={[
+                    styles.barFill,
+                    { width: `${Math.min(total.pct, 100)}%`, backgroundColor: levelColor },
+                  ]}
+                />
+              </View>
+              <View style={styles.budgetMeta}>
+                <Text style={styles.metaText}>
+                  {zh.budgets.spent} {formatCents(total.spent)} / {formatCents(total.amount)}
+                </Text>
+                {total.daily > 0 && (
+                  <Text style={styles.metaText}>
+                    {zh.budgets.dailyAvailable} {formatCents(total.daily)}
+                  </Text>
+                )}
+              </View>
+            </>
+          ) : (
+            <View style={[styles.noBudget, { borderColor: colors.border }]}>
+              <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                {zh.overview.noBudgetHint}
+              </Text>
+              <Text style={[styles.setBudget, { color: colors.primary }]}>{zh.overview.setBudget}</Text>
+            </View>
+          )}
+        </Pressable>
+      </ScrollView>
 
       {/* 悬浮记一笔 */}
-      <Pressable style={styles.fab} onPress={() => router.push('/add-transaction')}>
-        <Text style={styles.fabText}>＋</Text>
+      <Pressable
+        style={[styles.fab, { backgroundColor: colors.primary, bottom: tabBarInset + 8 }]}
+        onPress={() => void openAddTransaction()}
+      >
+        <Icon name="plus" size={26} color={colors.onPrimary} />
       </Pressable>
     </View>
   );
@@ -162,60 +198,56 @@ export default function TransactionsScreen() {
 
 function makeStyles({ colors }: AppTheme) {
   return StyleSheet.create({
-    monthBar: {
+    content: { padding: 16, gap: 12 },
+    card: { borderRadius: 12, padding: 16 },
+    cardHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: colors.card,
-      paddingVertical: 10,
+      justifyContent: 'space-between',
+      marginBottom: 10,
     },
-    monthArrow: { paddingHorizontal: 24, paddingVertical: 4 },
-    monthArrowText: { color: colors.primary, fontSize: 18 },
-    monthTitle: { color: colors.text, fontSize: 16, fontWeight: '600' },
-    summaryBar: {
+    cardTitle: { color: colors.text, fontSize: 15, fontWeight: '600' },
+    pct: { fontSize: 13, fontWeight: '600', fontVariant: ['tabular-nums'] },
+    dayRow: { flexDirection: 'row', alignItems: 'center' },
+    dayCol: { flex: 1, alignItems: 'center' },
+    dayDivider: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch' },
+    dayLabel: { color: colors.textSecondary, fontSize: 12, marginBottom: 4 },
+    dayValue: { fontSize: 17, fontWeight: '600', fontVariant: ['tabular-nums'] },
+    barTrack: { height: 8, borderRadius: 4, overflow: 'hidden' },
+    barFill: { height: 8, borderRadius: 4 },
+    budgetMeta: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
+    metaText: { color: colors.textSecondary, fontSize: 12 },
+    noBudget: {
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderRadius: 8,
+      paddingVertical: 14,
+      alignItems: 'center',
+      gap: 4,
+    },
+    setBudget: { fontSize: 13, fontWeight: '600' },
+    sectionHeader: {
       flexDirection: 'row',
-      backgroundColor: colors.card,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 2,
+      marginBottom: 8,
+    },
+    viewAll: { fontSize: 13, fontWeight: '500' },
+    groupHeader: { color: colors.textSecondary, fontSize: 12, fontWeight: '500', marginBottom: 2 },
+    groupDivider: {
+      marginTop: 10,
+      paddingTop: 10,
       borderTopWidth: StyleSheet.hairlineWidth,
       borderTopColor: colors.border,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: colors.border,
-      paddingVertical: 12,
     },
-    summaryItem: { flex: 1, alignItems: 'center' },
-    summaryLabel: { color: colors.textSecondary, fontSize: 12 },
-    summaryValue: { fontSize: 16, fontWeight: '600', marginTop: 2 },
-    dayHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingHorizontal: 16,
-      paddingTop: 14,
-      paddingBottom: 6,
-    },
-    dayHeaderText: { color: colors.textSecondary, fontSize: 12 },
-    row: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: colors.card,
-      marginHorizontal: 12,
-      marginBottom: 6,
-      borderRadius: 10,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      gap: 10,
-    },
-    rowIcon: { fontSize: 22 },
-    rowTitle: { color: colors.text, fontSize: 15, fontWeight: '500' },
-    rowSub: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
-    rowAmount: { fontSize: 16, fontWeight: '600' },
-    empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    empty: { paddingVertical: 20, alignItems: 'center' },
     fab: {
       position: 'absolute',
       right: 20,
-      bottom: 24,
       width: 56,
       height: 56,
       borderRadius: 28,
-      backgroundColor: colors.primary,
       alignItems: 'center',
       justifyContent: 'center',
       elevation: 4,
@@ -224,6 +256,5 @@ function makeStyles({ colors }: AppTheme) {
       shadowRadius: 6,
       shadowOffset: { width: 0, height: 3 },
     },
-    fabText: { color: '#FFFFFF', fontSize: 28, lineHeight: 32 },
   });
 }

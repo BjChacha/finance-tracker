@@ -3,11 +3,18 @@ import {
   BASELINE_VERSION,
   buildBaseline,
   CANDIDATE_MIN_SCORE,
-  MAX_AMOUNTS_PER_CATEGORY,
+  MAX_AMOUNTS_PER_TARGET,
+  orderByScore,
   orderTree,
   pickAutoSelect,
+  pickAutoSelectId,
+  pickAutoSelectTransferPair,
+  scoreAccounts,
   scoreCategories,
+  scoreTransferPairs,
   shouldRebuild,
+  transferDestinationScores,
+  transferSourceScores,
   type Baseline,
   type BaselineRow,
   type StoredBaseline,
@@ -20,8 +27,9 @@ function row(
   categoryId: string,
   amount: number,
   dateKey: string,
+  accountId = 'default-account',
 ): BaselineRow {
-  return { type, categoryId, amount, dateKey };
+  return { type, categoryId, accountId, toAccountId: null, amount, dateKey };
 }
 
 describe('buildBaseline', () => {
@@ -64,10 +72,42 @@ describe('buildBaseline', () => {
     rows.push(row('expense', 'shop', 4200, '2026-05-01'));
 
     const entry = buildBaseline(rows).entries.expense[0];
-    expect(entry.amounts).toHaveLength(MAX_AMOUNTS_PER_CATEGORY);
+    expect(entry.amounts).toHaveLength(MAX_AMOUNTS_PER_TARGET);
     expect(entry.amounts[0]).toMatchObject({ cents: 100, count: 2 });
     expect(entry.amounts.some((a) => a.cents === 4200)).toBe(false);
     expect(entry.count).toBe(43); // 截断只影响金额表,总笔数保留
+  });
+
+  it('builds account entries and keeps transfer pairs directional', () => {
+    const baseline = buildBaseline([
+      row('expense', 'coffee', 1500, '2026-07-10', 'wallet'),
+      row('income', 'salary', 500000, '2026-07-10', 'bank'),
+      {
+        type: 'transfer',
+        categoryId: null,
+        accountId: 'wallet',
+        toAccountId: 'bank',
+        amount: 3000,
+        dateKey: '2026-07-11',
+      },
+      {
+        type: 'transfer',
+        categoryId: null,
+        accountId: 'bank',
+        toAccountId: 'wallet',
+        amount: 3000,
+        dateKey: '2026-07-11',
+      },
+    ]);
+
+    expect(baseline.accountEntries.expense[0]).toMatchObject({ accountId: 'wallet', count: 1 });
+    expect(baseline.accountEntries.income[0]).toMatchObject({ accountId: 'bank', count: 1 });
+    expect(baseline.transferPairs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ accountId: 'wallet', toAccountId: 'bank' }),
+        expect.objectContaining({ accountId: 'bank', toAccountId: 'wallet' }),
+      ]),
+    );
   });
 });
 
@@ -120,6 +160,64 @@ describe('scoreCategories', () => {
     const b = buildBaseline([row('expense', 'coffee', 1500, '2026-07-11')]);
     expect(scoreCategories(b, 'expense', 0, TODAY).size).toBe(0);
     expect(scoreCategories(b, 'expense', -100, TODAY).size).toBe(0);
+  });
+});
+
+describe('account suggestions', () => {
+  const baseline = buildBaseline([
+    row('expense', 'coffee', 1500, '2026-07-11', 'wallet'),
+    row('expense', 'coffee', 3000, '2026-07-11', 'bank'),
+    {
+      type: 'transfer',
+      categoryId: null,
+      accountId: 'wallet',
+      toAccountId: 'bank',
+      amount: 5000,
+      dateKey: '2026-07-11',
+    },
+    {
+      type: 'transfer',
+      categoryId: null,
+      accountId: 'bank',
+      toAccountId: 'wallet',
+      amount: 9000,
+      dateKey: '2026-07-11',
+    },
+  ]);
+
+  it('scores single accounts with the shared amount kernel', () => {
+    const scores = scoreAccounts(baseline, 'expense', 1500, TODAY);
+    expect(scores.get('wallet')).toBeGreaterThanOrEqual(AUTO_SELECT_MIN_SCORE);
+    expect(scores.has('bank')).toBe(false);
+  });
+
+  it('scores and orders transfer sources and destinations by directed pair', () => {
+    const pairs = scoreTransferPairs(baseline, 5000, TODAY);
+    expect(pairs[0]).toMatchObject({ accountId: 'wallet', toAccountId: 'bank' });
+    expect(transferSourceScores(pairs).get('wallet')).toBe(pairs[0].score);
+    expect(transferDestinationScores(pairs, 'wallet').get('bank')).toBe(pairs[0].score);
+    expect(transferDestinationScores(pairs, 'bank').has('wallet')).toBe(false);
+  });
+
+  it('stably orders accounts and auto-selects only valid targets above threshold', () => {
+    const accounts = [{ id: 'cash' }, { id: 'wallet' }, { id: 'bank' }];
+    const scores = new Map([
+      ['bank', 1],
+      ['wallet', 2],
+    ]);
+    expect(orderByScore(accounts, scores).map(({ id }) => id)).toEqual([
+      'wallet',
+      'bank',
+      'cash',
+    ]);
+    expect(pickAutoSelectId(accounts, scores)).toBe('wallet');
+
+    const pairs = scoreTransferPairs(baseline, 5000, TODAY);
+    expect(pickAutoSelectTransferPair(pairs, new Set(['wallet', 'bank']))).toMatchObject({
+      accountId: 'wallet',
+      toAccountId: 'bank',
+    });
+    expect(pickAutoSelectTransferPair(pairs, new Set(['wallet']))).toBeNull();
   });
 });
 
@@ -200,7 +298,12 @@ describe('pickAutoSelect', () => {
 });
 
 describe('shouldRebuild', () => {
-  const baseline: Baseline = { v: BASELINE_VERSION, entries: { expense: [], income: [] } };
+  const baseline: Baseline = {
+    v: BASELINE_VERSION,
+    entries: { expense: [], income: [] },
+    accountEntries: { expense: [], income: [] },
+    transferPairs: [],
+  };
   const stored: StoredBaseline = {
     baseline,
     meta: { builtAt: 1000, txCount: 10, maxUpdatedAt: 99 },

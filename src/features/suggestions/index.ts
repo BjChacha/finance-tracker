@@ -1,2 +1,15 @@
-export { orderTree, pickAutoSelect } from './model';
-export { useCategorySuggestion } from './hooks';
+export {
+  orderByScore,
+  orderTree,
+  pickAutoSelect,
+  pickAutoSelectId,
+  pickAutoSelectTransferPair,
+  transferDestinationScores,
+  transferSourceScores,
+  type TransferPairScore,
+} from './model';
+export {
+  useAccountSuggestion,
+  useCategorySuggestion,
+  type AccountSuggestion,
+} from './hooks';

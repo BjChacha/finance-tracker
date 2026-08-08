@@ -66,3 +66,32 @@ export async function archiveCategory(id: string): Promise<void> {
   await db.update(categories).set({ archived: 1 }).where(eq(categories.id, id));
   await db.update(categories).set({ archived: 1 }).where(eq(categories.parentId, id));
 }
+
+/** 「补记漏记」分类名（余额调整交易专用，收支两类各一个） */
+export const ADJUSTMENT_CATEGORY_NAME = '补记漏记';
+
+/**
+ * 取得（不存在则创建）指定类型下的「补记漏记」分类，返回 id。
+ * 幂等：按 名称+类型 查找；缺失才插入（isPreset=1）。
+ * 兼容已有库（未播种）与恢复旧备份的情形。
+ */
+export async function ensureAdjustmentCategory(type: 'expense' | 'income'): Promise<string> {
+  const [existing] = await db
+    .select({ id: categories.id })
+    .from(categories)
+    .where(and(eq(categories.name, ADJUSTMENT_CATEGORY_NAME), eq(categories.type, type)))
+    .limit(1);
+  if (existing) return existing.id;
+  const id = newId();
+  await db.insert(categories).values({
+    id,
+    name: ADJUSTMENT_CATEGORY_NAME,
+    type,
+    icon: '⚖️',
+    color: '#9CA3AF',
+    parentId: null,
+    sortOrder: Date.now(),
+    isPreset: 1,
+  });
+  return id;
+}

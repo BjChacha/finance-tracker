@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   Alert,
@@ -7,9 +7,10 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+import { SingleLineTextInput } from '@/components/single-line-text-input';
+import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import type { RecurringFrequency, TransactionType } from '@/db/schema';
 import { useAccountBalances } from '@/features/accounts';
 import { useCategoryTree } from '@/features/categories';
@@ -23,8 +24,10 @@ import {
 import { promptSwitchOnNegative } from '@/features/transactions';
 import { zh } from '@/i18n/zh';
 import { todayKey } from '@/lib/date';
+import { resolveIconKey } from '@/lib/iconResolvers';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
+import { Icon, type IconName } from '@/components/Icon';
 
 const TYPE_TABS: { key: TransactionType; label: string }[] = [
   { key: 'expense', label: zh.tx.expense },
@@ -46,7 +49,6 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export default function RecurringEditScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const router = useRouter();
   const theme = useTheme();
   const { colors } = theme;
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -120,7 +122,7 @@ export default function RecurringEditScreen() {
     }
   }
 
-  function handleSave() {
+  function handleSave(dismiss: () => void) {
     if (!name.trim()) {
       Alert.alert(zh.recurring.nameRequired);
       return;
@@ -186,21 +188,21 @@ export default function RecurringEditScreen() {
       autoCreate,
     };
     const done = {
-      onSuccess: () => router.back(),
+      onSuccess: dismiss,
       onError: (e: Error) => Alert.alert(zh.common.error, e.message),
     };
     if (existing) update.mutate({ id: existing.id, input }, done);
     else create.mutate(input, done);
   }
 
-  function handleDelete() {
+  function handleDelete(dismiss: () => void) {
     if (!existing) return;
     Alert.alert(zh.common.delete, zh.recurring.deleteConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       {
         text: zh.common.delete,
         style: 'destructive',
-        onPress: () => remove.mutate(existing.id, { onSuccess: () => router.back() }),
+        onPress: () => remove.mutate(existing.id, { onSuccess: dismiss }),
       },
     ]);
   }
@@ -211,7 +213,9 @@ export default function RecurringEditScreen() {
     selected: boolean,
     onPress: () => void,
     color = colors.primary,
+    icon?: IconName,
   ) {
+    const labelColor = selected ? colors.onPrimary : colors.text;
     return (
       <Pressable
         key={key}
@@ -222,7 +226,10 @@ export default function RecurringEditScreen() {
         ]}
         onPress={onPress}
       >
-        <Text style={{ color: selected ? '#FFFFFF' : colors.text, fontSize: 13 }}>{label}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          {icon && <Icon name={icon} size={14} color={labelColor} />}
+          <Text style={{ color: labelColor, fontSize: 13 }}>{label}</Text>
+        </View>
       </Pressable>
     );
   }
@@ -230,8 +237,8 @@ export default function RecurringEditScreen() {
   const expandedNode = categoryTree.find((n) => n.id === expandedParent);
 
   return (
-    <>
-      <Stack.Screen options={{ title: existing ? zh.recurring.edit : zh.recurring.add }} />
+    <SecondarySheetScreen title={existing ? zh.recurring.edit : zh.recurring.add}>
+      {({ dismiss }) => (
       <ScrollView
         style={{ flex: 1, backgroundColor: colors.background }}
         contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
@@ -240,7 +247,7 @@ export default function RecurringEditScreen() {
         {/* 名称 */}
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>{zh.recurring.name}</Text>
-          <TextInput
+          <SingleLineTextInput
             style={styles.textInput}
             value={name}
             onChangeText={setName}
@@ -265,7 +272,7 @@ export default function RecurringEditScreen() {
                 style={[styles.segmentItem, active && { backgroundColor: tabColor }]}
                 onPress={() => switchType(tab.key)}
               >
-                <Text style={{ color: active ? '#FFFFFF' : colors.textSecondary, fontWeight: '600' }}>
+                <Text style={{ color: active ? colors.onPrimary : colors.textSecondary, fontWeight: '600' }}>
                   {tab.label}
                 </Text>
               </Pressable>
@@ -276,7 +283,7 @@ export default function RecurringEditScreen() {
         {/* 金额 */}
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>{zh.tx.amount}</Text>
-          <TextInput
+          <SingleLineTextInput
             style={[styles.textInput, { color: typeColor, fontWeight: '600' }]}
             value={amountText}
             onChangeText={setAmountText}
@@ -293,8 +300,13 @@ export default function RecurringEditScreen() {
           </Text>
           <View style={styles.chipWrap}>
             {accounts.map((a) =>
-              renderChip(a.id, `${a.icon} ${a.name}`, effectiveAccountId === a.id, () =>
-                setAccountId(a.id),
+              renderChip(
+                a.id,
+                a.name,
+                effectiveAccountId === a.id,
+                () => setAccountId(a.id),
+                colors.primary,
+                resolveIconKey(a.icon, 'account'),
               ),
             )}
           </View>
@@ -310,10 +322,11 @@ export default function RecurringEditScreen() {
                 .map((a) =>
                   renderChip(
                     a.id,
-                    `${a.icon} ${a.name}`,
+                    a.name,
                     toAccountId === a.id,
                     () => setToAccountId(a.id),
                     colors.transfer,
+                    resolveIconKey(a.icon, 'account'),
                   ),
                 )}
             </View>
@@ -328,13 +341,14 @@ export default function RecurringEditScreen() {
               {categoryTree.map((node) =>
                 renderChip(
                   node.id,
-                  `${node.icon} ${node.name}`,
+                  node.name,
                   categoryId === node.id || node.children.some((c) => c.id === categoryId),
                   () => {
                     setCategoryId(node.id);
                     setExpandedParent(node.children.length > 0 ? node.id : null);
                   },
                   typeColor,
+                  resolveIconKey(node.icon, 'category'),
                 ),
               )}
             </View>
@@ -366,7 +380,7 @@ export default function RecurringEditScreen() {
           <Text style={styles.sectionLabel2}>{zh.recurring.interval}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Text style={{ color: colors.text }}>每</Text>
-            <TextInput
+            <SingleLineTextInput
               style={[styles.textInput, { width: 64, textAlign: 'center' }]}
               value={intervalText}
               onChangeText={setIntervalText}
@@ -411,7 +425,7 @@ export default function RecurringEditScreen() {
                 )}
               </View>
               <Text style={styles.sectionLabel2}>{zh.recurring.anchorYearlyDay}</Text>
-              <TextInput
+              <SingleLineTextInput
                 style={[styles.textInput, { width: 96, textAlign: 'center' }]}
                 value={yearlyDayText}
                 onChangeText={setYearlyDayText}
@@ -426,7 +440,7 @@ export default function RecurringEditScreen() {
         {/* 日期 */}
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>{zh.recurring.startDate}</Text>
-          <TextInput
+          <SingleLineTextInput
             style={styles.textInput}
             value={startDate}
             onChangeText={setStartDate}
@@ -434,7 +448,7 @@ export default function RecurringEditScreen() {
             placeholderTextColor={colors.textSecondary}
           />
           <Text style={styles.sectionLabel2}>{zh.recurring.endDate}</Text>
-          <TextInput
+          <SingleLineTextInput
             style={styles.textInput}
             value={endDateText}
             onChangeText={setEndDateText}
@@ -459,7 +473,7 @@ export default function RecurringEditScreen() {
             />
           </View>
           <Text style={styles.sectionLabel2}>{zh.tx.note}</Text>
-          <TextInput
+          <SingleLineTextInput
             style={styles.textInput}
             value={note}
             onChangeText={setNote}
@@ -470,18 +484,19 @@ export default function RecurringEditScreen() {
 
         <Pressable
           style={[styles.saveBtn, { backgroundColor: colors.primary, opacity: pending ? 0.6 : 1 }]}
-          onPress={handleSave}
+          onPress={() => handleSave(dismiss)}
           disabled={pending}
         >
           <Text style={styles.saveBtnText}>{zh.common.save}</Text>
         </Pressable>
         {existing && (
-          <Pressable style={styles.deleteBtn} onPress={handleDelete}>
+          <Pressable style={styles.deleteBtn} onPress={() => handleDelete(dismiss)}>
             <Text style={{ color: colors.expense, fontSize: 15 }}>{zh.common.delete}</Text>
           </Pressable>
         )}
       </ScrollView>
-    </>
+      )}
+    </SecondarySheetScreen>
   );
 }
 
@@ -507,9 +522,9 @@ function makeStyles({ colors }: AppTheme) {
     },
     chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, borderWidth: 1 },
     textInput: {
+      height: 40,
       color: colors.text,
       fontSize: 15,
-      paddingVertical: 8,
       paddingHorizontal: 10,
       borderWidth: 1,
       borderColor: colors.border,
@@ -517,7 +532,7 @@ function makeStyles({ colors }: AppTheme) {
     },
     switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4 },
-    saveBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+    saveBtnText: { color: colors.onPrimary, fontSize: 16, fontWeight: '600' },
     deleteBtn: { alignItems: 'center', paddingVertical: 14, marginTop: 4 },
   });
 }

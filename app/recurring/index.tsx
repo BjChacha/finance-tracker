@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Icon } from '@/components/Icon';
+import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import {
   describeFrequency,
   usePendingRules,
@@ -44,13 +46,14 @@ export default function RecurringScreen() {
     const target =
       rule.type === 'transfer'
         ? `${rule.accountName ?? '?'} → ${rule.toAccountName ?? '?'}`
-        : `${rule.categoryIcon ?? ''}${rule.categoryName ?? ''} · ${rule.accountName ?? ''}`;
+        : `${rule.categoryName ?? ''} · ${rule.accountName ?? ''}`;
     return `${freq} · ${target}`;
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 96 }}>
+    <SecondarySheetScreen title={zh.recurring.title}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 96 }}>
         {/* 待确认 */}
         {pending.length > 0 && (
           <>
@@ -123,13 +126,14 @@ export default function RecurringScreen() {
             </Pressable>
           ))
         )}
-      </ScrollView>
+        </ScrollView>
 
-      {/* 新增 */}
-      <Pressable style={styles.fab} onPress={() => router.push('/recurring/edit')}>
-        <Text style={styles.fabText}>＋</Text>
-      </Pressable>
-    </View>
+        {/* 新增 */}
+        <Pressable style={styles.fab} onPress={() => router.push('/recurring/edit')}>
+          <Icon name="plus" size={26} color={colors.onPrimary} />
+        </Pressable>
+      </View>
+    </SecondarySheetScreen>
   );
 }
 
@@ -148,7 +152,7 @@ function makeStyles({ colors }: AppTheme) {
     ruleSub: { color: colors.textSecondary, fontSize: 12, marginTop: 3 },
     amount: { fontSize: 15, fontWeight: '600' },
     pendingBtn: { borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
-    pendingBtnText: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
+    pendingBtnText: { color: colors.onPrimary, fontSize: 13, fontWeight: '600' },
     skipBtn: { backgroundColor: 'transparent', borderWidth: 1 },
     empty: { alignItems: 'center', paddingVertical: 64 },
     fab: {
@@ -167,6 +171,5 @@ function makeStyles({ colors }: AppTheme) {
       shadowRadius: 6,
       shadowOffset: { width: 0, height: 3 },
     },
-    fabText: { color: '#FFFFFF', fontSize: 28, lineHeight: 32 },
   });
 }

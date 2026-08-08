@@ -33,8 +33,73 @@ export type RawBackupPayload = {
 
 export type BackupUpgrader = (payload: RawBackupPayload) => RawBackupPayload;
 
-/** 目前 schemaVersion=1，尚无历史版本需要升级 */
-export const backupUpgraders: Record<number, BackupUpgrader> = {};
+/** 目前 schemaVersion=4 */
+export const backupUpgraders: Record<number, BackupUpgrader> = {
+  // v1 → v2：引入多币种。transactions 增加 currency/exchange_rate/amount_base_cents/to_amount，
+  // accounts 增加 rate_to_base。v1 备份全部为隐式 CNY（本位币），按此回填。
+  1: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const txs = Array.isArray(data.transactions) ? data.transactions : [];
+    const accounts = Array.isArray(data.accounts) ? data.accounts : [];
+    return {
+      ...payload,
+      schemaVersion: 2,
+      data: {
+        ...data,
+        accounts: accounts.map((a) => ({
+          ...(a as Record<string, unknown>),
+          rateToBase: 1_000_000,
+        })),
+        transactions: txs.map((t) => {
+          const row = t as Record<string, unknown>;
+          const amount = typeof row.amount === 'number' ? row.amount : 0;
+          const isTransfer = row.type === 'transfer';
+          return {
+            ...row,
+            currency: 'CNY',
+            exchangeRate: 1_000_000,
+            amountBaseCents: amount,
+            toAmount: isTransfer ? amount : null,
+          };
+        }),
+      },
+    };
+  },
+  // v2 → v3：引入「项目」机制。新增 projects 表（旧备份为空），
+  // transactions 增加可空 projectId（旧数据统一补 null）。
+  2: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const txs = Array.isArray(data.transactions) ? data.transactions : [];
+    return {
+      ...payload,
+      schemaVersion: 3,
+      data: {
+        ...data,
+        projects: [],
+        transactions: txs.map((t) => ({
+          ...(t as Record<string, unknown>),
+          projectId: null,
+        })),
+      },
+    };
+  },
+  // v3 -> v4: normalize persisted account type values.
+  3: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const accountRows = Array.isArray(data.accounts) ? data.accounts : [];
+    return {
+      ...payload,
+      schemaVersion: 4,
+      data: {
+        ...data,
+        accounts: accountRows.map((account) => {
+          const row = account as Record<string, unknown>;
+          return { ...row, type: normalizeAccountType(row.type) };
+        }),
+      },
+    };
+  },
+};
 
 /**
  * 逐级执行升级链：fromVersion → fromVersion+1 → … → toVersion。
@@ -56,3 +121,4 @@ export function runUpgradeChain(
   }
   return current;
 }
+import { normalizeAccountType } from '@/db/account-types';

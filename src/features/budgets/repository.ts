@@ -138,7 +138,7 @@ export async function budgetStatus(monthKey: string): Promise<BudgetStatus> {
   const spentRows = await db
     .select({
       categoryId: groupId,
-      total: sql<number>`SUM(${transactions.amount})`.mapWith(Number),
+      total: sql<number>`SUM(${transactions.amountBaseCents})`.mapWith(Number),
     })
     .from(transactions)
     .innerJoin(categories, eq(transactions.categoryId, categories.id))
@@ -147,12 +147,12 @@ export async function budgetStatus(monthKey: string): Promise<BudgetStatus> {
     .groupBy(groupId);
   const spentByCat = new Map(spentRows.map((r) => [r.categoryId, r.total]));
 
-  // 总支出：expense 金额 + transfer 手续费（与 monthSummary 同口径）
+  // 总支出（本位币）：expense 本位币额 + transfer 手续费折本位币（与 monthSummary 同口径）
   const [totalRow] = await db
     .select({
       expense: sql<number>`COALESCE(SUM(CASE
-        WHEN ${transactions.type} = 'expense' THEN ${transactions.amount}
-        WHEN ${transactions.type} = 'transfer' THEN ${transactions.fee}
+        WHEN ${transactions.type} = 'expense' THEN ${transactions.amountBaseCents}
+        WHEN ${transactions.type} = 'transfer' THEN CAST(ROUND(${transactions.fee} * ${transactions.exchangeRate} / 1000000.0) AS INTEGER)
         ELSE 0 END), 0)`.mapWith(Number),
     })
     .from(transactions)

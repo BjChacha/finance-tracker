@@ -1,10 +1,11 @@
+import { ACCOUNT_TYPES } from '@/db/account-types';
 import { backupEnvelopeSchema, backupFileSchema } from '../schema';
 
 /** 合法的最小备份 fixture（每表 1 行或空） */
 function validBackup() {
   return {
     format: 'finance-tracker-backup',
-    schemaVersion: 1,
+    schemaVersion: 4,
     appVersion: '1.0.0',
     exportedAt: '2026-07-08T10:00:00.000Z',
     data: {
@@ -17,6 +18,7 @@ function validBackup() {
           color: '#10B981',
           initialBalance: 10000,
           currency: 'CNY',
+          rateToBase: 1_000_000,
           includeInTotal: 1,
           sortOrder: 0,
           archived: 0,
@@ -37,15 +39,21 @@ function validBackup() {
           archived: 0,
         },
       ],
+      projects: [],
       transactions: [
         {
           id: 'tx-1',
           type: 'expense',
           amount: 1250,
+          currency: 'CNY',
+          exchangeRate: 1_000_000,
+          amountBaseCents: 1250,
           fee: 0,
           accountId: 'acc-1',
           toAccountId: null,
+          toAmount: null,
           categoryId: 'cat-1',
+          projectId: null,
           date: 1751942400000,
           dateKey: '2026-07-08',
           note: '午餐',
@@ -82,6 +90,18 @@ describe('backupFileSchema', () => {
     }
   });
 
+  it.each(ACCOUNT_TYPES)('accepts current account type: %s', (type) => {
+    const input = validBackup();
+    input.data.accounts[0]!.type = type;
+    expect(backupFileSchema.safeParse(input).success).toBe(true);
+  });
+
+  it.each(['credit', 'alipay', 'wechat', 'unexpected'])('rejects legacy account type: %s', (type) => {
+    const input = validBackup();
+    input.data.accounts[0]!.type = type;
+    expect(backupFileSchema.safeParse(input).success).toBe(false);
+  });
+
   it.each([
     ['format 不匹配', (b: ReturnType<typeof validBackup>) => ({ ...b, format: 'other-app' })],
     [
@@ -113,6 +133,20 @@ describe('backupFileSchema', () => {
       '交易类型非法',
       (b: ReturnType<typeof validBackup>) => {
         b.data.transactions[0]!.type = 'refund' as never;
+        return b;
+      },
+    ],
+    [
+      '缺少 projects 表',
+      (b: ReturnType<typeof validBackup>) => {
+        const { projects: _drop, ...rest } = b.data;
+        return { ...b, data: rest };
+      },
+    ],
+    [
+      'projectId 非字符串',
+      (b: ReturnType<typeof validBackup>) => {
+        b.data.transactions[0]!.projectId = 123 as unknown as null;
         return b;
       },
     ],

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ACCOUNT_TYPES } from '@/db/account-types';
 import { BACKUP_FORMAT } from '@/db/backup-version';
 
 /**
@@ -11,11 +12,12 @@ import { BACKUP_FORMAT } from '@/db/backup-version';
 const accountRowSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
-  type: z.enum(['cash', 'bank', 'alipay', 'wechat', 'credit', 'other']),
+  type: z.enum(ACCOUNT_TYPES),
   icon: z.string(),
   color: z.string(),
   initialBalance: z.int(),
   currency: z.string(),
+  rateToBase: z.int(),
   includeInTotal: z.int(),
   sortOrder: z.number(),
   archived: z.int(),
@@ -35,14 +37,30 @@ const categoryRowSchema = z.object({
   archived: z.int(),
 });
 
+const projectRowSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  icon: z.string(),
+  color: z.string(),
+  sortOrder: z.number(),
+  archived: z.int(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 const transactionRowSchema = z.object({
   id: z.string().min(1),
   type: z.enum(['expense', 'income', 'transfer']),
   amount: z.int(),
+  currency: z.string(),
+  exchangeRate: z.int(),
+  amountBaseCents: z.int(),
   fee: z.int(),
   accountId: z.string().min(1),
   toAccountId: z.string().nullable(),
+  toAmount: z.int().nullable(),
   categoryId: z.string().nullable(),
+  projectId: z.string().nullable(),
   date: z.number(),
   dateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   note: z.string(),
@@ -116,6 +134,7 @@ export const backupFileSchema = z.object({
   data: z.object({
     accounts: z.array(accountRowSchema),
     categories: z.array(categoryRowSchema),
+    projects: z.array(projectRowSchema),
     transactions: z.array(transactionRowSchema),
     budgets: z.array(budgetRowSchema),
     recurringRules: z.array(recurringRuleRowSchema),
