@@ -1,17 +1,31 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import {
+  queryOptions,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { checkBudgetsAfterTransaction } from '@/features/budgets';
 import { toDateKey } from '@/lib/date';
 import { invalidateTransactionData } from './invalidate';
 import {
+  allTimeSummary,
   createTransaction,
+  daySummary,
   getTransactionById,
+  listRecentTransactions,
   listTransactions,
   monthSummary,
   removeTransaction,
+  searchTransactions,
   updateTransaction,
   type TxFilters,
   type TxInput,
+  type TxListItem,
+  type TransactionSearchCursor,
 } from './repository';
+import { normalizeTransactionSearchQuery } from './search-query';
 
 /** key: ['transactions', filters] */
 export function useTransactions(filters: TxFilters) {
@@ -22,18 +36,77 @@ export function useTransactions(filters: TxFilters) {
 }
 
 /** key: ['transaction', id] */
-export function useTransaction(id: string) {
-  return useQuery({
+export function transactionQueryOptions(id: string) {
+  return queryOptions({
     queryKey: ['transaction', id],
     queryFn: () => getTransactionById(id),
+  });
+}
+
+export function useTransaction(id: string) {
+  return useQuery({
+    ...transactionQueryOptions(id),
     enabled: id.length > 0,
   });
+}
+
+export function usePrefetchTransaction() {
+  const queryClient = useQueryClient();
+  return useCallback(
+    (transaction: TxListItem) => {
+      const { id } = transaction;
+      if (id.length === 0) return;
+      const options = transactionQueryOptions(id);
+      queryClient.setQueryData<TxListItem | null>(
+        options.queryKey,
+        (current) => current ?? transaction,
+      );
+      void queryClient.prefetchQuery(options);
+    },
+    [queryClient],
+  );
 }
 
 export function useMonthSummary(monthKey: string) {
   return useQuery({
     queryKey: ['transactions-summary', monthKey],
     queryFn: () => monthSummary(monthKey),
+  });
+}
+
+/** key: ['transactions-summary', 'all'] —— 落在 ['transactions-summary'] 失效前缀下 */
+export function useAllTimeSummary() {
+  return useQuery({
+    queryKey: ['transactions-summary', 'all'],
+    queryFn: () => allTimeSummary(),
+  });
+}
+
+/** key: ['transactions-summary', 'day', dateKey] —— 落在 ['transactions-summary'] 失效前缀下 */
+export function useDaySummary(dateKey: string) {
+  return useQuery({
+    queryKey: ['transactions-summary', 'day', dateKey],
+    queryFn: () => daySummary(dateKey),
+  });
+}
+
+/** key: ['transactions', 'recent', limit] —— 落在 ['transactions'] 失效前缀下 */
+export function useRecentTransactions(limit: number) {
+  return useQuery({
+    queryKey: ['transactions', 'recent', limit],
+    queryFn: () => listRecentTransactions(limit),
+  });
+}
+
+export function useTransactionSearch(query: string, pageSize = 50) {
+  const normalizedQuery = normalizeTransactionSearchQuery(query);
+  return useInfiniteQuery({
+    queryKey: ['transactions', 'search', normalizedQuery, pageSize],
+    queryFn: ({ pageParam }) =>
+      searchTransactions({ query: normalizedQuery, cursor: pageParam, pageSize }),
+    initialPageParam: null as TransactionSearchCursor | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    enabled: normalizedQuery.length > 0,
   });
 }
 

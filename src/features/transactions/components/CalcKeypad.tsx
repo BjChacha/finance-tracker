@@ -1,10 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, type AppTheme } from '@/theme';
+import { fireKeypadHaptic } from '@/lib/haptics';
 
 type Props = {
   onKey: (key: string) => void;
   onDone: () => void;
+  /** 置灰并禁用 OK 键（金额为空/0 时不可确认；不传则始终可按） */
+  okDisabled?: boolean;
 };
 
 // label = 显示字形；value = 发给 appendCalcKey 的字节。
@@ -17,22 +20,32 @@ const OP_KEYS: { label: string; value: string }[] = [
 ];
 
 const DIGIT_ROWS: { label: string; value: string }[][] = [
-  [{ label: '7', value: '7' }, { label: '8', value: '8' }, { label: '9', value: '9' }],
-  [{ label: '4', value: '4' }, { label: '5', value: '5' }, { label: '6', value: '6' }],
   [{ label: '1', value: '1' }, { label: '2', value: '2' }, { label: '3', value: '3' }],
+  [{ label: '4', value: '4' }, { label: '5', value: '5' }, { label: '6', value: '6' }],
+  [{ label: '7', value: '7' }, { label: '8', value: '8' }, { label: '9', value: '9' }],
 ];
 
-export function CalcKeypad({ onKey, onDone }: Props) {
+export function CalcKeypad({ onKey, onDone, okDisabled }: Props) {
   const theme = useTheme();
+  const { colors } = theme;
   const insets = useSafeAreaInsets();
   const styles = makeStyles(theme);
+
+  const handleKey = (k: string) => {
+    fireKeypadHaptic();
+    onKey(k);
+  };
+  const handleDone = () => {
+    fireKeypadHaptic();
+    onDone();
+  };
 
   return (
     <View style={[styles.root, { paddingBottom: insets.bottom }]}>
       {/* 运算符：顶部一行 */}
       <View style={styles.opRow}>
         {OP_KEYS.map((k) => (
-          <Pressable key={k.value} style={styles.opKey} onPress={() => onKey(k.value)}>
+          <Pressable key={k.value} style={styles.opKey} onPress={() => handleKey(k.value)}>
             <Text style={styles.opLabel}>{k.label}</Text>
           </Pressable>
         ))}
@@ -44,31 +57,35 @@ export function CalcKeypad({ onKey, onDone }: Props) {
           {DIGIT_ROWS.map((row, ri) => (
             <View key={ri} style={styles.digitRow}>
               {row.map((k) => (
-                <Pressable key={k.value} style={styles.digitKey} onPress={() => onKey(k.value)}>
+                <Pressable key={k.value} style={styles.digitKey} onPress={() => handleKey(k.value)}>
                   <Text style={styles.digitLabel}>{k.label}</Text>
                 </Pressable>
               ))}
             </View>
           ))}
           <View style={styles.digitRow}>
-            <Pressable style={styles.digitKey} onPress={() => onKey('.')}>
-              <Text style={styles.digitLabel}>.</Text>
-            </Pressable>
-            <Pressable style={[styles.digitKey, { flex: 2 }]} onPress={() => onKey('0')}>
+            <Pressable style={[styles.digitKey, { flex: 2 }]} onPress={() => handleKey('0')}>
               <Text style={styles.digitLabel}>0</Text>
+            </Pressable>
+            <Pressable style={styles.digitKey} onPress={() => handleKey('.')}>
+              <Text style={styles.digitLabel}>.</Text>
             </Pressable>
           </View>
         </View>
 
         <View style={styles.rightCol}>
-          <Pressable style={styles.sideKey} onPress={() => onKey('C')}>
+          <Pressable style={styles.sideKey} onPress={() => handleKey('C')}>
             <Text style={styles.sideLabel}>C</Text>
           </Pressable>
-          <Pressable style={styles.sideKey} onPress={() => onKey('⌫')}>
+          <Pressable style={styles.sideKey} onPress={() => handleKey('⌫')}>
             <Text style={styles.sideLabel}>⌫</Text>
           </Pressable>
-          <Pressable style={[styles.sideKey, styles.okKey]} onPress={onDone}>
-            <Text style={styles.okLabel}>OK</Text>
+          <Pressable
+            style={[styles.sideKey, styles.okKey, okDisabled && { opacity: 0.6 }]}
+            onPress={handleDone}
+            disabled={okDisabled}
+          >
+            <Text style={[styles.okLabel, { color: colors.onPrimary }]}>OK</Text>
           </Pressable>
         </View>
       </View>
@@ -119,6 +136,6 @@ function makeStyles({ colors }: AppTheme) {
     },
     sideLabel: { fontSize: 22, fontWeight: '500', color: colors.text },
     okKey: { flex: 2, backgroundColor: colors.primary },
-    okLabel: { fontSize: 20, fontWeight: '700', color: '#FFFFFF' },
+    okLabel: { fontSize: 20, fontWeight: '700' },
   });
 }
