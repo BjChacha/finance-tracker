@@ -1,7 +1,7 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import type { AccountType } from './account-types';
 
-/** 账户类型 */
-export type AccountType = 'cash' | 'bank' | 'alipay' | 'wechat' | 'credit' | 'other';
+export type { AccountType } from './account-types';
 /** 交易类型 */
 export type TransactionType = 'expense' | 'income' | 'transfer';
 /** 周期频率 */
@@ -16,6 +16,8 @@ export const accounts = sqliteTable('accounts', {
   /** 初始余额（分），信用卡可为负 */
   initialBalance: integer('initial_balance').notNull().default(0),
   currency: text('currency').notNull().default('CNY'),
+  /** 相对本位币的当前汇率 ×1e6（RATE_SCALE），用于净值换算；本位币账户=1000000 */
+  rateToBase: integer('rate_to_base').notNull().default(1000000),
   includeInTotal: integer('include_in_total').notNull().default(1),
   sortOrder: integer('sort_order').notNull().default(0),
   archived: integer('archived').notNull().default(0),
@@ -39,22 +41,47 @@ export const categories = sqliteTable(
   (t) => [index('idx_categories_type').on(t.type, t.archived, t.sortOrder)],
 );
 
+export const projects = sqliteTable(
+  'projects',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    icon: text('icon').notNull(),
+    color: text('color').notNull(),
+    sortOrder: integer('sort_order').notNull().default(0),
+    archived: integer('archived').notNull().default(0),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (t) => [index('idx_projects_list').on(t.archived, t.sortOrder)],
+);
+
 export const transactions = sqliteTable(
   'transactions',
   {
     id: text('id').primaryKey(),
     type: text('type').$type<TransactionType>().notNull(),
-    /** 金额（分），恒为正数，方向由 type 决定 */
+    /** 金额（分），恒为正数，方向由 type 决定；为交易币种 currency 下的金额 */
     amount: integer('amount').notNull(),
-    /** 转账手续费（分），计入支出统计 */
+    /** 交易币种（ISO 4217），与账户币种一致 */
+    currency: text('currency').notNull().default('CNY'),
+    /** 相对本位币汇率 ×1e6（RATE_SCALE=1_000_000）；本位币交易=1000000 */
+    exchangeRate: integer('exchange_rate').notNull().default(1000000),
+    /** 本位币金额（分）= round(amount × exchangeRate / 1e6)；跨账户统计/预算聚合用 */
+    amountBaseCents: integer('amount_base_cents').notNull().default(0),
+    /** 转账手续费（分，交易币种），计入支出统计 */
     fee: integer('fee').notNull().default(0),
     accountId: text('account_id')
       .notNull()
       .references(() => accounts.id),
     /** 仅 transfer：转入账户 */
     toAccountId: text('to_account_id').references(() => accounts.id),
+    /** 仅 transfer：转入侧金额（目标账户币种，分）；同币种=amount，跨币种=按汇率换算 */
+    toAmount: integer('to_amount'),
     /** transfer 为空 */
     categoryId: text('category_id').references(() => categories.id),
+    /** 可选：所属项目 */
+    projectId: text('project_id').references(() => projects.id),
     /** Unix 毫秒，精确排序 */
     date: integer('date').notNull(),
     /** 'YYYY-MM-DD'，写入时按本地时区固化，图表分组稳定 */
@@ -72,6 +99,7 @@ export const transactions = sqliteTable(
     index('idx_tx_account').on(t.accountId, t.dateKey),
     index('idx_tx_to_account').on(t.toAccountId, t.dateKey),
     index('idx_tx_category').on(t.categoryId, t.dateKey),
+    index('idx_tx_project').on(t.projectId, t.dateKey),
     index('idx_tx_fingerprint').on(t.fingerprint),
     index('idx_tx_batch').on(t.importBatchId),
   ],
@@ -156,6 +184,8 @@ export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
+export type Project = typeof projects.$inferSelect;
+export type NewProject = typeof projects.$inferInsert;
 export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
 export type Budget = typeof budgets.$inferSelect;
