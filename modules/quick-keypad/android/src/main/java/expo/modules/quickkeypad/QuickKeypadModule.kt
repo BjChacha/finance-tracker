@@ -70,6 +70,10 @@ class QuickKeypadModule : Module() {
       }
     }
 
+    Function("completeAppLaunch") {
+      AppLaunchController.complete()
+    }
+
     Function("completeQuickAddHandoff") { handoffId: String ->
       QuickAddHandoffController.complete(handoffId)
     }

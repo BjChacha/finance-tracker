@@ -26,6 +26,25 @@ export function todayKey(): string {
   return dayjs().format('YYYY-MM-DD');
 }
 
+/** 昨天的 date_key */
+export function yesterdayKey(): string {
+  return dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+}
+
+/** 时间戳 → 'HH:mm'（交易条目展示时分用） */
+export function formatTime(ts: number): string {
+  return dayjs(ts).format('HH:mm');
+}
+
+/**
+ * 把 'YYYY-MM-DD' 与 'HH:mm' 组合为**本地时区**的 Unix 毫秒时间戳。
+ * 交易同时含日期与时间：date 列本就是毫秒整数，这里只负责在保存时把两者拼起来。
+ * 输入需已通过格式校验；非法输入返回 NaN（交由调用方防御）。
+ */
+export function combineDateAndTime(dateKey: string, hhmm: string): number {
+  return dayjs(`${dateKey} ${hhmm}`).valueOf();
+}
+
 /** 明细列表的日期分组标题，如 "07月05日 星期六" */
 export function formatDayHeader(dateKey: string): string {
   return dayjs(dateKey).format('MM月DD日 dddd');

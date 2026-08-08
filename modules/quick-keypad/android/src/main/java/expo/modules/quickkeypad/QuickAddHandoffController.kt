@@ -340,10 +340,12 @@ object QuickAddHandoffController {
   private fun applyTranslucency(activity: Activity) {
     if (isTranslucent(activity)) return
     val themeIsTranslucent = isThemeTranslucent(activity)
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R && !themeIsTranslucent) return
+    val requiresDynamicTranslucency =
+      !themeIsTranslucent || AppLaunchController.isExplicitlyOpaque(activity)
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R && requiresDynamicTranslucency) return
     translucencyState?.activityRef?.get()?.let(::clearTranslucency)
     if (
-      !themeIsTranslucent &&
+      requiresDynamicTranslucency &&
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
       !activity.setTranslucent(true)
     ) {
@@ -379,6 +381,7 @@ object QuickAddHandoffController {
     activity.window.setBackgroundDrawable(
       state?.windowBackground ?: ColorDrawable(opaqueColor),
     )
+    AppLaunchController.markExplicitlyOpaque(activity)
   }
 
   private fun resolveWindowBackgroundColor(activity: Activity): Int {

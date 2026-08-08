@@ -1,4 +1,4 @@
-import { appendCalcKey, evalMoneyExpr, hasPendingOp } from '../calc';
+import { appendCalcKey, applyCalcInput, evalMoneyExpr, hasPendingOp } from '../calc';
 
 describe('evalMoneyExpr', () => {
   it('单个数字直接解析为分', () => {
@@ -75,8 +75,11 @@ describe('appendCalcKey', () => {
     expect(appendCalcKey('1.2', '3')).toBe('1.23');
   });
 
-  it('运算符：空表达式忽略、连按替换、尾点先去掉', () => {
+  it('运算符：空表达式仅接受负号、连按替换、尾点先去掉', () => {
     expect(appendCalcKey('', '+')).toBe('');
+    expect(appendCalcKey('', '-')).toBe('-');
+    expect(appendCalcKey('-', '5')).toBe('-5');
+    expect(appendCalcKey('-', '.')).toBe('-0.');
     expect(appendCalcKey('5', '+')).toBe('5+');
     expect(appendCalcKey('5+', '×')).toBe('5×');
     expect(appendCalcKey('5.', '+')).toBe('5+');
@@ -91,6 +94,39 @@ describe('appendCalcKey', () => {
   it('折叠出的负数结果后可继续输入', () => {
     expect(appendCalcKey('-5.00', '+')).toBe('-5.00+');
     expect(appendCalcKey('-', '5')).toBe('-5');
+  });
+});
+
+describe('applyCalcInput', () => {
+  it('replaces a prefilled amount on the first numeric key', () => {
+    expect(applyCalcInput('12.34', '5', true)).toEqual({
+      expression: '5',
+      replaceOnNextNumeric: false,
+    });
+    expect(applyCalcInput('12.34', '.', true)).toEqual({
+      expression: '0.',
+      replaceOnNextNumeric: false,
+    });
+  });
+
+  it('edits a prefilled amount when the first key is an operator or backspace', () => {
+    expect(applyCalcInput('12.34', '-', true)).toEqual({
+      expression: '12.34-',
+      replaceOnNextNumeric: false,
+    });
+    expect(applyCalcInput('12.34', '⌫', true)).toEqual({
+      expression: '12.3',
+      replaceOnNextNumeric: false,
+    });
+  });
+
+  it('clears replacement mode with C and then accepts a leading minus', () => {
+    const cleared = applyCalcInput('12.34', 'C', true);
+    expect(cleared).toEqual({ expression: '', replaceOnNextNumeric: false });
+    expect(applyCalcInput(cleared.expression, '-', cleared.replaceOnNextNumeric)).toEqual({
+      expression: '-',
+      replaceOnNextNumeric: false,
+    });
   });
 });
 

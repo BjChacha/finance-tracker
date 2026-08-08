@@ -10,6 +10,7 @@ import expo.modules.kotlin.records.Record
 
 class QuickKeypadThemeRecord(
   @Field val isDark: Boolean = false,
+  @Field val followsSystem: Boolean = false,
   @Field val background: String = "#F5F5F4",
   @Field val surface: String = "#FFFFFF",
   @Field val text: String = "#1C1917",
@@ -21,6 +22,7 @@ class QuickKeypadThemeRecord(
 
 data class QuickKeypadPalette(
   val isDark: Boolean,
+  val followsSystem: Boolean,
   @ColorInt val background: Int,
   @ColorInt val surface: Int,
   @ColorInt val text: Int,
@@ -34,6 +36,7 @@ object QuickKeypadThemeStore {
   private const val PREFERENCES_NAME = "quick_keypad_theme"
   private const val KEY_INITIALIZED = "initialized"
   private const val KEY_IS_DARK = "is_dark"
+  private const val KEY_FOLLOWS_SYSTEM = "follows_system"
   private const val KEY_BACKGROUND = "background"
   private const val KEY_SURFACE = "surface"
   private const val KEY_TEXT = "text"
@@ -49,6 +52,7 @@ object QuickKeypadThemeStore {
       .edit()
       .putBoolean(KEY_INITIALIZED, true)
       .putBoolean(KEY_IS_DARK, palette.isDark)
+      .putBoolean(KEY_FOLLOWS_SYSTEM, palette.followsSystem)
       .putInt(KEY_BACKGROUND, palette.background)
       .putInt(KEY_SURFACE, palette.surface)
       .putInt(KEY_TEXT, palette.text)
@@ -63,8 +67,9 @@ object QuickKeypadThemeStore {
     val preferences =
       context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     if (!preferences.getBoolean(KEY_INITIALIZED, false)) return null
-    return QuickKeypadPalette(
+    val palette = QuickKeypadPalette(
       isDark = preferences.getBoolean(KEY_IS_DARK, false),
+      followsSystem = preferences.getBoolean(KEY_FOLLOWS_SYSTEM, false),
       background = preferences.getInt(KEY_BACKGROUND, Color.TRANSPARENT),
       surface = preferences.getInt(KEY_SURFACE, Color.TRANSPARENT),
       text = preferences.getInt(KEY_TEXT, Color.TRANSPARENT),
@@ -73,14 +78,27 @@ object QuickKeypadThemeStore {
       primary = preferences.getInt(KEY_PRIMARY, Color.TRANSPARENT),
       onPrimary = preferences.getInt(KEY_ON_PRIMARY, Color.TRANSPARENT),
     )
+    return if (
+      shouldRefreshSystemTheme(
+        followsSystem = palette.followsSystem,
+        cachedIsDark = palette.isDark,
+        systemIsDark = isSystemDark(context),
+      )
+    ) {
+      fromResources(context, followsSystem = true)
+    } else {
+      palette
+    }
   }
 
-  fun fromResources(context: Context): QuickKeypadPalette {
-    val isDark =
-      context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-        Configuration.UI_MODE_NIGHT_YES
+  fun fromResources(
+    context: Context,
+    followsSystem: Boolean = true,
+  ): QuickKeypadPalette {
+    val isDark = isSystemDark(context)
     return QuickKeypadPalette(
       isDark = isDark,
+      followsSystem = followsSystem,
       background = context.getColor(R.color.quick_handoff_background),
       surface = context.getColor(R.color.quick_keypad_panel),
       text = resolveThemeColor(
@@ -103,6 +121,7 @@ object QuickKeypadThemeStore {
     return try {
       QuickKeypadPalette(
         isDark = isDark,
+        followsSystem = followsSystem,
         background = Color.parseColor(background),
         surface = Color.parseColor(surface),
         text = Color.parseColor(text),
@@ -115,6 +134,10 @@ object QuickKeypadThemeStore {
       null
     }
   }
+
+  private fun isSystemDark(context: Context): Boolean =
+    context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+      Configuration.UI_MODE_NIGHT_YES
 
   @ColorInt
   private fun resolveThemeColor(
@@ -131,3 +154,9 @@ object QuickKeypadThemeStore {
     }
   }
 }
+
+internal fun shouldRefreshSystemTheme(
+  followsSystem: Boolean,
+  cachedIsDark: Boolean,
+  systemIsDark: Boolean,
+): Boolean = followsSystem && cachedIsDark != systemIsDark

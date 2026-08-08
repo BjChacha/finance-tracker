@@ -2,6 +2,7 @@ import type { AppTheme } from "@/theme/themes";
 
 export type QuickKeypadThemePayload = {
 	isDark: boolean;
+	followsSystem: boolean;
 	background: string;
 	surface: string;
 	text: string;
@@ -13,9 +14,11 @@ export type QuickKeypadThemePayload = {
 
 export function toQuickKeypadThemePayload(
 	theme: AppTheme,
+	followsSystem = false,
 ): QuickKeypadThemePayload {
 	return {
 		isDark: theme.dark,
+		followsSystem,
 		background: theme.colors.background,
 		surface: theme.colors.card,
 		text: theme.colors.text,

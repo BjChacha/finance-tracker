@@ -1,4 +1,4 @@
-import { monthRange, nextRunDate, toDateKey, toMonthKey } from '../date';
+import { combineDateAndTime, dayjs, formatTime, monthRange, nextRunDate, toDateKey, toMonthKey } from '../date';
 
 describe('toDateKey / toMonthKey / monthRange', () => {
   it('formats date key', () => {
@@ -41,5 +41,31 @@ describe('nextRunDate', () => {
   it('yearly anchor MMDD with Feb-29 fallback', () => {
     expect(nextRunDate('2026-05-01', 'yearly', 1, 501)).toBe('2027-05-01');
     expect(nextRunDate('2024-02-29', 'yearly', 1, 229)).toBe('2025-02-28'); // 平年回退
+  });
+});
+
+describe('combineDateAndTime', () => {
+  it('组合日期与时间为本地时区毫秒时间戳', () => {
+    const ts = combineDateAndTime('2026-07-26', '09:30');
+    expect(dayjs(ts).format('YYYY-MM-DD HH:mm')).toBe('2026-07-26 09:30');
+  });
+
+  it('时间分量可通过 formatTime 还原', () => {
+    const ts = combineDateAndTime('2025-01-31', '23:59');
+    expect(formatTime(ts)).toBe('23:59');
+  });
+
+  it('日期分量可通过 toDateKey 还原（本地时区固化）', () => {
+    const ts = combineDateAndTime('2024-02-29', '00:00');
+    expect(toDateKey(ts)).toBe('2024-02-29');
+  });
+
+  it('非法日期输入返回 NaN，交由调用方防御', () => {
+    expect(Number.isNaN(combineDateAndTime('not-a-date', '09:30'))).toBe(true);
+  });
+
+  it('合法 HH:mm（由 DateTimePicker 写入）组合出有限时间戳', () => {
+    expect(Number.isFinite(combineDateAndTime('2026-07-26', '00:00'))).toBe(true);
+    expect(Number.isFinite(combineDateAndTime('2026-07-26', '23:59'))).toBe(true);
   });
 });

@@ -37,7 +37,8 @@ export function appendCalcKey(expr: string, key: string): string {
   if (key === '⌫') return expr.slice(0, -1);
 
   if (isOp(key)) {
-    if (expr === '' || expr === '-') return expr;
+    if (expr === '') return key === '-' ? '-' : expr;
+    if (expr === '-') return expr;
     if (expr.endsWith('.')) return expr.slice(0, -1) + key;
     if (isOp(expr[expr.length - 1]!)) return expr.slice(0, -1) + key;
     return expr + key;
@@ -57,6 +58,31 @@ export function appendCalcKey(expr: string, key: string): string {
   }
 
   return expr;
+}
+
+export type CalcInputResult = {
+  expression: string;
+  replaceOnNextNumeric: boolean;
+};
+
+export function applyCalcInput(
+  expression: string,
+  key: string,
+  replaceOnNextNumeric = false,
+): CalcInputResult {
+  if (key === 'C') {
+    return { expression: '', replaceOnNextNumeric: false };
+  }
+  if (replaceOnNextNumeric && /^\d$/.test(key)) {
+    return { expression: key, replaceOnNextNumeric: false };
+  }
+  if (replaceOnNextNumeric && key === '.') {
+    return { expression: '0.', replaceOnNextNumeric: false };
+  }
+  return {
+    expression: appendCalcKey(expression, key),
+    replaceOnNextNumeric: false,
+  };
 }
 
 type Token = { kind: 'num'; cents: number } | { kind: 'op'; op: Op };

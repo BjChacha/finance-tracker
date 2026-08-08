@@ -23,13 +23,23 @@ export function isQuickKeypadAvailable(): boolean {
   return getNativeModule() !== null;
 }
 
-export function syncQuickKeypadTheme(theme: AppTheme): void {
+export function syncQuickKeypadTheme(theme: AppTheme, followsSystem = false): void {
   const mod = getNativeModule();
   if (!mod) return;
   try {
-    mod.syncTheme(toQuickKeypadThemePayload(theme));
+    mod.syncTheme(toQuickKeypadThemePayload(theme, followsSystem));
   } catch (error) {
     console.warn('[quick-keypad] Failed to sync native theme', error);
+  }
+}
+
+export function completeAppLaunch(): void {
+  const mod = getNativeModule();
+  if (!mod) return;
+  try {
+    mod.completeAppLaunch();
+  } catch (error) {
+    console.warn('[quick-keypad] Failed to complete app launch', error);
   }
 }
 

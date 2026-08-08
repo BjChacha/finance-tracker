@@ -14,6 +14,7 @@ export type PendingQuickAddLaunch = {
 
 export type QuickKeypadThemePayload = {
   isDark: boolean;
+  followsSystem: boolean;
   background: string;
   surface: string;
   text: string;
@@ -29,6 +30,7 @@ type QuickKeypadModuleEvents = {
 
 declare class QuickKeypadModule extends NativeModule<QuickKeypadModuleEvents> {
   syncTheme(theme: QuickKeypadThemePayload): boolean;
+  completeAppLaunch(): void;
 
   open(
     initialAmountCents: number,
