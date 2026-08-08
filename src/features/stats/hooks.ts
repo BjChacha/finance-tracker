@@ -1,67 +1,113 @@
-import { useQuery } from '@tanstack/react-query';
 import {
-  accountDistribution,
-  calendarHeatmap,
-  categoryBreakdown,
-  categoryRank,
-  monthlyCompare,
-  netWorthTrend,
-  trend,
-  type BreakdownType,
-  type StatsRange,
-} from './repository';
-import type { TrendGranularity } from './transform';
+	keepPreviousData,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
+import { useEffect } from "react";
+import { dayjs } from "@/lib/date";
+import {
+	accountDistribution,
+	calendarHeatmap,
+	categoryBreakdown,
+	categoryRank,
+	monthlyCompare,
+	netWorthTrend,
+	transactionDateRange,
+	transactionSummary,
+	trend,
+	type BreakdownType,
+	type StatsRange,
+} from "./repository";
+import type { TrendGranularity } from "./transform";
 
 /** key: ['stats', 'breakdown', ...] */
 export function useCategoryBreakdown(
-  range: StatsRange,
-  type: BreakdownType,
-  parentId?: string | null,
+	range: StatsRange,
+	type: BreakdownType,
+	parentId?: string | null,
 ) {
-  return useQuery({
-    queryKey: ['stats', 'breakdown', { range, type, parentId: parentId ?? null }],
-    queryFn: () => categoryBreakdown(range, type, parentId),
-  });
+	return useQuery({
+		queryKey: [
+			"stats",
+			"breakdown",
+			{ range, type, parentId: parentId ?? null },
+		],
+		queryFn: () => categoryBreakdown(range, type, parentId),
+	});
 }
 
 export function useTrend(granularity: TrendGranularity, range: StatsRange) {
-  return useQuery({
-    queryKey: ['stats', 'trend', { granularity, range }],
-    queryFn: () => trend(granularity, range),
-  });
+	return useQuery({
+		queryKey: ["stats", "trend", { granularity, range }],
+		queryFn: () => trend(granularity, range),
+	});
 }
 
 export function useMonthlyCompare(n = 6) {
-  return useQuery({
-    queryKey: ['stats', 'monthly-compare', n],
-    queryFn: () => monthlyCompare(n),
-  });
+	return useQuery({
+		queryKey: ["stats", "monthly-compare", n],
+		queryFn: () => monthlyCompare(n),
+	});
+}
+
+/** key: ['stats', 'date-range'] —— 全部交易的实际日期范围，供“全部时间”模式使用 */
+export function useTransactionDateRange() {
+	return useQuery({
+		queryKey: ["stats", "date-range"],
+		queryFn: () => transactionDateRange(),
+	});
+}
+
+/** key: ['stats', 'summary'] —— 全局记账摘要（起始日 / 笔数 / 跟踪金额） */
+export function useTransactionSummary() {
+	return useQuery({
+		queryKey: ["stats", "summary"],
+		queryFn: () => transactionSummary(),
+	});
 }
 
 export function useAccountDistribution() {
-  return useQuery({
-    queryKey: ['stats', 'account-distribution'],
-    queryFn: () => accountDistribution(),
-  });
+	return useQuery({
+		queryKey: ["stats", "account-distribution"],
+		queryFn: () => accountDistribution(),
+	});
 }
 
 export function useNetWorthTrend(n = 6) {
-  return useQuery({
-    queryKey: ['stats', 'net-worth', n],
-    queryFn: () => netWorthTrend(n),
-  });
+	return useQuery({
+		queryKey: ["stats", "net-worth", n],
+		queryFn: () => netWorthTrend(n),
+	});
 }
 
 export function useCalendarHeatmap(monthKey: string) {
-  return useQuery({
-    queryKey: ['stats', 'heatmap', monthKey],
-    queryFn: () => calendarHeatmap(monthKey),
-  });
+	const qc = useQueryClient();
+	const query = useQuery({
+		queryKey: ["stats", "heatmap", monthKey],
+		queryFn: () => calendarHeatmap(monthKey),
+		// 切换月份时先保持上一月数据，避免日历闪空
+		placeholderData: keepPreviousData,
+	});
+	// 预取相邻月份：点上一月/下一月时直接命中缓存，无需等待加载
+	useEffect(() => {
+		for (const delta of [-1, 1]) {
+			const key = dayjs(`${monthKey}-01`).add(delta, "month").format("YYYY-MM");
+			void qc.prefetchQuery({
+				queryKey: ["stats", "heatmap", key],
+				queryFn: () => calendarHeatmap(key),
+			});
+		}
+	}, [monthKey, qc]);
+	return query;
 }
 
-export function useCategoryRank(range: StatsRange, type: BreakdownType, limit = 10) {
-  return useQuery({
-    queryKey: ['stats', 'rank', { range, type, limit }],
-    queryFn: () => categoryRank(range, type, limit),
-  });
+export function useCategoryRank(
+	range: StatsRange,
+	type: BreakdownType,
+	limit = 10,
+) {
+	return useQuery({
+		queryKey: ["stats", "rank", { range, type, limit }],
+		queryFn: () => categoryRank(range, type, limit),
+	});
 }
