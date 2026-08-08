@@ -1,15 +1,28 @@
-import { Stack, useRouter } from 'expo-router';
+import { useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { IconBubble } from '@/components/IconBubble';
+import {
+  SecondarySheetScreen,
+  SheetHeaderIconButton,
+} from '@/components/navigation/secondary-sheet-screen';
 import { totalAssets, useAccountBalances, useArchiveAccount } from '@/features/accounts';
+import {
+  AccountEditor,
+  type AccountEditorHandle,
+} from '@/features/accounts/components/AccountEditor';
 import { zh } from '@/i18n/zh';
 import { formatCentsWithSymbol } from '@/lib/money';
+import { resolveIconKey } from '@/lib/iconResolvers';
 import { useTheme } from '@/theme';
+
+type EditorState = { kind: 'create' } | { kind: 'edit'; accountId: string };
 
 export default function AccountsScreen() {
   const { colors } = useTheme();
-  const router = useRouter();
   const { data: accounts = [] } = useAccountBalances();
   const archive = useArchiveAccount();
+  const [editor, setEditor] = useState<EditorState | null>(null);
+  const editorRef = useRef<AccountEditorHandle>(null);
 
   function confirmArchive(id: string, name: string) {
     Alert.alert(`${zh.accounts.archive}「${name}」`, zh.accounts.archiveConfirm, [
@@ -18,67 +31,114 @@ export default function AccountsScreen() {
     ]);
   }
 
+  const title =
+    editor?.kind === 'create'
+      ? zh.accounts.add
+      : editor?.kind === 'edit'
+        ? zh.accounts.edit
+        : zh.accounts.title;
+
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: zh.accounts.title,
-          headerRight: () => (
-            <Pressable onPress={() => router.push('/accounts/edit')} hitSlop={12}>
-              <Text style={{ color: colors.primary, fontSize: 15 }}>{zh.accounts.add}</Text>
-            </Pressable>
-          ),
-        }}
-      />
-      <ScrollView
-        style={{ flex: 1, backgroundColor: colors.background }}
-        contentContainerStyle={{ padding: 16 }}
-      >
-        <View style={[styles.totalCard, { backgroundColor: colors.primary }]}>
-          <Text style={styles.totalLabel}>{zh.accounts.totalAssets}</Text>
-          <Text style={styles.totalValue}>{formatCentsWithSymbol(totalAssets(accounts))}</Text>
-        </View>
-
-        {accounts.length === 0 && (
-          <Text style={{ color: colors.textSecondary, textAlign: 'center', marginTop: 24 }}>
-            {zh.accounts.empty}
-          </Text>
-        )}
-
-        {accounts.map((a) => (
-          <Pressable
-            key={a.id}
-            style={[styles.row, { backgroundColor: colors.card }]}
-            onPress={() => router.push({ pathname: '/accounts/edit', params: { id: a.id } })}
-            onLongPress={() => confirmArchive(a.id, a.name)}
-          >
-            <View style={[styles.iconBox, { backgroundColor: `${a.color}33` }]}>
-              <Text style={{ fontSize: 20 }}>{a.icon}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontSize: 15, fontWeight: '500' }}>{a.name}</Text>
-              <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
-                {zh.accounts.types[a.type]}
-                {a.includeInTotal === 0 ? ` · 不${zh.accounts.includeInTotal}` : ''}
-              </Text>
-            </View>
-            <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>
-              {formatCentsWithSymbol(a.balance)}
+    <SecondarySheetScreen
+      title={title}
+      headerLeft={
+        editor ? (
+          <SheetHeaderIconButton
+            icon="chevron-left"
+            label={zh.common.back}
+            onPress={() => setEditor(null)}
+          />
+        ) : undefined
+      }
+      headerRight={
+        editor ? null : (
+          <SheetHeaderIconButton
+            icon="plus"
+            label={zh.accounts.add}
+            onPress={() => setEditor({ kind: 'create' })}
+          />
+        )
+      }
+      onBackPress={() => {
+        if (editorRef.current?.handleBackPress()) return true;
+        if (!editor) return false;
+        setEditor(null);
+        return true;
+      }}
+    >
+      {editor ? (
+        <AccountEditor
+          ref={editorRef}
+          key={editor.kind === 'edit' ? editor.accountId : 'create'}
+          accountId={editor.kind === 'edit' ? editor.accountId : undefined}
+          onComplete={() => setEditor(null)}
+        />
+      ) : (
+        <ScrollView
+          style={{ flex: 1, backgroundColor: colors.background }}
+          contentContainerStyle={{ padding: 16 }}
+        >
+          <View style={[styles.totalCard, { backgroundColor: colors.primary }]}>
+            <Text style={[styles.totalLabel, { color: `${colors.onPrimary}D9` }]}>
+              {zh.accounts.totalAssets}
             </Text>
-          </Pressable>
-        ))}
-        <Text style={{ color: colors.textSecondary, fontSize: 12, textAlign: 'center', marginTop: 12 }}>
-          长按账户可归档
-        </Text>
-      </ScrollView>
-    </>
+            <Text style={[styles.totalValue, { color: colors.onPrimary }]}>
+              {formatCentsWithSymbol(totalAssets(accounts))}
+            </Text>
+          </View>
+
+          {accounts.length === 0 && (
+            <Text style={{ color: colors.textSecondary, textAlign: 'center', marginTop: 24 }}>
+              {zh.accounts.empty}
+            </Text>
+          )}
+
+          {accounts.map((account) => (
+            <Pressable
+              key={account.id}
+              style={[styles.row, { backgroundColor: colors.card }]}
+              onPress={() => setEditor({ kind: 'edit', accountId: account.id })}
+              onLongPress={() => confirmArchive(account.id, account.name)}
+            >
+              <IconBubble
+                name={resolveIconKey(account.icon, 'account')}
+                color={account.color}
+                size={40}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: colors.text, fontSize: 15, fontWeight: '500' }}>
+                  {account.name}
+                </Text>
+                <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
+                  {zh.accounts.types[account.type]}
+                  {account.includeInTotal === 0 ? ` · 不${zh.accounts.includeInTotal}` : ''}
+                </Text>
+              </View>
+              <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>
+                {formatCentsWithSymbol(account.balance, account.currency)}
+              </Text>
+            </Pressable>
+          ))}
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontSize: 12,
+              textAlign: 'center',
+              marginTop: 12,
+            }}
+          >
+            长按账户可归档
+          </Text>
+        </ScrollView>
+      )}
+    </SecondarySheetScreen>
   );
 }
 
 const styles = StyleSheet.create({
   totalCard: { borderRadius: 14, padding: 20, marginBottom: 16 },
-  totalLabel: { color: 'rgba(255,255,255,0.85)', fontSize: 13 },
-  totalValue: { color: '#FFFFFF', fontSize: 30, fontWeight: '700', marginTop: 6 },
+  totalLabel: { fontSize: 13 },
+  totalValue: { fontSize: 30, fontWeight: '700', marginTop: 6 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -86,12 +146,5 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
     gap: 12,
-  },
-  iconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
