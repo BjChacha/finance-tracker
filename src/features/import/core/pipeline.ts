@@ -5,6 +5,7 @@ import { createAccount, listAccountsWithBalance } from '@/features/accounts';
 import { createCategory, listCategoryTree } from '@/features/categories';
 import { dayjs, toDateKey } from '@/lib/date';
 import { newId } from '@/lib/id';
+import { RATE_SCALE, toBaseCents } from '@/lib/money';
 import type { PickedDocument } from '@/lib/fs';
 import { createFileContext, withEncoding, type SupportedEncoding } from './encoding';
 import { dedupe, type DedupeRow } from './dedupe';
@@ -404,6 +405,22 @@ export class ImportSession {
     const now = Date.now();
 
     await withTransaction(async () => {
+      // 0. 汇总各账户标签的币种/汇率（来自适配器；仅用于本次新建账户）
+      const accCurrency = new Map<string, string>();
+      const accRate = new Map<string, number>();
+      for (const { row: tx } of dedupeRows) {
+        const srcLabel = (tx.rawAccount ?? '').trim();
+        if (srcLabel && tx.currency) {
+          accCurrency.set(srcLabel, tx.currency);
+          accRate.set(srcLabel, tx.exchangeRate ?? RATE_SCALE);
+        }
+        const dstLabel = (tx.rawToAccount ?? '').trim();
+        if (dstLabel && tx.toCurrency) {
+          accCurrency.set(dstLabel, tx.toCurrency);
+          accRate.set(dstLabel, tx.toExchangeRate ?? RATE_SCALE);
+        }
+      }
+
       // 1. 解析映射选择 → 目标 id（create 的现场新建）
       const categoryIds = new Map<string, string>();
       for (const item of mappingPlan.categories) {
@@ -425,10 +442,12 @@ export class ImportSession {
             : await createAccount({
                 name: item.sourceLabel || '导入账户',
                 type: 'other',
-                icon: '💳',
+                icon: 'credit-card',
                 color: '#64748B',
                 initialBalance: 0,
                 includeInTotal: true,
+                currency: accCurrency.get(item.sourceLabel) ?? 'CNY',
+                rateToBase: accRate.get(item.sourceLabel) ?? RATE_SCALE,
               }),
         );
       }
@@ -466,8 +485,12 @@ export class ImportSession {
           type,
           amount: tx.amountCents,
           fee: 0,
+          currency: tx.currency ?? 'CNY',
+          exchangeRate: tx.exchangeRate ?? RATE_SCALE,
+          amountBaseCents: toBaseCents(tx.amountCents, tx.exchangeRate ?? RATE_SCALE),
           accountId,
           toAccountId,
+          toAmount: type === 'transfer' ? (tx.toAmountCents ?? tx.amountCents) : null,
           categoryId,
           date: dateMs,
           dateKey: toDateKey(dateMs),
@@ -480,7 +503,7 @@ export class ImportSession {
       });
 
       // 3. 分批插入（≤200 行/批且绑定变量 ≤900）
-      const cols = 15;
+      const cols = 19;
       const batchSize = Math.min(200, Math.floor(900 / cols));
       for (let i = 0; i < txRows.length; i += batchSize) {
         const chunk = txRows.slice(i, i + batchSize);
@@ -542,12 +565,12 @@ async function ensureCategory(label: string, type: 'expense' | 'income'): Promis
   const parent = tree.find((c) => c.name === parentName);
   const parentId =
     parent?.id ??
-    (await createCategory({ name: parentName, type, icon: '📥', color: '#9CA3AF', parentId: null }));
+    (await createCategory({ name: parentName, type, icon: 'package', color: '#9CA3AF', parentId: null }));
   if (!childName) return parentId;
 
   const existingChild = parent?.children.find((c) => c.name === childName);
   if (existingChild) return existingChild.id;
-  return createCategory({ name: childName, type, icon: '📥', color: '#9CA3AF', parentId });
+  return createCategory({ name: childName, type, icon: 'package', color: '#9CA3AF', parentId });
 }
 
 /* ---------------------------------- 撤销批次 ---------------------------------- */

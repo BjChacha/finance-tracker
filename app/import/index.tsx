@@ -8,10 +8,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
+import { Icon } from '@/components/Icon';
+import { SingleLineTextInput } from '@/components/single-line-text-input';
 import {
   adapterRegistry,
   ImportSession,
@@ -285,7 +286,7 @@ export default function ImportScreen() {
                 { backgroundColor: i <= step ? colors.primary : colors.border },
               ]}
             >
-              <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '600' }}>{i + 1}</Text>
+              <Text style={{ color: colors.onPrimary, fontSize: 11, fontWeight: '600' }}>{i + 1}</Text>
             </View>
             <Text
               style={{
@@ -331,9 +332,9 @@ export default function ImportScreen() {
           onPress={handlePickFile}
         >
           {busy ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.onPrimary} />
           ) : (
-            <Text style={styles.primaryBtnText}>{t.pickFile}</Text>
+            <Text style={[styles.primaryBtnText, { color: colors.onPrimary }]}>{t.pickFile}</Text>
           )}
         </Pressable>
       </View>
@@ -402,7 +403,7 @@ export default function ImportScreen() {
               >
                 <Text
                   style={{
-                    color: encoding === key ? '#FFFFFF' : colors.textSecondary,
+                    color: encoding === key ? colors.onPrimary : colors.textSecondary,
                     fontSize: 13,
                     fontWeight: '600',
                   }}
@@ -475,7 +476,7 @@ export default function ImportScreen() {
               >
                 <Text
                   style={{
-                    color: directionMode === key ? '#FFFFFF' : colors.textSecondary,
+                    color: directionMode === key ? colors.onPrimary : colors.textSecondary,
                     fontSize: 13,
                     fontWeight: '600',
                   }}
@@ -493,7 +494,7 @@ export default function ImportScreen() {
               </Text>
               {renderChipSelect(directionColumn, setDirectionColumn, headers, false)}
               <Text style={[styles.sectionLabel, { marginTop: 12 }]}>{t.incomeLabels}</Text>
-              <TextInput
+              <SingleLineTextInput
                 style={styles.textInput}
                 value={incomeLabelsText}
                 onChangeText={setIncomeLabelsText}
@@ -501,7 +502,7 @@ export default function ImportScreen() {
                 placeholderTextColor={colors.textSecondary}
               />
               <Text style={[styles.sectionLabel, { marginTop: 12 }]}>{t.transferLabels}</Text>
-              <TextInput
+              <SingleLineTextInput
                 style={styles.textInput}
                 value={transferLabelsText}
                 onChangeText={setTransferLabelsText}
@@ -522,7 +523,7 @@ export default function ImportScreen() {
           <Text style={[styles.sectionLabel, { marginTop: 12 }]}>{t.colNote}</Text>
           {renderChipSelect(noteColumn, setNoteColumn, headers, true)}
           <Text style={[styles.sectionLabel, { marginTop: 12 }]}>{t.dateFormat}</Text>
-          <TextInput
+          <SingleLineTextInput
             style={styles.textInput}
             value={dateFormat}
             onChangeText={setDateFormat}
@@ -648,7 +649,7 @@ export default function ImportScreen() {
               ]}
             >
               {includeDuplicates ? (
-                <Text style={{ color: '#FFFFFF', fontSize: 12 }}>✓</Text>
+                <Icon name="check" size={14} color={colors.onPrimary} />
               ) : null}
             </View>
             <Text style={{ color: colors.text, fontSize: 14 }}>{t.includeDuplicates}</Text>
@@ -706,7 +707,7 @@ export default function ImportScreen() {
                   fontWeight: '600',
                 }}
               >
-                {formatCentsWithSymbol(row.amountCents)}
+                {formatCentsWithSymbol(row.amountCents, row.currency)}
               </Text>
               {duplicate ? (
                 <View style={[styles.dupBadge, { backgroundColor: `${colors.expense}22` }]}>
@@ -731,7 +732,7 @@ export default function ImportScreen() {
     if (!commitResult) return null;
     return (
       <View style={styles.card}>
-        <Text style={{ fontSize: 40, textAlign: 'center' }}>{undone ? '↩️' : '✅'}</Text>
+        <Icon name={undone ? 'rotate-ccw' : 'circle-check-big'} size={40} color={colors.primary} style={{ alignSelf: 'center' }} />
         <Text style={[styles.cardTitle, { textAlign: 'center', marginTop: 8 }]}>
           {undone ? t.undoDone(commitResult.inserted) : t.doneTitle}
         </Text>
@@ -753,7 +754,7 @@ export default function ImportScreen() {
           style={[styles.primaryBtn, { backgroundColor: colors.primary }]}
           onPress={() => router.back()}
         >
-          <Text style={styles.primaryBtnText}>{t.finish}</Text>
+          <Text style={[styles.primaryBtnText, { color: colors.onPrimary }]}>{t.finish}</Text>
         </Pressable>
       </View>
     );
@@ -783,9 +784,9 @@ export default function ImportScreen() {
           onPress={onNext}
         >
           {busy ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.onPrimary} />
           ) : (
-            <Text style={styles.primaryBtnText}>{nextLabel}</Text>
+            <Text style={[styles.primaryBtnText, { color: colors.onPrimary }]}>{nextLabel}</Text>
           )}
         </Pressable>
       </View>
@@ -821,13 +822,15 @@ export default function ImportScreen() {
                 style={[styles.modalOption, current.action === 'create' && { backgroundColor: `${colors.primary}18` }]}
                 onPress={() => select({ action: 'create' })}
               >
-                <Text style={{ color: colors.primary, fontSize: 15 }}>
-                  ➕{' '}
-                  {t.createNewNamed(
-                    pickerItem.sourceLabel ||
-                      (pickerItem.kind === 'category' ? '未分类' : '导入账户'),
-                  )}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Icon name="plus" size={14} color={colors.primary} />
+                  <Text style={{ color: colors.primary, fontSize: 15 }}>
+                    {t.createNewNamed(
+                      pickerItem.sourceLabel ||
+                        (pickerItem.kind === 'category' ? '未分类' : '导入账户'),
+                    )}
+                  </Text>
+                </View>
               </Pressable>
               {options.map((o) => {
                 const selected = current.action === 'existing' && current.targetId === o.id;
@@ -892,7 +895,7 @@ function Chip({
       }}
       onPress={onPress}
     >
-      <Text style={{ color: selected ? '#FFFFFF' : colors.text, fontSize: 13 }}>{label}</Text>
+      <Text style={{ color: selected ? colors.onPrimary : colors.text, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
 }
@@ -927,7 +930,7 @@ function makeStyles({ colors }: AppTheme) {
       justifyContent: 'center',
       marginTop: 12,
     },
-    primaryBtnText: { color: '#FFFFFF', fontSize: 15, fontWeight: '600' },
+    primaryBtnText: { fontSize: 15, fontWeight: '600' },
     secondaryBtn: {
       borderRadius: 12,
       paddingVertical: 13,
@@ -954,9 +957,9 @@ function makeStyles({ colors }: AppTheme) {
     segmentItem: { flex: 1, paddingVertical: 7, alignItems: 'center', borderRadius: 8 },
     chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
     textInput: {
+      height: 40,
       color: colors.text,
       fontSize: 14,
-      paddingVertical: 8,
       paddingHorizontal: 10,
       borderWidth: 1,
       borderColor: colors.border,

@@ -24,6 +24,16 @@ export interface NormalizedTransaction {
   rawToAccount?: string;
   /** 源流水号；存在时优先参与去重指纹 */
   sourceId?: string;
+  /** 交易币种 ISO code（默认 CNY；应为 rawAccount 账户的币种） */
+  currency?: string;
+  /** 相对本位币汇率 ×1e6（默认 1.0） */
+  exchangeRate?: number;
+  /** 仅 transfer：转入侧金额（目标账户币种，分）；缺省=amountCents（同币种） */
+  toAmountCents?: number;
+  /** 仅 transfer：转入账户币种 ISO code（用于建账户时定币种） */
+  toCurrency?: string;
+  /** 仅 transfer：转入账户相对本位币汇率 ×1e6（用于建账户时定 rateToBase） */
+  toExchangeRate?: number;
   /** 原始行数据（预览/排错用） */
   raw?: Record<string, string>;
 }
@@ -33,11 +43,14 @@ export interface ImportFileContext {
   fileName: string;
   mimeType?: string;
   sizeBytes: number;
-  /** 读全文；不传 encoding 时自动探测（UTF-8 BOM / 无效 UTF-8 序列 → GBK） */
-  readText(encoding?: 'utf-8' | 'gbk'): Promise<string>;
+  /** 读全文；不传 encoding 时自动探测（UTF-16/UTF-8 BOM、无效 UTF-8 序列 → GBK） */
+  readText(encoding?: SupportedEncodingArg): Promise<string>;
   /** 读前 N 行（探测格式用，避免适配器各自整读大文件） */
-  readHead(lines: number, encoding?: 'utf-8' | 'gbk'): Promise<string[]>;
+  readHead(lines: number, encoding?: SupportedEncodingArg): Promise<string[]>;
 }
+
+/** 上下文支持的编码（与 encoding.ts 的 SupportedEncoding 保持一致，此处内联避免循环依赖） */
+export type SupportedEncodingArg = 'utf-8' | 'gbk' | 'utf-16le' | 'utf-16be';
 
 /** 格式探测结果；confidence ∈ [0,1]，0 表示完全不匹配 */
 export interface DetectResult {
