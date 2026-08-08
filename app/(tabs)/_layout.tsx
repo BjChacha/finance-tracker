@@ -1,99 +1,110 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TopTabs } from 'expo-router/js-top-tabs';
-import { zh } from '@/i18n/zh';
-import { useTheme } from '@/theme';
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useReducedMotion } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Icon } from "@/components/Icon";
+import { FloatingTabBar, TAB_TITLES } from "@/components/navigation/tab-bar";
+import {
+	TabPagerViewport,
+	useTabPagerController,
+} from "@/components/navigation/tab-pager";
+import { useHeadlessTabRouter } from "@/components/navigation/tab-router-adapter";
+import { zh } from "@/i18n/zh";
+import { useTheme } from "@/theme";
 
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.45 }}>{emoji}</Text>;
-}
-
-const TITLES: Record<string, string> = {
-  index: zh.tabs.transactions,
-  stats: zh.tabs.stats,
-  budgets: zh.tabs.budgets,
-  profile: zh.tabs.profile,
-};
+/** Composes the headless Expo router with the interruptible three-slot pager. */
 
 export default function TabLayout() {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const [title, setTitle] = useState<string>(zh.tabs.transactions);
+	const theme = useTheme();
+	const insets = useSafeAreaInsets();
+	const router = useRouter();
+	const reduceMotion = useReducedMotion();
 
-  return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {/* material top tabs 没有 header，这里自绘标题栏并处理顶部安全区 */}
-      <View style={[styles.header, { backgroundColor: theme.colors.card, paddingTop: insets.top }]}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{title}</Text>
-      </View>
-      <TopTabs
-        tabBarPosition="bottom"
-        screenListeners={{
-          state: (e: { data?: { state?: { index: number; routes: { name: string }[] } } }) => {
-            const s = e.data?.state;
-            const name = s?.routes[s.index]?.name;
-            if (name && TITLES[name]) setTitle(TITLES[name]);
-          },
-        }}
-        screenOptions={{
-          lazy: true,
-          tabBarShowIcon: true,
-          tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.textSecondary,
-          tabBarStyle: {
-            backgroundColor: theme.colors.card,
-            borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: theme.colors.border,
-            paddingBottom: insets.bottom,
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          tabBarIndicatorStyle: { height: 0 },
-          tabBarLabelStyle: { fontSize: 11, textTransform: 'none', margin: 0 },
-          tabBarItemStyle: { paddingVertical: 6, minHeight: 52 },
-          tabBarPressColor: `${theme.colors.primary}22`,
-        }}
-      >
-        <TopTabs.Screen
-          name="index"
-          options={{
-            title: zh.tabs.transactions,
-            tabBarIcon: ({ focused }: { focused: boolean }) => <TabIcon emoji="📒" focused={focused} />,
-          }}
-        />
-        <TopTabs.Screen
-          name="stats"
-          options={{
-            title: zh.tabs.stats,
-            tabBarIcon: ({ focused }: { focused: boolean }) => <TabIcon emoji="📊" focused={focused} />,
-          }}
-        />
-        <TopTabs.Screen
-          name="budgets"
-          options={{
-            title: zh.tabs.budgets,
-            tabBarIcon: ({ focused }: { focused: boolean }) => <TabIcon emoji="🎯" focused={focused} />,
-          }}
-        />
-        <TopTabs.Screen
-          name="profile"
-          options={{
-            title: zh.tabs.profile,
-            tabBarIcon: ({ focused }: { focused: boolean }) => <TabIcon emoji="👤" focused={focused} />,
-          }}
-        />
-      </TopTabs>
-    </View>
-  );
+	const { scenes, activeRouteName, routerContract, NavigationContent } =
+		useHeadlessTabRouter();
+	const pager = useTabPagerController({
+		router: routerContract,
+		activeRouteName,
+		reduceMotion,
+	});
+	const state = pager.state;
+	const title = TAB_TITLES[state.anchorName];
+
+	return (
+		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+			{/* Headless tabs require the app shell to own the safe-area header. */}
+			<View
+				style={[
+					styles.header,
+					{ backgroundColor: theme.colors.card, paddingTop: insets.top },
+				]}
+			>
+				<View style={styles.headerBar}>
+					<Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+						{title}
+					</Text>
+					{state.anchorName === "index" && (
+						<Pressable
+							onPress={() => router.push("/transactions/search")}
+							hitSlop={12}
+							style={styles.headerRight}
+							accessibilityLabel={zh.txList.searchAction}
+						>
+							<Icon name="search" size={23} color={theme.colors.text} />
+						</Pressable>
+					)}
+					{state.anchorName === "assets" && (
+						<Pressable
+							onPress={() => router.push("/accounts/edit")}
+							hitSlop={12}
+							style={styles.headerRight}
+							accessibilityLabel={zh.accounts.add}
+						>
+							<Icon name="plus" size={24} color={theme.colors.text} />
+						</Pressable>
+					)}
+				</View>
+			</View>
+			<View style={{ flex: 1 }}>
+				<NavigationContent>
+					<TabPagerViewport
+						scenes={scenes}
+						controller={pager}
+						style={{ backgroundColor: theme.colors.background }}
+					/>
+				</NavigationContent>
+			</View>
+			<FloatingTabBar
+				activeName={state.anchorName}
+				visualTabPosition={pager.visualTabPosition}
+				pillTranslateX={pager.pillTranslateX}
+				onPillStepChange={pager.setPillStep}
+				onPressTab={pager.pressTab}
+				onLongPressTab={pager.longPressTab}
+			/>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 12,
-    minHeight: 44,
-  },
-  headerTitle: { fontSize: 17, fontWeight: '600' },
+	header: {
+		position: "relative",
+		minHeight: 44,
+	},
+	// A shared fixed-height row keeps the title and action icon vertically aligned.
+	headerBar: {
+		position: "relative",
+		height: 32,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	headerTitle: { fontSize: 17, fontWeight: "600" },
+	headerRight: {
+		position: "absolute",
+		right: 8,
+		width: 32,
+		height: 32,
+		alignItems: "center",
+		justifyContent: "center",
+	},
 });
