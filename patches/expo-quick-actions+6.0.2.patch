@@ -1,0 +1,87 @@
+diff --git a/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/ExpoQuickActionsModule.kt b/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/ExpoQuickActionsModule.kt
+index 66dc4a0..3357199 100644
+--- a/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/ExpoQuickActionsModule.kt
++++ b/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/ExpoQuickActionsModule.kt
+@@ -195,6 +195,18 @@ class ExpoQuickActionsModule : Module() {
+             })
+         }
+ 
++        // PATCH(finance-tracker): synchronous read of the CURRENT launch action.
++        // `initial` above is frozen into JS constants at first JS load and goes stale on
++        // Activity recreation (same JS instance — e.g. after BackHandler.exitApp finishes the
++        // Activity on Android S+). `launchAction` is refreshed on every onCreate (see the
++        // lifecycle listener: shortcut -> action, launcher-icon/MAIN -> null), so this lets JS
++        // decide — inside a useState initializer — whether THIS launch was via the shortcut.
++        Function("getLaunchAction") {
++            return@Function QuickActionsSingleton.launchAction?.let {
++                mapOf("id" to it.id, "title" to it.title, "subtitle" to it.subtitle, "icon" to it.icon, "params" to it.params)
++            }
++        }
++
+         AsyncFunction("isSupported") {
+             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                 isSupported(context)
+diff --git a/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/QuickActionsReactActivityLifecycleListener.kt b/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/QuickActionsReactActivityLifecycleListener.kt
+index efb5019..0c65c39 100644
+--- a/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/QuickActionsReactActivityLifecycleListener.kt
++++ b/node_modules/expo-quick-actions/android/src/main/java/expo/modules.quickactions/QuickActionsReactActivityLifecycleListener.kt
+@@ -2,6 +2,7 @@ package expo.modules.quickactions
+ 
+ import android.app.Activity
+ import android.content.Context
++import android.content.Intent
+ import android.content.pm.ShortcutManager
+ import android.os.Build
+ import android.os.Bundle
+@@ -21,7 +22,24 @@ class QuickActionsReactActivityLifecycleListener(activityContext: Context) : Rea
+                 QuickActionsSingleton.maxCount = service.maxShortcutCountPerActivity
+             }
+             activity?.intent?.let {
+-                QuickActionsSingleton.launchAction = ExpoQuickActionsModule.convertShortcutIntent(it)
++                // PATCH(finance-tracker): fix warm-start shortcut loss + recents re-trigger.
++                // 1) Skip history relaunch: system re-delivers the original shortcut intent when
++                //    the task is reopened from recents — without this guard the add-transaction
++                //    keypad would pop again (cold via `initial`, warm via the event below).
++                // 2) Emit the event on onCreate too: when the process (and JS runtime) is alive but
++                //    the Activity was destroyed and recreated, upstream only writes `launchAction`
++                //    (frozen into JS constants at first launch) and never emits — the action is
++                //    silently lost. `handleShortcutIntent` -> `notifyShortcutAction` uses
++                //    `instance?.sendEvent`, so on a true cold start (module instance not yet
++                //    created) it is a harmless no-op and `initial` keeps covering that path.
++                if ((it.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
++                    QuickActionsSingleton.launchAction = ExpoQuickActionsModule.convertShortcutIntent(it)
++                    ExpoQuickActionsModule.handleShortcutIntent(it)
++                } else {
++                    // PATCH(finance-tracker): recents relaunch — clear so getLaunchAction() doesn't
++                    // read the stale shortcut and re-pop the keypad.
++                    QuickActionsSingleton.launchAction = null
++                }
+             }
+         }
+     }
+diff --git a/node_modules/expo-quick-actions/build/index.d.ts b/node_modules/expo-quick-actions/build/index.d.ts
+index 8de9130..40dc02a 100644
+--- a/node_modules/expo-quick-actions/build/index.d.ts
++++ b/node_modules/expo-quick-actions/build/index.d.ts
+@@ -15,6 +15,8 @@ export declare const initial: Action | undefined;
+ export declare const maxCount: number | undefined;
+ export declare const setItems: <TAction extends Action = Action>(data?: TAction[]) => Promise<void>;
+ export declare const isSupported: () => Promise<boolean>;
++/** PATCH(finance-tracker): synchronous read of the current launch action (Android). */
++export declare const getLaunchAction: () => Action | undefined;
+ export declare function addListener<TAction extends Action = Action>(listener: (action: TAction) => void): {
+     remove: () => void;
+ };
+diff --git a/node_modules/expo-quick-actions/build/index.js b/node_modules/expo-quick-actions/build/index.js
+index 7a14dcc..5a2796f 100644
+--- a/node_modules/expo-quick-actions/build/index.js
++++ b/node_modules/expo-quick-actions/build/index.js
+@@ -4,6 +4,8 @@ export const initial = ExpoQuickActions?.initial;
+ export const maxCount = ExpoQuickActions?.maxCount;
+ export const setItems = ExpoQuickActions?.setItems ?? (() => Promise.resolve());
+ export const isSupported = ExpoQuickActions?.isSupported ?? (() => Promise.resolve(false));
++// PATCH(finance-tracker): synchronous read of the current launch action (see ExpoQuickActionsModule.getLaunchAction).
++export const getLaunchAction = ExpoQuickActions?.getLaunchAction ?? (() => undefined);
+ export function addListener(listener) {
+     if (!ExpoQuickActions?.addListener) {
+         return { remove: () => { } };

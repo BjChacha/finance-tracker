@@ -43,5 +43,10 @@ yarn-error.*
 # local Expo module build outputs
 modules/*/android/build/
 
-# local Android handoff verification captures
-/debug/capture/handoff-fix-20260805/
+# local caches, build artifacts & debug sandboxes
+.jest-cache/
+artifacts/
+debug/
+
+# local real-data fixtures (privacy-sensitive, not for VCS)
+import_example/
