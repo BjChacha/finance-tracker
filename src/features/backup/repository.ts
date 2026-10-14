@@ -3,6 +3,7 @@ import { asc, eq } from 'drizzle-orm';
 import { alias, type SQLiteTable } from 'drizzle-orm/sqlite-core';
 import Papa from 'papaparse';
 import { normalizeAccountType } from '@/db/account-types';
+import { toCsvRecord } from './csv';
 import { db, withTransaction } from '@/db/client';
 import { BACKUP_FORMAT, BACKUP_SCHEMA_VERSION } from '@/db/backup-version';
 import {
@@ -19,7 +20,6 @@ import {
 import { getSetting, setSetting } from '@/db/settings';
 import { dayjs } from '@/lib/date';
 import { readTextFromUri, shareFile, writeTextToCache } from '@/lib/fs';
-import { formatCents } from '@/lib/money';
 import { backupEnvelopeSchema, backupFileSchema, type BackupData, type BackupFile } from './schema';
 import { runUpgradeChain, type RawBackupPayload } from './upgraders';
 
@@ -199,12 +199,6 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
 
 /* ---------------------------------- CSV 导出 ---------------------------------- */
 
-const TX_TYPE_LABEL: Record<string, string> = {
-  expense: '支出',
-  income: '收入',
-  transfer: '转账',
-};
-
 /**
  * 导出全部交易明细为 CSV（中文表头，UTF-8 带 BOM，Excel 可直接打开）→ 系统分享。
  * @returns 导出的行数
@@ -231,22 +225,7 @@ export async function exportCsv(): Promise<number> {
     .leftJoin(toAccounts, eq(transactions.toAccountId, toAccounts.id))
     .orderBy(asc(transactions.dateKey), asc(transactions.createdAt));
 
-  const records = rows.map((r) => {
-    // 二级分类：有父级 → 分类=父名 / 子分类=自身名；一级 → 分类=自身名
-    const category = r.categoryParentName ?? r.categoryName ?? '';
-    const subCategory = r.categoryParentName ? (r.categoryName ?? '') : '';
-    return {
-      日期: r.dateKey,
-      类型: TX_TYPE_LABEL[r.type] ?? r.type,
-      '金额(元)': formatCents(r.amount, { grouping: false }),
-      分类: category,
-      子分类: subCategory,
-      账户: r.accountName ?? '',
-      转入账户: r.toAccountName ?? '',
-      '手续费(元)': r.fee > 0 ? formatCents(r.fee, { grouping: false }) : '',
-      备注: r.note,
-    };
-  });
+  const records = rows.map(toCsvRecord);
   if (records.length === 0) return 0;
 
   const csv = Papa.unparse(records, { newline: '\r\n' });
