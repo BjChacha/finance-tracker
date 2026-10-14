@@ -17,8 +17,8 @@ export const motion = {
 	exit: 150,
 	/** 一级之上的卡片/记账键盘从底部进入 */
 	sheetEnter: 260,
-	/** 卡片/记账键盘向底部退出 */
-	sheetExit: 240,
+	/** 卡片/记账键盘向底部退出（与进入同长，保证退出过程完整可见） */
+	sheetExit: 260,
 	/** 统一的「先快后慢」三次贝塞尔曲线控制点 */
 	sheetCurve: [0.22, 1, 0.36, 1] as const,
 } as const;

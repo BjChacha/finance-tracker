@@ -1,15 +1,14 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useReducedMotion } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Icon } from "@/components/Icon";
-import { FloatingTabBar, TAB_TITLES } from "@/components/navigation/tab-bar";
+import { FloatingTabBar } from "@/components/navigation/tab-bar";
+import { TabHeader } from "@/components/navigation/tab-header";
 import {
 	TabPagerViewport,
 	useTabPagerController,
 } from "@/components/navigation/tab-pager";
 import { useHeadlessTabRouter } from "@/components/navigation/tab-router-adapter";
-import { zh } from "@/i18n/zh";
 import { useTheme } from "@/theme";
 
 /** Composes the headless Expo router with the interruptible three-slot pager. */
@@ -28,7 +27,6 @@ export default function TabLayout() {
 		reduceMotion,
 	});
 	const state = pager.state;
-	const title = TAB_TITLES[state.anchorName];
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -39,31 +37,16 @@ export default function TabLayout() {
 					{ backgroundColor: theme.colors.card, paddingTop: insets.top },
 				]}
 			>
-				<View style={styles.headerBar}>
-					<Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-						{title}
-					</Text>
-					{state.anchorName === "index" && (
-						<Pressable
-							onPress={() => router.push("/transactions/search")}
-							hitSlop={12}
-							style={styles.headerRight}
-							accessibilityLabel={zh.txList.searchAction}
-						>
-							<Icon name="search" size={23} color={theme.colors.text} />
-						</Pressable>
-					)}
-					{state.anchorName === "assets" && (
-						<Pressable
-							onPress={() => router.push("/accounts/edit")}
-							hitSlop={12}
-							style={styles.headerRight}
-							accessibilityLabel={zh.accounts.add}
-						>
-							<Icon name="plus" size={24} color={theme.colors.text} />
-						</Pressable>
-					)}
-				</View>
+				<TabHeader
+					activeName={state.anchorName}
+					phase={state.phase}
+					anchorIndex={pager.anchorIndex}
+					translateX={pager.translateX}
+					viewportWidth={pager.viewportWidthValue}
+					opacityFor={pager.opacityFor}
+					onSearch={() => router.push("/transactions/search")}
+					onAddAccount={() => router.push("/accounts/edit")}
+				/>
 			</View>
 			<View style={{ flex: 1 }}>
 				<NavigationContent>
@@ -90,21 +73,5 @@ const styles = StyleSheet.create({
 	header: {
 		position: "relative",
 		minHeight: 44,
-	},
-	// A shared fixed-height row keeps the title and action icon vertically aligned.
-	headerBar: {
-		position: "relative",
-		height: 32,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	headerTitle: { fontSize: 17, fontWeight: "600" },
-	headerRight: {
-		position: "absolute",
-		right: 8,
-		width: 32,
-		height: 32,
-		alignItems: "center",
-		justifyContent: "center",
 	},
 });
