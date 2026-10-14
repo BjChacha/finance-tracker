@@ -33,9 +33,16 @@ describe('buildTransactionInput', () => {
         note: 'lunch',
         currency: 'USD',
         exchangeRate: 6_760_600,
+        clientTag: null,
       },
       error: null,
     });
+  });
+
+  it('passes the client idempotency tag through to the payload', () => {
+    const result = buildTransactionInput({ ...validDraft, clientTag: 'handoff-42' });
+
+    expect(result.input?.clientTag).toBe('handoff-42');
   });
 
   it.each([
@@ -57,7 +64,6 @@ describe('buildTransactionInput', () => {
       buildTransactionInput({
         ...validDraft,
         type: 'transfer',
-        categoryId: null,
         toAccountId: 'account-1',
       }),
     ).toEqual({ input: null, error: 'sameAccount' });
@@ -65,10 +71,28 @@ describe('buildTransactionInput', () => {
       buildTransactionInput({
         ...validDraft,
         type: 'transfer',
-        categoryId: null,
         toAccountId: 'account-2',
         feeText: 'unfinished',
       }),
     ).toEqual({ input: null, error: 'invalidFee' });
+  });
+
+  it('requires and preserves a transfer category', () => {
+    expect(
+      buildTransactionInput({
+        ...validDraft,
+        type: 'transfer',
+        categoryId: null,
+        toAccountId: 'account-2',
+      }),
+    ).toEqual({ input: null, error: 'needCategory' });
+
+    const result = buildTransactionInput({
+      ...validDraft,
+      type: 'transfer',
+      categoryId: 'bill-repayment',
+      toAccountId: 'account-2',
+    });
+    expect(result.input?.categoryId).toBe('bill-repayment');
   });
 });

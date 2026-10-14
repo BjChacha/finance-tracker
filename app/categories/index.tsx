@@ -13,7 +13,7 @@ import {
   SecondarySheetScreen,
   SheetHeaderIconButton,
 } from '@/components/navigation/secondary-sheet-screen';
-import type { Category } from '@/db/schema';
+import type { Category, CategoryType } from '@/db/schema';
 import {
   useArchiveCategory,
   useCategoryTree,
@@ -37,7 +37,7 @@ type EditorState = {
 
 export default function CategoriesScreen() {
   const { colors } = useTheme();
-  const [tab, setTab] = useState<'expense' | 'income'>('expense');
+  const [tab, setTab] = useState<CategoryType>('expense');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [editor, setEditor] = useState<EditorState>(null);
 
@@ -126,14 +126,17 @@ export default function CategoriesScreen() {
       }
     >
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        {/* 支出/收入 tab */}
+        {/* 分类类型 tab */}
         <View style={[styles.segment, { backgroundColor: colors.card }]}>
-          {(['expense', 'income'] as const).map((t) => (
+          {(['expense', 'income', 'transfer'] as const).map((t) => (
             <Pressable
               key={t}
               style={[
                 styles.segmentItem,
-                tab === t && { backgroundColor: t === 'expense' ? colors.expense : colors.income },
+                tab === t && {
+                  backgroundColor:
+                    t === 'expense' ? colors.expense : t === 'income' ? colors.income : colors.transfer,
+                },
               ]}
               onPress={() => {
                 setTab(t);
@@ -176,7 +179,7 @@ function CategoryEditor({
   parentId,
   onClose,
 }: {
-  type: 'expense' | 'income';
+  type: CategoryType;
   editing: Category | null;
   parentId: string | null;
   onClose: () => void;
@@ -184,7 +187,9 @@ function CategoryEditor({
   const { colors } = useTheme();
   const [name, setName] = useState(editing?.name ?? '');
   const [icon, setIcon] = useState(resolveIconKey(editing?.icon, 'category'));
-  const [color, setColor] = useState(editing?.color ?? COLOR_OPTIONS[0]!);
+  const [color, setColor] = useState(
+    editing?.color ?? (type === 'transfer' ? colors.transfer : COLOR_OPTIONS[0]!),
+  );
   const create = useCreateCategory();
   const update = useUpdateCategory();
 

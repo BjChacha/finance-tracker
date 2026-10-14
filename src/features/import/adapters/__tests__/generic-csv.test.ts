@@ -69,10 +69,10 @@ describe('genericCsvAdapter.parse（正负号方向模式）', () => {
 
 describe('genericCsvAdapter.parse（方向列模式）', () => {
   const csv = [
-    '时间,收支类型,金额,对方',
-    '2026-07-01,支出,12.50,拉面店',
-    '2026-07-02,收入,100.00,老板',
-    '2026-07-03,转账,500.00,自己',
+    '时间,收支类型,金额,分类,账户,转入账户,对方',
+    '2026-07-01,支出,12.50,餐饮,现金,,拉面店',
+    '2026-07-02,收入,100.00,工资,工资卡,,老板',
+    '2026-07-03,转账,500.00,提现,银行卡,现金,自己',
   ].join('\n');
 
   it('按标签映射方向，金额取绝对值', async () => {
@@ -83,6 +83,9 @@ describe('genericCsvAdapter.parse（方向列模式）', () => {
       directionColumn: '收支类型',
       incomeLabels: ['收入'],
       transferLabels: ['转账'],
+      categoryColumn: '分类',
+      accountColumn: '账户',
+      toAccountColumn: '转入账户',
       noteColumn: '对方',
     });
     expect(result.transactions.map((t) => t.direction)).toEqual([
@@ -91,6 +94,11 @@ describe('genericCsvAdapter.parse（方向列模式）', () => {
       'transfer',
     ]);
     expect(result.transactions.map((t) => t.amountCents)).toEqual([1250, 10000, 50000]);
+    expect(result.transactions[2]).toMatchObject({
+      rawCategory: '提现',
+      rawAccount: '银行卡',
+      rawToAccount: '现金',
+    });
   });
 
   it('未命中任何标签的行按支出处理', async () => {

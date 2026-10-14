@@ -45,7 +45,8 @@ export const CATEGORY_ICON_KEYS: IconName[] = [
   'pill', 'heart-pulse', 'book-open', 'graduation-cap', 'smartphone', 'wifi',
   'gift', 'party-popper', 'cat', 'dog', 'baby', 'trophy', 'volleyball', 'dices',
   'brush', 'sparkles', 'landmark', 'piggy-bank', 'trending-up', 'wallet', 'briefcase',
-  'hand-coins', 'recycle', 'rotate-ccw', 'package',
+  'hand-coins', 'recycle', 'rotate-ccw', 'package', 'arrow-left-right', 'credit-card',
+  'banknote',
 ];
 
 /** 账户选择器图标集 */

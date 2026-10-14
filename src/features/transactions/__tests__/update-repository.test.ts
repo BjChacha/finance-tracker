@@ -42,4 +42,25 @@ describe('updateTransaction', () => {
       }),
     );
   });
+
+  it('preserves the selected category when updating a transfer', async () => {
+    await updateTransaction('tx-transfer', {
+      type: 'transfer',
+      amount: 50_000,
+      accountId: 'bank',
+      toAccountId: 'credit-card',
+      categoryId: 'bill-repayment',
+      date: 1_775_001_600_000,
+      currency: 'CNY',
+      exchangeRate: 1_000_000,
+    });
+
+    expect(mockSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'transfer',
+        categoryId: 'bill-repayment',
+        toAccountId: 'credit-card',
+      }),
+    );
+  });
 });

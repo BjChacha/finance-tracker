@@ -86,8 +86,7 @@ export default function RecurringEditScreen() {
   const [expandedParent, setExpandedParent] = useState<string | null>(null);
 
   const { data: accounts = [] } = useAccountBalances();
-  const categoryType = type === 'income' ? 'income' : 'expense';
-  const { data: categoryTree = [] } = useCategoryTree(categoryType);
+  const { data: categoryTree = [] } = useCategoryTree(type);
 
   const create = useCreateRule();
   const update = useUpdateRule();
@@ -149,7 +148,7 @@ export default function RecurringEditScreen() {
       Alert.alert(zh.txList.sameAccount);
       return;
     }
-    if (type !== 'transfer' && !categoryId) {
+    if (!categoryId) {
       Alert.alert(zh.txList.needCategory);
       return;
     }
@@ -178,7 +177,7 @@ export default function RecurringEditScreen() {
       amount,
       accountId: effectiveAccountId,
       toAccountId: type === 'transfer' ? toAccountId : null,
-      categoryId: type === 'transfer' ? null : categoryId,
+      categoryId,
       note: note.trim(),
       frequency,
       interval,
@@ -334,8 +333,7 @@ export default function RecurringEditScreen() {
         )}
 
         {/* 分类 */}
-        {type !== 'transfer' && (
-          <View style={styles.card}>
+        <View style={styles.card}>
             <Text style={styles.sectionLabel}>{zh.tx.category}</Text>
             <View style={styles.chipWrap}>
               {categoryTree.map((node) =>
@@ -365,8 +363,7 @@ export default function RecurringEditScreen() {
                 )}
               </View>
             )}
-          </View>
-        )}
+        </View>
 
         {/* 频率 + 间隔 + 锚点 */}
         <View style={styles.card}>

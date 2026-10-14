@@ -6,7 +6,7 @@ import { useResidentEditor } from '@/components/navigation/resident-editor-sheet
 import { zh } from '@/i18n/zh';
 import { dayjs, formatTime, todayKey, yesterdayKey } from '@/lib/date';
 import { resolveIconKey } from '@/lib/iconResolvers';
-import { formatCents } from '@/lib/money';
+import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
 import { usePrefetchTransaction } from '../hooks';
 import type { TxListItem } from '../repository';
@@ -41,8 +41,13 @@ export function TransactionRow({ tx, showDivider = true, style }: Props) {
     tx.dateKey === todayKey() || tx.dateKey === yesterdayKey()
       ? formatTime(tx.date)
       : dayjs(tx.date).format('MM-DD');
+  const categoryLabel = tx.categoryName
+    ? tx.parentCategoryName
+      ? `${tx.parentCategoryName} › ${tx.categoryName}`
+      : tx.categoryName
+    : zh.common.empty;
   const sub = isTransfer
-    ? `${timeLabel} · ${tx.note || zh.tx.transfer}`
+    ? [timeLabel, categoryLabel, tx.note].filter(Boolean).join(' · ')
     : `${timeLabel} · ${tx.accountName ?? ''}${tx.note ? ` · ${tx.note}` : ''}`;
   const sign = tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : '';
 
@@ -73,7 +78,7 @@ export function TransactionRow({ tx, showDivider = true, style }: Props) {
       </View>
       <Text style={[styles.amount, { color: amountColor }]}>
         {sign}
-        {formatCents(tx.amount)}
+        {formatCentsWithSymbol(tx.amount, tx.currency)}
       </Text>
     </Pressable>
   );

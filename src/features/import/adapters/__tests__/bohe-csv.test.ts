@@ -80,6 +80,8 @@ describe('boheCsvAdapter.parse', () => {
     expect(tx.amountCents).toBe(50000);
     expect(tx.toAmountCents).toBe(50000);
     expect(tx.currency).toBe('CNY');
+    expect(tx.rawCategory).toBe('账户互转');
+    expect(tx.note).not.toContain('#账户互转');
   });
 
   it('纯外币账户（中国银行visa=USD）：保留 USD + 汇率', async () => {

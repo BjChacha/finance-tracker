@@ -83,10 +83,13 @@ export function TransactionSearchResults({
         ? `${transaction.accountName ?? '?'} → ${transaction.toAccountName ?? '?'}`
         : categoryLabel;
       const subtitleParts: string[] = [];
-      if (!isTransfer && transaction.accountName) subtitleParts.push(transaction.accountName);
+      if (isTransfer) {
+        subtitleParts.push(formatTime(transaction.date), categoryLabel);
+      } else if (transaction.accountName) {
+        subtitleParts.push(transaction.accountName);
+      }
       if (transaction.projectName) subtitleParts.push(`${zh.tx.project}：${transaction.projectName}`);
       if (transaction.note) subtitleParts.push(transaction.note);
-      if (subtitleParts.length === 0 && isTransfer) subtitleParts.push(zh.tx.transfer);
       const sign =
         transaction.type === 'expense' ? '-' : transaction.type === 'income' ? '+' : '';
 
@@ -117,7 +120,7 @@ export function TransactionSearchResults({
             </Text>
           </View>
           <View style={styles.rowTrailing}>
-            <Text style={styles.rowTime}>{formatTime(transaction.date)}</Text>
+            {!isTransfer && <Text style={styles.rowTime}>{formatTime(transaction.date)}</Text>}
             <Text style={[styles.rowAmount, { color: amountColor }]}>
               {sign}
               {formatCents(transaction.amount)}

@@ -1,12 +1,12 @@
 import { and, asc, eq } from 'drizzle-orm';
 import { db } from '@/db/client';
-import { categories, type Category } from '@/db/schema';
+import { categories, type Category, type CategoryType } from '@/db/schema';
 import { newId } from '@/lib/id';
 
 export type CategoryNode = Category & { children: Category[] };
 
 /** 按类型取未归档分类，组装成两级树 */
-export async function listCategoryTree(type: 'expense' | 'income'): Promise<CategoryNode[]> {
+export async function listCategoryTree(type: CategoryType): Promise<CategoryNode[]> {
   const rows = await db
     .select()
     .from(categories)
@@ -30,7 +30,7 @@ export async function listCategoryTree(type: 'expense' | 'income'): Promise<Cate
 
 export type CategoryInput = {
   name: string;
-  type: 'expense' | 'income';
+  type: CategoryType;
   icon: string;
   color: string;
   parentId: string | null;

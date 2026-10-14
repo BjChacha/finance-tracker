@@ -1,6 +1,5 @@
 export {
   orderByScore,
-  orderTree,
   pickAutoSelect,
   pickAutoSelectId,
   pickAutoSelectTransferPair,

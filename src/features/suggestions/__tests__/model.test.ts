@@ -5,7 +5,6 @@ import {
   CANDIDATE_MIN_SCORE,
   MAX_AMOUNTS_PER_TARGET,
   orderByScore,
-  orderTree,
   pickAutoSelect,
   pickAutoSelectId,
   pickAutoSelectTransferPair,
@@ -23,7 +22,7 @@ import {
 const TODAY = '2026-07-12';
 
 function row(
-  type: 'expense' | 'income',
+  type: 'expense' | 'income' | 'transfer',
   categoryId: string,
   amount: number,
   dateKey: string,
@@ -38,6 +37,7 @@ describe('buildBaseline', () => {
     expect(b.v).toBe(BASELINE_VERSION);
     expect(b.entries.expense).toEqual([]);
     expect(b.entries.income).toEqual([]);
+    expect(b.entries.transfer).toEqual([]);
   });
 
   it('按 type 与分类聚合,金额去重计数,lastDateKey 取最近', () => {
@@ -161,6 +161,27 @@ describe('scoreCategories', () => {
     expect(scoreCategories(b, 'expense', 0, TODAY).size).toBe(0);
     expect(scoreCategories(b, 'expense', -100, TODAY).size).toBe(0);
   });
+
+  it('转账分类使用同一金额与新近度评分，且不影响账户对', () => {
+    const baseline = buildBaseline([
+      {
+        type: 'transfer',
+        categoryId: 'bill-repayment',
+        accountId: 'bank',
+        toAccountId: 'credit-card',
+        amount: 50000,
+        dateKey: '2026-07-11',
+      },
+    ]);
+
+    expect(scoreCategories(baseline, 'transfer', 50000, TODAY).get('bill-repayment')).toBeGreaterThanOrEqual(
+      AUTO_SELECT_MIN_SCORE,
+    );
+    expect(scoreTransferPairs(baseline, 50000, TODAY)[0]).toMatchObject({
+      accountId: 'bank',
+      toAccountId: 'credit-card',
+    });
+  });
 });
 
 describe('account suggestions', () => {
@@ -226,40 +247,6 @@ function node(id: string, children: { id: string }[] = []) {
   return { id, children };
 }
 
-describe('orderTree', () => {
-  const tree = [node('p1'), node('p2', [node('c21'), node('c22')]), node('p3'), node('p4')];
-
-  it('候选按得分降序排前,其余保持原顺序;子分类同理', () => {
-    const scores = new Map([
-      ['c22', 2],
-      ['p4', 1],
-    ]);
-    const ordered = orderTree(tree, scores);
-    expect(ordered.map((n) => n.id)).toEqual(['p2', 'p4', 'p1', 'p3']); // p2 聚合子分类 c22 的分
-    expect(ordered[0].children.map((c) => c.id)).toEqual(['c22', 'c21']);
-  });
-
-  it('父分类得分取 max(自身, 子分类最高分)', () => {
-    const scores = new Map([
-      ['p1', 1.5],
-      ['p2', 0.2],
-      ['c21', 1 ],
-    ]);
-    // p2 聚合后 = max(0.2, 1) = 1 < p1 的 1.5
-    expect(orderTree(tree, scores).map((n) => n.id)).toEqual(['p1', 'p2', 'p3', 'p4']);
-  });
-
-  it('scores 中不在树里的 id 被忽略;空 scores 保持原序;不修改原数组', () => {
-    const ghost = new Map([['ghost', 9]]);
-    expect(orderTree(tree, ghost).map((n) => n.id)).toEqual(['p1', 'p2', 'p3', 'p4']);
-    expect(orderTree(tree, new Map()).map((n) => n.id)).toEqual(['p1', 'p2', 'p3', 'p4']);
-
-    const scores = new Map([['p4', 1]]);
-    orderTree(tree, scores);
-    expect(tree.map((n) => n.id)).toEqual(['p1', 'p2', 'p3', 'p4']); // 原树未被改动
-  });
-});
-
 describe('pickAutoSelect', () => {
   const tree = [node('p1'), node('p2', [node('c21'), node('c22')]), node('p3')];
 
@@ -300,7 +287,7 @@ describe('pickAutoSelect', () => {
 describe('shouldRebuild', () => {
   const baseline: Baseline = {
     v: BASELINE_VERSION,
-    entries: { expense: [], income: [] },
+    entries: { expense: [], income: [], transfer: [] },
     accountEntries: { expense: [], income: [] },
     transferPairs: [],
   };

@@ -1,6 +1,11 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import { db, withTransaction } from '@/db/client';
-import { importBatches, importMappings, transactions } from '@/db/schema';
+import {
+  importBatches,
+  importMappings,
+  transactions,
+  type CategoryType,
+} from '@/db/schema';
 import { createAccount, listAccountsWithBalance } from '@/features/accounts';
 import { createCategory, listCategoryTree } from '@/features/categories';
 import { dayjs, toDateKey } from '@/lib/date';
@@ -28,8 +33,8 @@ export interface MappingItem {
   kind: 'category' | 'account';
   /** 源账单文案；'' 表示该行未提供（展示为"未指定"） */
   sourceLabel: string;
-  /** 仅 kind=category：目标分类的收支类型 */
-  categoryType?: 'expense' | 'income';
+  /** 仅 kind=category：目标分类的交易类型 */
+  categoryType?: CategoryType;
   /** 建议选项（用户可改） */
   suggestion: MappingChoice;
 }
@@ -38,7 +43,7 @@ export interface CategoryOption {
   id: string;
   /** 展示名：二级分类为 "父/子" */
   displayName: string;
-  type: 'expense' | 'income';
+  type: CategoryType;
 }
 
 export interface AccountOption {
@@ -71,6 +76,17 @@ function categoryLabel(tx: NormalizedTransaction): string {
 
 function normalizeForMatch(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, '');
+}
+
+const TRANSFER_CATEGORY_ALIASES: Record<string, string> = {
+  信用卡还款: '账单还款',
+  提现: '取钱',
+};
+
+function fallbackCategoryName(type: CategoryType): string {
+  if (type === 'expense') return '其他支出';
+  if (type === 'income') return '其他收入';
+  return '其他';
 }
 
 /** 相似度建议：精确相等 → 子级名相等 → 包含关系（双向，长度 ≥ 2） */
@@ -245,14 +261,15 @@ export class ImportSession {
     const txs = this.parseResult.transactions;
 
     // 现有目标
-    const [expenseTree, incomeTree, accountList] = await Promise.all([
+    const [expenseTree, incomeTree, transferTree, accountList] = await Promise.all([
       listCategoryTree('expense'),
       listCategoryTree('income'),
+      listCategoryTree('transfer'),
       listAccountsWithBalance(),
     ]);
     const categoryOptions: CategoryOption[] = [];
-    const categoryTargets: { id: string; names: string[]; type: 'expense' | 'income' }[] = [];
-    for (const tree of [expenseTree, incomeTree]) {
+    const categoryTargets: { id: string; names: string[]; type: CategoryType }[] = [];
+    for (const tree of [expenseTree, incomeTree, transferTree]) {
       for (const parent of tree) {
         categoryOptions.push({ id: parent.id, displayName: parent.name, type: parent.type });
         categoryTargets.push({
@@ -284,21 +301,22 @@ export class ImportSession {
     }));
 
     // 去重收集源标签
-    const categoryLabels = new Map<string, 'expense' | 'income'>();
+    const categoryLabels = new Map<string, { label: string; type: CategoryType }>();
     const accountLabels = new Set<string>();
     for (const tx of txs) {
+      const label = categoryLabel(tx);
+      categoryLabels.set(`${tx.direction}\u0000${label}`, { label, type: tx.direction });
+      accountLabels.add((tx.rawAccount ?? '').trim());
       if (tx.direction === 'transfer') {
-        accountLabels.add((tx.rawAccount ?? '').trim());
         accountLabels.add((tx.rawToAccount ?? '').trim());
-      } else {
-        const label = categoryLabel(tx);
-        if (!categoryLabels.has(label)) categoryLabels.set(label, tx.direction);
-        accountLabels.add((tx.rawAccount ?? '').trim());
       }
     }
 
     // 记忆表
-    const allLabels = [...new Set([...categoryLabels.keys(), ...accountLabels])].filter(
+    const allLabels = [...new Set([
+      ...[...categoryLabels.values()].map(({ label }) => label),
+      ...accountLabels,
+    ])].filter(
       (l) => l.length > 0,
     );
     const memoryRows =
@@ -316,18 +334,22 @@ export class ImportSession {
     const memory = new Map(memoryRows.map((m) => [`${m.kind}|${m.sourceLabel}`, m.targetId]));
 
     // 分类映射项
-    const categoryItems: MappingItem[] = [...categoryLabels.entries()].map(([label, type]) => {
+    const categoryItems: MappingItem[] = [...categoryLabels.values()].map(({ label, type }) => {
       const targets = categoryTargets.filter((t) => t.type === type);
       let suggestion: MappingChoice = { action: 'create' };
       const remembered = memory.get(`category|${label}`);
       if (remembered && targets.some((t) => t.id === remembered)) {
         suggestion = { action: 'existing', targetId: remembered, via: 'memory' };
       } else if (label) {
-        const similar = suggestByName(label, targets);
+        const childLabel = label.split('/').pop() ?? label;
+        const suggestedLabel =
+          type === 'transfer'
+            ? (TRANSFER_CATEGORY_ALIASES[label] ?? TRANSFER_CATEGORY_ALIASES[childLabel] ?? label)
+            : label;
+        const similar = suggestByName(suggestedLabel, targets);
         if (similar) suggestion = { action: 'existing', targetId: similar.id, via: 'similar' };
       } else {
-        // 未指定分类 → 建议落到预置的"其他支出/其他收入"
-        const fallback = suggestByName(type === 'expense' ? '其他支出' : '其他收入', targets);
+        const fallback = suggestByName(fallbackCategoryName(type), targets);
         if (fallback) suggestion = { action: 'existing', targetId: fallback.id, via: 'default' };
       }
       return { kind: 'category', sourceLabel: label, categoryType: type, suggestion };
@@ -456,6 +478,24 @@ export class ImportSession {
         if (!id) throw new Error(`账户映射缺失：${label ?? '(未指定)'}`);
         return id;
       };
+      const sameAccountTransferExists = rows.some(({ row: tx }) => {
+        if (tx.direction !== 'transfer') return false;
+        return resolveAccount(tx.rawAccount) === resolveAccount(tx.rawToAccount);
+      });
+      const sameAccountFallbackCategoryId = sameAccountTransferExists
+        ? await ensureCategory('', 'expense')
+        : null;
+      const resolveCategory = (tx: NormalizedTransaction, type: CategoryType): string => {
+        const id = categoryIds.get(
+          mappingKey({
+            kind: 'category',
+            sourceLabel: categoryLabel(tx),
+            categoryType: type,
+          }),
+        );
+        if (!id) throw new Error(`分类映射缺失：${categoryLabel(tx) || '(未指定)'}`);
+        return id;
+      };
 
       // 2. 组装交易行
       const txRows = rows.map(({ row: tx, fingerprint }) => {
@@ -463,22 +503,18 @@ export class ImportSession {
         let type = tx.direction;
         const accountId = resolveAccount(tx.rawAccount);
         let toAccountId: string | null = null;
-        let categoryId: string | null = null;
+        let categoryId: string;
         if (type === 'transfer') {
           toAccountId = resolveAccount(tx.rawToAccount);
           if (toAccountId === accountId) {
-            // 转入转出映射到了同一账户，无法成立转账 → 按支出落库
             type = 'expense';
             toAccountId = null;
+            categoryId = sameAccountFallbackCategoryId!;
+          } else {
+            categoryId = resolveCategory(tx, 'transfer');
           }
-        }
-        if (type !== 'transfer') {
-          const key = mappingKey({
-            kind: 'category',
-            sourceLabel: categoryLabel(tx),
-            categoryType: tx.direction === 'income' ? 'income' : 'expense',
-          });
-          categoryId = categoryIds.get(key) ?? null;
+        } else {
+          categoryId = resolveCategory(tx, type);
         }
         return {
           id: newId(),
@@ -553,12 +589,12 @@ export class ImportSession {
  * "父/子" 标签会先找/建父级（一级分类），再在其下找/建子级。
  * 在 commit 事务内调用。
  */
-async function ensureCategory(label: string, type: 'expense' | 'income'): Promise<string> {
+async function ensureCategory(label: string, type: CategoryType): Promise<string> {
   const parts = label
     .split('/')
     .map((p) => p.trim())
     .filter(Boolean);
-  const parentName = parts[0] ?? '未分类';
+  const parentName = parts[0] ?? fallbackCategoryName(type);
   const childName = parts[1];
 
   const tree = await listCategoryTree(type);

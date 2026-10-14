@@ -45,7 +45,7 @@ export default function RecurringScreen() {
     const freq = describeFrequency(rule.frequency, rule.interval, rule.anchor);
     const target =
       rule.type === 'transfer'
-        ? `${rule.accountName ?? '?'} → ${rule.toAccountName ?? '?'}`
+        ? `${rule.categoryName ?? ''} · ${rule.accountName ?? '?'} → ${rule.toAccountName ?? '?'}`
         : `${rule.categoryName ?? ''} · ${rule.accountName ?? ''}`;
     return `${freq} · ${target}`;
   }

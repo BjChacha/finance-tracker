@@ -5,8 +5,8 @@ import {
   scoreAccounts,
   scoreCategories,
   scoreTransferPairs,
+  type CategorySuggestType,
   type SuggestTransactionType,
-  type SuggestType,
   type TransferPairScore,
 } from './model';
 import { ensureBaseline } from './repository';
@@ -19,7 +19,7 @@ const EMPTY_PAIR_SCORES: readonly TransferPairScore[] = [];
  * 返回「分类 id → 得分」,按得分降序迭代;未启用/无金额/无基线时返回空 Map。
  */
 export function useCategorySuggestion(opts: {
-  type: SuggestType;
+  type: CategorySuggestType;
   amountCents: number | null;
   enabled: boolean;
 }): Map<string, number> {

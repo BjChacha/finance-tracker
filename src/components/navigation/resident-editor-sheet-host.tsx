@@ -454,6 +454,17 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 							renderMode={transactionRenderMode}
 							sessionKey={transaction ? sessionKey : null}
 							initialValues={transactionInitialValues}
+							summaryValues={
+								transaction
+									? {
+										accountName: transaction.accountName,
+										toAccountName: transaction.toAccountName,
+										categoryName: transaction.categoryName,
+										categoryIcon: transaction.categoryIcon,
+										categoryColor: transaction.categoryColor,
+									}
+									: undefined
+							}
 							submitting={updateTransaction.isPending}
 							onSessionHydrated={handleTransactionHydrated}
 							onEditorReady={() => setTransactionWarmed(true)}

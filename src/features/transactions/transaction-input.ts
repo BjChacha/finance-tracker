@@ -25,6 +25,8 @@ export type TransactionDraft = {
   note: string;
   currency: string;
   exchangeRate: number;
+  /** 客户端幂等键（如快捷记账 handoffId），随创建提交 */
+  clientTag?: string | null;
 };
 
 export type TransactionInputResult =
@@ -35,11 +37,10 @@ export function buildTransactionInput(draft: TransactionDraft): TransactionInput
   const amount = evalMoneyExpr(draft.amountText);
   if (amount === null || amount <= 0) return { input: null, error: 'invalidAmount' };
   if (!draft.accountId) return { input: null, error: 'needAccount' };
+  if (!draft.categoryId) return { input: null, error: 'needCategory' };
   if (draft.type === 'transfer') {
     if (!draft.toAccountId) return { input: null, error: 'needAccount' };
     if (draft.toAccountId === draft.accountId) return { input: null, error: 'sameAccount' };
-  } else if (!draft.categoryId) {
-    return { input: null, error: 'needCategory' };
   }
 
   const date = dayjs(draft.dateText, 'YYYY-MM-DD');
@@ -72,12 +73,13 @@ export function buildTransactionInput(draft: TransactionDraft): TransactionInput
       fee,
       accountId: draft.accountId,
       toAccountId: draft.type === 'transfer' ? draft.toAccountId : null,
-      categoryId: draft.type === 'transfer' ? null : draft.categoryId,
+      categoryId: draft.categoryId,
       projectId: draft.projectId,
       date: combineDateAndTime(draft.dateText, draft.timeText),
       note: draft.note.trim(),
       currency: draft.currency,
       exchangeRate: draft.exchangeRate,
+      clientTag: draft.clientTag ?? null,
     },
     error: null,
   };

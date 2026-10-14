@@ -277,7 +277,7 @@ export type TxInput = {
   fee?: number;
   accountId: string;
   toAccountId?: string | null;
-  categoryId?: string | null;
+  categoryId: string;
   /** 可选：所属项目 */
   projectId?: string | null;
   /** Unix 毫秒 */
@@ -289,6 +289,8 @@ export type TxInput = {
   exchangeRate?: number;
   /** 仅 transfer：转入侧金额（目标账户币种，分）。缺省=amount（视同同币种） */
   toAmount?: number;
+  /** 客户端幂等键（如快捷记账 handoffId）；同键重复提交返回既有记录 id */
+  clientTag?: string | null;
 };
 
 type NormalizedTx = TxInput & {
@@ -314,6 +316,7 @@ function normalize(input: TxInput): NormalizedTx {
       ? (input.exchangeRate as number)
       : RATE_SCALE;
   const amountBaseCents = toBaseCents(input.amount, exchangeRate);
+  if (!input.categoryId) throw new Error('请选择分类');
 
   if (input.type === 'transfer') {
     if (!input.toAccountId) throw new Error('转账必须指定转入账户');
@@ -322,9 +325,8 @@ function normalize(input: TxInput): NormalizedTx {
       Number.isSafeInteger(input.toAmount) && (input.toAmount as number) > 0
         ? (input.toAmount as number)
         : input.amount;
-    return { ...input, categoryId: null, projectId: input.projectId ?? null, fee, currency, exchangeRate, amountBaseCents, toAmount, dateKey: toDateKey(input.date) };
+    return { ...input, projectId: input.projectId ?? null, fee, currency, exchangeRate, amountBaseCents, toAmount, dateKey: toDateKey(input.date) };
   }
-  if (!input.categoryId) throw new Error('请选择分类');
   return { ...input, toAccountId: null, toAmount: undefined, projectId: input.projectId ?? null, fee: 0, currency, exchangeRate, amountBaseCents, dateKey: toDateKey(input.date) };
 }
 
@@ -332,26 +334,46 @@ export async function createTransaction(input: TxInput): Promise<string> {
   const n = normalize(input);
   const now = Date.now();
   const id = newId();
-  await db.insert(transactions).values({
-    id,
-    type: n.type,
-    amount: n.amount,
-    fee: n.fee,
-    currency: n.currency,
-    exchangeRate: n.exchangeRate,
-    amountBaseCents: n.amountBaseCents,
-    accountId: n.accountId,
-    toAccountId: n.toAccountId ?? null,
-    toAmount: n.type === 'transfer' ? (n.toAmount ?? n.amount) : null,
-    categoryId: n.categoryId ?? null,
-    projectId: n.projectId ?? null,
-    date: n.date,
-    dateKey: n.dateKey,
-    note: n.note ?? '',
-    createdAt: now,
-    updatedAt: now,
-  });
-  return id;
+  const inserted = await db
+    .insert(transactions)
+    .values({
+      id,
+      type: n.type,
+      amount: n.amount,
+      fee: n.fee,
+      currency: n.currency,
+      exchangeRate: n.exchangeRate,
+      amountBaseCents: n.amountBaseCents,
+      accountId: n.accountId,
+      toAccountId: n.toAccountId ?? null,
+      toAmount: n.type === 'transfer' ? (n.toAmount ?? n.amount) : null,
+      categoryId: n.categoryId ?? null,
+      projectId: n.projectId ?? null,
+      date: n.date,
+      dateKey: n.dateKey,
+      note: n.note ?? '',
+      clientTag: n.clientTag ?? null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    // Idempotency: a quick-add handoff can be double-submitted (revived form, retried
+    // mutation). The unique client_tag collapses the second write into a no-op.
+    .onConflictDoNothing({ target: transactions.clientTag })
+    .returning({ id: transactions.id });
+  if (inserted.length > 0) return inserted[0]!.id;
+
+  if (n.clientTag) {
+    const existing = await db
+      .select({ id: transactions.id })
+      .from(transactions)
+      .where(eq(transactions.clientTag, n.clientTag))
+      .limit(1);
+    if (existing.length > 0) return existing[0]!.id;
+  }
+
+  // Defensive: conflict without a client tag (or a missing row right after insert)
+  // should be impossible; surface it instead of silently returning a wrong id.
+  throw new Error(zh.tx.createConflict);
 }
 
 export async function updateTransaction(id: string, input: TxInput): Promise<void> {

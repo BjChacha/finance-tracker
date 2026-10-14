@@ -73,7 +73,7 @@ export type RecurringInput = {
   amount: number;
   accountId: string;
   toAccountId: string | null;
-  categoryId: string | null;
+  categoryId: string;
   note: string;
   frequency: RecurringFrequency;
   interval: number;
@@ -83,15 +83,14 @@ export type RecurringInput = {
   autoCreate: boolean;
 };
 
-function validate(input: RecurringInput): void {
+export function validateRecurringInput(input: RecurringInput): void {
   if (!input.name.trim()) throw new Error('请输入名称');
   if (!Number.isSafeInteger(input.amount) || input.amount <= 0) throw new Error('金额必须为正数');
   if (!Number.isSafeInteger(input.interval) || input.interval < 1) throw new Error('间隔必须为正整数');
+  if (!input.categoryId) throw new Error('请选择分类');
   if (input.type === 'transfer') {
     if (!input.toAccountId) throw new Error('转账必须指定转入账户');
     if (input.toAccountId === input.accountId) throw new Error('转出与转入账户不能相同');
-  } else if (!input.categoryId) {
-    throw new Error('请选择分类');
   }
   if (input.endDate !== null && input.endDate < input.startDate) {
     throw new Error('结束日期不能早于开始日期');
@@ -105,7 +104,7 @@ function toRow(input: RecurringInput) {
     amount: input.amount,
     accountId: input.accountId,
     toAccountId: input.type === 'transfer' ? input.toAccountId : null,
-    categoryId: input.type === 'transfer' ? null : input.categoryId,
+    categoryId: input.categoryId,
     note: input.note.trim(),
     frequency: input.frequency,
     interval: input.interval,
@@ -117,7 +116,7 @@ function toRow(input: RecurringInput) {
 }
 
 export async function createRule(input: RecurringInput): Promise<string> {
-  validate(input);
+  validateRecurringInput(input);
   // 首个 nextRunDate = startDate 与锚点对齐后的第一个日期（>= startDate）。
   // 例：startDate=2026-07-07(周二) + weekly anchor=1(周一) → 2026-07-13；
   //     startDate=2026-07-07 + monthly anchor=1 → 2026-08-01（本月 1 号已过）。
@@ -137,7 +136,7 @@ export async function createRule(input: RecurringInput): Promise<string> {
 }
 
 export async function updateRule(id: string, input: RecurringInput): Promise<void> {
-  validate(input);
+  validateRecurringInput(input);
   const [rule] = await db.select().from(recurringRules).where(eq(recurringRules.id, id)).limit(1);
   if (!rule) throw new Error('规则不存在');
   // 重新对齐 nextRunDate；若规则已运行过，推进到 lastRunDate 之后，避免 catchUp 重复补历史账
@@ -195,7 +194,7 @@ export function ruleToTxValues(rule: RecurringRule, runDate: string): NewTransac
     accountId: rule.accountId,
     toAccountId: rule.type === 'transfer' ? rule.toAccountId : null,
     toAmount: rule.type === 'transfer' ? rule.amount : null,
-    categoryId: rule.type === 'transfer' ? null : rule.categoryId,
+    categoryId: rule.categoryId,
     date: dayjs(runDate).hour(12).minute(0).second(0).millisecond(0).valueOf(),
     dateKey: runDate,
     note: rule.note,

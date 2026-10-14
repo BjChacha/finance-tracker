@@ -20,6 +20,8 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
+	type LayoutChangeEvent,
+	type TextInput,
 	View,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -28,14 +30,20 @@ import Animated, {
 	Easing,
 	FadeIn,
 	FadeOut,
+	interpolateColor,
 	SlideInDown,
 	SlideOutDown,
+	useAnimatedStyle,
+	useReducedMotion,
+	useSharedValue,
 	withTiming,
+	type EntryAnimationsValues,
 	type EntryExitAnimationFunction,
+	type ExitAnimationsValues,
 } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/Icon";
-import { IconBubble } from "@/components/IconBubble";
 import { SingleLineTextInput } from "@/components/single-line-text-input";
 import type { TransactionType } from "@/db/schema";
 import { useAccountBalances } from "@/features/accounts";
@@ -44,7 +52,6 @@ import { useProjects } from "@/features/projects";
 import { useRates } from "@/features/currency";
 import {
 	orderByScore,
-	orderTree,
 	pickAutoSelect,
 	pickAutoSelectId,
 	pickAutoSelectTransferPair,
@@ -68,16 +75,29 @@ import { isQuickKeypadAvailable, openKeypad } from "@/lib/quickKeypad";
 import { useProgressiveMount } from "@/lib/use-progressive-mount";
 import { motion, useTheme, type AppTheme } from "@/theme";
 import { computeAmountPreview } from "../amountPreview";
+import { buildVisibleCategoryTree } from "../visible-categories";
 import { CategoryPickerModal } from "./CategoryPickerModal";
 import { CurrencyPickerModal } from "./CurrencyPickerModal";
 import { AmountKeypadPanel } from "./AmountKeypadPanel";
 import { DateTimeSemanticCards } from "./date-time-semantic-cards";
+import {
+	TRANSACTION_TYPE_TABS,
+	TransactionTypeSegment,
+} from "./TransactionTypeSegment";
 import { promptSwitchOnNegative } from "../promptSwitchOnNegative";
 import { isQuickAddFormInteractive } from "../quickAddPerformance";
 import {
 	buildTransactionInput,
 	type TransactionValidationError,
 } from "../transaction-input";
+import {
+	animateTypeTransition,
+	completeTypeTransitionState,
+	createTypeTransition,
+	growTypeTransition,
+	TRANSACTION_TYPE_INDEX,
+	type TypeTransitionState,
+} from "../transaction-type-transition";
 import type { TxInput } from "../repository";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -125,6 +145,8 @@ type Props = {
 	sessionKey?: string | number | null;
 	onSessionHydrated?: (sessionKey: string | number) => void;
 	onEditorReady?: () => void;
+	/** 客户端幂等键（如快捷记账 handoffId）：重复提交返回既有记录 */
+	clientTag?: string | null;
 	onSubmit: (input: TxInput) => void | Promise<void>;
 };
 
@@ -137,21 +159,8 @@ export interface TransactionFormHandle {
 	save: () => Promise<boolean>;
 }
 
-const TYPE_TABS: { key: TransactionType; label: string }[] = [
-	{ key: "expense", label: zh.tx.expense },
-	{ key: "income", label: zh.tx.income },
-	{ key: "transfer", label: zh.tx.transfer },
-];
-
-/** 表单分类网格最多 4 列 × 3 行；其余在「全部分类」弹窗里 */
+/** 表单分类胶囊渐进挂载上限；分类已全部呈现时不显示「全部分类」入口 */
 const VISIBLE_COUNT = 12;
-const TYPE_INDEX: Record<TransactionType, number> = {
-	expense: 0,
-	income: 1,
-	transfer: 2,
-};
-/** 类型切换微滑距离（px）：保留方向语义，幅度对齐分段切换的轻量过渡 */
-const TYPE_SWITCH_SLIDE = 16;
 
 function TransactionFormComponent(
 	{
@@ -165,6 +174,7 @@ function TransactionFormComponent(
 		sessionKey = null,
 		onSessionHydrated,
 		onEditorReady,
+		clientTag,
 		onSubmit,
 	}: Props,
 	ref: ForwardedRef<TransactionFormHandle>,
@@ -172,6 +182,7 @@ function TransactionFormComponent(
 	const theme = useTheme();
 	const { colors } = theme;
 	const insets = useSafeAreaInsets();
+	const reduceMotion = useReducedMotion();
 	const mode = modeProp ?? (initialValues ? "edit" : "create");
 	// 原始交易类型/分类（仅编辑模式有意义）：切换类型切回原类型时恢复原分类。
 	const originalType = initialValues?.type;
@@ -190,6 +201,15 @@ function TransactionFormComponent(
 
 	const [type, setType] = useState<TransactionType>(
 		initialValues?.type ?? "expense",
+	);
+	const [typeTransition, setTypeTransition] =
+		useState<TypeTransitionState | null>(null);
+	const typeTransitionRef = useRef<TypeTransitionState | null>(null);
+	const typeTransitionIdRef = useRef(0);
+	const typePageWidthRef = useRef(0);
+	const typePageHeightRef = useRef(0);
+	const typeVisualPosition = useSharedValue(
+		TRANSACTION_TYPE_INDEX[initialValues?.type ?? "expense"],
 	);
 	const [amountText, setAmountText] = useState(
 		initialValues?.amount != null
@@ -235,11 +255,14 @@ function TransactionFormComponent(
 		y: number;
 	} | null>(null);
 	const badgeRefs = useRef<Record<string, View | null>>({});
-	const dirRef = useRef<"right" | "left">("right");
-	// 分类/转账块的入场分两种来源：渐进揭示要纯淡入，用户切类型要方向微滑。
-	// 用「是否切过类型」而非「是否首帧」判断 —— stage 2 到达时首帧早已过去，分不出这两者。
+	// Progressive mounting fades individual blocks; type changes slide the keyed page shell.
+	// Track whether the type changed because later stages no longer know the first render source.
 	const typeSwitchedRef = useRef(false);
 	const replaceAmountOnNextNumericRef = useRef(false);
+	// The native keypad's OK sits exactly where the form's save button appears once the
+	// keypad closes (no exit animation). A habitual second tap would therefore submit the
+	// form and exit the quick-add flow; ignore save taps for a beat after a keypad close.
+	const nativeKeypadClosedAtRef = useRef(0);
 	const [keypadVisible, setKeypadVisible] = useState(
 		Platform.OS !== "android" && !initialValues,
 	);
@@ -247,6 +270,11 @@ function TransactionFormComponent(
 	const [currency, setCurrency] = useState(initialValues?.currency ?? "CNY");
 	const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false);
 	const [keyboardVisible, setKeyboardVisible] = useState(false);
+	const [keyboardHeight, setKeyboardHeight] = useState(0);
+	const scrollYRef = useRef(0);
+	const noteInputRef = useRef<TextInput>(null);
+	const feeInputRef = useRef<TextInput>(null);
+	const activeInputRef = useRef<TextInput | null>(null);
 	// 智能分类推荐:金额确认快照 + 用户手动选过分类的标记(手动选过后不再自动改选)
 	const [confirmedAmountCents, setConfirmedAmountCents] = useState<
 		number | null
@@ -264,6 +292,26 @@ function TransactionFormComponent(
 		string | number | null
 	>(null);
 	const editorReadyReportedRef = useRef(false);
+	const completeTypeTransition = useCallback((transitionId: number) => {
+		const current = typeTransitionRef.current;
+		const next = completeTypeTransitionState(current, transitionId);
+		if (next === current) return;
+		typeTransitionRef.current = next;
+		setTypeTransition(next);
+	}, []);
+	const handleTypePageLayout = useCallback((event: LayoutChangeEvent) => {
+		const { width, height } = event.nativeEvent.layout;
+		if (width > 0) typePageWidthRef.current = width;
+		if (height > 0) typePageHeightRef.current = height;
+		const current = typeTransitionRef.current;
+		if (!current || height <= current.minHeight) return;
+		const next = growTypeTransition(current, height);
+		if (next === current) return;
+		typeTransitionRef.current = next;
+		setTypeTransition((previous) =>
+			previous?.id === next.id ? next : previous,
+		);
+	}, []);
 
 	useLayoutEffect(() => {
 		if (sessionKey === null || hydratedSessionKeyRef.current === sessionKey)
@@ -274,7 +322,12 @@ function TransactionFormComponent(
 			initialValues?.dateMs != null
 				? dayjs(initialValues.dateMs)
 				: dayjs(initialValues?.dateKey ?? todayKey(), "YYYY-MM-DD");
-		setType(initialValues?.type ?? "expense");
+		const nextType = initialValues?.type ?? "expense";
+		typeTransitionIdRef.current += 1;
+		typeTransitionRef.current = null;
+		setTypeTransition(null);
+		typeVisualPosition.set(TRANSACTION_TYPE_INDEX[nextType]);
+		setType(nextType);
 		setAmountText(
 			initialValues?.amount != null
 				? formatCents(initialValues.amount, { grouping: false })
@@ -343,7 +396,7 @@ function TransactionFormComponent(
 
 	const accountsQuery = useAccountBalances();
 	const projectsQuery = useProjects();
-	const categoryType = type === "income" ? "income" : "expense";
+	const categoryType = type;
 	const categoryQuery = useCategoryTree(categoryType);
 	const ratesQuery = useRates();
 	const accounts = accountsQuery.data ?? [];
@@ -361,17 +414,49 @@ function TransactionFormComponent(
 	});
 
 	useEffect(() => {
-		const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
-			setKeyboardVisible(true),
-		);
-		const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
-			setKeyboardVisible(false),
-		);
+		const showSubscription = Keyboard.addListener("keyboardDidShow", (e) => {
+			setKeyboardVisible(true);
+			setKeyboardHeight(e.endCoordinates.height);
+		});
+		const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+			setKeyboardVisible(false);
+			setKeyboardHeight(0);
+		});
 		return () => {
 			showSubscription.remove();
 			hideSubscription.remove();
 		};
 	}, []);
+
+	// Android 上 sheet 是 absolute+translateY 浮层，KeyboardAvoidingView 对其失效：
+	// keyboardDidShow 在键盘起弹即触发，立即测量并启动动画滚动，
+	// 让内容上移与键盘弹出动画并行（不再等 300ms 后才滚，避免「先弹键盘再挪位」）。
+	useEffect(() => {
+		if (!keyboardVisible || keyboardHeight === 0) return;
+		activeInputRef.current?.measureInWindow((_x, y, _w, h) => {
+			if (h === 0) return;
+			const kbTop = Dimensions.get("screen").height - keyboardHeight;
+			const overlap = y + h - kbTop + 48;
+			if (overlap > 0 && scrollRef.current) {
+				scrollRef.current.scrollTo({
+					y: scrollYRef.current + overlap,
+					animated: true,
+				});
+			}
+		});
+	}, [keyboardVisible, keyboardHeight]);
+
+	// saveFooter 随键盘平滑上移/回落（时长对齐键盘面板），替代瞬时跳变。
+	const saveFooterTranslateY = useSharedValue(0);
+	useEffect(() => {
+		saveFooterTranslateY.value = withTiming(
+			keyboardVisible && keyboardHeight > 0 ? -keyboardHeight : 0,
+			{ duration: motion.enter, easing: Easing.out(Easing.cubic) },
+		);
+	}, [keyboardHeight, keyboardVisible, saveFooterTranslateY]);
+	const saveFooterAnimatedStyle = useAnimatedStyle(() => ({
+		transform: [{ translateY: saveFooterTranslateY.value }],
+	}));
 
 	useEffect(() => {
 		if (!onInteractive || interactiveReported.current || !formInteractive)
@@ -391,26 +476,12 @@ function TransactionFormComponent(
 	const suggestScores = useCategorySuggestion({
 		type: categoryType,
 		amountCents: confirmedAmountCents,
-		enabled: categorySuggestEnabled && type !== "transfer",
+		enabled: categorySuggestEnabled,
 	});
-	const orderedTree = useMemo(() => {
-		const scored = orderTree(categoryTree, suggestScores);
-		// 编辑模式：把已选分类所属的顶级节点置顶，便于查看/确认当前分类。
-		if (mode !== "edit" || !categoryId) return scored;
-		const ownerIndex = scored.findIndex(
-			(node) =>
-				node.id === categoryId ||
-				node.children.some((child) => child.id === categoryId),
-		);
-		if (ownerIndex <= 0) return scored;
-		return [
-			scored[ownerIndex],
-			...scored.slice(0, ownerIndex),
-			...scored.slice(ownerIndex + 1),
-		];
-	}, [categoryTree, suggestScores, mode, categoryId]);
+	// 分类栏固定顺序（不随智能推荐/编辑态重排）；智能预选仅高亮，选中分类
+	// 不在前缀内时由 visibleTree 末位替换保证可见。
 	const selectedCategory = useMemo(() => {
-		for (const node of orderedTree) {
+		for (const node of categoryTree) {
 			if (node.id === categoryId) return node;
 			const child = node.children.find(
 				(candidate) => candidate.id === categoryId,
@@ -418,7 +489,7 @@ function TransactionFormComponent(
 			if (child) return child;
 		}
 		return null;
-	}, [categoryId, orderedTree]);
+	}, [categoryId, categoryTree]);
 	const { accountScores, transferPairs } = useAccountSuggestion({
 		type,
 		amountCents: confirmedAmountCents,
@@ -513,7 +584,8 @@ function TransactionFormComponent(
 		accounts.find((account) => account.id === effectiveAccountId) ?? null;
 	const selectedDestinationAccount =
 		accounts.find((account) => account.id === toAccountId) ?? null;
-	const typeLabel = TYPE_TABS.find((tab) => tab.key === type)?.label ?? type;
+	const typeLabel =
+		TRANSACTION_TYPE_TABS.find((tab) => tab.key === type)?.label ?? type;
 
 	// 外币时按汇率缓存折算到本位币（CNY 视作 1.0；汇率缺失/非法时 parseRateToScaled 回退 1.0）
 	const originalCurrency = initialValues?.currency ?? "CNY";
@@ -547,10 +619,12 @@ function TransactionFormComponent(
 				note,
 				currency,
 				exchangeRate: exchangeRateScaled,
+				clientTag,
 			}),
 		[
 			amountText,
 			categoryId,
+			clientTag,
 			currency,
 			dateText,
 			effectiveAccountId,
@@ -600,25 +674,29 @@ function TransactionFormComponent(
 	const styles = useMemo(() => makeStyles(theme), [theme]);
 	const mountedCategoryCount =
 		editorStage < 2 ? 0 : Math.min(VISIBLE_COUNT, (editorStage - 1) * 2);
+	// 固定顺序取前缀；选中分类（父或子）所属顶级节点不在前缀内时替换末位，
+	// 被顶掉的那个分类仍可从「全部分类」中选取。
+	const visibleTree = useMemo(
+		() => buildVisibleCategoryTree(categoryTree, mountedCategoryCount, categoryId),
+		[categoryTree, mountedCategoryCount, categoryId],
+	);
 	const mountedAccountCount =
 		type === "transfer"
-			? Math.min(orderedAccounts.length, Math.max(0, editorStage - 1) * 2)
+			? Math.min(orderedAccounts.length, Math.max(0, editorStage - 4) * 2)
 			: editorStage < 9
 				? 0
 				: Math.min(orderedAccounts.length, (editorStage - 8) * 2);
 	const mountedDestinationAccountCount =
-		editorStage < 5
+		editorStage < 8
 			? 0
-			: Math.min(orderedDestinationAccounts.length, (editorStage - 4) * 2);
-	const dateStage = type === "transfer" ? 9 : 12;
-	const noteStage = type === "transfer" ? 10 : 13;
-	const projectStage = type === "transfer" ? 11 : 14;
-	const saveStage = type === "transfer" ? 12 : 15;
+			: Math.min(orderedDestinationAccounts.length, (editorStage - 7) * 2);
+	const categoryAllStage = type === "transfer" ? 5 : 8;
+	const dateStage = 12;
+	const noteStage = 13;
+	const projectStage = 14;
+	const saveStage = 15;
 
-	function switchType(next: TransactionType) {
-		if (next === type) return;
-		dirRef.current = TYPE_INDEX[next] > TYPE_INDEX[type] ? "right" : "left";
-		typeSwitchedRef.current = true;
+	function applyTypeSwitch(next: TransactionType) {
 		setType(next);
 		setAccountTouched(false);
 		if (next !== "transfer") setToAccountId(null);
@@ -633,6 +711,63 @@ function TransactionFormComponent(
 			setCategoryTouched(false);
 		}
 	}
+
+	function switchType(next: TransactionType) {
+		if (next === type) {
+			if (typeTransitionRef.current?.phase === "preparing") {
+				typeTransitionIdRef.current += 1;
+				typeTransitionRef.current = null;
+				setTypeTransition(null);
+				typeVisualPosition.set(TRANSACTION_TYPE_INDEX[type]);
+			}
+			return;
+		}
+
+		typeSwitchedRef.current = true;
+		const transitionId = typeTransitionIdRef.current + 1;
+		typeTransitionIdRef.current = transitionId;
+
+		if (reduceMotion || typePageWidthRef.current <= 0) {
+			typeTransitionRef.current = null;
+			setTypeTransition(null);
+			typeVisualPosition.set(TRANSACTION_TYPE_INDEX[next]);
+			applyTypeSwitch(next);
+			return;
+		}
+
+		const transition = createTypeTransition(
+			transitionId,
+			type,
+			next,
+			typePageHeightRef.current,
+		);
+		typeTransitionRef.current = transition;
+		setTypeTransition(transition);
+	}
+
+	useLayoutEffect(() => {
+		if (typeTransition?.phase !== "preparing") return;
+		if (typeTransitionRef.current?.id !== typeTransition.id) return;
+		const animating = animateTypeTransition(typeTransition);
+		typeTransitionRef.current = animating;
+		applyTypeSwitch(animating.to);
+		setTypeTransition(animating);
+	}, [typeTransition?.id, typeTransition?.phase]);
+
+	useLayoutEffect(() => {
+		if (typeTransition?.phase !== "animating") return;
+		typeVisualPosition.set(
+			withTiming(TRANSACTION_TYPE_INDEX[typeTransition.to], {
+				duration: motion.tab,
+				easing: Easing.out(Easing.cubic),
+			}),
+		);
+	}, [
+		typeTransition?.id,
+		typeTransition?.phase,
+		typeTransition?.to,
+		typeVisualPosition,
+	]);
 
 	function handleKey(key: string) {
 		setAmountText((previous) => {
@@ -679,6 +814,7 @@ function TransactionFormComponent(
 				initialAmountCents: evalMoneyExpr(amountText) ?? 0,
 				initialCurrency: currency,
 			});
+			nativeKeypadClosedAtRef.current = Date.now();
 			if (result) applyAmountResult(result.amountCents, result.currency);
 		} catch {
 			replaceAmountOnNextNumericRef.current = amountText !== "";
@@ -699,6 +835,9 @@ function TransactionFormComponent(
 	}
 
 	function handleSave() {
+		// Swallow the stray second tap that lands on 保存 right after the native keypad's
+		// OK closes on top of it (see nativeKeypadClosedAtRef).
+		if (Date.now() - nativeKeypadClosedAtRef.current < 600) return;
 		if (!inputResult.input) {
 			showValidationError(inputResult.error);
 			return;
@@ -742,90 +881,127 @@ function TransactionFormComponent(
 			<Pressable
 				key={node.id}
 				style={[
-					styles.categoryCell,
-					selected && { backgroundColor: `${typeColor}22` },
+					styles.categoryChip,
+					selected && { backgroundColor: typeColor, borderColor: typeColor },
 				]}
 				onPress={() => {
 					setCategoryTouched(true);
-					// 该父分类下已选中子分类时，点击格子本体保持子分类，不回退到父分类。
+					// 该父分类下已选中子分类时，点击胶囊本体保持子分类，不回退到父分类。
 					// 想切回父分类请用「全部分类」弹窗。
 					if (!selectedChild) setCategoryId(node.id);
 				}}
 			>
-				<View>
-					<IconBubble
-						name={resolveIconKey(visualCategory.icon, "category")}
-						color={visualCategory.color}
-						size={36}
-					/>
-					{hasChildren && (
-						<Pressable
-							ref={(r) => {
-								badgeRefs.current[node.id] = r;
-							}}
-							style={[
-								styles.moreBadge,
-								{ backgroundColor: colors.card, borderColor: colors.border },
-							]}
-							hitSlop={6}
-							onPress={(e) => {
-								e.stopPropagation();
-								badgeRefs.current[node.id]?.measureInWindow((x, y, _w, h) => {
-									setSubmenu({ node, x, y: y + h });
-								});
-							}}
-						>
-							<Icon
-								name="chevron-down"
-								size={10}
-								color={colors.textSecondary}
-							/>
-						</Pressable>
-					)}
-				</View>
+				<Icon
+					name={resolveIconKey(visualCategory.icon, "category")}
+					size={14}
+					color={selected ? colors.onPrimary : colors.text}
+				/>
 				<Text
 					style={[
-						styles.categoryName,
-						{ color: selected ? typeColor : colors.text },
+						styles.categoryChipName,
+						{ color: selected ? colors.onPrimary : colors.text },
 					]}
 					numberOfLines={1}
 				>
 					{visualCategory.name}
 				</Text>
+				{hasChildren && (
+					<Pressable
+						ref={(r) => {
+							badgeRefs.current[node.id] = r;
+						}}
+						style={styles.categoryMoreBtn}
+						hitSlop={6}
+						onPress={(e) => {
+							e.stopPropagation();
+							badgeRefs.current[node.id]?.measureInWindow((x, y, _w, h) => {
+								setSubmenu({ node, x, y: y + h });
+							});
+						}}
+					>
+						<Icon
+							name="chevron-down"
+							size={14}
+							color={selected ? colors.onPrimary : colors.textSecondary}
+						/>
+					</Pressable>
+				)}
 			</Pressable>
 		);
 	}
 
-	// 类型切换：方向微滑 + 淡入（分段切换的轻量过渡）；仅用 entering，旧内容瞬时移除
-	const enterOffset =
-		dirRef.current === "right" ? TYPE_SWITCH_SLIDE : -TYPE_SWITCH_SLIDE;
-	const entering: EntryExitAnimationFunction = () => {
-		"worklet";
-		return {
-			initialValues: { opacity: 0, transform: [{ translateX: enterOffset }] },
-			animations: {
-				opacity: withTiming(1, {
-					duration: motion.base,
-					easing: Easing.out(Easing.cubic),
-				}),
-				transform: [
-					{
-						translateX: withTiming(0, {
-							duration: motion.base,
-							easing: Easing.out(Easing.cubic),
-						}),
-					},
-				],
-			},
+	// Make the current page absolute before changing the key so both native pages can coexist.
+	// originX also lets an interrupted page exit from its current on-screen position.
+	const typeSlideDistance = typePageWidthRef.current;
+	const typeSlideDirection = typeTransition?.direction ?? 1;
+	const typeTransitionId = typeTransition?.id ?? 0;
+	const isOutgoingTypePage =
+		typeTransition !== null && type !== typeTransition.to;
+	const contentEntering = useMemo<EntryExitAnimationFunction>(() => {
+		return (values: EntryAnimationsValues) => {
+			"worklet";
+			return {
+				initialValues: {
+					originX:
+						values.targetOriginX + typeSlideDirection * typeSlideDistance,
+				},
+				animations: {
+					originX: withTiming(values.targetOriginX, {
+						duration: motion.tab,
+						easing: Easing.out(Easing.cubic),
+					}),
+				},
+				callback: (finished: boolean) => {
+					if (finished)
+						scheduleOnRN(completeTypeTransition, typeTransitionId);
+				},
+			};
 		};
-	};
+	}, [
+		completeTypeTransition,
+		typeSlideDirection,
+		typeSlideDistance,
+		typeTransitionId,
+	]);
+	const contentExiting = useMemo<EntryExitAnimationFunction>(() => {
+		return (values: ExitAnimationsValues) => {
+			"worklet";
+			return {
+				initialValues: { originX: values.currentOriginX },
+				animations: {
+					originX: withTiming(
+						values.currentOriginX -
+							typeSlideDirection * typeSlideDistance,
+						{
+							duration: motion.tab,
+							easing: Easing.out(Easing.cubic),
+						},
+					),
+				},
+			};
+		};
+	}, [typeSlideDirection, typeSlideDistance]);
+	const saveButtonColorStyle = useAnimatedStyle(() => ({
+		backgroundColor: interpolateColor(
+			typeVisualPosition.get(),
+			[0, 1, 2],
+			[colors.expense, colors.income, colors.transfer],
+		),
+	}), [
+		colors.expense,
+		colors.income,
+		colors.transfer,
+		typeVisualPosition,
+	]);
 
-	// 渐进揭示各区块时的入场：位置不动、只浮现，避免逐帧出现的区块互相「跳」。
-	// 全量模式下所有区块同帧挂载，此时不该有过渡，故传 undefined。
+	// Progressive blocks fade without moving so later stages do not shift earlier content.
+	// Full editor mode mounts every block together and therefore skips this animation.
 	const revealEntering =
 		renderMode === "staged-editor"
 			? FadeIn.duration(motion.base).easing(Easing.out(Easing.cubic))
 			: undefined;
+	// Once the type changes, the keyed page shell owns the transition.
+	const blockEntering = typeSwitchedRef.current ? undefined : revealEntering;
 
 	if (editorStage === 0) {
 		const summaryAmount = evalMoneyExpr(amountText);
@@ -921,6 +1097,43 @@ function TransactionFormComponent(
 							</Text>
 						</View>
 					</View>
+					{type === "transfer" && (
+						<View
+							style={[
+								styles.summaryDetail,
+								styles.summaryDetailWide,
+								{ backgroundColor: colors.card },
+							]}
+						>
+							<Icon
+								name={resolveIconKey(
+									selectedCategory?.icon ?? summaryValues?.categoryIcon,
+									"category",
+								)}
+								size={20}
+								color={
+									selectedCategory?.color ??
+									summaryValues?.categoryColor ??
+									typeColor
+								}
+							/>
+							<View style={styles.summaryDetailText}>
+								<Text
+									style={[styles.summaryLabel, { color: colors.textSecondary }]}
+								>
+									{zh.tx.transferCategory}
+								</Text>
+								<Text
+									numberOfLines={1}
+									style={[styles.summaryValue, { color: colors.text }]}
+								>
+									{selectedCategory?.name ??
+										summaryValues?.categoryName ??
+										zh.common.loading}
+								</Text>
+							</View>
+						</View>
+					)}
 				</View>
 				<DateTimeSemanticCards
 					dateText={dateText}
@@ -937,6 +1150,8 @@ function TransactionFormComponent(
 			style={{ flex: 1, backgroundColor: colors.background }}
 			onLayout={onInteractive ? () => setFormLaidOut(true) : undefined}
 		>
+			{/* sheet 是 absolute+translateY 浮层，KeyboardAvoidingView 在 Android 上对其失效，
+			   故 Android 关闭 KAV，改由 keyboardDidShow 时手动 scrollTo + saveFooter 上移避让。 */}
 			<KeyboardAvoidingView
 				style={{ flex: 1 }}
 				behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -945,359 +1160,378 @@ function TransactionFormComponent(
 					ref={scrollRef}
 					removeClippedSubviews={Platform.OS === "android"}
 					style={{ flex: 1 }}
-					contentContainerStyle={{ padding: 16, paddingBottom: 16 }}
+					contentContainerStyle={{
+						padding: 16,
+						// 键盘弹出时追加底部内边距，给 ScrollView 足够滚动空间让备注避开键盘
+						paddingBottom: 16 + (keyboardVisible ? keyboardHeight : 0),
+					}}
 					keyboardShouldPersistTaps="handled"
+					onScroll={(e) => {
+						scrollYRef.current = e.nativeEvent.contentOffset.y;
+					}}
+					scrollEventThrottle={16}
 				>
-					{/* 类型切换 */}
-					<View style={styles.segment}>
-						{TYPE_TABS.map((tab) => {
-							const active = tab.key === type;
-							const tabColor =
-								tab.key === "expense"
-									? colors.expense
-									: tab.key === "income"
-										? colors.income
-										: colors.transfer;
-							return (
-								<Pressable
-									key={tab.key}
-									style={[
-										styles.segmentItem,
-										active && { backgroundColor: tabColor },
-									]}
-									onPress={() => switchType(tab.key)}
-								>
-									<Text
-										style={{
-											color: active ? colors.onPrimary : colors.textSecondary,
-											fontWeight: "600",
-										}}
-									>
-										{tab.label}
-									</Text>
-								</Pressable>
-							);
-						})}
-					</View>
+					<TransactionTypeSegment
+						type={type}
+						visualPosition={typeVisualPosition}
+						onSelect={switchType}
+					/>
 
-					{/* 金额 */}
-					<View style={styles.amountBox}>
-						<Pressable
-							style={styles.currencySymbolBtn}
-							hitSlop={8}
-							onPress={() => {
-								Keyboard.dismiss();
-								setCurrencyPickerOpen(true);
-							}}
+					<View
+						testID="transaction-type-page-viewport"
+						style={[
+							styles.typePageViewport,
+							typeTransition && { minHeight: typeTransition.minHeight },
+						]}
+					>
+						<Animated.View
+							key={type}
+							collapsable={false}
+							testID={`transaction-type-page-${type}`}
+							entering={
+								typeTransition?.phase === "animating"
+									? contentEntering
+									: undefined
+							}
+							exiting={typeTransition ? contentExiting : undefined}
+							onLayout={handleTypePageLayout}
+							pointerEvents={isOutgoingTypePage ? "none" : "auto"}
+							accessibilityElementsHidden={isOutgoingTypePage}
+							importantForAccessibility={
+								isOutgoingTypePage ? "no-hide-descendants" : "auto"
+							}
+							style={typeTransition ? styles.typePageAbsolute : undefined}
 						>
-							<Text style={[styles.currencySymbol, { color: typeColor }]}>
-								{currencySymbol(currency)}
-							</Text>
-						</Pressable>
-						<Pressable
-							style={{ flex: 1 }}
-							onPress={() => void openAmountKeypad()}
-						>
-							<Text
-								style={[
-									styles.amountInput,
-									{ color: amountText ? typeColor : colors.border },
-								]}
+						{/* 金额 */}
+						<View style={styles.amountBox}>
+							<Pressable
+								style={styles.currencySymbolBtn}
+								hitSlop={8}
+								onPress={() => {
+									Keyboard.dismiss();
+									setCurrencyPickerOpen(true);
+								}}
 							>
-								{amountText || zh.txList.amountPlaceholder}
-							</Text>
-						</Pressable>
-						{preview !== null && (
-							<Text style={[styles.preview, { color: colors.textSecondary }]}>
-								= {formatCents(preview, { grouping: false })}
-							</Text>
-						)}
-						{preview === null && basePreview !== null && (
-							<Text style={[styles.preview, { color: colors.textSecondary }]}>
-								≈ {formatCentsWithSymbol(basePreview, "CNY")}
-							</Text>
-						)}
-					</View>
-
-					{/* 分类（支出/收入） */}
-					{editorStage >= 2 && type !== "transfer" && (
-						<Animated.View
-							key={type}
-							entering={
-								typeSwitchedRef.current ? entering : revealEntering
-							}
-							style={styles.card}
-						>
-							<Text style={styles.sectionLabel}>{zh.tx.category}</Text>
-							<View style={styles.categoryGrid}>
-								{orderedTree
-									.slice(0, mountedCategoryCount)
-									.map(renderCategoryCell)}
-							</View>
-							{editorStage >= 8 && (
-								<Pressable
-									style={[styles.allBtn, { borderColor: colors.border }]}
-									onPress={() => setCategoryPickerOpen(true)}
+								<Text style={[styles.currencySymbol, { color: typeColor }]}>
+									{currencySymbol(currency)}
+								</Text>
+							</Pressable>
+							<Pressable
+								style={{ flex: 1 }}
+								onPress={() => void openAmountKeypad()}
+							>
+								<Text
+									style={[
+										styles.amountInput,
+										{ color: amountText ? typeColor : colors.border },
+									]}
 								>
-									<Icon name="search" size={16} color={colors.textSecondary} />
-									<Text
-										style={[styles.allBtnText, { color: colors.textSecondary }]}
-									>
-										{zh.tx.categoryAll}
-									</Text>
-									<Icon
-										name="chevron-right"
-										size={16}
-										color={colors.textSecondary}
-									/>
-								</Pressable>
+									{amountText || zh.txList.amountPlaceholder}
+								</Text>
+							</Pressable>
+							{preview !== null && (
+								<Text style={[styles.preview, { color: colors.textSecondary }]}>
+									= {formatCents(preview, { grouping: false })}
+								</Text>
 							)}
-						</Animated.View>
-					)}
+							{preview === null && basePreview !== null && (
+								<Text style={[styles.preview, { color: colors.textSecondary }]}>
+									≈ {formatCentsWithSymbol(basePreview, "CNY")}
+								</Text>
+							)}
+						</View>
 
-					{/* 账户 */}
-					{mountedAccountCount > 0 && (
-						<Animated.View style={styles.card} entering={revealEntering}>
-							<Text style={styles.sectionLabel}>
-								{type === "transfer" ? zh.tx.fromAccount : zh.tx.account}
-							</Text>
-							<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-								<View style={styles.chipRow}>
-									{orderedAccounts.slice(0, mountedAccountCount).map((a) => {
-										const selected = effectiveAccountId === a.id;
-										return (
-											<Pressable
-												key={a.id}
-												style={[
-													styles.chip,
-													selected && {
-														backgroundColor: colors.primary,
-														borderColor: colors.primary,
-													},
-												]}
-												onPress={() => {
-													setAccountTouched(true);
-													setAccountId(a.id);
-													if (toAccountId === a.id) setToAccountId(null);
-												}}
-											>
-												<View
-													style={{
-														flexDirection: "row",
-														alignItems: "center",
-														gap: 4,
-													}}
-												>
-													<Icon
-														name={resolveIconKey(a.icon, "account")}
-														size={14}
-														color={selected ? colors.onPrimary : colors.text}
-													/>
-													<Text
-														style={{
-															color: selected ? colors.onPrimary : colors.text,
-															fontSize: 13,
-														}}
-													>
-														{a.name}
-													</Text>
-												</View>
-											</Pressable>
-										);
-									})}
+						{/* 分类 */}
+						{editorStage >= 2 && (
+							<Animated.View style={styles.card} entering={blockEntering}>
+								<Text style={styles.sectionLabel}>
+									{type === "transfer" ? zh.tx.transferCategory : zh.tx.category}
+								</Text>
+								<View style={styles.categoryGrid}>
+									{visibleTree.map(renderCategoryCell)}
 								</View>
-							</ScrollView>
-						</Animated.View>
-					)}
+								{editorStage >= categoryAllStage &&
+									categoryTree.length > mountedCategoryCount && (
+										<Pressable
+											style={[styles.allBtn, { borderColor: colors.border }]}
+											onPress={() => setCategoryPickerOpen(true)}
+										>
+											<Icon
+												name="search"
+												size={16}
+												color={colors.textSecondary}
+											/>
+											<Text
+												style={[
+													styles.allBtnText,
+													{ color: colors.textSecondary },
+												]}
+											>
+												{zh.tx.categoryAll}
+											</Text>
+											<Icon
+												name="chevron-right"
+												size={16}
+												color={colors.textSecondary}
+											/>
+										</Pressable>
+									)}
+							</Animated.View>
+						)}
 
-					{/* 转账：转入账户 + 手续费 */}
-					{mountedDestinationAccountCount > 0 && type === "transfer" && (
-						<Animated.View
-							key={type}
-							entering={
-								typeSwitchedRef.current ? entering : revealEntering
-							}
-						>
-							<View style={styles.card}>
-								<Text style={styles.sectionLabel}>{zh.tx.toAccount}</Text>
+						{/* 账户 */}
+						{mountedAccountCount > 0 && (
+							<Animated.View style={styles.card} entering={blockEntering}>
+								<Text style={styles.sectionLabel}>
+									{type === "transfer" ? zh.tx.fromAccount : zh.tx.account}
+								</Text>
 								<ScrollView horizontal showsHorizontalScrollIndicator={false}>
 									<View style={styles.chipRow}>
-										{orderedDestinationAccounts
-											.slice(0, mountedDestinationAccountCount)
-											.map((a) => {
-												const selected = toAccountId === a.id;
-												return (
-													<Pressable
-														key={a.id}
-														style={[
-															styles.chip,
-															selected && {
-																backgroundColor: colors.transfer,
-																borderColor: colors.transfer,
-															},
-														]}
-														onPress={() => {
-															setAccountTouched(true);
-															setToAccountId(a.id);
-														}}
-													>
-														<View
-															style={{
-																flexDirection: "row",
-																alignItems: "center",
-																gap: 4,
-															}}
-														>
-															<Icon
-																name={resolveIconKey(a.icon, "account")}
-																size={14}
-																color={
-																	selected ? colors.onPrimary : colors.text
-																}
-															/>
-															<Text
-																style={{
-																	color: selected
-																		? colors.onPrimary
-																		: colors.text,
-																	fontSize: 13,
-																}}
-															>
-																{a.name}
-															</Text>
-														</View>
-													</Pressable>
-												);
-											})}
-									</View>
-								</ScrollView>
-							</View>
-							{editorStage >= 8 && (
-								<View style={styles.card}>
-									<Text style={styles.sectionLabel}>{zh.tx.fee}</Text>
-									<SingleLineTextInput
-										style={styles.textInput}
-										value={feeText}
-										onChangeText={setFeeText}
-										placeholder={zh.txList.feePlaceholder}
-										placeholderTextColor={colors.textSecondary}
-										keyboardType="decimal-pad"
-										onFocus={() => setKeypadVisible(false)}
-									/>
-								</View>
-							)}
-						</Animated.View>
-					)}
-
-					{editorStage >= dateStage && (
-						<Animated.View entering={revealEntering}>
-							<DateTimeSemanticCards
-								dateText={dateText}
-								timeText={timeText}
-								onPressDate={() => {
-									setTempDate(dayjs(dateText, "YYYY-MM-DD").toDate());
-									setDatePickerOpen(true);
-								}}
-								onPressTime={() => {
-									setTempTime(dayjs(`${dateText} ${timeText}`).toDate());
-									setTimePickerOpen(true);
-								}}
-							/>
-						</Animated.View>
-					)}
-
-					{/* 备注 */}
-					{editorStage >= noteStage && (
-						<Animated.View style={styles.card} entering={revealEntering}>
-							<Text style={styles.sectionLabel}>{zh.tx.note}</Text>
-							<SingleLineTextInput
-								style={styles.textInput}
-								value={note}
-								onChangeText={setNote}
-								placeholder={zh.tx.notePlaceholder}
-								placeholderTextColor={colors.textSecondary}
-								onFocus={() => setKeypadVisible(false)}
-							/>
-						</Animated.View>
-					)}
-
-					{/* 项目（可选，适用于所有交易类型） */}
-					{editorStage >= projectStage && (
-						<Animated.View style={styles.card} entering={revealEntering}>
-							<Text style={styles.sectionLabel}>{zh.tx.project}</Text>
-							<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-								<View style={styles.chipRow}>
-									<Pressable
-										style={[
-											styles.chip,
-											projectId === null && {
-												backgroundColor: colors.primary,
-												borderColor: colors.primary,
-											},
-										]}
-										onPress={() => setProjectId(null)}
-									>
-										<Text
-											style={{
-												color:
-													projectId === null
-														? colors.onPrimary
-														: colors.textSecondary,
-												fontSize: 13,
-											}}
-										>
-											{zh.tx.projectNone}
-										</Text>
-									</Pressable>
-									{projects.map((p) => {
-										const selected = projectId === p.id;
-										return (
-											<Pressable
-												key={p.id}
-												style={[
-													styles.chip,
-													selected && {
-														backgroundColor: colors.primary,
-														borderColor: colors.primary,
-													},
-												]}
-												onPress={() => setProjectId(p.id)}
-											>
-												<View
-													style={{
-														flexDirection: "row",
-														alignItems: "center",
-														gap: 4,
+										{orderedAccounts.slice(0, mountedAccountCount).map((a) => {
+											const selected = effectiveAccountId === a.id;
+											return (
+												<Pressable
+													key={a.id}
+													style={[
+														styles.chip,
+														selected && {
+															backgroundColor: colors.primary,
+															borderColor: colors.primary,
+														},
+													]}
+													onPress={() => {
+														setAccountTouched(true);
+														setAccountId(a.id);
+														if (toAccountId === a.id) setToAccountId(null);
 													}}
 												>
-													<Icon
-														name={resolveIconKey(p.icon, "category")}
-														size={14}
-														color={selected ? colors.onPrimary : colors.text}
-													/>
-													<Text
+													<View
 														style={{
-															color: selected ? colors.onPrimary : colors.text,
-															fontSize: 13,
+															flexDirection: "row",
+															alignItems: "center",
+															gap: 4,
 														}}
 													>
-														{p.name}
-													</Text>
-												</View>
-											</Pressable>
-										);
-									})}
+														<Icon
+															name={resolveIconKey(a.icon, "account")}
+															size={14}
+															color={selected ? colors.onPrimary : colors.text}
+														/>
+														<Text
+															style={{
+																color: selected
+																	? colors.onPrimary
+																	: colors.text,
+																fontSize: 13,
+															}}
+														>
+															{a.name}
+														</Text>
+													</View>
+												</Pressable>
+											);
+										})}
+									</View>
+								</ScrollView>
+							</Animated.View>
+						)}
+
+						{/* 转账：转入账户 + 手续费 */}
+						{mountedDestinationAccountCount > 0 && type === "transfer" && (
+							<Animated.View entering={blockEntering}>
+								<View style={styles.card}>
+									<Text style={styles.sectionLabel}>{zh.tx.toAccount}</Text>
+									<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+										<View style={styles.chipRow}>
+											{orderedDestinationAccounts
+												.slice(0, mountedDestinationAccountCount)
+												.map((a) => {
+													const selected = toAccountId === a.id;
+													return (
+														<Pressable
+															key={a.id}
+															style={[
+																styles.chip,
+																selected && {
+																	backgroundColor: colors.transfer,
+																	borderColor: colors.transfer,
+																},
+															]}
+															onPress={() => {
+																setAccountTouched(true);
+																setToAccountId(a.id);
+															}}
+														>
+															<View
+																style={{
+																	flexDirection: "row",
+																	alignItems: "center",
+																	gap: 4,
+																}}
+															>
+																<Icon
+																	name={resolveIconKey(a.icon, "account")}
+																	size={14}
+																	color={
+																		selected ? colors.onPrimary : colors.text
+																	}
+																/>
+																<Text
+																	style={{
+																		color: selected
+																			? colors.onPrimary
+																			: colors.text,
+																		fontSize: 13,
+																	}}
+																>
+																	{a.name}
+																</Text>
+															</View>
+														</Pressable>
+													);
+												})}
+										</View>
+									</ScrollView>
 								</View>
-							</ScrollView>
+								{editorStage >= 11 && (
+									<View style={styles.card}>
+										<Text style={styles.sectionLabel}>{zh.tx.fee}</Text>
+										<SingleLineTextInput
+											ref={feeInputRef}
+											style={styles.textInput}
+											value={feeText}
+											onChangeText={setFeeText}
+											placeholder={zh.txList.feePlaceholder}
+											placeholderTextColor={colors.textSecondary}
+											keyboardType="decimal-pad"
+											onFocus={() => {
+												setKeypadVisible(false);
+												activeInputRef.current = feeInputRef.current;
+											}}
+										/>
+									</View>
+								)}
+							</Animated.View>
+						)}
+
+						{editorStage >= dateStage && (
+							<Animated.View entering={blockEntering}>
+								<DateTimeSemanticCards
+									dateText={dateText}
+									timeText={timeText}
+									onPressDate={() => {
+										setTempDate(dayjs(dateText, "YYYY-MM-DD").toDate());
+										setDatePickerOpen(true);
+									}}
+									onPressTime={() => {
+										setTempTime(dayjs(`${dateText} ${timeText}`).toDate());
+										setTimePickerOpen(true);
+									}}
+								/>
+							</Animated.View>
+						)}
+
+						{/* 备注 */}
+						{editorStage >= noteStage && (
+							<Animated.View style={styles.card} entering={blockEntering}>
+								<Text style={styles.sectionLabel}>{zh.tx.note}</Text>
+								<SingleLineTextInput
+									ref={noteInputRef}
+									style={styles.textInput}
+									value={note}
+									onChangeText={setNote}
+									placeholder={zh.tx.notePlaceholder}
+									placeholderTextColor={colors.textSecondary}
+									onFocus={() => {
+										setKeypadVisible(false);
+										activeInputRef.current = noteInputRef.current;
+									}}
+								/>
+							</Animated.View>
+						)}
+
+						{/* 项目（可选，适用于所有交易类型） */}
+						{editorStage >= projectStage && (
+							<Animated.View style={styles.card} entering={blockEntering}>
+								<Text style={styles.sectionLabel}>{zh.tx.project}</Text>
+								<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+									<View style={styles.chipRow}>
+										<Pressable
+											style={[
+												styles.chip,
+												projectId === null && {
+													backgroundColor: colors.primary,
+													borderColor: colors.primary,
+												},
+											]}
+											onPress={() => setProjectId(null)}
+										>
+											<Text
+												style={{
+													color:
+														projectId === null
+															? colors.onPrimary
+															: colors.textSecondary,
+													fontSize: 13,
+												}}
+											>
+												{zh.tx.projectNone}
+											</Text>
+										</Pressable>
+										{projects.map((p) => {
+											const selected = projectId === p.id;
+											return (
+												<Pressable
+													key={p.id}
+													style={[
+														styles.chip,
+														selected && {
+															backgroundColor: colors.primary,
+															borderColor: colors.primary,
+														},
+													]}
+													onPress={() => setProjectId(p.id)}
+												>
+													<View
+														style={{
+															flexDirection: "row",
+															alignItems: "center",
+															gap: 4,
+														}}
+													>
+														<Icon
+															name={resolveIconKey(p.icon, "category")}
+															size={14}
+															color={selected ? colors.onPrimary : colors.text}
+														/>
+														<Text
+															style={{
+																color: selected
+																	? colors.onPrimary
+																	: colors.text,
+																fontSize: 13,
+															}}
+														>
+															{p.name}
+														</Text>
+													</View>
+												</Pressable>
+											);
+										})}
+									</View>
+								</ScrollView>
+							</Animated.View>
+						)}
 						</Animated.View>
-					)}
+					</View>
 				</ScrollView>
 
 				{editorStage >= saveStage && mode === "create" && (
 					<Animated.View
-						entering={revealEntering}
+						entering={blockEntering}
 						style={[
 							styles.saveFooter,
+							saveFooterAnimatedStyle,
 							{
 								backgroundColor: colors.card,
 								borderTopColor: colors.border,
@@ -1305,21 +1539,22 @@ function TransactionFormComponent(
 							},
 						]}
 					>
-						<Pressable
+						<AnimatedPressable
 							style={[
 								styles.saveBtn,
+								saveButtonColorStyle,
 								{
-									backgroundColor: typeColor,
-									opacity: submitting || !canSave ? 0.6 : 1,
+									opacity:
+										submitting || !canSave || typeTransition ? 0.6 : 1,
 								},
 							]}
 							onPress={handleSave}
-							disabled={submitting || !canSave}
+							disabled={submitting || !canSave || typeTransition !== null}
 						>
 							<Text style={[styles.saveBtnText, { color: colors.onPrimary }]}>
 								{zh.common.save}
 							</Text>
-						</Pressable>
+						</AnimatedPressable>
 					</Animated.View>
 				)}
 				{keypadVisible && (
@@ -1500,7 +1735,7 @@ function TransactionFormComponent(
 			{/* 全部分类弹窗 */}
 			<CategoryPickerModal
 				visible={categoryPickerOpen}
-				tree={orderedTree}
+				tree={categoryTree}
 				categoryType={categoryType}
 				selectedId={categoryId}
 				onSelect={(id) => {
@@ -1609,7 +1844,7 @@ function makeStyles({ colors }: AppTheme) {
 			fontWeight: "700",
 			fontVariant: ["tabular-nums"],
 		},
-		summaryDetails: { flexDirection: "row", gap: 8 },
+		summaryDetails: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
 		summaryDetail: {
 			flex: 1,
 			minWidth: 0,
@@ -1619,21 +1854,19 @@ function makeStyles({ colors }: AppTheme) {
 			borderRadius: 12,
 			padding: 12,
 		},
+		summaryDetailWide: { flexBasis: "100%" },
 		summaryDetailText: { flex: 1, minWidth: 0 },
 		summaryLabel: { fontSize: 12, marginBottom: 2 },
 		summaryValue: { fontSize: 14, fontWeight: "600" },
-		segment: {
-			flexDirection: "row",
-			backgroundColor: colors.card,
-			borderRadius: 10,
-			padding: 4,
-			marginBottom: 12,
+		typePageViewport: {
+			position: "relative",
+			overflow: "hidden",
 		},
-		segmentItem: {
-			flex: 1,
-			paddingVertical: 8,
-			alignItems: "center",
-			borderRadius: 8,
+		typePageAbsolute: {
+			position: "absolute",
+			top: 0,
+			right: 0,
+			left: 0,
 		},
 		amountBox: {
 			flexDirection: "row",
@@ -1663,25 +1896,19 @@ function makeStyles({ colors }: AppTheme) {
 			fontSize: 13,
 			marginBottom: 8,
 		},
-		categoryGrid: { flexDirection: "row", flexWrap: "wrap" },
-		categoryCell: {
-			width: "25%",
+		categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+		categoryChip: {
+			flexDirection: "row",
 			alignItems: "center",
-			paddingVertical: 8,
-			borderRadius: 10,
-		},
-		categoryName: { fontSize: 12, marginTop: 4 },
-		moreBadge: {
-			position: "absolute",
-			right: -2,
-			bottom: -2,
-			width: 16,
-			height: 16,
-			borderRadius: 8,
+			gap: 4,
+			paddingHorizontal: 12,
+			paddingVertical: 7,
+			borderRadius: 16,
 			borderWidth: 1,
-			alignItems: "center",
-			justifyContent: "center",
+			borderColor: colors.border,
 		},
+		categoryChipName: { fontSize: 13 },
+		categoryMoreBtn: { marginLeft: 2, padding: 2 },
 		allBtn: {
 			flexDirection: "row",
 			alignItems: "center",

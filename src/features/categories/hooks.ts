@@ -6,9 +6,10 @@ import {
   updateCategory,
   type CategoryInput,
 } from './repository';
+import type { CategoryType } from '@/db/schema';
 
 /** key: ['categories', type] */
-export function useCategoryTree(type: 'expense' | 'income') {
+export function useCategoryTree(type: CategoryType) {
   return useQuery({
     queryKey: ['categories', type],
     queryFn: () => listCategoryTree(type),

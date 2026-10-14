@@ -6,7 +6,7 @@
  * kernel so their confidence thresholds stay aligned.
  */
 
-export const BASELINE_VERSION = 2;
+export const BASELINE_VERSION = 3;
 export const BASELINE_WINDOW_DAYS = 183;
 export const MAX_AMOUNTS_PER_TARGET = 40;
 export const SIGMA = 0.18;
@@ -17,6 +17,7 @@ export const CANDIDATE_MIN_SCORE = 0.15;
 
 export type SuggestType = 'expense' | 'income';
 export type SuggestTransactionType = SuggestType | 'transfer';
+export type CategorySuggestType = SuggestTransactionType;
 
 export type BaselineRow = {
   type: SuggestTransactionType;
@@ -55,7 +56,7 @@ export type TransferPairScore = {
 
 export type Baseline = {
   v: typeof BASELINE_VERSION;
-  entries: Record<SuggestType, BaselineEntry[]>;
+  entries: Record<CategorySuggestType, BaselineEntry[]>;
   accountEntries: Record<SuggestType, AccountBaselineEntry[]>;
   transferPairs: TransferPairBaselineEntry[];
 };
@@ -113,9 +114,13 @@ function finalize<TTarget extends object>(
 }
 
 export function buildBaseline(rows: BaselineRow[]): Baseline {
-  const categoryAggregates: Record<SuggestType, Map<string, Aggregate<{ categoryId: string }>>> = {
+  const categoryAggregates: Record<
+    CategorySuggestType,
+    Map<string, Aggregate<{ categoryId: string }>>
+  > = {
     expense: new Map(),
     income: new Map(),
+    transfer: new Map(),
   };
   const accountAggregates: Record<SuggestType, Map<string, Aggregate<{ accountId: string }>>> = {
     expense: new Map(),
@@ -127,6 +132,15 @@ export function buildBaseline(rows: BaselineRow[]): Baseline {
   >();
 
   for (const row of rows) {
+    if (row.categoryId) {
+      addRow(
+        categoryAggregates[row.type],
+        row.categoryId,
+        { categoryId: row.categoryId },
+        row,
+      );
+    }
+
     if (row.type === 'transfer') {
       if (!row.toAccountId || row.toAccountId === row.accountId) continue;
       const pairKey = `${row.accountId}\u0000${row.toAccountId}`;
@@ -140,14 +154,6 @@ export function buildBaseline(rows: BaselineRow[]): Baseline {
     }
 
     addRow(accountAggregates[row.type], row.accountId, { accountId: row.accountId }, row);
-    if (row.categoryId) {
-      addRow(
-        categoryAggregates[row.type],
-        row.categoryId,
-        { categoryId: row.categoryId },
-        row,
-      );
-    }
   }
 
   return {
@@ -155,6 +161,7 @@ export function buildBaseline(rows: BaselineRow[]): Baseline {
     entries: {
       expense: finalize(categoryAggregates.expense),
       income: finalize(categoryAggregates.income),
+      transfer: finalize(categoryAggregates.transfer),
     },
     accountEntries: {
       expense: finalize(accountAggregates.expense),
@@ -203,7 +210,7 @@ function scoreTargets<TEntry extends TargetStats>(
 
 export function scoreCategories(
   baseline: Baseline,
-  type: SuggestType,
+  type: CategorySuggestType,
   amountCents: number,
   today: string,
 ): Map<string, number> {
@@ -264,27 +271,6 @@ export function orderByScore<T extends { id: string }>(
 ): T[] {
   if (scores.size === 0) return items;
   return partitionByScore(items, (item) => scores.get(item.id));
-}
-
-export function orderTree<T extends NodeLike>(
-  tree: T[],
-  scores: ReadonlyMap<string, number>,
-): T[] {
-  if (scores.size === 0) return tree;
-
-  const parentScore = (node: T): number | undefined => {
-    let max = scores.get(node.id);
-    for (const child of node.children) {
-      const score = scores.get(child.id);
-      if (score !== undefined && (max === undefined || score > max)) max = score;
-    }
-    return max;
-  };
-
-  return partitionByScore(tree, parentScore).map((node) => {
-    if (parentScore(node) === undefined || node.children.length === 0) return node;
-    return { ...node, children: partitionByScore(node.children, (child) => scores.get(child.id)) };
-  });
 }
 
 export function pickAutoSelectId<T extends { id: string }>(

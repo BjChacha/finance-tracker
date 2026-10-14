@@ -191,7 +191,7 @@ export const boheCsvAdapter: ImportAdapter = {
         const dstCur = curOf(dstLabel);
         const src = convertSide(rawAmount, rawCur, rawRate, srcCur, rateOf(srcLabel));
         const dst = convertSide(rawAmount, rawCur, rawRate, dstCur, rateOf(dstLabel));
-        const transferCat = cell(row, h.category); // 转账原因（如「信用卡还款」），折叠进备注
+        const transferCat = cell(row, h.category);
         transactions.push({
           direction: 'transfer',
           amountCents: src.amount,
@@ -203,7 +203,8 @@ export const boheCsvAdapter: ImportAdapter = {
           toExchangeRate: dst.rate,
           rawAccount: srcLabel,
           rawToAccount: dstLabel,
-          note: buildNote(note, merchant, project, transferCat ? `#${transferCat}` : undefined),
+          rawCategory: transferCat || undefined,
+          note: buildNote(note, merchant, project),
         });
         return;
       }

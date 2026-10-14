@@ -28,6 +28,8 @@ type Stage =
 
 type Props = AddTransactionLaunch & {
 	presentation?: "sheet" | "screen";
+	/** 客户端幂等键（快捷记账 handoffId）：防双触发重复落库 */
+	clientTag?: string | null;
 	onClose: () => void;
 	onCreated: () => void;
 	onInteractive?: () => void;
@@ -47,6 +49,7 @@ function AddTransactionFlowComponent(
 		initialAmountCents,
 		initialCurrency,
 		initialType,
+		clientTag,
 		presentation = "sheet",
 		onClose,
 		onCreated,
@@ -145,6 +148,7 @@ function AddTransactionFlowComponent(
 							ref={ref}
 							mode="create"
 							initialValues={stage.initial}
+							clientTag={clientTag}
 							submitting={create.isPending}
 							onInteractive={onInteractive}
 							renderMode={renderMode}

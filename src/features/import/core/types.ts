@@ -15,7 +15,7 @@ export interface NormalizedTransaction {
   /** 'YYYY-MM-DD' 或带时间的日期字符串（前 10 位必须是日期） */
   date: string;
   note?: string;
-  /** 源账单里的分类文案（映射步骤转成本地分类） */
+  /** 源账单里的分类文案（适用于所有交易类型） */
   rawCategory?: string;
   rawSubCategory?: string;
   /** 源账单里的账户文案（映射步骤转成本地账户） */
