@@ -16,8 +16,11 @@ import {
 	Text,
 	useWindowDimensions,
 	View,
+	AppState,
+	type AppStateStatus,
 } from "react-native";
 import Animated, {
+	cancelAnimation,
 	Easing,
 	interpolate,
 	LinearTransition,
@@ -185,6 +188,33 @@ export function SecondarySheetSurface({
 		);
 	}, [laidOut, notifyTransitionFinished, progress, visible]);
 
+	// Foreground recovery: a transition interrupted by backgrounding can leave the surface
+	// frozen mid-animation (vsync-backed completion callbacks are dropped). Re-drive toward
+	// the current target so onEntered/onExited still fire instead of stranding the sheet.
+	useEffect(() => {
+		if (process.env.EXPO_OS !== "android") return;
+		const subscription = AppState.addEventListener(
+			"change",
+			(state: AppStateStatus) => {
+				if (state !== "active" || !laidOut) return;
+				const target = visibleRef.current ? 1 : 0;
+				cancelAnimation(progress);
+				progress.value = withTiming(
+					target,
+					{
+						duration: visibleRef.current ? motion.sheetEnter : motion.sheetExit,
+						easing: sheetEasing,
+						reduceMotion: ReduceMotion.System,
+					},
+					(finished) => {
+						if (finished) runOnJS(notifyTransitionFinished)(target === 1);
+					},
+				);
+			},
+		);
+		return () => subscription.remove();
+	}, [laidOut, notifyTransitionFinished, progress]);
+
 	useEffect(() => {
 		if (!laidOut || visible || !preparing) return;
 		progress.value = 0.001;
@@ -213,8 +243,11 @@ export function SecondarySheetSurface({
 
 	const maxLargeHeight = Math.max(0, height - insets.top - 12);
 	const largeHeight = Math.min(Math.round(height * 0.82), maxLargeHeight);
+	// 卡片 opacity 只在 progress 前段快速淡入，之后保持不透明：
+	// 若与 progress 同步衰减，退出时卡片在前 1/4 时长内就淡成半透明，
+	// 剩余 3/4 的下滑过程几乎不可见（「退出看不到动画」的根因）。
 	const cardAnimatedStyle = useAnimatedStyle(() => ({
-		opacity: progress.value,
+		opacity: interpolate(progress.value, [0, 0.15, 1], [0, 1, 1]),
 		transform: [{ translateY: (1 - progress.value) * travelDistance.value }],
 	}));
 	const scrimAnimatedStyle = useAnimatedStyle(() => ({
@@ -376,6 +409,50 @@ export function SecondarySheetScreen({
 		onEnteredRef.current?.();
 	}, []);
 
+	// Re-usable entry starter: also invoked by foreground recovery below.
+	const beginEntryFromCurrentState = useCallback(() => {
+		const preparation = entryPreparationRef.current + 1;
+		entryPreparationRef.current = preparation;
+
+		const startEntry = () => {
+			if (closingRef.current || entryPreparationRef.current !== preparation) {
+				return;
+			}
+			entryFrameRef.current = requestAnimationFrame(() => {
+				entryFrameRef.current = null;
+				if (closingRef.current || entryPreparationRef.current !== preparation) {
+					return;
+				}
+				if (skipEntryAnimation) {
+					notifyEntered();
+					return;
+				}
+				progress.value = withTiming(
+					1,
+					{
+						duration: motion.sheetEnter,
+						easing: sheetEasing,
+						reduceMotion: ReduceMotion.System,
+					},
+					(finished) => {
+						if (finished) runOnJS(notifyEntered)();
+					},
+				);
+			});
+		};
+
+		try {
+			const result = beforeEntryRef.current?.();
+			if (result && typeof result.then === "function") {
+				void Promise.resolve(result).then(startEntry, startEntry);
+				return;
+			}
+		} catch {
+			// Entry preparation is fail-open so a native handoff cannot strand the sheet.
+		}
+		startEntry();
+	}, [notifyEntered, progress, skipEntryAnimation]);
+
 	const handleCardLayout = useCallback(
 		(event: LayoutChangeEvent) => {
 			const measuredTravelDistance =
@@ -389,60 +466,9 @@ export function SecondarySheetScreen({
 			if (closingRef.current) return;
 			travelDistance.value = measuredTravelDistance;
 			entryStartedRef.current = true;
-			const preparation = entryPreparationRef.current + 1;
-			entryPreparationRef.current = preparation;
-
-			const startEntry = () => {
-				if (
-					closingRef.current ||
-					entryPreparationRef.current !== preparation
-				) {
-					return;
-				}
-				entryFrameRef.current = requestAnimationFrame(() => {
-					entryFrameRef.current = null;
-					if (
-						closingRef.current ||
-						entryPreparationRef.current !== preparation
-					) {
-						return;
-					}
-					if (skipEntryAnimation) {
-						notifyEntered();
-						return;
-					}
-					progress.value = withTiming(
-						1,
-						{
-							duration: motion.sheetEnter,
-							easing: sheetEasing,
-							reduceMotion: ReduceMotion.System,
-						},
-						(finished) => {
-							if (finished) runOnJS(notifyEntered)();
-						},
-					);
-				});
-			};
-
-			try {
-				const result = beforeEntryRef.current?.();
-				if (result && typeof result.then === "function") {
-					void Promise.resolve(result).then(startEntry, startEntry);
-					return;
-				}
-			} catch {
-				// Entry preparation is fail-open so a native handoff cannot strand the sheet.
-			}
-			startEntry();
+			beginEntryFromCurrentState();
 		},
-		[
-			insets.bottom,
-			notifyEntered,
-			progress,
-			skipEntryAnimation,
-			travelDistance,
-		],
+		[beginEntryFromCurrentState, insets.bottom, travelDistance],
 	);
 
 	const finishDismiss = useCallback(() => {
@@ -472,6 +498,49 @@ export function SecondarySheetScreen({
 		},
 		[finishDismiss, progress, skipExitAnimation],
 	);
+
+	// Foreground recovery: the OS can drop vsync-backed callbacks (native postOnAnimation,
+	// rAF, withTiming completion) while the sheet is mid-entry or mid-exit. Without this a
+	// backgrounded sheet keeps stale closingRef/entryStarted state forever — every dismiss,
+	// back and scrim tap is then silently swallowed and the screen is trapped.
+	useEffect(() => {
+		if (process.env.EXPO_OS !== "android") return;
+		const subscription = AppState.addEventListener(
+			"change",
+			(state: AppStateStatus) => {
+				if (state !== "active") return;
+				if (closingRef.current) {
+					// A dismiss was requested but its exit never completed. Complete it now without
+					// replaying the exit animation: the user already left mid-dismiss, so finishing
+					// the action beats trapping the screen behind a dead guard.
+					dismissRequestRef.current = false;
+					finishDismiss();
+					return;
+				}
+				if (entryStartedRef.current && !entryCompletedRef.current) {
+					// Entry was interrupted (rAF/withTiming callback dropped): restart it.
+					beginEntryFromCurrentState();
+					return;
+				}
+				if (entryCompletedRef.current) {
+					// A keypad round-trip can background the activity mid-entry; reanimated then
+					// finishes the animation while the view is detached and never re-commits the
+					// final style, leaving the card stuck at opacity 0 (screen looks "gone" while
+					// the scrim stays). Nudge the shared value to force a fresh style commit.
+					progress.value = 0.999;
+					progress.value = withTiming(
+						1,
+						{
+							duration: 32,
+							easing: sheetEasing,
+							reduceMotion: ReduceMotion.System,
+						},
+					);
+				}
+			},
+		);
+		return () => subscription.remove();
+	}, [beginEntryFromCurrentState, finishDismiss]);
 
 	const dismiss = useCallback<SheetDismiss>(
 		(afterDismiss) => {
@@ -510,15 +579,11 @@ export function SecondarySheetScreen({
 	const maxLargeHeight = Math.max(0, height - insets.top - 12);
 	const largeHeight = Math.min(Math.round(height * 0.82), maxLargeHeight);
 	const cardAnimatedStyle = useAnimatedStyle(() => ({
-		opacity: progress.value,
+		opacity: interpolate(progress.value, [0, 0.15, 1], [0, 1, 1]),
 		transform: [{ translateY: (1 - progress.value) * travelDistance.value }],
 	}));
 	const scrimAnimatedStyle = useAnimatedStyle(() => ({
-		opacity: interpolate(
-			progress.value,
-			[0, 1],
-			[initialScrimOpacity, 0.38],
-		),
+		opacity: interpolate(progress.value, [0, 1], [initialScrimOpacity, 0.38]),
 	}));
 
 	const body =
