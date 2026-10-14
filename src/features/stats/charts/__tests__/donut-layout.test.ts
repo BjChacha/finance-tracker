@@ -1,54 +1,81 @@
-import {
-  DONUT_LABEL_MIN_GAP,
-  layoutDonutLabels,
-} from '../donut-layout';
-import type { DonutSlice } from '../donut-data';
+import { DONUT_LABEL_MIN_GAP, layoutDonutLabels } from "../donut-layout";
+import type { DonutSlice } from "../donut-data";
 
 const values = [35.7, 16.2, 11.3, 10.7, 6.2, 6.1, 4.6, 3.1, 3.1, 2.9];
 
 const slices: DonutSlice[] = values.map((value, index) => ({
-  id: `category-${index}`,
-  label: index === 2 ? 'Electronic products' : `Category ${index}`,
-  value,
-  pct: value,
-  color: '#5470C6',
+	id: `category-${index}`,
+	label: index === 2 ? "Electronic products" : `Category ${index}`,
+	value,
+	pct: value,
+	color: "#5470C6",
 }));
 
-describe('layoutDonutLabels', () => {
-  it('keeps a dense ten-label layout inside the canvas without overlap', () => {
-    const width = 333;
-    const height = 208;
+describe("layoutDonutLabels", () => {
+	it("keeps a dense ten-label layout inside the canvas without overlap", () => {
+		const width = 333;
+		const height = 208;
 
-    const labels = layoutDonutLabels(slices, { width, height });
+		const labels = layoutDonutLabels(slices, { width, height });
 
-    expect(labels).toHaveLength(slices.length);
-    for (const label of labels) {
-      expect(label.bounds.left).toBeGreaterThanOrEqual(0);
-      expect(label.bounds.right).toBeLessThanOrEqual(width);
-      expect(label.y).toBeGreaterThan(0);
-      expect(label.y).toBeLessThan(height);
-    }
+		expect(labels).toHaveLength(slices.length);
+		for (const label of labels) {
+			expect(label.bounds.left).toBeGreaterThanOrEqual(0);
+			expect(label.bounds.right).toBeLessThanOrEqual(width);
+			expect(label.y).toBeGreaterThan(0);
+			expect(label.y).toBeLessThan(height);
+		}
 
-    for (const side of ['left', 'right'] as const) {
-      const sideLabels = labels.filter((label) => label.side === side).sort((a, b) => a.y - b.y);
-      for (let index = 1; index < sideLabels.length; index++) {
-        expect(sideLabels[index]!.y - sideLabels[index - 1]!.y).toBeGreaterThanOrEqual(
-          DONUT_LABEL_MIN_GAP,
-        );
-      }
-    }
-  });
+		for (const side of ["left", "right"] as const) {
+			const sideLabels = labels
+				.filter((label) => label.side === side)
+				.sort((a, b) => a.y - b.y);
+			for (let index = 1; index < sideLabels.length; index++) {
+				expect(
+					sideLabels[index]!.y - sideLabels[index - 1]!.y,
+				).toBeGreaterThanOrEqual(DONUT_LABEL_MIN_GAP);
+			}
+		}
+	});
 
-  it('places leader-line endpoints outside label text', () => {
-    const labels = layoutDonutLabels(slices, { width: 333, height: 208 });
+	it("places leader-line endpoints outside label text", () => {
+		const labels = layoutDonutLabels(slices, { width: 333, height: 208 });
 
-    for (const label of labels) {
-      const lineEnd = label.linePoints[2]!;
-      if (label.side === 'left') {
-        expect(lineEnd.x).toBeGreaterThanOrEqual(label.bounds.right);
-      } else {
-        expect(lineEnd.x).toBeLessThanOrEqual(label.bounds.left);
-      }
-    }
-  });
+		for (const label of labels) {
+			const lineEnd = label.linePoints[2]!;
+			if (label.side === "left") {
+				expect(lineEnd.x).toBeGreaterThanOrEqual(label.bounds.right);
+			} else {
+				expect(lineEnd.x).toBeLessThanOrEqual(label.bounds.left);
+			}
+		}
+	});
+
+	it("keeps a dense one-sided cluster fully inside the viewport (no clipped labels)", () => {
+		// Regression: with many labels on one side, the greedy spread used to shift the
+		// whole stack up by the full bottom overflow, pushing the topmost labels above
+		// y=0 where the SVG viewport clips them (invisible label + truncated leader
+		// line). These values produce 11 right-side labels: two near the top plus a
+		// dense cluster at the lower right, and 4 left-side fillers.
+		const denseValues = [
+			37.25, 40, 40, 40, 47.5, 45, 50, 33.25, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 18,
+		];
+		const denseSlices: DonutSlice[] = denseValues.map((value, index) => ({
+			id: `dense-${index}`,
+			label: `Category ${index}`,
+			value,
+			pct: value,
+			color: "#5470C6",
+		}));
+
+		const labels = layoutDonutLabels(denseSlices, { width: 333, height: 208 });
+
+		const rightLabels = labels.filter((label) => label.side === "right");
+		expect(rightLabels).toHaveLength(11);
+		// Label text box is 16px tall (LABEL_HEIGHT): keep it inside the SVG viewport.
+		for (const label of labels) {
+			expect(label.y - 8).toBeGreaterThanOrEqual(0);
+			expect(label.y + 8).toBeLessThanOrEqual(208);
+		}
+	});
 });

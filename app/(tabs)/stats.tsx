@@ -15,7 +15,6 @@ import {
 	useCategoryRank,
 	useMonthlyCompare,
 	useNetWorthTrend,
-	useTransactionDateRange,
 	useTrend,
 	type BreakdownType,
 	type StatsRange,
@@ -26,16 +25,48 @@ import { formatCents } from "@/lib/money";
 import { dayjs, monthRange, todayKey, toMonthKey } from "@/lib/date";
 import { useTheme, type AppTheme } from "@/theme";
 
-type RangeMode = "week" | "month" | "3m" | "6m" | "year";
+type RangeMode = "month" | "quarter" | "year";
 
-/** 不选中任何选项 = 全部时间（默认） */
 const RANGE_OPTIONS: { mode: RangeMode; label: string }[] = [
-	{ mode: "week", label: zh.stats.rangeWeek },
 	{ mode: "month", label: zh.stats.rangeMonth },
-	{ mode: "3m", label: zh.stats.range3m },
-	{ mode: "6m", label: zh.stats.range6m },
+	{ mode: "quarter", label: zh.stats.rangeQuarter },
 	{ mode: "year", label: zh.stats.rangeYear },
 ];
+
+/** quarterKey "YYYY-Qn" → 该自然季度的首末日 date_key */
+function quarterRange(quarterKey: string): [string, string] {
+	const [yearStr, qStr] = quarterKey.split("-Q");
+	const year = Number(yearStr);
+	const q = Number(qStr);
+	const startMonth = (q - 1) * 3 + 1;
+	const endMonth = q * 3;
+	const start = dayjs(`${year}-${String(startMonth).padStart(2, "0")}-01`);
+	const end = dayjs(`${year}-${String(endMonth).padStart(2, "0")}-01`).endOf("month");
+	return [start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD")];
+}
+
+/** monthKey "YYYY-MM" → 当前所在自然季度 "YYYY-Qn" */
+function quarterOf(monthKey: string): string {
+	const year = Number(monthKey.slice(0, 4));
+	const q = Math.ceil(Number(monthKey.slice(5, 7)) / 3);
+	return `${year}-Q${q}`;
+}
+
+/** 季度键加减（跨年自动进位） */
+function shiftQuarterKey(quarterKey: string, delta: number): string {
+	const [yearStr, qStr] = quarterKey.split("-Q");
+	let year = Number(yearStr);
+	let q = Number(qStr) + delta;
+	while (q > 4) {
+		q -= 4;
+		year += 1;
+	}
+	while (q < 1) {
+		q += 4;
+		year -= 1;
+	}
+	return `${year}-Q${q}`;
+}
 
 function Section({
 	title,
@@ -111,59 +142,33 @@ export default function StatsScreen() {
 	const theme = useTheme();
 	const tabBarInset = useFloatingTabBarInset();
 	const currentMonth = toMonthKey(todayKey());
-	const [mode, setMode] = useState<RangeMode | null>(null);
+	const currentQuarter = quarterOf(currentMonth);
+	const currentYear = currentMonth.slice(0, 4);
+	const [mode, setMode] = useState<RangeMode>("month");
 	const [monthKey, setMonthKey] = useState(currentMonth);
+	const [quarterKey, setQuarterKey] = useState(currentQuarter);
+	const [yearKey, setYearKey] = useState(currentYear);
 	const [heatMonth, setHeatMonth] = useState(currentMonth);
 	const [txType, setTxType] = useState<BreakdownType>("expense");
 
-	const dateRangeQuery = useTransactionDateRange();
-
 	const range = useMemo<StatsRange>(() => {
-		if (mode === null) {
-			// 全部时间：基于真实数据范围；未加载时用当月兜底，加载后自动重算
-			return (
-				dateRangeQuery.data ?? {
-					start: monthRange(currentMonth)[0],
-					end: monthRange(currentMonth)[1],
-				}
-			);
-		}
 		switch (mode) {
-			case "week": {
-				// zh-cn locale：周一为一周起点
-				const start = dayjs().startOf("week").format("YYYY-MM-DD");
-				const end = dayjs().endOf("week").format("YYYY-MM-DD");
-				return { start, end };
-			}
 			case "month": {
 				const [start, end] = monthRange(monthKey);
 				return { start, end };
 			}
-			case "3m":
-			case "6m": {
-				const back = mode === "3m" ? 2 : 5;
-				const start = dayjs(`${currentMonth}-01`)
-					.subtract(back, "month")
-					.format("YYYY-MM-DD");
-				return { start, end: monthRange(currentMonth)[1] };
+			case "quarter": {
+				const [start, end] = quarterRange(quarterKey);
+				return { start, end };
 			}
 			case "year": {
-				const year = currentMonth.slice(0, 4);
-				return { start: `${year}-01-01`, end: `${year}-12-31` };
+				return { start: `${yearKey}-01-01`, end: `${yearKey}-12-31` };
 			}
 		}
-	}, [mode, monthKey, currentMonth, dateRangeQuery.data]);
+	}, [mode, monthKey, quarterKey, yearKey]);
 
-	const granularity: TrendGranularity = useMemo(() => {
-		if (mode === "week" || mode === "month") return "day";
-		if (mode === "3m") return "week";
-		// 全部时间（mode=null）：跨度超 24 个月时按年，避免点过密
-		if (mode === null) {
-			const months = dayjs(range.end).diff(dayjs(range.start), "month") + 1;
-			return months > 24 ? "year" : "month";
-		}
-		return "month";
-	}, [mode, range]);
+	const granularity: TrendGranularity =
+		mode === "month" ? "day" : mode === "quarter" ? "week" : "month";
 
 	const breakdown = useCategoryBreakdown(range, txType);
 	const trendQuery = useTrend(granularity, range);
@@ -173,15 +178,19 @@ export default function StatsScreen() {
 	const rank = useCategoryRank(range, txType, 6);
 
 	const selectMode = (m: RangeMode) => {
-		// 再次点击已选中项 → 取消选择，回到“全部时间”
-		setMode((prev) => (prev === m ? null : m));
-		setMonthKey(currentMonth);
+		setMode(m);
 	};
 	const selectType = (t: BreakdownType) => {
 		setTxType(t);
 	};
 	const shiftMonth = (delta: number) => {
 		setMonthKey(dayjs(`${monthKey}-01`).add(delta, "month").format("YYYY-MM"));
+	};
+	const shiftQuarter = (delta: number) => {
+		setQuarterKey(shiftQuarterKey(quarterKey, delta));
+	};
+	const shiftYear = (delta: number) => {
+		setYearKey(String(Number(yearKey) + delta));
 	};
 	const shiftHeatMonth = (delta: number) => {
 		setHeatMonth(
@@ -217,12 +226,11 @@ export default function StatsScreen() {
 		primary: p.value,
 	}));
 	const breakdownRangeLabel =
-		mode === null
-			? zh.stats.rangeAll
-			: mode === "month"
-				? dayjs(`${monthKey}-01`).format("YYYY年M月")
-				: (RANGE_OPTIONS.find((option) => option.mode === mode)?.label ??
-					zh.stats.rangeAll);
+		mode === "month"
+			? dayjs(`${monthKey}-01`).format("YYYY年M月")
+			: mode === "quarter"
+				? `${quarterKey.slice(0, 4)}年第${quarterKey.slice(-1)}季度`
+				: `${yearKey}年`;
 	const breakdownSubtitle = [breakdownRangeLabel, zh.tx[txType]].join(" · ");
 
 	// KPI：储蓄率 / 日均支出 / 当前类型下最大分类（均复用已取数据，无新增查询）
@@ -264,25 +272,25 @@ export default function StatsScreen() {
 				))}
 			</View>
 
-			{/* 本月模式下的月份切换 */}
+			{/* 当前周期切换：本月/本季/今年 均可前后翻页 */}
 			{mode === "month" ? (
 				<View style={styles.monthSwitch}>
-					<Pressable onPress={() => shiftMonth(-1)} hitSlop={8}>
+						<Pressable onPress={() => shiftMonth(-1)} hitSlop={8}>
 						<Icon
 							name="chevron-left"
 							size={22}
 							color={theme.colors.primary}
 							style={styles.monthArrow}
 						/>
-					</Pressable>
-					<Text style={[styles.monthText, { color: theme.colors.text }]}>
+						</Pressable>
+						<Text style={[styles.monthText, { color: theme.colors.text }]}>
 						{dayjs(`${monthKey}-01`).format("YYYY年M月")}
-					</Text>
-					<Pressable
+						</Text>
+						<Pressable
 						onPress={() => shiftMonth(1)}
 						hitSlop={8}
 						disabled={monthKey >= currentMonth}
-					>
+						>
 						<Icon
 							name="chevron-right"
 							size={22}
@@ -293,9 +301,69 @@ export default function StatsScreen() {
 							}
 							style={styles.monthArrow}
 						/>
-					</Pressable>
+						</Pressable>
 				</View>
-			) : null}
+			) : mode === "quarter" ? (
+				<View style={styles.monthSwitch}>
+						<Pressable onPress={() => shiftQuarter(-1)} hitSlop={8}>
+						<Icon
+							name="chevron-left"
+							size={22}
+							color={theme.colors.primary}
+							style={styles.monthArrow}
+						/>
+						</Pressable>
+						<Text style={[styles.monthText, { color: theme.colors.text }]}>
+						{`${quarterKey.slice(0, 4)}年第${quarterKey.slice(-1)}季度`}
+						</Text>
+						<Pressable
+						onPress={() => shiftQuarter(1)}
+						hitSlop={8}
+						disabled={quarterKey >= currentQuarter}
+						>
+						<Icon
+							name="chevron-right"
+							size={22}
+							color={
+								quarterKey >= currentQuarter
+									? theme.colors.border
+									: theme.colors.primary
+							}
+							style={styles.monthArrow}
+						/>
+						</Pressable>
+				</View>
+			) : (
+				<View style={styles.monthSwitch}>
+						<Pressable onPress={() => shiftYear(-1)} hitSlop={8}>
+						<Icon
+							name="chevron-left"
+							size={22}
+							color={theme.colors.primary}
+							style={styles.monthArrow}
+						/>
+						</Pressable>
+						<Text style={[styles.monthText, { color: theme.colors.text }]}>
+						{`${yearKey}年`}
+						</Text>
+						<Pressable
+						onPress={() => shiftYear(1)}
+						hitSlop={8}
+						disabled={yearKey >= currentYear}
+						>
+						<Icon
+							name="chevron-right"
+							size={22}
+							color={
+								yearKey >= currentYear
+									? theme.colors.border
+									: theme.colors.primary
+							}
+							style={styles.monthArrow}
+						/>
+						</Pressable>
+				</View>
+			)}
 
 			{/* 支出/收入切换 */}
 			<View style={[styles.segment, { backgroundColor: theme.colors.card }]}>
