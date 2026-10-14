@@ -48,5 +48,15 @@ modules/*/android/build/
 artifacts/
 debug/
 
+# release APK copies
+/build/release/
+
 # local real-data fixtures (privacy-sensitive, not for VCS)
 import_example/
+
+# agent/editor session working docs (not for VCS)
+.zcode/
+.planning/
+/task_plan.md
+/progress.md
+/findings.md

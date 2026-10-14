@@ -62,7 +62,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "build:apk": "cd android && .\\gradlew.bat assembleRelease && echo APK ready: android/app/build/outputs/apk/release/app-release.apk"
+    "build:apk": "cd android && .\\gradlew.bat assembleRelease && cd .. && node scripts/copy-apk.mjs"
   },
   "jest": {
     "preset": "jest-expo",
