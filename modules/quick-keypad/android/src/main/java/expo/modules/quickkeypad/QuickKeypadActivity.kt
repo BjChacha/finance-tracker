@@ -161,6 +161,23 @@ class QuickKeypadActivity : AppCompatActivity() {
         updateDisplay()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val resultIntent = intent.getBooleanExtra(EXTRA_RESULT_MODE, false)
+        if (resultIntent == resultMode) return
+        // singleTop reuse across modes: a retained navigate-mode source must never run a
+        // second handoff because an in-app caller opened the keypad in result mode.
+        resultMode = resultIntent
+        if (resultIntent) {
+            if (retainedHandoffId != null) {
+                setResult(RESULT_CANCELED)
+                finishWithoutExitTransition()
+                return
+            }
+            configureResultModeOpenTransition()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(STATE_EXPRESSION, expr)
         outState.putString(STATE_CURRENCY, currency)
@@ -195,6 +212,31 @@ class QuickKeypadActivity : AppCompatActivity() {
             amountText.setTextColor(themePalette.primary)
             val ev = Calc.eval(expr)
             auxText.text = if (hasPendingOp(expr) && ev != null) "= ${formatCents(ev)}" else ""
+        }
+    }
+
+    /**
+     * A blocked confirm must never look like a dead OK button: the keypad stays open with
+     * no JS counterpart to show a validation error, so surface the reason inline. The hint
+     * lives until the next key press rewinds it via updateDisplay().
+     */
+    private fun showConfirmBlockedHint(messageRes: Int, reason: String) {
+        Log.i(PERF_TAG, "resultMode=$resultMode phase=confirm_blocked reason=$reason")
+        vibrateError()
+        val errorColor = 0xFFE11D48.toInt()
+        auxText.setTextColor(errorColor)
+        auxText.text = getString(messageRes)
+        amountText.setTextColor(errorColor)
+    }
+
+    private fun vibrateError() {
+        if (hapticLevel <= 0) return
+        val vibrator = getSystemService(Vibrator::class.java) ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 24, 90, 24), -1))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(48)
         }
     }
 
@@ -343,12 +385,14 @@ class QuickKeypadActivity : AppCompatActivity() {
             performanceHandoffId?.let {
                 QuickAddHandoffController.cancelPerformance(it, "invalid_expression")
             }
+            showConfirmBlockedHint(R.string.quick_keypad_error_invalid_amount, "invalid_expression")
             return
         }
         if (cents == 0L && !allowZero) {
             performanceHandoffId?.let {
                 QuickAddHandoffController.cancelPerformance(it, "zero_not_allowed")
             }
+            showConfirmBlockedHint(R.string.quick_keypad_error_zero_amount, "zero_not_allowed")
             return
         }
         if (resultMode) {

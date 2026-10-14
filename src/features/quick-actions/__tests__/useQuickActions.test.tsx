@@ -1,5 +1,5 @@
 import { act, render } from '@testing-library/react-native';
-import { Platform } from 'react-native';
+import { AppState, Platform, type AppStateStatus } from 'react-native';
 import { useQuickActionsBootstrap } from '../useQuickActions';
 
 const mockReplace = jest.fn();
@@ -15,9 +15,6 @@ let mockPendingLaunch: {
   type: 'expense' | 'income';
   handoffId: string;
 } | null = null;
-let mockLaunchListener:
-  | ((launch: NonNullable<typeof mockPendingLaunch>) => void)
-  | null = null;
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({
@@ -43,14 +40,6 @@ jest.mock('@/components/navigation/resident-editor-sheet-host', () => ({
 
 jest.mock('@/lib/quickKeypad', () => ({
   getPendingQuickAddLaunch: () => mockPendingLaunch,
-  addQuickAddLaunchListener: (listener: (launch: never) => void) => {
-    mockLaunchListener = listener as never;
-    return {
-      remove() {
-        mockLaunchListener = null;
-      },
-    };
-  },
 }));
 
 function Harness() {
@@ -65,20 +54,32 @@ const LAUNCH = {
   handoffId: 'handoff-1',
 };
 
+let appStateListener: ((state: AppStateStatus) => void) | null = null;
+
+function foreground() {
+  act(() => appStateListener?.('active'));
+}
+
 describe('useQuickActionsBootstrap (android)', () => {
   beforeAll(() => {
     Object.defineProperty(Platform, 'OS', { get: () => 'android', configurable: true });
+    jest.spyOn(AppState, 'addEventListener').mockImplementation(
+      (_type, listener) => {
+        appStateListener = listener;
+        return { remove: () => (appStateListener = null) };
+      },
+    );
   });
 
   beforeEach(() => {
     mockPendingLaunch = null;
-    mockLaunchListener = null;
     mockPathname = '/';
     mockParams = {};
     mockReplace.mockClear();
     mockDismissAll.mockClear();
     mockCanDismiss.mockClear().mockReturnValue(false);
     mockDismissResidentEditor.mockClear();
+    appStateListener = null;
   });
 
   it('collapses the resident editor before replacing the stack', () => {
@@ -133,28 +134,27 @@ describe('useQuickActionsBootstrap (android)', () => {
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  it('routes once when the same handoff arrives twice', () => {
+  it('routes once when the same handoff is pulled again on foreground', () => {
     mockPendingLaunch = LAUNCH;
     render(<Harness />);
     expect(mockReplace).toHaveBeenCalledTimes(1);
 
-    act(() => mockLaunchListener?.(LAUNCH));
+    foreground();
 
     expect(mockReplace).toHaveBeenCalledTimes(1);
     expect(mockDismissResidentEditor).toHaveBeenCalledTimes(1);
   });
 
-  it('routes a new handoff after the previous one', () => {
+  it('routes a new handoff pulled on foreground after the previous one', () => {
     mockPendingLaunch = LAUNCH;
     render(<Harness />);
 
-    act(() =>
-      mockLaunchListener?.({
-        ...LAUNCH,
-        amountCents: 5678,
-        handoffId: 'handoff-2',
-      }),
-    );
+    mockPendingLaunch = {
+      ...LAUNCH,
+      amountCents: 5678,
+      handoffId: 'handoff-2',
+    };
+    foreground();
 
     expect(mockReplace).toHaveBeenCalledTimes(2);
     expect(mockDismissResidentEditor).toHaveBeenCalledTimes(2);
@@ -162,6 +162,7 @@ describe('useQuickActionsBootstrap (android)', () => {
 
   it('does nothing when no launch is pending', () => {
     render(<Harness />);
+    foreground();
 
     expect(mockDismissResidentEditor).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();

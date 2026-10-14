@@ -1,5 +1,4 @@
 import { NativeModule, requireOptionalNativeModule } from 'expo';
-
 export type QuickKeypadResult = {
   amountCents: number;
   currency: string;
@@ -24,11 +23,7 @@ export type QuickKeypadThemePayload = {
   onPrimary: string;
 };
 
-type QuickKeypadModuleEvents = {
-  onQuickAddLaunch: (launch: PendingQuickAddLaunch) => void;
-};
-
-declare class QuickKeypadModule extends NativeModule<QuickKeypadModuleEvents> {
+declare class QuickKeypadModule extends NativeModule {
   syncTheme(theme: QuickKeypadThemePayload): boolean;
   completeAppLaunch(): void;
 

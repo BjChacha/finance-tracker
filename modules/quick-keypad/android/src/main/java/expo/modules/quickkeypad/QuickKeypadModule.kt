@@ -12,19 +12,19 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
+/**
+ * Launch delivery is pull-only: JavaScript reads getPendingQuickAddLaunch() when the router root
+ * is ready (and again when the app returns to the foreground). Pushing the launch through an
+ * event was delivered to a stale MainActivity root that CLEAR_TASK was about to destroy, which
+ * raced the new root's deep-link navigation (duplicate/ghost forms, handoff timeouts).
+ */
 class QuickKeypadModule : Module() {
   private var pendingPromise: Promise? = null
   private var hasPendingActivityResult = false
   private var pendingActivityResult: Map<String, Any>? = null
-  private val quickAddLaunchListener =
-    { launch: QuickAddHandoffController.QuickAddLaunch ->
-      sendEvent(EVENT_QUICK_ADD_LAUNCH, launch.toPayload())
-    }
 
   override fun definition() = ModuleDefinition {
     Name("QuickKeypad")
-
-    Events(EVENT_QUICK_ADD_LAUNCH)
 
     Function("syncTheme") { theme: QuickKeypadThemeRecord ->
       val context = appContext.reactContext?.applicationContext
@@ -33,7 +33,6 @@ class QuickKeypadModule : Module() {
     }
 
     OnCreate {
-      QuickAddHandoffController.setLaunchListener(quickAddLaunchListener)
       registerQuickAddShortcut()
     }
 
@@ -48,9 +47,18 @@ class QuickKeypadModule : Module() {
         allowZero: Boolean,
         promise: Promise ->
       val activity = appContext.currentActivity
-      if (activity == null || pendingPromise != null) {
+      if (activity == null) {
         promise.resolve(null)
         return@AsyncFunction
+      }
+      if (pendingPromise != null) {
+        // A previous open() never settled (its activity result was lost while the app was
+        // backgrounded). Recycle the slot instead of silently rejecting every future open.
+        val stale = pendingPromise
+        pendingPromise = null
+        hasPendingActivityResult = false
+        pendingActivityResult = null
+        stale?.resolve(null)
       }
 
       pendingPromise = promise
@@ -121,7 +129,6 @@ class QuickKeypadModule : Module() {
     }
 
     OnDestroy {
-      QuickAddHandoffController.removeLaunchListener(quickAddLaunchListener)
       pendingPromise?.resolve(null)
       pendingPromise = null
       hasPendingActivityResult = false
@@ -165,6 +172,5 @@ class QuickKeypadModule : Module() {
 
   private companion object {
     const val REQUEST_CODE = 4201
-    const val EVENT_QUICK_ADD_LAUNCH = "onQuickAddLaunch"
   }
 }

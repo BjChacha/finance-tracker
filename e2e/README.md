@@ -86,8 +86,10 @@ Result: 9 passed, 0 failed (of 9).
 | `tc-qa-3.1-warm-l2-save.sh` | 热启动·二级界面 · 保存 | 二级残留被清除、form 在前、DB +1 |
 | `tc-qa-3.2-warm-l2-cancel.sh` | 热启动·二级界面 · 取消 | 退桌面、DB 不变 |
 | `tc-qa-e1-keypad-cancel.sh` | 小键盘阶段取消 | keypad 关闭、焦点回桌面、无 form |
-| `tc-qa-e2-zero-block.sh` | 零金额拦截 | OK 无反应、keypad 保留、无 form |
+| `tc-qa-e2-zero-block.sh` | 零金额拦截 | OK 显示「金额不能为 0」提示、keypad 保留、无 form |
 | `tc-qa-e3-negative-income.sh` | 负金额转收入 | 金额 = abs(-12.5)=12.5、DB +1 |
+| `tc-qa-e6-reedit-amount.sh` | form 内重编辑金额 | 二次键盘结果送达、金额更新、back 可退（无卡死） |
+| `tc-qa-e7-keypad-block-feedback.sh` | 空值/零值确认反馈 | 「金额无效」/「金额不能为 0」提示可见、补输后可正常确认、取消可用 |
 
 ## 模拟器 vs 真机
 

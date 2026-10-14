@@ -1,4 +1,7 @@
 <resources>
   <string name="quick_keypad_currency_select_description">Current currency %1$s. Choose another currency.</string>
   <string name="quick_keypad_currency_fixed_description">Current currency %1$s.</string>
+  <!-- The app is zh-only; keep user-visible keypad hints in Chinese like src/i18n/zh. -->
+  <string name="quick_keypad_error_invalid_amount">金额无效</string>
+  <string name="quick_keypad_error_zero_amount">金额不能为 0</string>
 </resources>

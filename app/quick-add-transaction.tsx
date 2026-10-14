@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { BackHandler, ToastAndroid, View } from "react-native";
+import { BackHandler, Platform, ToastAndroid, View } from "react-native";
 import {
 	AddTransactionFlow,
 	parseAddTransactionLaunch,
@@ -30,6 +30,10 @@ export default function QuickAddTransactionScreen() {
 	// can then hand the window back to the launcher without mounting another app route first.
 	const exitQuickAdd = useCallback(() => {
 		if (process.env.EXPO_OS === "android") {
+			// Below S, invokeDefaultOnBackPressed moves the task to back instead of finishing:
+			// the route stack (and this form) would survive and reappear on the next launch.
+			// (iOS/web Version is a string, but this branch is Android-only.)
+			if (Number(Platform.Version) < 31) router.dismissAll();
 			BackHandler.exitApp();
 			return;
 		}
@@ -106,6 +110,7 @@ export default function QuickAddTransactionScreen() {
 		>
 			<AddTransactionFlow
 				{...launch}
+				clientTag={handoffId}
 				ref={formRef}
 				// The native keypad already supplied the amount. Stage the remaining editor sections to
 				// keep the first committed form frame small.

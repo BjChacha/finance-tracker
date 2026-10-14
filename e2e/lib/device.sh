@@ -9,8 +9,10 @@ export MSYS2_ARG_CONV_EXCL="*"
 export MSYS_NO_PATHCONV=1
 
 # Locate adb on PATH, or add the Android SDK platform-tools dir.
+# NB: type -P only matches binaries — the adb() wrapper below would make plain
+# `command -v adb` always succeed and skip the SDK path setup entirely.
 _resolve_adb() {
-	if command -v adb >/dev/null 2>&1; then return 0; fi
+	if type -P adb >/dev/null 2>&1; then return 0; fi
 	local sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 	if [ -z "$sdk" ] && [ -n "$LOCALAPPDATA" ]; then
 		sdk="$LOCALAPPDATA/Android/Sdk"
