@@ -1,4 +1,4 @@
-import { dayjs } from '@/lib/date';
+import { daysRemainingInPeriod, type BudgetPeriod } from '@/lib/date';
 
 /** 预算进度百分比（一位小数）；额度为 0 返回 0。可超过 100。 */
 export function budgetPct(spent: number, amount: number): number {
@@ -30,17 +30,18 @@ export function crossedTier(spent: number, amount: number, alertPct: number): nu
 }
 
 /**
- * 日均可用（分/天，向下取整）：剩余额度 / 当月剩余天数（含今天）。
- * - 过去月份返回 0（已成历史，无"可用"概念）
- * - 未来月份按整月天数平摊
+ * 日均可用（分/天，向下取整）：剩余额度 / 周期剩余天数（含今天）。
+ * - 过去周期返回 0（已成历史，无「可用」概念）
+ * - 未来周期按整周期天数平摊
  * - 剩余 <= 0 返回 0
  */
-export function dailyAvailable(remaining: number, monthKey: string, todayK: string): number {
+export function dailyAvailable(
+  remaining: number,
+  period: BudgetPeriod,
+  periodKey: string,
+  todayK: string,
+): number {
   if (remaining <= 0) return 0;
-  const curMonth = todayK.slice(0, 7);
-  if (monthKey < curMonth) return 0;
-  const daysInMonth = dayjs(`${monthKey}-01`).daysInMonth();
-  const days =
-    monthKey > curMonth ? daysInMonth : daysInMonth - Number(todayK.slice(8, 10)) + 1;
-  return Math.floor(remaining / Math.max(days, 1));
+  const days = daysRemainingInPeriod(period, periodKey, todayK);
+  return days > 0 ? Math.floor(remaining / days) : 0;
 }

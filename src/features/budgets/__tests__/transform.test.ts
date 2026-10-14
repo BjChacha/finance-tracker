@@ -59,21 +59,30 @@ describe('crossedTier', () => {
 describe('dailyAvailable', () => {
   it('current month divides remaining by days left including today', () => {
     // 2026-07 有 31 天，7 号起剩 25 天
-    expect(dailyAvailable(25000, '2026-07', '2026-07-07')).toBe(1000);
+    expect(dailyAvailable(25000, 'month', '2026-07', '2026-07-07')).toBe(1000);
     // 月末最后一天剩 1 天
-    expect(dailyAvailable(500, '2026-07', '2026-07-31')).toBe(500);
+    expect(dailyAvailable(500, 'month', '2026-07', '2026-07-31')).toBe(500);
   });
-  it('past month returns 0', () => {
-    expect(dailyAvailable(10000, '2026-06', '2026-07-07')).toBe(0);
+  it('current quarter divides by days left in the quarter', () => {
+    // 2026-Q3 = 7-9 月，共 92 天；7/7 起剩 86 天
+    expect(dailyAvailable(8600, 'quarter', '2026-Q3', '2026-07-07')).toBe(100);
   });
-  it('future month divides by full month days', () => {
-    expect(dailyAvailable(31000, '2026-08', '2026-07-07')).toBe(1000);
+  it('current year divides by days left in the year', () => {
+    // 2026 共 365 天，7/7 是第 188 天，剩 178 天
+    expect(dailyAvailable(17800, 'year', '2026', '2026-07-07')).toBe(100);
+  });
+  it('past period returns 0', () => {
+    expect(dailyAvailable(10000, 'month', '2026-06', '2026-07-07')).toBe(0);
+    expect(dailyAvailable(10000, 'quarter', '2026-Q1', '2026-07-07')).toBe(0);
+  });
+  it('future period divides by full period days', () => {
+    expect(dailyAvailable(31000, 'month', '2026-08', '2026-07-07')).toBe(1000);
   });
   it('non-positive remaining returns 0', () => {
-    expect(dailyAvailable(0, '2026-07', '2026-07-07')).toBe(0);
-    expect(dailyAvailable(-100, '2026-07', '2026-07-07')).toBe(0);
+    expect(dailyAvailable(0, 'month', '2026-07', '2026-07-07')).toBe(0);
+    expect(dailyAvailable(-100, 'month', '2026-07', '2026-07-07')).toBe(0);
   });
   it('rounds down to whole cents', () => {
-    expect(dailyAvailable(100, '2026-07', '2026-07-29')).toBe(33); // 100 / 3 天
+    expect(dailyAvailable(100, 'month', '2026-07', '2026-07-29')).toBe(33); // 100 / 3 天
   });
 });

@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { categories, settings, type TransactionType } from '@/db/schema';
 import { zh } from '@/i18n/zh';
-import { toMonthKey } from '@/lib/date';
+import { BUDGET_PERIODS, toPeriodKey } from '@/lib/date';
 import { formatCents } from '@/lib/money';
 import { budgetStatus, type BudgetStatusItem } from './repository';
 import { crossedTier } from './transform';
@@ -28,9 +28,9 @@ function getNotifications(): NotificationsModule | null {
   return notificationsModule;
 }
 
-/** settings 表防重复 key：同一预算同一月同一档位只触发一次 */
-function alertKey(budgetId: string, monthKey: string, tier: number): string {
-  return `budget-alert:${budgetId}:${monthKey}:${tier}`;
+/** settings 表防重复 key：同一预算同一周期同一档位只触发一次（periodKey 区分月/季/年） */
+function alertKey(budgetId: string, periodKey: string, tier: number): string {
+  return `budget-alert:${budgetId}:${periodKey}:${tier}`;
 }
 
 async function hasFired(key: string): Promise<boolean> {
@@ -95,6 +95,7 @@ async function notify(item: BudgetStatusItem, tier: number): Promise<void> {
         title: tier === 100 ? zh.budgets.notifOverTitle : zh.budgets.notifWarnTitle,
         body: zh.budgets.notifBody(
           item.name,
+          zh.budgets.periodScope[item.period],
           String(item.pct),
           formatCents(item.spent),
           formatCents(item.amount),
@@ -117,14 +118,11 @@ export type BudgetCheckTx = {
 /**
  * 记账后预算提醒检查（仅 expense）：
  * 检查该笔交易涉及的分类预算（子分类归并到父分类）与总预算，
- * 跨过 alertPct 或 100% 档位时发本地通知；同预算同月同档位只触发一次（settings 记 key）。
+ * 跨过 alertPct 或 100% 档位时发本地通知；同预算同周期同档位只触发一次（settings 记 key）。
  */
 export async function checkBudgetsAfterTransaction(tx: BudgetCheckTx): Promise<void> {
   try {
     if (tx.type !== 'expense') return;
-    const monthKey = toMonthKey(tx.dateKey);
-    const status = await budgetStatus(monthKey);
-
     // 子分类消费归并计入父分类预算：找到所属一级分类
     let topCategoryId = tx.categoryId;
     if (topCategoryId) {
@@ -136,18 +134,23 @@ export async function checkBudgetsAfterTransaction(tx: BudgetCheckTx): Promise<v
       if (cat?.parentId) topCategoryId = cat.parentId;
     }
 
-    const involved: BudgetStatusItem[] = [
-      ...(status.total ? [status.total] : []),
-      ...status.categories.filter((c) => c.categoryId === topCategoryId),
-    ];
-    for (const item of involved) {
-      const tier = crossedTier(item.spent, item.amount, item.alertPct);
-      if (tier === null) continue;
-      const key = alertKey(item.budgetId, monthKey, tier);
-      if (await hasFired(key)) continue;
-      // 先记档再发通知：即使权限被拒也视为已处理，保证"只触发一次"
-      await markFired(key);
-      await notify(item, tier);
+    // 交易同时落入月/季/年三个周期，分别检查各自预算
+    for (const period of BUDGET_PERIODS) {
+      const periodKey = toPeriodKey(tx.dateKey, period);
+      const status = await budgetStatus(period, periodKey);
+      const involved: BudgetStatusItem[] = [
+        ...(status.total ? [status.total] : []),
+        ...status.categories.filter((c) => c.categoryId === topCategoryId),
+      ];
+      for (const item of involved) {
+        const tier = crossedTier(item.spent, item.amount, item.alertPct);
+        if (tier === null) continue;
+        const key = alertKey(item.budgetId, periodKey, tier);
+        if (await hasFired(key)) continue;
+        // 先记档再发通知：即使权限被拒也视为已处理，保证「只触发一次」
+        await markFired(key);
+        await notify(item, tier);
+      }
     }
   } catch {
     // 提醒失败不影响主流程

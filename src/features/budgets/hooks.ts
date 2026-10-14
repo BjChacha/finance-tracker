@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { BudgetPeriod } from '@/lib/date';
 import {
   budgetStatus,
   listBudgets,
@@ -7,16 +8,16 @@ import {
   type BudgetInput,
 } from './repository';
 
-/** key: ['budgets'] */
-export function useBudgets() {
-  return useQuery({ queryKey: ['budgets'], queryFn: () => listBudgets() });
+/** key: ['budgets', period] */
+export function useBudgets(period: BudgetPeriod) {
+  return useQuery({ queryKey: ['budgets', period], queryFn: () => listBudgets(period) });
 }
 
-/** key: ['budget-status', monthKey] */
-export function useBudgetStatus(monthKey: string) {
+/** key: ['budget-status', period, periodKey] */
+export function useBudgetStatus(period: BudgetPeriod, periodKey: string) {
   return useQuery({
-    queryKey: ['budget-status', monthKey],
-    queryFn: () => budgetStatus(monthKey),
+    queryKey: ['budget-status', period, periodKey],
+    queryFn: () => budgetStatus(period, periodKey),
   });
 }
 

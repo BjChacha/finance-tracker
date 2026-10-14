@@ -28,7 +28,7 @@ export default function OverviewScreen() {
   const monthKey = toMonthKey(todayK);
 
   const { data: day } = useDaySummary(todayK);
-  const { data: budget } = useBudgetStatus(monthKey);
+  const { data: budget } = useBudgetStatus('month', monthKey);
   const { data: recent = [] } = useRecentTransactions(3);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

@@ -1,9 +1,10 @@
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, eq, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import { db } from '@/db/client';
 import { budgets, categories, transactions, type Budget } from '@/db/schema';
-import { monthRange, todayKey } from '@/lib/date';
+import { periodRange, todayKey, type BudgetPeriod } from '@/lib/date';
 import { newId } from '@/lib/id';
+import { formatCents } from '@/lib/money';
 import { budgetLevel, budgetPct, dailyAvailable, type BudgetLevel } from './transform';
 
 export type BudgetListItem = Budget & {
@@ -12,11 +13,89 @@ export type BudgetListItem = Budget & {
   categoryColor: string | null;
 };
 
-/** 全部预算（含停用），总预算排最前，其余按创建时间 */
-export async function listBudgets(): Promise<BudgetListItem[]> {
+export type BudgetInput = {
+  period: BudgetPeriod;
+  /** null = 该周期总预算 */
+  categoryId: string | null;
+  /** 该周期额度（分） */
+  amount: number;
+  /** 提醒阈值（%） */
+  alertPct: number;
+};
+
+export type AllocationSummary = {
+  /** 该周期总预算额度（分） */
+  totalAmount: number;
+  /** 已分配到分类预算的合计（分） */
+  allocated: number;
+  /** 待分配 = totalAmount - allocated */
+  toAllocate: number;
+};
+
+/**
+ * 由预算行（categoryId/amount）计算信封分配汇总。纯函数，便于单测。
+ * 无总预算行（categoryId=null 缺失）返回 null。
+ */
+export function computeAllocation(
+  rows: ReadonlyArray<{ categoryId: string | null; amount: number }>,
+): AllocationSummary | null {
+  let totalAmount = 0;
+  let allocated = 0;
+  let hasTotal = false;
+  for (const r of rows) {
+    if (r.categoryId === null) {
+      totalAmount = r.amount;
+      hasTotal = true;
+    } else {
+      allocated += r.amount;
+    }
+  }
+  if (!hasTotal) return null;
+  return { totalAmount, allocated, toAllocate: totalAmount - allocated };
+}
+
+export type AllocationContext = {
+  /** 该周期当前总预算额度；无总预算时为 null */
+  totalAmount: number | null;
+  /** 除本次待写分类外的其他分类预算合计（分） */
+  othersAllocated: number;
+};
+
+/**
+ * 信封分配校验（纯函数）：返回错误信息或 null（通过）。
+ * - 额度必须为正整数分
+ * - categoryId=null（总预算）：不得低于现有分类合计 othersAllocated
+ * - categoryId!=null（分类）：必须先有总预算；本次不得超过 总预算 - othersAllocated
+ */
+export function validateBudgetAllocation(
+  input: Pick<BudgetInput, 'categoryId' | 'amount'>,
+  ctx: AllocationContext,
+): string | null {
+  if (!Number.isSafeInteger(input.amount) || input.amount <= 0) {
+    return '额度必须为正数';
+  }
+  if (input.categoryId === null) {
+    if (input.amount < ctx.othersAllocated) {
+      return `总预算不能低于已分配的分类预算合计（当前已分配 ${formatCents(ctx.othersAllocated)}）`;
+    }
+    return null;
+  }
+  if (ctx.totalAmount === null) {
+    return '请先设置该周期的总预算';
+  }
+  const remaining = ctx.totalAmount - ctx.othersAllocated;
+  if (input.amount > remaining) {
+    return `分类预算超出待分配额度（总预算剩余 ${formatCents(remaining)}）`;
+  }
+  return null;
+}
+
+/** 该周期全部预算（含停用）：总预算排最前，其余按创建时间 */
+export async function listBudgets(period: BudgetPeriod): Promise<BudgetListItem[]> {
   return db
     .select({
       id: budgets.id,
+      period: budgets.period,
       categoryId: budgets.categoryId,
       amount: budgets.amount,
       alertPct: budgets.alertPct,
@@ -29,29 +108,69 @@ export async function listBudgets(): Promise<BudgetListItem[]> {
     })
     .from(budgets)
     .leftJoin(categories, eq(budgets.categoryId, categories.id))
+    .where(eq(budgets.period, period))
     .orderBy(sql`${budgets.categoryId} IS NOT NULL`, budgets.createdAt);
 }
 
-export type BudgetInput = {
-  /** null = 月度总预算 */
-  categoryId: string | null;
-  /** 每月额度（分） */
-  amount: number;
-  /** 提醒阈值（%） */
-  alertPct: number;
-};
+/** 信封分配汇总（读库后委托纯函数）。无总预算返回 null。 */
+export async function allocationSummary(period: BudgetPeriod): Promise<AllocationSummary | null> {
+  const rows = await db
+    .select({ categoryId: budgets.categoryId, amount: budgets.amount })
+    .from(budgets)
+    .where(eq(budgets.period, period));
+  return computeAllocation(rows);
+}
+
+/** 该周期分类预算合计；excludeCategoryId 排除某分类（更新时不算自身） */
+async function sumCategoryAllocations(
+  period: BudgetPeriod,
+  excludeCategoryId?: string,
+): Promise<number> {
+  const conds = [eq(budgets.period, period), sql`${budgets.categoryId} IS NOT NULL`];
+  if (excludeCategoryId !== undefined) {
+    conds.push(ne(budgets.categoryId, excludeCategoryId));
+  }
+  const [row] = await db
+    .select({ total: sql<number>`COALESCE(SUM(${budgets.amount}), 0)`.mapWith(Number) })
+    .from(budgets)
+    .where(and(...conds));
+  return row?.total ?? 0;
+}
+
+/** 查找某周期 (period, categoryId) 的预算行 */
+async function findBudgetRow(
+  period: BudgetPeriod,
+  categoryId: string | null,
+): Promise<{ id: string; amount: number } | null> {
+  const cond =
+    categoryId === null
+      ? and(eq(budgets.period, period), isNull(budgets.categoryId))
+      : and(eq(budgets.period, period), eq(budgets.categoryId, categoryId));
+  const [row] = await db
+    .select({ id: budgets.id, amount: budgets.amount })
+    .from(budgets)
+    .where(cond)
+    .limit(1);
+  return row ?? null;
+}
 
 /**
- * 每分类唯一 upsert。注意：SQLite 唯一索引不约束 NULL（多行 categoryId=NULL 可共存），
- * 所以总预算（categoryId=null）的唯一性靠先查后写保证，分类预算也走同一路径保持一致。
+ * 每周期每分类 upsert，强制信封分配约束（先取数再校验再写）。
+ * 总预算（categoryId=null）唯一性靠先查后写保证（SQLite 唯一索引不约束 NULL）。
  */
 export async function upsertBudget(input: BudgetInput): Promise<string> {
-  if (!Number.isSafeInteger(input.amount) || input.amount <= 0) {
-    throw new Error('额度必须为正数');
-  }
-  const cond =
-    input.categoryId === null ? isNull(budgets.categoryId) : eq(budgets.categoryId, input.categoryId);
-  const [existing] = await db.select({ id: budgets.id }).from(budgets).where(cond).limit(1);
+  const totalRow = input.categoryId === null ? null : await findBudgetRow(input.period, null);
+  const others = await sumCategoryAllocations(
+    input.period,
+    input.categoryId === null ? undefined : input.categoryId,
+  );
+  const error = validateBudgetAllocation(input, {
+    totalAmount: totalRow?.amount ?? null,
+    othersAllocated: others,
+  });
+  if (error) throw new Error(error);
+
+  const existing = await findBudgetRow(input.period, input.categoryId);
   const now = Date.now();
   if (existing) {
     await db
@@ -63,6 +182,7 @@ export async function upsertBudget(input: BudgetInput): Promise<string> {
   const id = newId();
   await db.insert(budgets).values({
     id,
+    period: input.period,
     categoryId: input.categoryId,
     amount: input.amount,
     alertPct: input.alertPct,
@@ -73,50 +193,98 @@ export async function upsertBudget(input: BudgetInput): Promise<string> {
   return id;
 }
 
+/** 删除预算。删除总预算时若仍有分类预算则拒绝，保持分配一致性。 */
 export async function removeBudget(id: string): Promise<void> {
+  const [row] = await db
+    .select({ period: budgets.period, categoryId: budgets.categoryId })
+    .from(budgets)
+    .where(eq(budgets.id, id))
+    .limit(1);
+  if (!row) return;
+  if (row.categoryId === null) {
+    const allocated = await sumCategoryAllocations(row.period);
+    if (allocated > 0) {
+      throw new Error('请先删除该周期所有分类预算，再删除总预算');
+    }
+  }
   await db.delete(budgets).where(eq(budgets.id, id));
 }
 
 export type BudgetStatusItem = {
   budgetId: string;
-  /** null = 总预算 */
+  period: BudgetPeriod;
   categoryId: string | null;
   name: string;
   icon: string | null;
   color: string | null;
-  /** 每月额度（分） */
   amount: number;
   alertPct: number;
-  /** 当月已用（分） */
   spent: number;
-  /** 剩余（分），可为负 */
   remaining: number;
-  /** 进度 %（一位小数，可超 100） */
   pct: number;
-  /** 日均可用（分/天） */
   daily: number;
   level: BudgetLevel;
 };
 
 export type BudgetStatus = {
-  monthKey: string;
+  period: BudgetPeriod;
+  periodKey: string;
   total: BudgetStatusItem | null;
+  allocation: AllocationSummary | null;
   categories: BudgetStatusItem[];
 };
 
 const parentCat = alias(categories, 'parent_cat');
 
+/** 区间内 expense 按一级分类归并（子分类计入父分类） */
+async function spentByTopCategory(start: string, end: string): Promise<Map<string, number>> {
+  const groupId = sql<string>`COALESCE(${parentCat.id}, ${categories.id})`;
+  const rows = await db
+    .select({
+      categoryId: groupId,
+      total: sql<number>`SUM(${transactions.amountBaseCents})`.mapWith(Number),
+    })
+    .from(transactions)
+    .innerJoin(categories, eq(transactions.categoryId, categories.id))
+    .leftJoin(parentCat, eq(categories.parentId, parentCat.id))
+    .where(
+      and(
+        sql`${transactions.dateKey} >= ${start}`,
+        sql`${transactions.dateKey} <= ${end}`,
+        eq(transactions.type, 'expense'),
+      ),
+    )
+    .groupBy(groupId);
+  return new Map(rows.map((r) => [r.categoryId, r.total]));
+}
+
+/** 区间内总支出（expense 本位币额 + transfer fee 折本位币，与 stats expenseSum 同口径） */
+async function totalExpense(start: string, end: string): Promise<number> {
+  const [row] = await db
+    .select({
+      expense: sql<number>`COALESCE(SUM(CASE
+        WHEN ${transactions.type} = 'expense' THEN ${transactions.amountBaseCents}
+        WHEN ${transactions.type} = 'transfer' THEN CAST(ROUND(${transactions.fee} * ${transactions.exchangeRate} / 1000000.0) AS INTEGER)
+        ELSE 0 END), 0)`.mapWith(Number),
+    })
+    .from(transactions)
+    .where(
+      and(
+        sql`${transactions.dateKey} >= ${start}`,
+        sql`${transactions.dateKey} <= ${end}`,
+      ),
+    );
+  return row?.expense ?? 0;
+}
+
 /**
- * 当月预算执行情况（仅启用预算）：
- * - 分类预算：expense 交易按分类汇总，子分类消费归并计入父分类预算
- * - 总预算：当月全部支出（expense + 转账 fee），口径与 monthSummary 一致
+ * 某周期预算执行情况（仅启用预算）：
+ * - 分类预算：区间内 expense 按一级分类归并
+ * - 总预算：区间内 expense + transfer fee（与 monthSummary / expenseSum 同口径）
+ * 三类聚合并行查询。
  */
-export async function budgetStatus(monthKey: string): Promise<BudgetStatus> {
-  const [start, end] = monthRange(monthKey);
-  const inMonth = and(
-    sql`${transactions.dateKey} >= ${start}`,
-    sql`${transactions.dateKey} <= ${end}`,
-  );
+export async function budgetStatus(period: BudgetPeriod, periodKey: string): Promise<BudgetStatus> {
+  const [start, end] = periodRange(period, periodKey);
 
   const budgetRows = await db
     .select({
@@ -130,43 +298,21 @@ export async function budgetStatus(monthKey: string): Promise<BudgetStatus> {
     })
     .from(budgets)
     .leftJoin(categories, eq(budgets.categoryId, categories.id))
-    .where(eq(budgets.enabled, 1))
+    .where(and(eq(budgets.period, period), eq(budgets.enabled, 1)))
     .orderBy(sql`${budgets.categoryId} IS NOT NULL`, budgets.createdAt);
 
-  // 按一级分类归并的当月支出（子分类计入父分类）
-  const groupId = sql<string>`COALESCE(${parentCat.id}, ${categories.id})`;
-  const spentRows = await db
-    .select({
-      categoryId: groupId,
-      total: sql<number>`SUM(${transactions.amountBaseCents})`.mapWith(Number),
-    })
-    .from(transactions)
-    .innerJoin(categories, eq(transactions.categoryId, categories.id))
-    .leftJoin(parentCat, eq(categories.parentId, parentCat.id))
-    .where(and(inMonth, eq(transactions.type, 'expense')))
-    .groupBy(groupId);
-  const spentByCat = new Map(spentRows.map((r) => [r.categoryId, r.total]));
-
-  // 总支出（本位币）：expense 本位币额 + transfer 手续费折本位币（与 monthSummary 同口径）
-  const [totalRow] = await db
-    .select({
-      expense: sql<number>`COALESCE(SUM(CASE
-        WHEN ${transactions.type} = 'expense' THEN ${transactions.amountBaseCents}
-        WHEN ${transactions.type} = 'transfer' THEN CAST(ROUND(${transactions.fee} * ${transactions.exchangeRate} / 1000000.0) AS INTEGER)
-        ELSE 0 END), 0)`.mapWith(Number),
-    })
-    .from(transactions)
-    .where(inMonth);
-  const totalSpent = totalRow?.expense ?? 0;
+  const [spentMap, totalSpent, allocation] = await Promise.all([
+    spentByTopCategory(start, end),
+    totalExpense(start, end),
+    allocationSummary(period),
+  ]);
 
   const today = todayKey();
-  const build = (
-    row: (typeof budgetRows)[number],
-    spent: number,
-  ): BudgetStatusItem => {
+  const build = (row: (typeof budgetRows)[number], spent: number): BudgetStatusItem => {
     const remaining = row.amount - spent;
     return {
       budgetId: row.id,
+      period,
       categoryId: row.categoryId,
       name: row.categoryId === null ? '总预算' : (row.categoryName ?? ''),
       icon: row.categoryIcon,
@@ -176,7 +322,7 @@ export async function budgetStatus(monthKey: string): Promise<BudgetStatus> {
       spent,
       remaining,
       pct: budgetPct(spent, row.amount),
-      daily: dailyAvailable(remaining, monthKey, today),
+      daily: dailyAvailable(remaining, period, periodKey, today),
       level: budgetLevel(spent, row.amount, row.alertPct),
     };
   };
@@ -184,11 +330,8 @@ export async function budgetStatus(monthKey: string): Promise<BudgetStatus> {
   let total: BudgetStatusItem | null = null;
   const categoryItems: BudgetStatusItem[] = [];
   for (const row of budgetRows) {
-    if (row.categoryId === null) {
-      total = build(row, totalSpent);
-    } else {
-      categoryItems.push(build(row, spentByCat.get(row.categoryId) ?? 0));
-    }
+    if (row.categoryId === null) total = build(row, totalSpent);
+    else categoryItems.push(build(row, spentMap.get(row.categoryId) ?? 0));
   }
-  return { monthKey, total, categories: categoryItems };
+  return { period, periodKey, total, allocation, categories: categoryItems };
 }
