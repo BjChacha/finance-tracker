@@ -5,6 +5,9 @@ import m0000 from './0000_youthful_roulette.sql';
 import m0001 from './0001_multicurrency_import.sql';
 import m0002 from './0002_projects.sql';
 import m0003 from './0003_account_types.sql';
+import m0004 from './0004_budget_periods.sql';
+import m0005 from './0005_polite_trish_tilby.sql';
+import m0006 from './0006_transfer_categories.sql';
 
 export default {
   journal,
@@ -13,5 +16,8 @@ export default {
     m0001,
     m0002,
     m0003,
+    m0004,
+    m0005,
+    m0006,
   },
 };

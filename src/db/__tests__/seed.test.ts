@@ -24,6 +24,7 @@ const chainable = (rows: unknown[]) => {
 jest.mock('@/db/client', () => ({
   db: {
     select: jest.fn(() => chainable([])),
+    insert: jest.fn(),
   },
 }));
 
@@ -46,7 +47,50 @@ jest.mock('@/db/schema', () => ({
 
 import { db } from '@/db/client';
 import { getSetting, setSetting } from '@/db/settings';
-import { migrateMealCategoriesOnce } from '@/db/seed';
+import { migrateMealCategoriesOnce, seedIfEmpty } from '@/db/seed';
+
+describe('seedIfEmpty', () => {
+  const selectMock = db.select as jest.Mock;
+  const insertMock = db.insert as jest.Mock;
+  const valuesMock = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    selectMock.mockReset();
+    insertMock.mockReset().mockReturnValue({ values: valuesMock });
+    valuesMock.mockReset().mockResolvedValue(undefined);
+  });
+
+  it('seeds missing expense and income types when migration already inserted transfer presets', async () => {
+    selectMock
+      .mockImplementationOnce(() => chainable([{ type: 'transfer' }]))
+      .mockImplementationOnce(() => chainable([{ value: 1 }]));
+
+    await seedIfEmpty();
+
+    const categoryRows = valuesMock.mock.calls[0]![0] as Array<{ type: string }>;
+    expect(new Set(categoryRows.map((row) => row.type))).toEqual(new Set(['expense', 'income']));
+    expect(categoryRows.some((row) => row.type === 'transfer')).toBe(false);
+  });
+
+  it('uses stable IDs when the transfer category type is missing', async () => {
+    selectMock
+      .mockImplementationOnce(() => chainable([{ type: 'expense' }, { type: 'income' }]))
+      .mockImplementationOnce(() => chainable([{ value: 1 }]));
+
+    await seedIfEmpty();
+
+    const categoryRows = valuesMock.mock.calls[0]![0] as Array<{ id: string; type: string }>;
+    expect(categoryRows.map((row) => row.id)).toEqual([
+      'preset-transfer-account',
+      'preset-transfer-bill-repayment',
+      'preset-transfer-withdrawal',
+      'preset-transfer-deposit',
+      'preset-transfer-other',
+    ]);
+    expect(categoryRows.every((row) => row.type === 'transfer')).toBe(true);
+  });
+});
 
 describe('migrateMealCategoriesOnce', () => {
   const selectMock = db.select as jest.Mock;

@@ -1,9 +1,11 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import type { AccountType } from './account-types';
+import type { BudgetPeriod } from '@/lib/date';
 
 export type { AccountType } from './account-types';
 /** 交易类型 */
 export type TransactionType = 'expense' | 'income' | 'transfer';
+export type CategoryType = TransactionType;
 /** 周期频率 */
 export type RecurringFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -30,7 +32,7 @@ export const categories = sqliteTable(
   {
     id: text('id').primaryKey(),
     name: text('name').notNull(),
-    type: text('type').$type<'expense' | 'income'>().notNull(),
+    type: text('type').$type<CategoryType>().notNull(),
     icon: text('icon').notNull(),
     color: text('color').notNull(),
     parentId: text('parent_id'),
@@ -78,7 +80,6 @@ export const transactions = sqliteTable(
     toAccountId: text('to_account_id').references(() => accounts.id),
     /** 仅 transfer：转入侧金额（目标账户币种，分）；同币种=amount，跨币种=按汇率换算 */
     toAmount: integer('to_amount'),
-    /** transfer 为空 */
     categoryId: text('category_id').references(() => categories.id),
     /** 可选：所属项目 */
     projectId: text('project_id').references(() => projects.id),
@@ -91,6 +92,8 @@ export const transactions = sqliteTable(
     importBatchId: text('import_batch_id'),
     /** SHA-256(dateKey|amount|type|note)，导入去重 */
     fingerprint: text('fingerprint'),
+    /** 客户端幂等键（如快捷记账 handoffId）：同键重复提交返回既有记录，防双触发双写 */
+    clientTag: text('client_tag'),
     createdAt: integer('created_at').notNull(),
     updatedAt: integer('updated_at').notNull(),
   },
@@ -102,6 +105,7 @@ export const transactions = sqliteTable(
     index('idx_tx_project').on(t.projectId, t.dateKey),
     index('idx_tx_fingerprint').on(t.fingerprint),
     index('idx_tx_batch').on(t.importBatchId),
+    uniqueIndex('uq_tx_client_tag').on(t.clientTag),
   ],
 );
 
@@ -109,9 +113,11 @@ export const budgets = sqliteTable(
   'budgets',
   {
     id: text('id').primaryKey(),
-    /** NULL = 月度总预算 */
+    /** 预算周期：month / quarter / year */
+    period: text('period').$type<BudgetPeriod>().notNull().default('month'),
+    /** NULL = 该周期的总预算；非空 = 该周期某分类预算（一级支出分类） */
     categoryId: text('category_id').references(() => categories.id),
-    /** 每月额度（分） */
+    /** 该周期额度（分） */
     amount: integer('amount').notNull(),
     /** 提醒阈值（%），100 时仅超支提醒 */
     alertPct: integer('alert_pct').notNull().default(80),
@@ -119,7 +125,7 @@ export const budgets = sqliteTable(
     createdAt: integer('created_at').notNull(),
     updatedAt: integer('updated_at').notNull(),
   },
-  (t) => [uniqueIndex('uq_budgets_category').on(t.categoryId)],
+  (t) => [uniqueIndex('uq_budgets_period_category').on(t.period, t.categoryId)],
 );
 
 export const recurringRules = sqliteTable(

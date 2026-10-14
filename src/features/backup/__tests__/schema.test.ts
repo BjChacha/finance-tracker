@@ -5,7 +5,7 @@ import { backupEnvelopeSchema, backupFileSchema } from '../schema';
 function validBackup() {
   return {
     format: 'finance-tracker-backup',
-    schemaVersion: 4,
+    schemaVersion: 6,
     appVersion: '1.0.0',
     exportedAt: '2026-07-08T10:00:00.000Z',
     data: {
@@ -64,7 +64,18 @@ function validBackup() {
           updatedAt: 1751942400000,
         },
       ],
-      budgets: [],
+      budgets: [
+        {
+          id: 'bud-1',
+          period: 'month',
+          categoryId: null,
+          amount: 500000,
+          alertPct: 80,
+          enabled: 1,
+          createdAt: 1751900000000,
+          updatedAt: 1751900000000,
+        },
+      ],
       recurringRules: [],
       importBatches: [],
       importMappings: [],
@@ -93,6 +104,12 @@ describe('backupFileSchema', () => {
   it.each(ACCOUNT_TYPES)('accepts current account type: %s', (type) => {
     const input = validBackup();
     input.data.accounts[0]!.type = type;
+    expect(backupFileSchema.safeParse(input).success).toBe(true);
+  });
+
+  it('accepts transfer categories', () => {
+    const input = validBackup();
+    input.data.categories[0]!.type = 'transfer';
     expect(backupFileSchema.safeParse(input).success).toBe(true);
   });
 
@@ -147,6 +164,14 @@ describe('backupFileSchema', () => {
       'projectId 非字符串',
       (b: ReturnType<typeof validBackup>) => {
         b.data.transactions[0]!.projectId = 123 as unknown as null;
+        return b;
+      },
+    ],
+    [
+      'budget 缺 period',
+      (b: ReturnType<typeof validBackup>) => {
+        const { period: _drop, ...rest } = b.data.budgets[0]!;
+        b.data.budgets[0] = rest as never;
         return b;
       },
     ],

@@ -5,7 +5,7 @@
  * 此版本号 +1，并在 src/features/backup/upgraders.ts 中补一个
  * `旧版本号 → 旧版本号+1` 的升级函数，使旧备份文件仍可恢复。
  */
-export const BACKUP_SCHEMA_VERSION = 4;
+export const BACKUP_SCHEMA_VERSION = 6;
 
 /** 备份文件的 format 标识，恢复时用于快速识别文件类型 */
 export const BACKUP_FORMAT = 'finance-tracker-backup';

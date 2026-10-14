@@ -1,3 +1,9 @@
+import { normalizeAccountType } from '@/db/account-types';
+import {
+  TRANSFER_CATEGORY_PRESETS,
+  TRANSFER_OTHER_CATEGORY_ID,
+} from '@/db/category-presets';
+
 /**
  * 备份版本升级链。
  *
@@ -33,7 +39,7 @@ export type RawBackupPayload = {
 
 export type BackupUpgrader = (payload: RawBackupPayload) => RawBackupPayload;
 
-/** 目前 schemaVersion=4 */
+/** 目前 schemaVersion=6 */
 export const backupUpgraders: Record<number, BackupUpgrader> = {
   // v1 → v2：引入多币种。transactions 增加 currency/exchange_rate/amount_base_cents/to_amount，
   // accounts 增加 rate_to_base。v1 备份全部为隐式 CNY（本位币），按此回填。
@@ -99,6 +105,62 @@ export const backupUpgraders: Record<number, BackupUpgrader> = {
       },
     };
   },
+  // v4 → v5：预算引入「周期」。budgets 增加 period，旧数据统一回填 'month'
+  // （原实现仅月预算，语义不变）。索引重建由 DB migration 负责。
+  4: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const budgetRows = Array.isArray(data.budgets) ? data.budgets : [];
+    return {
+      ...payload,
+      schemaVersion: 5,
+      data: {
+        ...data,
+        budgets: budgetRows.map((b) => ({
+          ...(b as Record<string, unknown>),
+          period: 'month',
+        })),
+      },
+    };
+  },
+  5: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const categoryRows = Array.isArray(data.categories) ? data.categories : [];
+    const transactionRows = Array.isArray(data.transactions) ? data.transactions : [];
+    const recurringRuleRows = Array.isArray(data.recurringRules) ? data.recurringRules : [];
+    const existingCategoryIds = new Set(
+      categoryRows.map((category) => (category as Record<string, unknown>).id),
+    );
+    const missingTransferCategories = TRANSFER_CATEGORY_PRESETS.flatMap((preset, sortOrder) =>
+      existingCategoryIds.has(preset.id)
+        ? []
+        : [
+            {
+              ...preset,
+              type: 'transfer',
+              parentId: null,
+              sortOrder,
+              isPreset: 1,
+              archived: 0,
+            },
+          ],
+    );
+    const backfillTransferCategory = (value: unknown) => {
+      const row = value as Record<string, unknown>;
+      if (row.type !== 'transfer' || row.categoryId != null) return row;
+      return { ...row, categoryId: TRANSFER_OTHER_CATEGORY_ID };
+    };
+
+    return {
+      ...payload,
+      schemaVersion: 6,
+      data: {
+        ...data,
+        categories: [...categoryRows, ...missingTransferCategories],
+        transactions: transactionRows.map(backfillTransferCategory),
+        recurringRules: recurringRuleRows.map(backfillTransferCategory),
+      },
+    };
+  },
 };
 
 /**
@@ -121,4 +183,3 @@ export function runUpgradeChain(
   }
   return current;
 }
-import { normalizeAccountType } from '@/db/account-types';

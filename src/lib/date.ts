@@ -90,3 +90,106 @@ export function nextRunDate(
     }
   }
 }
+
+/** 预算周期：月 / 自然季 / 自然年 */
+export type BudgetPeriod = 'month' | 'quarter' | 'year';
+
+const QUARTER_KEY_RE = /^(\d{4})-Q([1-4])$/;
+const PERIOD_KEYS: readonly BudgetPeriod[] = ['month', 'quarter', 'year'];
+export const BUDGET_PERIODS = PERIOD_KEYS;
+
+/** dateKey → periodKey（月 'YYYY-MM' / 季 'YYYY-Qn' / 年 'YYYY'） */
+export function toPeriodKey(dateKey: string, period: BudgetPeriod): string {
+  const year = dateKey.slice(0, 4);
+  switch (period) {
+    case 'month':
+      return dateKey.slice(0, 7);
+    case 'year':
+      return year;
+    case 'quarter': {
+      const month = Number(dateKey.slice(5, 7));
+      const q = Math.floor((month - 1) / 3) + 1;
+      return `${year}-Q${q}`;
+    }
+  }
+}
+
+/** periodKey → 周期首末的 dateKey（闭区间，与 monthRange 同口径） */
+export function periodRange(period: BudgetPeriod, periodKey: string): [string, string] {
+  switch (period) {
+    case 'month':
+      return monthRange(periodKey);
+    case 'year':
+      return [`${periodKey}-01-01`, `${periodKey}-12-31`];
+    case 'quarter': {
+      const m = QUARTER_KEY_RE.exec(periodKey);
+      if (!m) throw new Error(`Invalid quarter periodKey: ${periodKey}`);
+      const startMonth = (Number(m[2]) - 1) * 3 + 1;
+      const start = dayjs(`${m[1]}-${String(startMonth).padStart(2, '0')}-01`);
+      const end = start.add(2, 'month').endOf('month');
+      return [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')];
+    }
+  }
+}
+
+/** 给定日期所在周期的 periodKey；默认取今天 */
+export function currentPeriodKey(period: BudgetPeriod, refKey = todayKey()): string {
+  return toPeriodKey(refKey, period);
+}
+
+/**
+ * 周期内剩余天数（含今天）：
+ * - 过去周期返回 0（已成历史，无「可用」概念）
+ * - 未来周期返回整周期天数
+ * - 当前周期返回从今天到周期末（含）的天数
+ */
+export function daysRemainingInPeriod(
+  period: BudgetPeriod,
+  periodKey: string,
+  refKey = todayKey(),
+): number {
+  const [start, end] = periodRange(period, periodKey);
+  if (refKey < start) return dayjs(end).diff(dayjs(start), 'day') + 1;
+  if (refKey > end) return 0;
+  return dayjs(end).diff(dayjs(refKey), 'day') + 1;
+}
+
+/** 周期展示标题：月 'YYYY年MM月' / 季 'YYYY年 Qn' / 年 'YYYY年' */
+export function formatPeriodTitle(period: BudgetPeriod, periodKey: string): string {
+  switch (period) {
+    case 'month':
+      return dayjs(`${periodKey}-01`).format('YYYY年MM月');
+    case 'year':
+      return `${periodKey}年`;
+    case 'quarter': {
+      const m = QUARTER_KEY_RE.exec(periodKey);
+      if (!m) throw new Error(`Invalid quarter periodKey: ${periodKey}`);
+      return `${m[1]}年 Q${m[2]}`;
+    }
+  }
+}
+
+/** periodKey 前后平移 delta 个周期（月 ±N 月 / 年 ±N 年 / 季 ±N 季，跨年自动进位） */
+export function shiftPeriodKey(period: BudgetPeriod, periodKey: string, delta: number): string {
+  switch (period) {
+    case 'month':
+      return dayjs(`${periodKey}-01`).add(delta, 'month').format('YYYY-MM');
+    case 'year':
+      return String(Number(periodKey) + delta);
+    case 'quarter': {
+      const m = QUARTER_KEY_RE.exec(periodKey);
+      if (!m) throw new Error(`Invalid quarter periodKey: ${periodKey}`);
+      let year = Number(m[1]);
+      let q = Number(m[2]) + delta;
+      while (q < 1) {
+        q += 4;
+        year -= 1;
+      }
+      while (q > 4) {
+        q -= 4;
+        year += 1;
+      }
+      return `${year}-Q${q}`;
+    }
+  }
+}

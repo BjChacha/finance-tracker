@@ -1,4 +1,18 @@
-import { combineDateAndTime, dayjs, formatTime, monthRange, nextRunDate, toDateKey, toMonthKey } from '../date';
+import {
+  combineDateAndTime,
+  currentPeriodKey,
+  dayjs,
+  daysRemainingInPeriod,
+  formatTime,
+  formatPeriodTitle,
+  monthRange,
+  nextRunDate,
+  periodRange,
+  toDateKey,
+  todayKey,
+  toMonthKey,
+  toPeriodKey,
+} from '../date';
 
 describe('toDateKey / toMonthKey / monthRange', () => {
   it('formats date key', () => {
@@ -67,5 +81,61 @@ describe('combineDateAndTime', () => {
   it('合法 HH:mm（由 DateTimePicker 写入）组合出有限时间戳', () => {
     expect(Number.isFinite(combineDateAndTime('2026-07-26', '00:00'))).toBe(true);
     expect(Number.isFinite(combineDateAndTime('2026-07-26', '23:59'))).toBe(true);
+  });
+});
+
+describe('budget period helpers', () => {
+  it('toPeriodKey maps dateKey to month/quarter/year keys', () => {
+    expect(toPeriodKey('2026-07-15', 'month')).toBe('2026-07');
+    expect(toPeriodKey('2026-07-15', 'year')).toBe('2026');
+    expect(toPeriodKey('2026-01-01', 'quarter')).toBe('2026-Q1');
+    expect(toPeriodKey('2026-03-31', 'quarter')).toBe('2026-Q1');
+    expect(toPeriodKey('2026-04-01', 'quarter')).toBe('2026-Q2');
+    expect(toPeriodKey('2026-12-31', 'quarter')).toBe('2026-Q4');
+  });
+
+  it('periodRange returns closed [start, end] for each period', () => {
+    expect(periodRange('month', '2026-02')).toEqual(['2026-02-01', '2026-02-28']);
+    expect(periodRange('year', '2026')).toEqual(['2026-01-01', '2026-12-31']);
+    expect(periodRange('quarter', '2026-Q2')).toEqual(['2026-04-01', '2026-06-30']);
+    expect(periodRange('quarter', '2026-Q4')).toEqual(['2026-10-01', '2026-12-31']);
+    // Q1 跨问年 2 月
+    expect(periodRange('quarter', '2024-Q1')).toEqual(['2024-01-01', '2024-03-31']);
+  });
+
+  it('periodRange throws on invalid quarter key', () => {
+    expect(() => periodRange('quarter', 'bogus')).toThrow();
+  });
+
+  it('daysRemainingInPeriod: past period returns 0', () => {
+    expect(daysRemainingInPeriod('month', '2026-01', '2026-07-15')).toBe(0);
+    expect(daysRemainingInPeriod('quarter', '2026-Q1', '2026-07-15')).toBe(0);
+    expect(daysRemainingInPeriod('year', '2025', '2026-07-15')).toBe(0);
+  });
+
+  it('daysRemainingInPeriod: current period counts today..end', () => {
+    // 2026-07，到 07-31，含今天 07-15 → 17 天
+    expect(daysRemainingInPeriod('month', '2026-07', '2026-07-15')).toBe(17);
+    expect(daysRemainingInPeriod('month', '2026-07', '2026-07-31')).toBe(1);
+  });
+
+  it('daysRemainingInPeriod: future period returns full span', () => {
+    expect(daysRemainingInPeriod('month', '2026-02', '2026-01-15')).toBe(28);
+    // 2026-Q1 整季 = 31+28+31 = 90 天
+    expect(daysRemainingInPeriod('quarter', '2026-Q1', '2025-12-15')).toBe(90);
+    // 2026 整年 365 天
+    expect(daysRemainingInPeriod('year', '2026', '2025-12-15')).toBe(365);
+  });
+
+  it('formatPeriodTitle renders localized titles', () => {
+    expect(formatPeriodTitle('month', '2026-07')).toBe('2026年07月');
+    expect(formatPeriodTitle('year', '2026')).toBe('2026年');
+    expect(formatPeriodTitle('quarter', '2026-Q2')).toBe('2026年 Q2');
+  });
+
+  it('currentPeriodKey defaults to today and overrides by refKey', () => {
+    const t = todayKey();
+    expect(currentPeriodKey('month')).toBe(t.slice(0, 7));
+    expect(currentPeriodKey('quarter', '2026-05-01')).toBe('2026-Q2');
   });
 });

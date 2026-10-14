@@ -28,7 +28,7 @@ const accountRowSchema = z.object({
 const categoryRowSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
-  type: z.enum(['expense', 'income']),
+  type: z.enum(['expense', 'income', 'transfer']),
   icon: z.string(),
   color: z.string(),
   parentId: z.string().nullable(),
@@ -73,6 +73,7 @@ const transactionRowSchema = z.object({
 
 const budgetRowSchema = z.object({
   id: z.string().min(1),
+  period: z.enum(['month', 'quarter', 'year']),
   categoryId: z.string().nullable(),
   amount: z.int(),
   alertPct: z.int(),

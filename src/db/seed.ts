@@ -1,8 +1,15 @@
 import { and, count, eq, inArray, isNotNull, sql } from 'drizzle-orm';
 import { db } from './client';
-import { accounts, categories, transactions, type NewCategory } from './schema';
+import {
+  accounts,
+  categories,
+  transactions,
+  type CategoryType,
+  type NewCategory,
+} from './schema';
 import { newId } from '@/lib/id';
 import { getSetting, setSetting } from './settings';
+import { TRANSFER_CATEGORY_PRESETS } from './category-presets';
 
 type PresetCategory = { name: string; icon: string; color: string; children?: string[] };
 
@@ -36,38 +43,54 @@ const INCOME_PRESETS: PresetCategory[] = [
   { name: '补记漏记', icon: '⚖️', color: '#9CA3AF' },
 ];
 
-/** 首次启动播种：内置分类 + 默认现金账户。幂等（有数据则跳过）。 */
+/** 首次启动播种：内置分类 + 默认现金账户。幂等（按分类类型补齐）。 */
 export async function seedIfEmpty(): Promise<void> {
-  const [{ value: categoryCount }] = await db.select({ value: count() }).from(categories);
-  if (categoryCount === 0) {
-    const rows: NewCategory[] = [];
-    const push = (preset: PresetCategory, type: 'expense' | 'income', sortOrder: number) => {
-      const parentId = newId();
+  const existingCategoryRows = await db.select({ type: categories.type }).from(categories);
+  const existingTypes = new Set(existingCategoryRows.map((row) => row.type));
+  const rows: NewCategory[] = [];
+  const push = (
+    preset: PresetCategory,
+    type: CategoryType,
+    sortOrder: number,
+    stableId?: string,
+  ) => {
+    const parentId = stableId ?? newId();
+    rows.push({
+      id: parentId,
+      name: preset.name,
+      type,
+      icon: preset.icon,
+      color: preset.color,
+      parentId: null,
+      sortOrder,
+      isPreset: 1,
+    });
+    preset.children?.forEach((childName, i) => {
       rows.push({
-        id: parentId,
-        name: preset.name,
+        id: newId(),
+        name: childName,
         type,
         icon: preset.icon,
         color: preset.color,
-        parentId: null,
-        sortOrder,
+        parentId,
+        sortOrder: i,
         isPreset: 1,
       });
-      preset.children?.forEach((childName, i) => {
-        rows.push({
-          id: newId(),
-          name: childName,
-          type,
-          icon: preset.icon,
-          color: preset.color,
-          parentId,
-          sortOrder: i,
-          isPreset: 1,
-        });
-      });
-    };
+    });
+  };
+
+  if (!existingTypes.has('expense')) {
     EXPENSE_PRESETS.forEach((p, i) => push(p, 'expense', i));
+  }
+  if (!existingTypes.has('income')) {
     INCOME_PRESETS.forEach((p, i) => push(p, 'income', i));
+  }
+  if (!existingTypes.has('transfer')) {
+    TRANSFER_CATEGORY_PRESETS.forEach((preset, index) =>
+      push(preset, 'transfer', index, preset.id),
+    );
+  }
+  if (rows.length > 0) {
     await db.insert(categories).values(rows);
   }
 

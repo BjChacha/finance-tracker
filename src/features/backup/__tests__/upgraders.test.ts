@@ -222,3 +222,126 @@ describe('backupUpgraders[3] (v3 -> v4 account types)', () => {
     expect(out.data.projects).toEqual([]);
   });
 });
+
+describe('backupUpgraders[4]（v4 → v5 预算周期）', () => {
+  const upgrade = backupUpgraders[4]!;
+
+  it('budgets 补 period=month；升到 v5', () => {
+    const out = upgrade({
+      ...payloadAt(4),
+      data: {
+        budgets: [
+          { id: 'b1', categoryId: null, amount: 500000 },
+          { id: 'b2', categoryId: 'cat-1', amount: 100000 },
+        ],
+      },
+    }) as RawBackupPayload & { data: { budgets: Record<string, unknown>[] } };
+    expect(out.schemaVersion).toBe(5);
+    expect(out.data.budgets.every((b) => b.period === 'month')).toBe(true);
+    expect(out.data.budgets[0]).toMatchObject({ id: 'b1', categoryId: null, amount: 500000 });
+  });
+
+  it('缺 data / 空数组时不抛错', () => {
+    expect(() => upgrade(payloadAt(4))).not.toThrow();
+    expect(() => upgrade({ ...payloadAt(4), data: { budgets: [] } })).not.toThrow();
+  });
+});
+
+describe('完整升级链 v1 → v5', () => {
+  it('budget 行最终带 period=month', () => {
+    const out = runUpgradeChain(
+      {
+        ...payloadAt(1),
+        data: {
+          accounts: [{ id: 'a', type: 'cash', currency: 'CNY' }],
+          transactions: [{ id: 'tx', type: 'expense', amount: 1250 }],
+          budgets: [{ id: 'b1', categoryId: null, amount: 300000 }],
+        },
+      },
+      1,
+      5,
+    ) as RawBackupPayload & { data: { budgets: Record<string, unknown>[] } };
+    expect(out.schemaVersion).toBe(5);
+    expect(out.data.budgets[0]).toMatchObject({ id: 'b1', period: 'month', amount: 300000 });
+  });
+});
+
+describe('backupUpgraders[5] (v5 -> v6 transfer categories)', () => {
+  const upgrade = backupUpgraders[5]!;
+
+  it('adds stable presets and backfills transfer transactions and recurring rules', () => {
+    const out = upgrade({
+      ...payloadAt(5),
+      data: {
+        categories: [
+          {
+            id: 'preset-transfer-account',
+            name: '账户互转',
+            type: 'transfer',
+          },
+        ],
+        transactions: [
+          { id: 'transfer', type: 'transfer', categoryId: null, note: '#legacy' },
+          { id: 'expense', type: 'expense', categoryId: null },
+        ],
+        recurringRules: [{ id: 'rule', type: 'transfer', categoryId: null }],
+      },
+    }) as RawBackupPayload & {
+      data: {
+        categories: Record<string, unknown>[];
+        transactions: Record<string, unknown>[];
+        recurringRules: Record<string, unknown>[];
+      };
+    };
+
+    expect(out.schemaVersion).toBe(6);
+    expect(out.data.categories.filter((category) => category.type === 'transfer')).toHaveLength(5);
+    expect(out.data.transactions[0]).toMatchObject({
+      categoryId: 'preset-transfer-other',
+      note: '#legacy',
+    });
+    expect(out.data.transactions[1]!.categoryId).toBeNull();
+    expect(out.data.recurringRules[0]!.categoryId).toBe('preset-transfer-other');
+  });
+
+  it('is idempotent for preset insertion', () => {
+    const once = upgrade({ ...payloadAt(5), data: {} });
+    const twice = upgrade({ ...once, schemaVersion: 5 });
+    const data = twice.data as { categories: Record<string, unknown>[] };
+    expect(new Set(data.categories.map((category) => category.id)).size).toBe(5);
+  });
+});
+
+describe('complete upgrade chain v1 -> v6', () => {
+  it('preserves prior upgrades and fills transfer categories', () => {
+    const out = runUpgradeChain(
+      {
+        ...payloadAt(1),
+        data: {
+          accounts: [{ id: 'a', type: 'cash', currency: 'CNY' }],
+          categories: [],
+          transactions: [{ id: 'tx', type: 'transfer', amount: 1250, categoryId: null }],
+          recurringRules: [{ id: 'rule', type: 'transfer', categoryId: null }],
+          budgets: [{ id: 'b1', categoryId: null, amount: 300000 }],
+        },
+      },
+      1,
+      6,
+    ) as RawBackupPayload & {
+      data: {
+        transactions: Record<string, unknown>[];
+        recurringRules: Record<string, unknown>[];
+        budgets: Record<string, unknown>[];
+      };
+    };
+
+    expect(out.schemaVersion).toBe(6);
+    expect(out.data.transactions[0]).toMatchObject({
+      categoryId: 'preset-transfer-other',
+      toAmount: 1250,
+      projectId: null,
+    });
+    expect(out.data.recurringRules[0]!.categoryId).toBe('preset-transfer-other');
+    expect(out.data.budgets[0]!.period).toBe('month');
+  });
+});
