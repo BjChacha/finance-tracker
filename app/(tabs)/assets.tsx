@@ -70,28 +70,34 @@ export default function AssetsScreen() {
       style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={[styles.content, { paddingBottom: tabBarInset }]}
     >
-      {/* 资产概览：净资产 + 资产/负债（语义色，负债以负数呈现）+ 平滑迷你趋势 */}
+      {/* 资产概览：左 净资产大数字 / 右 资产·负债，下方迷你趋势。整体压缩约 1/3 高度。 */}
       <View style={[styles.overviewCard, { backgroundColor: colors.card }]}>
-        <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>{zh.assets.netWorth}</Text>
-        <Text style={[styles.totalValue, { color: colors.primary }]}>
-          {formatCentsWithSymbol(totalAssets(accounts))}
-        </Text>
-        <View style={styles.totalSubRow}>
-          <View style={styles.totalSubCol}>
-            <Text style={[styles.totalSubLabel, { color: colors.textSecondary }]}>
-              {zh.assets.totalAssetsLabel}
+        <View style={styles.overviewTopRow}>
+          <View style={styles.overviewMain}>
+            <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>
+              {zh.assets.netWorth}
             </Text>
-            <Text style={[styles.totalSubValue, { color: colors.income }]}>
-              {formatCentsWithSymbol(totals.assets)}
+            <Text style={[styles.totalValue, { color: colors.primary }]}>
+              {formatCentsWithSymbol(totalAssets(accounts))}
             </Text>
           </View>
-          <View style={styles.totalSubCol}>
-            <Text style={[styles.totalSubLabel, { color: colors.textSecondary }]}>
-              {zh.assets.totalLiabilitiesLabel}
-            </Text>
-            <Text style={[styles.totalSubValue, { color: colors.expense }]}>
-              {formatCentsWithSymbol(-totals.liabilities)}
-            </Text>
+          <View style={styles.overviewSide}>
+            <View style={styles.sideItem}>
+              <Text style={[styles.sideLabel, { color: colors.textSecondary }]}>
+                {zh.assets.totalAssetsLabel}
+              </Text>
+              <Text style={[styles.sideValue, { color: colors.income }]}>
+                {formatCentsWithSymbol(totals.assets)}
+              </Text>
+            </View>
+            <View style={styles.sideItem}>
+              <Text style={[styles.sideLabel, { color: colors.textSecondary }]}>
+                {zh.assets.totalLiabilitiesLabel}
+              </Text>
+              <Text style={[styles.sideValue, { color: colors.expense }]}>
+                {formatCentsWithSymbol(-totals.liabilities)}
+              </Text>
+            </View>
           </View>
         </View>
         {netWorthPoints.length > 0 && (
@@ -102,7 +108,7 @@ export default function AssetsScreen() {
               primaryLabel={zh.stats.netWorth}
               compact
               curved
-              height={80}
+              height={56}
             />
           </View>
         )}
@@ -149,14 +155,26 @@ export default function AssetsScreen() {
 function makeStyles({ colors }: AppTheme) {
   return StyleSheet.create({
     content: { padding: 16, gap: 12 },
-    overviewCard: { borderRadius: 14, padding: 16 },
+    overviewCard: { borderRadius: 14, padding: 14 },
+    overviewTopRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    overviewMain: { flex: 1 },
     totalLabel: { fontSize: 13 },
-    totalValue: { fontSize: 30, fontWeight: '700', marginTop: 6, fontVariant: ['tabular-nums'] },
-    totalSubRow: { flexDirection: 'row', marginTop: 16, gap: 24 },
-    totalSubCol: { flex: 1 },
-    totalSubLabel: { fontSize: 12 },
-    totalSubValue: { fontSize: 15, fontWeight: '600', marginTop: 2, fontVariant: ['tabular-nums'] },
-    sparkWrap: { marginTop: 12 },
+    totalValue: {
+      fontSize: 26,
+      fontWeight: '700',
+      marginTop: 4,
+      fontVariant: ['tabular-nums'],
+    },
+    overviewSide: { gap: 6, alignItems: 'flex-end' },
+    sideItem: { alignItems: 'flex-end' },
+    sideLabel: { fontSize: 11 },
+    sideValue: {
+      fontSize: 13,
+      fontWeight: '600',
+      marginTop: 1,
+      fontVariant: ['tabular-nums'],
+    },
+    sparkWrap: { marginTop: 8 },
     card: { borderRadius: 12, padding: 16 },
     cardTitle: { color: colors.text, fontSize: 15, fontWeight: '600', marginBottom: 12 },
     groupSection: {
