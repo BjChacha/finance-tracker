@@ -4,7 +4,7 @@ Read the exact versioned docs at <https://docs.expo.dev/versions/v57.0.0/> befor
 
 # 真机调试 (adb)
 
-允许且鼓励使用 adb 对真机进行调试、复现与性能观测。当前已连接设备:红米 marble (23049RAD8C),serial `946d37c0`。
+允许且鼓励使用 adb 对真机进行调试、复现与性能观测。当前已连接设备:红米 M098FE (HyperOS 2),serial `57721e63`。
 
 ## adb 路径
 
@@ -22,6 +22,21 @@ adb 不在 PATH 中,需用完整路径:
 - `screenrecord` 是变帧率录制:画面静止时不编码、Activity/Surface 切换瞬间会丢帧。需要逐帧不丢时改用 `screencap` 连拍 (burst),或临时放慢系统动画 (见下) 再录。
 - 较长的命令序列写进 `.sh` 脚本文件执行,避免内联命令触发长度限制或引号转义问题。
 - 临时改系统设置 (动画缩放等) 后,务必用 `trap` 或显式命令恢复原值。
+
+## HyperOS 触摸注入 (input 被拦时)
+
+HyperOS 未开「USB 调试(安全设置)」时,`input tap/swipe`、`sendevent` 均被 SecurityException 拦截。**monkey 脚本模式可用**:
+
+- 脚本格式:`DispatchPointer(downtime,eventTime,action,x,y,pressure,size,metaState,xPrecision,yPrecision,device,edgeFlags)` —— 必须恰好 12 个参数,少一个会静默注入 0 事件;action 0=down 1=up 2=move,`UserWait(ms)` 插入延时。
+- 运行:`adb push x.mks /data/local/tmp/ && adb shell monkey -f /data/local/tmp/x.mks 1`。
+- 现成助手:`debug/verify/mtap.py`(单击)与 `debug/verify/mswipe.py`(滑动),直接 `python mtap.py <x> <y>`。
+- 定位控件坐标用 `uiautomator dump` + `adb pull`(记得 `export MSYS_NO_PATHCONV=1`)。
+
+## 动画验证方法 (screenrecord 逐帧)
+
+`screenrecord` 变帧率:静止段不编码,动画开始才出帧,首帧 pts 即动画近似起点。
+流程:设备上后台起录 → monkey tap 触发 → `adb pull` mp4 → `ffmpeg -i in.mp4 -vsync 0 f_%04d.png` 逐帧提取(pts 用 `ffprobe -show_entries frame=pts_time`)→ PIL 按帧追踪特征(亮文本行 y、彩色图标质心 x 等)。
+现成分析脚本:`debug/verify/shot.py`(整页 ASCII 渲染)、`debug/verify/donut_check.py`(环形图标签视口检查)。
 
 # 性能调测 (smartperfetto / perfetto)
 
