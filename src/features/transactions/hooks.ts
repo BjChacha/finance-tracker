@@ -24,6 +24,10 @@ import {
   type TxInput,
   type TxListItem,
   type TransactionSearchCursor,
+  transactionPage,
+  transactionDailyTotals,
+  transactionTotals,
+  largestExpenses,
 } from './repository';
 import { normalizeTransactionSearchQuery } from './search-query';
 
@@ -33,6 +37,30 @@ export function useTransactions(filters: TxFilters) {
     queryKey: ['transactions', filters],
     queryFn: () => listTransactions(filters),
   });
+}
+
+export function useTransactionPages(filters: TxFilters, enabled = true) {
+  return useInfiniteQuery({
+    queryKey: ['transactions', 'pages', filters],
+    queryFn: ({ pageParam }) => transactionPage(filters, pageParam),
+    initialPageParam: null as TransactionSearchCursor | null,
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
+    enabled,
+  });
+}
+
+export function useTransactionDailyTotals(filters: TxFilters, enabled = true) {
+  return useQuery({ queryKey: ['transactions-summary', 'days', filters],
+    queryFn: () => transactionDailyTotals(filters), enabled });
+}
+
+export function useTransactionTotals(filters: TxFilters) {
+  return useQuery({ queryKey: ['transactions-summary', 'scope', filters],
+    queryFn: () => transactionTotals(filters) });
+}
+
+export function useLargestExpenses(range: NonNullable<TxFilters['range']>) {
+  return useQuery({ queryKey: ['transactions', 'largest', range], queryFn: () => largestExpenses(range) });
 }
 
 /** key: ['transaction', id] */

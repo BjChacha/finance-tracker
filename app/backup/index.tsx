@@ -1,3 +1,4 @@
+import { AutomaticBackupPanel } from '@/features/backup/AutomaticBackupPanel';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Icon, type IconName } from '@/components/Icon';
@@ -41,10 +42,10 @@ export default function BackupScreen() {
     }
   }
 
-  async function onRestore() {
+  async function onRestore(fileUri?: string) {
     setBusy(true);
     try {
-      const picked = await pickDocument(['.json']);
+      const picked = fileUri ? { uri: fileUri } : await pickDocument(['.json']);
       if (!picked) return;
       // 双重确认：两次 Alert，第二次才真正执行
       Alert.alert(zh.backup.restoreConfirmTitle, zh.backup.restoreConfirm1, [
@@ -87,7 +88,7 @@ export default function BackupScreen() {
       onPress: onExportBackup,
     },
     { icon: 'file-text', title: zh.backup.exportCsv, desc: zh.backup.exportCsvDesc, onPress: onExportCsv },
-    { icon: 'recycle', title: zh.backup.restore, desc: zh.backup.restoreDesc, onPress: onRestore },
+    { icon: 'recycle', title: zh.backup.restore, desc: zh.backup.restoreDesc, onPress: () => { void onRestore(); } },
   ];
 
   return (
@@ -102,6 +103,8 @@ export default function BackupScreen() {
             {lastBackupAt ? dayjs(lastBackupAt).format('YYYY-MM-DD HH:mm') : zh.backup.never}
           </Text>
         </View>
+
+        <AutomaticBackupPanel working={working} onRestore={(uri) => { void onRestore(uri); }} />
 
         {actions.map((action) => (
           <Pressable

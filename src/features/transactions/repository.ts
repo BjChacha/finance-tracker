@@ -8,14 +8,8 @@ import { toDateKey } from '@/lib/date';
 import { newId } from '@/lib/id';
 import { RATE_SCALE, toBaseCents } from '@/lib/money';
 import { parseTransactionSearchQuery, type TransactionSearchToken } from './search-query';
-
-export type TxFilters = {
-  /** 'YYYY-MM'; omit to list all-time transactions */
-  monthKey?: string;
-  type?: TransactionType;
-  accountId?: string;
-  categoryId?: string;
-};
+import { expenseAmount, incomeAmount, transactionConditions, type TxFilters } from './filters';
+export type { TxFilters } from './filters';
 
 export type TxListItem = {
   id: string;
@@ -80,15 +74,7 @@ const txSelect = {
 
 /** 按月（或全部时间）+ 可选筛选查询明细，date desc */
 export async function listTransactions(filters: TxFilters): Promise<TxListItem[]> {
-  const conditions: SQL[] = [];
-  if (filters.monthKey) {
-    const [start, end] = monthRange(filters.monthKey);
-    conditions.push(sql`${transactions.dateKey} >= ${start}`);
-    conditions.push(sql`${transactions.dateKey} <= ${end}`);
-  }
-  if (filters.type) conditions.push(eq(transactions.type, filters.type));
-  if (filters.accountId) conditions.push(eq(transactions.accountId, filters.accountId));
-  if (filters.categoryId) conditions.push(eq(transactions.categoryId, filters.categoryId));
+  const conditions = transactionConditions(filters);
 
   return db
     .select(txSelect)
@@ -99,7 +85,62 @@ export async function listTransactions(filters: TxFilters): Promise<TxListItem[]
     .leftJoin(toAccounts, eq(transactions.toAccountId, toAccounts.id))
     .leftJoin(projects, eq(transactions.projectId, projects.id))
     .where(and(...conditions))
-    .orderBy(desc(transactions.date), desc(transactions.createdAt));
+    .orderBy(desc(transactions.date), desc(transactions.createdAt), desc(transactions.id));
+}
+
+export async function transactionPage(filters: TxFilters, cursor: TransactionSearchCursor | null = null,
+  pageSize = 50): Promise<TransactionSearchPage> {
+  const limit = Math.max(1, Math.min(100, Math.trunc(pageSize) || 50));
+  const conditions = transactionConditions(filters);
+  if (cursor) conditions.push(cursorCondition(cursor));
+  const rows = await db.select({ ...txSelect, createdAt: transactions.createdAt })
+    .from(transactions)
+    .leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .leftJoin(parentCategories, eq(categories.parentId, parentCategories.id))
+    .leftJoin(accounts, eq(transactions.accountId, accounts.id))
+    .leftJoin(toAccounts, eq(transactions.toAccountId, toAccounts.id))
+    .leftJoin(projects, eq(transactions.projectId, projects.id))
+    .where(and(...conditions))
+    .orderBy(desc(transactions.date), desc(transactions.createdAt), desc(transactions.id)).limit(limit + 1);
+  const page = rows.slice(0, limit);
+  const last = page.at(-1);
+  return { items: page.map(({ createdAt: _createdAt, ...row }) => row),
+    nextCursor: rows.length > limit && last
+      ? { date: last.date, createdAt: last.createdAt, id: last.id } : null };
+}
+
+export type LedgerTotals = { income: number; expense: number; count: number };
+export type LedgerDay = LedgerTotals & { dateKey: string };
+
+export async function transactionDailyTotals(filters: TxFilters): Promise<LedgerDay[]> {
+  return db.select({ dateKey: transactions.dateKey,
+    income: sql<number>`COALESCE(SUM(${incomeAmount()}), 0)`.mapWith(Number),
+    expense: sql<number>`COALESCE(SUM(${expenseAmount()}), 0)`.mapWith(Number),
+    count: sql<number>`COUNT(*)`.mapWith(Number),
+  }).from(transactions).leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .where(and(...transactionConditions(filters))).groupBy(transactions.dateKey)
+    .orderBy(desc(transactions.dateKey));
+}
+
+export async function transactionTotals(filters: TxFilters): Promise<LedgerTotals> {
+  const [row] = await db.select({
+    income: sql<number>`COALESCE(SUM(${incomeAmount()}), 0)`.mapWith(Number),
+    expense: sql<number>`COALESCE(SUM(${expenseAmount()}), 0)`.mapWith(Number),
+    count: sql<number>`COUNT(*)`.mapWith(Number),
+  }).from(transactions).leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .where(and(...transactionConditions(filters)));
+  return row ?? { income: 0, expense: 0, count: 0 };
+}
+
+export async function largestExpenses(range: NonNullable<TxFilters['range']>, limit = 3): Promise<TxListItem[]> {
+  return db.select(txSelect).from(transactions)
+    .leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .leftJoin(parentCategories, eq(categories.parentId, parentCategories.id))
+    .leftJoin(accounts, eq(transactions.accountId, accounts.id))
+    .leftJoin(toAccounts, eq(transactions.toAccountId, toAccounts.id))
+    .leftJoin(projects, eq(transactions.projectId, projects.id))
+    .where(and(...transactionConditions({ range, type: 'expense' })))
+    .orderBy(desc(expenseAmount()), desc(transactions.date), desc(transactions.id)).limit(limit);
 }
 
 /** 最近 N 笔交易（跨月、全局，date desc）—— 首页「最近交易」用 */

@@ -51,7 +51,7 @@ const light: AppTheme = {
     text: '#1C1917',
     textSecondary: '#78716C',
     border: '#E7E5E4',
-    onPrimary: '#FFFFFF',
+    onPrimary: '#1C1917',
   },
 };
 
@@ -65,7 +65,7 @@ const tiffany: AppTheme = {
     text: '#134E4A',
     textSecondary: '#5C7C77',
     border: '#C9EAE6',
-    onPrimary: '#FFFFFF',
+    onPrimary: '#1C1917',
   },
 };
 
@@ -82,7 +82,7 @@ const mint: AppTheme = {
     text: '#064E3B',
     textSecondary: '#5C7D6E',
     border: '#C8F0DC',
-    onPrimary: '#FFFFFF',
+    onPrimary: '#1C1917',
   },
 };
 
@@ -95,7 +95,7 @@ const dark: AppTheme = {
     text: '#FAFAF9',
     textSecondary: '#A8A29E',
     border: '#292524',
-    onPrimary: '#FFFFFF',
+    onPrimary: '#1C1917',
   },
 };
 

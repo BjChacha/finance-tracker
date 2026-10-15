@@ -296,18 +296,15 @@ export function useTabPagerController(options: {
 	const indexOpacity = useSharedValue(
 		Math.abs(initialAnchorIndex) <= 1 ? 1 : 0,
 	);
-	const assetsOpacity = useSharedValue(
+	const ledgerOpacity = useSharedValue(
 		Math.abs(1 - initialAnchorIndex) <= 1 ? 1 : 0,
 	);
-	const statsOpacity = useSharedValue(
+	const profileOpacity = useSharedValue(
 		Math.abs(2 - initialAnchorIndex) <= 1 ? 1 : 0,
 	);
-	const profileOpacity = useSharedValue(
-		Math.abs(3 - initialAnchorIndex) <= 1 ? 1 : 0,
-	);
 	const opacities = useMemo(
-		() => [indexOpacity, assetsOpacity, statsOpacity, profileOpacity] as const,
-		[indexOpacity, assetsOpacity, statsOpacity, profileOpacity],
+		() => [indexOpacity, ledgerOpacity, profileOpacity] as const,
+		[indexOpacity, ledgerOpacity, profileOpacity],
 	);
 
 	const pillTranslateX = useDerivedValue(

@@ -60,7 +60,7 @@ describe("FloatingTabBar", () => {
 		const labels = screen
 			.getAllByRole("tab")
 			.map((node) => node.props.accessibilityLabel);
-		expect(labels).toEqual(["总览", "资产", "看板", "个人"]);
+		expect(labels).toEqual(["\u770b\u677f", "\u6d41\u6c34", "\u6211\u7684"]);
 	});
 
 	it("derives selected accessibility state only from the visual anchor", () => {
@@ -72,7 +72,7 @@ describe("FloatingTabBar", () => {
 
 		rerender(
 			<FloatingTabBar
-				activeName="stats"
+				activeName="profile"
 				visualTabPosition={visualTabPosition}
 				pillTranslateX={pillTranslateX}
 				onPillStepChange={() => {}}
@@ -96,8 +96,8 @@ describe("FloatingTabBar", () => {
 			nativeEvent: { layout: { width: 320 } },
 		});
 
-		// (320 - 5*2 - 2*3) / 4 = 76, plus the 2-point item gap.
-		expect(onPillStepChange).toHaveBeenLastCalledWith(78);
+		// (320 - 5*2 - 2*2) / 3 = 102, plus the 2-point item gap.
+		expect(onPillStepChange).toHaveBeenLastCalledWith(104);
 	});
 
 	it("forwards press and long-press events", () => {
@@ -105,9 +105,9 @@ describe("FloatingTabBar", () => {
 		const onLongPressTab = jest.fn();
 		renderTabBar("index", { onPressTab, onLongPressTab });
 
-		fireEvent.press(screen.getAllByRole("tab")[3]);
+		fireEvent.press(screen.getAllByRole("tab")[2]);
 		expect(onPressTab).toHaveBeenCalledWith("profile");
 		fireEvent(screen.getAllByRole("tab")[1], "longPress");
-		expect(onLongPressTab).toHaveBeenCalledWith("assets");
+		expect(onLongPressTab).toHaveBeenCalledWith("ledger");
 	});
 });

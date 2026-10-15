@@ -11,7 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon, type IconName } from "@/components/Icon";
-import { zh } from "@/i18n/zh";
+import { dashboardText as copy } from '@/features/dashboard/labels';
 import { useTheme } from "@/theme";
 import {
 	FLOATING_TAB_BAR_BOTTOM_GAP,
@@ -21,16 +21,14 @@ import {
 import { TAB_DEFINITIONS, type TabRouteName } from "./tab-pager-machine";
 
 export const TAB_TITLES: Record<TabRouteName, string> = {
-	index: zh.tabs.overview,
-	assets: zh.tabs.assets,
-	stats: zh.tabs.dashboard,
-	profile: zh.tabs.settings,
+	index: copy.dashboard,
+	ledger: copy.ledger,
+	profile: copy.profile,
 };
 
 export const TAB_ICONS: Record<TabRouteName, IconName> = {
 	index: "house",
-	assets: "wallet",
-	stats: "chart-pie",
+	ledger: "file-text",
 	profile: "user",
 };
 

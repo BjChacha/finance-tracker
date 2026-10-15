@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { BudgetPeriod } from '@/lib/date';
+import { useTodayKey } from '@/lib/use-today-key';
 import {
   budgetStatus,
   listBudgets,
@@ -15,9 +16,10 @@ export function useBudgets(period: BudgetPeriod) {
 
 /** key: ['budget-status', period, periodKey] */
 export function useBudgetStatus(period: BudgetPeriod, periodKey: string) {
+  const today = useTodayKey();
   return useQuery({
-    queryKey: ['budget-status', period, periodKey],
-    queryFn: () => budgetStatus(period, periodKey),
+    queryKey: ['budget-status', period, periodKey, today],
+    queryFn: () => budgetStatus(period, periodKey, today),
   });
 }
 

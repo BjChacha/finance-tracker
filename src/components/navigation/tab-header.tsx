@@ -36,7 +36,6 @@ function TabHeaderLayer(props: {
 	viewportWidth: SharedValue<number>;
 	opacity: SharedValue<number>;
 	onSearch: () => void;
-	onAddAccount: () => void;
 }) {
 	const theme = useTheme();
 	const sceneIndex = canonicalTabIndex(props.name);
@@ -83,7 +82,7 @@ function TabHeaderLayer(props: {
 			>
 				{TAB_TITLES[props.name]}
 			</Text>
-			{props.name === "index" && (
+			{(props.name === "index" || props.name === "ledger") && (
 				<Pressable
 					onPress={props.onSearch}
 					disabled={!actionEnabled}
@@ -92,17 +91,6 @@ function TabHeaderLayer(props: {
 					accessibilityLabel={zh.txList.searchAction}
 				>
 					<Icon name="search" size={23} color={theme.colors.text} />
-				</Pressable>
-			)}
-			{props.name === "assets" && (
-				<Pressable
-					onPress={props.onAddAccount}
-					disabled={!actionEnabled}
-					hitSlop={12}
-					style={styles.rightAction}
-					accessibilityLabel={zh.accounts.add}
-				>
-					<Icon name="plus" size={24} color={theme.colors.text} />
 				</Pressable>
 			)}
 		</Animated.View>
@@ -117,7 +105,6 @@ export function TabHeader(props: {
 	viewportWidth: SharedValue<number>;
 	opacityFor: (name: TabRouteName) => SharedValue<number>;
 	onSearch: () => void;
-	onAddAccount: () => void;
 }) {
 	return (
 		<View style={styles.bar}>
@@ -132,7 +119,6 @@ export function TabHeader(props: {
 					viewportWidth={props.viewportWidth}
 					opacity={props.opacityFor(name)}
 					onSearch={props.onSearch}
-					onAddAccount={props.onAddAccount}
 				/>
 			))}
 		</View>

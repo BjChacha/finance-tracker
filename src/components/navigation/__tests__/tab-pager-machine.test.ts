@@ -75,7 +75,7 @@ describe("TabPagerMachine", () => {
 	it("crossfades a same-side replacement without resetting displacement", () => {
 		const first = reduceTabPager(stateAt("index"), {
 			type: "PRESS",
-			name: "stats",
+			name: "ledger",
 			reducedMotion: false,
 		});
 		const replacement = reduceTabPager(first.state, {
@@ -86,19 +86,19 @@ describe("TabPagerMachine", () => {
 
 		expect(replacement.state).toMatchObject({
 			targetName: "profile",
-			ghostName: "stats",
+			ghostName: "ledger",
 			transitionId: 2,
 		});
 		expect(commandsOf(replacement)[0]).toEqual({
 			type: "CONFIGURE_PROGRAM",
 			targetName: "profile",
-			ghostName: "stats",
-			crossfadeFrom: "stats",
+			ghostName: "ledger",
+			crossfadeFrom: "ledger",
 		});
 	});
 
 	it("keeps the old target as a ghost when replacing across the anchor", () => {
-		const first = reduceTabPager(stateAt("assets"), {
+		const first = reduceTabPager(stateAt("ledger"), {
 			type: "PRESS",
 			name: "profile",
 			reducedMotion: false,
@@ -146,7 +146,7 @@ describe("TabPagerMachine", () => {
 	it("uses the new gesture intent instead of the rebased visual offset", () => {
 		const first = reduceTabPager(stateAt("index"), {
 			type: "PRESS",
-			name: "assets",
+			name: "ledger",
 			reducedMotion: false,
 		});
 		const started = reduceTabPager(first.state, {
@@ -170,14 +170,14 @@ describe("TabPagerMachine", () => {
 		});
 
 		expect(updated.state).toMatchObject({
-			anchorName: "assets",
-			targetName: "stats",
+			anchorName: "ledger",
+			targetName: "profile",
 			displacement: 0.4,
 		});
 		expect(ended.state).toMatchObject({
 			phase: "animating",
-			anchorName: "assets",
-			targetName: "stats",
+			anchorName: "ledger",
+			targetName: "profile",
 		});
 		expect(commandsOf(ended)).toContainEqual({
 			type: "ANIMATE_TO",
@@ -190,7 +190,7 @@ describe("TabPagerMachine", () => {
 	it("lets the opposite gesture return from the promoted target", () => {
 		const first = reduceTabPager(stateAt("index"), {
 			type: "PRESS",
-			name: "assets",
+			name: "ledger",
 			reducedMotion: false,
 		});
 		const started = reduceTabPager(first.state, {
@@ -215,7 +215,7 @@ describe("TabPagerMachine", () => {
 
 		expect(ended.state).toMatchObject({
 			phase: "animating",
-			anchorName: "assets",
+			anchorName: "ledger",
 			targetName: "index",
 		});
 		expect(commandsOf(ended)).toContainEqual(
@@ -229,7 +229,7 @@ describe("TabPagerMachine", () => {
 	it("commits the promoted target when the takeover gesture is cancelled", () => {
 		const first = reduceTabPager(stateAt("index"), {
 			type: "PRESS",
-			name: "assets",
+			name: "ledger",
 			reducedMotion: false,
 		});
 		const started = reduceTabPager(first.state, {
@@ -248,11 +248,11 @@ describe("TabPagerMachine", () => {
 
 		expect(cancelled.state).toMatchObject({
 			phase: "returning",
-			anchorName: "assets",
+			anchorName: "ledger",
 		});
 		expect(commandsOf(completed)).toEqual([
-			{ type: "SETTLE_ANCHOR", name: "assets" },
-			{ type: "COMMIT_ROUTER", name: "assets" },
+			{ type: "SETTLE_ANCHOR", name: "ledger" },
+			{ type: "COMMIT_ROUTER", name: "ledger" },
 		]);
 	});
 
@@ -296,7 +296,7 @@ describe("TabPagerMachine", () => {
 
 		expect(result.state).toMatchObject({
 			phase: "animating",
-			targetName: "assets",
+			targetName: "ledger",
 		});
 		expect(commandsOf(result)).toContainEqual(
 			expect.objectContaining({
@@ -332,7 +332,7 @@ describe("TabPagerMachine", () => {
 		expect(returned.state).toMatchObject({
 			phase: "returning",
 			targetName: null,
-			ghostName: "assets",
+			ghostName: "ledger",
 		});
 	});
 
@@ -362,7 +362,7 @@ describe("TabPagerMachine", () => {
 	it("ignores stale animation completion after a takeover", () => {
 		const first = reduceTabPager(stateAt("index"), {
 			type: "PRESS",
-			name: "stats",
+			name: "ledger",
 			reducedMotion: false,
 		});
 		const second = reduceTabPager(first.state, {
@@ -397,7 +397,7 @@ describe("TabPagerMachine", () => {
 	it("aligns immediately to authoritative external navigation", () => {
 		const animating = reduceTabPager(stateAt("index"), {
 			type: "PRESS",
-			name: "stats",
+			name: "ledger",
 			reducedMotion: false,
 		});
 		const external = reduceTabPager(animating.state, {
@@ -417,8 +417,8 @@ describe("TabPagerMachine", () => {
 	});
 
 	it("clamps middle tabs and damps outward edge drags", () => {
-		expect(clampDragDisplacement(canonicalTabIndex("assets"), 3)).toBe(1);
-		expect(clampDragDisplacement(canonicalTabIndex("assets"), -3)).toBe(-1);
+		expect(clampDragDisplacement(canonicalTabIndex("ledger"), 3)).toBe(1);
+		expect(clampDragDisplacement(canonicalTabIndex("ledger"), -3)).toBe(-1);
 		expect(clampDragDisplacement(canonicalTabIndex("index"), 0.8)).toBe(0.4);
 		expect(clampDragDisplacement(canonicalTabIndex("profile"), -0.8)).toBe(
 			-0.4,
@@ -435,8 +435,8 @@ describe("mountedTabNames", () => {
 	}
 
 	it("mounts the anchor and its neighbours only", () => {
-		expect(mountedTabNames(stateOf("index"))).toEqual(["index", "assets"]);
-		expect(mountedTabNames(stateOf("profile"))).toEqual(["stats", "profile"]);
+		expect(mountedTabNames(stateOf("index"))).toEqual(["index", "ledger"]);
+		expect(mountedTabNames(stateOf("profile"))).toEqual(["ledger", "profile"]);
 	});
 
 	it("always covers what a gesture can reveal from the anchor", () => {
@@ -457,24 +457,24 @@ describe("mountedTabNames", () => {
 		expect(
 			mountedTabNames(stateOf("index", { targetName: "profile" })),
 		).toContain("profile");
-		expect(mountedTabNames(stateOf("index", { ghostName: "stats" }))).toContain(
-			"stats",
+		expect(mountedTabNames(stateOf("index", { ghostName: "profile" }))).toContain(
+			"profile",
 		);
 	});
 
 	it("covers the target's neighbours, since the target becomes the next anchor", () => {
 		// A swipe started as the animation lands would otherwise race React for stats.
-		expect(mountedTabNames(stateOf("index", { targetName: "assets" }))).toEqual([
+		expect(mountedTabNames(stateOf("index", { targetName: "ledger" }))).toEqual([
 			"index",
-			"assets",
-			"stats",
+			"ledger",
+			"profile",
 		]);
 	});
 
 	it("keeps previously mounted scenes and preserves visual order", () => {
 		expect(mountedTabNames(stateOf("index"), ["profile"])).toEqual([
 			"index",
-			"assets",
+			"ledger",
 			"profile",
 		]);
 	});

@@ -123,8 +123,11 @@ export default function ProfileScreen() {
 							return (
 								<Pressable
 									key={entry.label}
-									style={[
+									accessibilityRole="button"
+									accessibilityLabel={entry.label}
+									style={({ pressed }) => [
 										styles.row,
+										{ backgroundColor: pressed ? colors.background : colors.card },
 										i > 0 && {
 											borderTopWidth: StyleSheet.hairlineWidth,
 											borderTopColor: colors.border,

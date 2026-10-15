@@ -7,6 +7,7 @@ import {
   type CategoryInput,
 } from './repository';
 import type { CategoryType } from '@/db/schema';
+import { invalidateTransactionData } from '@/features/transactions/invalidate';
 
 /** key: ['categories', type] */
 export function useCategoryTree(type: CategoryType) {
@@ -20,7 +21,7 @@ export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: CategoryInput) => createCategory(input),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+    onSuccess: () => Promise.all([qc.invalidateQueries({ queryKey: ['categories'] }), invalidateTransactionData(qc)]),
   });
 }
 
@@ -34,7 +35,7 @@ export function useUpdateCategory() {
       id: string;
       input: Pick<CategoryInput, 'name' | 'icon' | 'color'>;
     }) => updateCategory(id, input),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+    onSuccess: () => Promise.all([qc.invalidateQueries({ queryKey: ['categories'] }), invalidateTransactionData(qc)]),
   });
 }
 
@@ -42,6 +43,6 @@ export function useArchiveCategory() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => archiveCategory(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+    onSuccess: () => Promise.all([qc.invalidateQueries({ queryKey: ['categories'] }), invalidateTransactionData(qc)]),
   });
 }

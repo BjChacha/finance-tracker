@@ -1,12 +1,14 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SingleLineTextInput } from '@/components/single-line-text-input';
@@ -28,6 +30,10 @@ import { resolveIconKey } from '@/lib/iconResolvers';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
 import { Icon, type IconName } from '@/components/Icon';
+import { FormActionBar } from '@/components/form/form-action-bar';
+import { scrollInputIntoView } from '@/components/form/scroll-input-into-view';
+import { useReducedMotion } from 'react-native-reanimated';
+import { formLabels } from '@/components/form/labels';
 
 const TYPE_TABS: { key: TransactionType; label: string }[] = [
   { key: 'expense', label: zh.tx.expense },
@@ -52,6 +58,15 @@ export default function RecurringEditScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const styles = useMemo(() => makeStyles(theme), [theme]);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollOffset = useRef(0);
+  const reduceMotion = useReducedMotion();
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', (event) => setKeyboardHeight(event.endCoordinates.height));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardHeight(0));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
 
   const { data: rules = [] } = useRecurringRules();
   const existing = id ? rules.find((r) => r.id === id) : undefined;
@@ -121,7 +136,8 @@ export default function RecurringEditScreen() {
     }
   }
 
-  function handleSave(dismiss: () => void) {
+  async function handleSave(dismiss: () => void) {
+    if (pending) return;
     if (!name.trim()) {
       Alert.alert(zh.recurring.nameRequired);
       return;
@@ -186,12 +202,9 @@ export default function RecurringEditScreen() {
       endDate,
       autoCreate,
     };
-    const done = {
-      onSuccess: dismiss,
-      onError: (e: Error) => Alert.alert(zh.common.error, e.message),
-    };
-    if (existing) update.mutate({ id: existing.id, input }, done);
-    else create.mutate(input, done);
+    if (existing) await update.mutateAsync({ id: existing.id, input });
+    else await create.mutateAsync(input);
+    dismiss();
   }
 
   function handleDelete(dismiss: () => void) {
@@ -238,9 +251,20 @@ export default function RecurringEditScreen() {
   return (
     <SecondarySheetScreen title={existing ? zh.recurring.edit : zh.recurring.add}>
       {({ dismiss }) => (
+      <View style={{ flex: 1 }}>
       <ScrollView
+        ref={scrollRef}
+        onScroll={(event) => { scrollOffset.current = event.nativeEvent.contentOffset.y; }}
+        scrollEventThrottle={16}
+        onLayout={() => {
+          requestAnimationFrame(() => {
+            if (Keyboard.isVisible()) {
+              scrollInputIntoView(scrollRef.current, TextInput.State.currentlyFocusedInput(), scrollOffset.current, !reduceMotion);
+            }
+          });
+        }}
         style={{ flex: 1, backgroundColor: colors.background }}
-        contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 24 + keyboardHeight }}
         keyboardShouldPersistTaps="handled"
       >
         {/* 名称 */}
@@ -479,19 +503,18 @@ export default function RecurringEditScreen() {
           />
         </View>
 
-        <Pressable
-          style={[styles.saveBtn, { backgroundColor: colors.primary, opacity: pending ? 0.6 : 1 }]}
-          onPress={() => handleSave(dismiss)}
-          disabled={pending}
-        >
-          <Text style={styles.saveBtnText}>{zh.common.save}</Text>
-        </Pressable>
         {existing && (
           <Pressable style={styles.deleteBtn} onPress={() => handleDelete(dismiss)}>
             <Text style={{ color: colors.expense, fontSize: 15 }}>{zh.common.delete}</Text>
           </Pressable>
         )}
       </ScrollView>
+      <FormActionBar
+        label={existing ? formLabels.saveChanges : zh.common.save}
+        pending={pending}
+        onPress={() => handleSave(dismiss)}
+      />
+      </View>
       )}
     </SecondarySheetScreen>
   );
@@ -528,8 +551,6 @@ function makeStyles({ colors }: AppTheme) {
       borderRadius: 8,
     },
     switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 4 },
-    saveBtnText: { color: colors.onPrimary, fontSize: 16, fontWeight: '600' },
     deleteBtn: { alignItems: 'center', paddingVertical: 14, marginTop: 4 },
   });
 }

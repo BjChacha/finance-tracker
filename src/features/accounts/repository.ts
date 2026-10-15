@@ -13,6 +13,7 @@ import { ensureAdjustmentCategory } from '@/features/categories/repository';
 import { createTransaction } from '@/features/transactions/repository';
 import { newId } from '@/lib/id';
 import { RATE_SCALE, toBaseCents } from '@/lib/money';
+import { todayKey } from '@/lib/date';
 import { planAdjustment } from './adjustment';
 
 /** 账户 + SQL 聚合余额（分） */
@@ -25,7 +26,9 @@ export type AccountWithBalance = Account & { balance: number };
  */
 export async function listAccountsWithBalance(opts?: {
   includeArchived?: boolean;
+  asOfDate?: string;
 }): Promise<AccountWithBalance[]> {
+  const asOfDate = opts?.asOfDate ?? todayKey();
   const rows: AccountWithBalance[] = await db
     .select({
       id: accounts.id,
@@ -52,11 +55,11 @@ export async function listAccountsWithBalance(opts?: {
               WHEN t.type = 'expense' THEN -t.amount
               WHEN t.type = 'transfer' THEN -(t.amount + t.fee)
               ELSE 0 END)
-            FROM transactions t WHERE t.account_id = ${accounts}.id
+            FROM transactions t WHERE t.account_id = ${accounts}.id AND t.date_key <= ${asOfDate}
           ), 0)
         + COALESCE((
             SELECT SUM(COALESCE(t.to_amount, t.amount)) FROM transactions t
-            WHERE t.to_account_id = ${accounts}.id AND t.type = 'transfer'
+            WHERE t.to_account_id = ${accounts}.id AND t.type = 'transfer' AND t.date_key <= ${asOfDate}
           ), 0)
       `.mapWith(Number),
     })

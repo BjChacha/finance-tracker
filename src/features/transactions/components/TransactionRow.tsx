@@ -10,12 +10,15 @@ import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
 import { usePrefetchTransaction } from '../hooks';
 import type { TxListItem } from '../repository';
+import { dashboardText as copy } from '@/features/dashboard/labels';
 
 type Props = {
   tx: TxListItem;
   /** 同组内非末行显示底部分隔线 */
   showDivider?: boolean;
   style?: ViewStyle;
+  expenseContribution?: boolean;
+  showBaseAmount?: boolean;
 };
 
 /**
@@ -23,7 +26,7 @@ type Props = {
  * 「最近交易」与「全部交易」共用，保证两处元素与点击交互完全一致；
  * 点击通过 resident editor 打开交易详情。
  */
-export function TransactionRow({ tx, showDivider = true, style }: Props) {
+export function TransactionRow({ tx, showDivider = true, style, expenseContribution, showBaseAmount }: Props) {
   const theme = useTheme();
   const { colors } = theme;
   const { openTransaction } = useResidentEditor();
@@ -31,6 +34,9 @@ export function TransactionRow({ tx, showDivider = true, style }: Props) {
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const isTransfer = tx.type === 'transfer';
+  const feeOnly = isTransfer && expenseContribution;
+  const displayAmount = feeOnly ? tx.fee : tx.amount;
+  const baseAmount = feeOnly ? Math.round(tx.fee * tx.exchangeRate / 1_000_000) : tx.amountBaseCents;
   const amountColor =
     tx.type === 'expense' ? colors.expense : tx.type === 'income' ? colors.income : colors.transfer;
   const title = isTransfer
@@ -49,7 +55,7 @@ export function TransactionRow({ tx, showDivider = true, style }: Props) {
   const sub = isTransfer
     ? [timeLabel, categoryLabel, tx.note].filter(Boolean).join(' · ')
     : `${timeLabel} · ${tx.accountName ?? ''}${tx.note ? ` · ${tx.note}` : ''}`;
-  const sign = tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : '';
+  const sign = feeOnly || tx.type === 'expense' ? '-' : tx.type === 'income' ? '+' : '';
 
   return (
     <Pressable
@@ -76,10 +82,15 @@ export function TransactionRow({ tx, showDivider = true, style }: Props) {
           {sub}
         </Text>
       </View>
-      <Text style={[styles.amount, { color: amountColor }]}>
+      <View style={{ alignItems: 'flex-end', gap: 3 }}>
+      {feeOnly && <Text style={{ color: colors.textSecondary, fontSize: 11 }}>{copy.fee}</Text>}
+      <Text style={[styles.amount, { color: feeOnly ? colors.expense : amountColor }]}>
         {sign}
-        {formatCentsWithSymbol(tx.amount, tx.currency)}
+        {formatCentsWithSymbol(displayAmount, tx.currency)}
       </Text>
+      {showBaseAmount && tx.currency !== 'CNY' && (!isTransfer || feeOnly) &&
+        <Text style={{ color: colors.textSecondary, fontSize: 11 }}>{formatCentsWithSymbol(baseAmount)}</Text>}
+      </View>
     </Pressable>
   );
 }

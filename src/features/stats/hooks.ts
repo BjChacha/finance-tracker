@@ -5,6 +5,8 @@ import {
 } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { dayjs } from "@/lib/date";
+import { assetHistory, assetHistoryStart } from '@/features/accounts/history';
+import { useTodayKey } from '@/lib/use-today-key';
 import {
 	accountDistribution,
 	calendarHeatmap,
@@ -74,16 +76,29 @@ export function useAccountDistribution() {
 }
 
 export function useNetWorthTrend(n = 6) {
+	const today = useTodayKey();
 	return useQuery({
-		queryKey: ["stats", "net-worth", n],
+		queryKey: ["stats", "net-worth", n, today],
 		queryFn: () => netWorthTrend(n),
 	});
 }
 
+export function useAssetHistory(range: StatsRange, granularity: TrendGranularity, enabled = true) {
+  return useQuery({ queryKey: ['stats', 'asset-history', range, granularity],
+    queryFn: () => assetHistory(range, granularity), enabled });
+}
+
+export function useAssetHistoryStart() {
+  const today = useTodayKey();
+  return useQuery({ queryKey: ['stats', 'asset-history-start', today],
+    queryFn: () => assetHistoryStart(today) });
+}
+
 export function useCalendarHeatmap(monthKey: string) {
 	const qc = useQueryClient();
+	const today = useTodayKey();
 	const query = useQuery({
-		queryKey: ["stats", "heatmap", monthKey],
+		queryKey: ["stats", "heatmap", monthKey, today],
 		queryFn: () => calendarHeatmap(monthKey),
 		// 切换月份时先保持上一月数据，避免日历闪空
 		placeholderData: keepPreviousData,
@@ -93,11 +108,11 @@ export function useCalendarHeatmap(monthKey: string) {
 		for (const delta of [-1, 1]) {
 			const key = dayjs(`${monthKey}-01`).add(delta, "month").format("YYYY-MM");
 			void qc.prefetchQuery({
-				queryKey: ["stats", "heatmap", key],
+				queryKey: ["stats", "heatmap", key, today],
 				queryFn: () => calendarHeatmap(key),
 			});
 		}
-	}, [monthKey, qc]);
+	}, [monthKey, qc, today]);
 	return query;
 }
 

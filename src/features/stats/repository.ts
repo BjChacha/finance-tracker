@@ -1,12 +1,13 @@
+import { assetHistory } from '@/features/accounts/history';
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import { db } from "@/db/client";
-import { accounts, categories, transactions } from "@/db/schema";
+import { categories, transactions } from "@/db/schema";
+import { expenseAmount, incomeAmount, transferFeeAmount, TRANSFER_FEES_ID, UNCATEGORIZED_ID } from '@/features/transactions/filters';
 import { listAccountsWithBalance } from "@/features/accounts";
-import { monthRange, toMonthKey, todayKey } from "@/lib/date";
+import { dayjs, monthRange, toMonthKey, todayKey } from "@/lib/date";
 import {
 	buildTrendSeries,
-	cumulateNetWorth,
 	monthKeysBack,
 	withPercent,
 	type NetWorthPoint,
@@ -79,14 +80,11 @@ export async function transactionSummary(): Promise<TransactionSummary> {
 
 /** 口径与 monthSummary 一致：transfer 不计收支，transfer 的 fee 计支出。均以本位币分计。 */
 const incomeSum = () =>
-	sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'income' THEN ${transactions.amountBaseCents} ELSE 0 END), 0)`.mapWith(
+	sql<number>`COALESCE(SUM(${incomeAmount()}), 0)`.mapWith(
 		Number,
 	);
 const expenseSum = () =>
-	sql<number>`COALESCE(SUM(CASE
-    WHEN ${transactions.type} = 'expense' THEN ${transactions.amountBaseCents}
-    WHEN ${transactions.type} = 'transfer' THEN CAST(ROUND(${transactions.fee} * ${transactions.exchangeRate} / 1000000.0) AS INTEGER)
-    ELSE 0 END), 0)`.mapWith(Number);
+	sql<number>`COALESCE(SUM(${expenseAmount()}), 0)`.mapWith(Number);
 
 const parentCat = alias(categories, "parent_cat");
 
@@ -124,22 +122,28 @@ export async function categoryBreakdown(
 			.orderBy(desc(sql`SUM(${transactions.amountBaseCents})`));
 		return withPercent(rows);
 	}
-	const groupId = sql<string>`COALESCE(${parentCat.id}, ${categories.id})`;
+	const groupId = sql<string>`COALESCE(${parentCat.id}, ${categories.id}, ${UNCATEGORIZED_ID})`;
 	const rows = await db
 		.select({
 			categoryId: groupId,
-			name: sql<string>`COALESCE(${parentCat.name}, ${categories.name})`,
-			icon: sql<string>`COALESCE(${parentCat.icon}, ${categories.icon})`,
-			color: sql<string>`COALESCE(${parentCat.color}, ${categories.color})`,
+			name: sql<string>`COALESCE(${parentCat.name}, ${categories.name}, ${'\u672a\u5206\u7c7b'})`,
+			icon: sql<string>`COALESCE(${parentCat.icon}, ${categories.icon}, 'package')`,
+			color: sql<string>`COALESCE(${parentCat.color}, ${categories.color}, '#9CA3AF')`,
 			total: totalExpr,
 		})
 		.from(transactions)
-		.innerJoin(categories, eq(transactions.categoryId, categories.id))
+		.leftJoin(categories, eq(transactions.categoryId, categories.id))
 		.leftJoin(parentCat, eq(categories.parentId, parentCat.id))
 		.where(and(inRange(range), eq(transactions.type, type)))
 		.groupBy(groupId)
 		.orderBy(desc(sql`SUM(${transactions.amountBaseCents})`));
-	return withPercent(rows);
+	if (type === 'expense') {
+    const [fees] = await db.select({ total: sql<number>`COALESCE(SUM(${transferFeeAmount()}), 0)`.mapWith(Number) })
+      .from(transactions).where(and(inRange(range), eq(transactions.type, 'transfer')));
+    if (fees && fees.total > 0) rows.push({ categoryId: TRANSFER_FEES_ID,
+      name: '\u8f6c\u8d26\u624b\u7eed\u8d39', icon: 'credit-card', color: '#64748B', total: fees.total });
+  }
+  return withPercent(rows.sort((a, b) => b.total - a.total));
 }
 
 /** 收支趋势：SQL 按日聚合后在内存按粒度分组补零（周起始由 dayjs zh-cn 计算） */
@@ -206,47 +210,12 @@ export async function accountDistribution(): Promise<AccountSlice[]> {
 	return withPercent(positive).sort((a, b) => b.total - a.total);
 }
 
-const fromAcc = alias(accounts, "from_acc");
-const toAcc = alias(accounts, "to_acc");
-
-/** 最近 n 个月每月月末净资产（本位币；includeInTotal=1 且未归档账户） */
+/** Compatibility wrapper for callers requesting recent monthly asset values. */
 export async function netWorthTrend(n = 6): Promise<NetWorthPoint[]> {
-	const months = monthKeysBack(toMonthKey(todayKey()), n);
-	// 初始余额按各账户 rateToBase 折算到本位币
-	const [baseRow] = await db
-		.select({
-			base: sql<number>`COALESCE(SUM(CAST(ROUND(${accounts.initialBalance} * ${accounts.rateToBase} / 1000000.0) AS INTEGER)), 0)`.mapWith(
-				Number,
-			),
-		})
-		.from(accounts)
-		.where(and(eq(accounts.includeInTotal, 1), eq(accounts.archived, 0)));
-	const monthExpr = sql<string>`substr(${transactions.dateKey}, 1, 7)`;
-	// 每月净值变动（本位币）：
-	// - 收入/支出/转出：取本位币额 amount_base_cents；转账手续费 fee 按汇率折本位币
-	// - 转入：to_amount 按目标账户 rateToBase 折本位币
-	const deltas = await db
-		.select({
-			month: monthExpr,
-			delta: sql<number>`COALESCE(SUM(
-        CASE WHEN ${fromAcc.includeInTotal} = 1 AND ${fromAcc.archived} = 0 THEN
-          CASE
-            WHEN ${transactions.type} = 'income' THEN ${transactions.amountBaseCents}
-            WHEN ${transactions.type} = 'expense' THEN -${transactions.amountBaseCents}
-            WHEN ${transactions.type} = 'transfer' THEN -(${transactions.amountBaseCents} + CAST(ROUND(${transactions.fee} * ${transactions.exchangeRate} / 1000000.0) AS INTEGER))
-            ELSE 0 END
-        ELSE 0 END
-        + CASE WHEN ${transactions.type} = 'transfer'
-            AND ${toAcc.includeInTotal} = 1 AND ${toAcc.archived} = 0
-          THEN CAST(ROUND(COALESCE(${transactions.toAmount}, ${transactions.amount}) * ${toAcc.rateToBase} / 1000000.0) AS INTEGER)
-          ELSE 0 END
-      ), 0)`.mapWith(Number),
-		})
-		.from(transactions)
-		.leftJoin(fromAcc, eq(transactions.accountId, fromAcc.id))
-		.leftJoin(toAcc, eq(transactions.toAccountId, toAcc.id))
-		.groupBy(monthExpr);
-	return cumulateNetWorth(baseRow?.base ?? 0, deltas, months);
+  const end = todayKey();
+  const start = dayjs(end).startOf('month').subtract(Math.max(1, n) - 1, 'month').format('YYYY-MM-DD');
+  const history = await assetHistory({ start, end }, 'month');
+  return history.points.slice(1).map((point) => ({ month: point.dateKey.slice(0, 7), value: point.netWorth }));
 }
 
 export type HeatCell = { dateKey: string; expense: number; income: number };
@@ -261,7 +230,7 @@ export async function calendarHeatmap(monthKey: string): Promise<HeatCell[]> {
 			income: incomeSum(),
 		})
 		.from(transactions)
-		.where(inRange({ start, end }))
+		.where(inRange({ start, end: end < todayKey() ? end : todayKey() }))
 		.groupBy(transactions.dateKey)
 		.orderBy(asc(transactions.dateKey));
 }

@@ -1,5 +1,5 @@
 import { forwardRef, useState, type ForwardedRef } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
 	Easing,
 	FadeIn,
@@ -153,16 +153,8 @@ function AddTransactionFlowComponent(
 							onInteractive={onInteractive}
 							renderMode={renderMode}
 							stageFramesPerStep={stageFramesPerStep}
-							onSubmit={(input) => {
-								create.mutate(input, {
-									onSuccess: completeCreate,
-									onError: (error) =>
-										Alert.alert(
-											zh.common.error,
-											error instanceof Error ? error.message : String(error),
-										),
-								});
-							}}
+							onSubmit={async (input) => { await create.mutateAsync(input); }}
+							onSaved={completeCreate}
 						/>
 					</Animated.View>
 				)}

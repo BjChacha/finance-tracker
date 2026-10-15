@@ -1,4 +1,7 @@
 import { useMemo, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { parsePeriodParams } from '@/lib/analytics-range';
+import { useTodayKey } from '@/lib/use-today-key';
 import {
   Alert,
   Modal,
@@ -16,6 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components/Icon';
+import { ActionButton } from '@/components/form/action-button';
 import { IconBubble } from '@/components/IconBubble';
 import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import { SingleLineTextInput } from '@/components/single-line-text-input';
@@ -59,8 +63,11 @@ export default function BudgetsScreen() {
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
 
-  const [period, setPeriod] = useState<BudgetPeriod>('month');
-  const [periodKey, setPeriodKey] = useState(() => currentPeriodKey('month'));
+  const params = useLocalSearchParams<{ period?: string; key?: string }>();
+  const today = useTodayKey();
+  const [initialSelection] = useState(() => parsePeriodParams(params, today));
+  const [period, setPeriod] = useState<BudgetPeriod>(initialSelection.period);
+  const [periodKey, setPeriodKey] = useState(initialSelection.key);
   const [editor, setEditor] = useState<EditorState | null>(null);
 
   const { data: status } = useBudgetStatus(period, periodKey);
@@ -466,13 +473,9 @@ export default function BudgetsScreen() {
                 <Text style={[styles.subText, { marginTop: 4 }]}>{zh.budgets.alertPctHint}</Text>
               </ScrollView>
 
-              <Pressable
-                style={[styles.saveBtn, { backgroundColor: colors.primary, opacity: upsert.isPending ? 0.6 : 1 }]}
-                onPress={handleSave}
-                disabled={upsert.isPending}
-              >
-                <Text style={styles.saveBtnText}>{zh.common.save}</Text>
-              </Pressable>
+              <View style={{ marginTop: 16 }}>
+                <ActionButton label={zh.common.save} onPress={handleSave} pending={upsert.isPending} />
+              </View>
               {editor?.budgetId && (
                 <Pressable style={styles.deleteBtn} onPress={handleDelete}>
                   <Text style={{ color: colors.expense, fontSize: 15 }}>{zh.common.delete}</Text>

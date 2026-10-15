@@ -2,8 +2,7 @@ import { motion } from "@/theme/motion";
 
 export const TAB_DEFINITIONS = [
 	{ name: "index", href: "/" },
-	{ name: "assets", href: "/assets" },
-	{ name: "stats", href: "/stats" },
+	{ name: "ledger", href: "/ledger" },
 	{ name: "profile", href: "/profile" },
 ] as const;
 

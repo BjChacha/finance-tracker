@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invalidateTransactionData } from '@/features/transactions/invalidate';
+import { useTodayKey } from '@/lib/use-today-key';
 import {
   adjustAccountBalance,
   archiveAccount,
@@ -15,9 +16,10 @@ import {
 
 /** 全部未归档账户 + 余额，key: ['account-balances'] */
 export function useAccountBalances() {
+  const today = useTodayKey();
   return useQuery({
-    queryKey: ['account-balances'],
-    queryFn: () => listAccountsWithBalance(),
+    queryKey: ['account-balances', today],
+    queryFn: () => listAccountsWithBalance({ asOfDate: today }),
   });
 }
 

@@ -45,7 +45,6 @@ export default function TabLayout() {
 					viewportWidth={pager.viewportWidthValue}
 					opacityFor={pager.opacityFor}
 					onSearch={() => router.push("/transactions/search")}
-					onAddAccount={() => router.push("/accounts/edit")}
 				/>
 			</View>
 			<View style={{ flex: 1 }}>

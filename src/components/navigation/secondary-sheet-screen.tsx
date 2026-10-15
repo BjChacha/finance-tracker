@@ -108,7 +108,7 @@ export function SheetHeaderIconButton({
 			accessibilityRole="button"
 			accessibilityLabel={label}
 			hitSlop={8}
-			style={styles.headerButton}
+			style={({ pressed }) => [styles.headerButton, { opacity: pressed ? 0.55 : 1 }]}
 			onPress={onPress}
 		>
 			<Icon name={icon} size={22} color={color ?? colors.primary} />
@@ -732,8 +732,8 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	headerButton: {
-		width: 44,
-		height: 44,
+		width: 48,
+		height: 48,
 		alignItems: "center",
 		justifyContent: "center",
 	},

@@ -22,26 +22,23 @@ function renderHeader(
 	phase: TabPagerPhase = "idle",
 ) {
 	const onSearch = jest.fn();
-	const onAddAccount = jest.fn();
 	const opacities = {
 		index: sharedValue(1),
-		assets: sharedValue(1),
-		stats: sharedValue(0),
+		ledger: sharedValue(1),
 		profile: sharedValue(0),
 	};
 	const utils = render(
 		<TabHeader
 			activeName={activeName}
 			phase={phase}
-			anchorIndex={sharedValue(activeName === "assets" ? 1 : 0)}
+			anchorIndex={sharedValue(activeName === "ledger" ? 1 : 0)}
 			translateX={sharedValue(0)}
 			viewportWidth={sharedValue(360)}
 			opacityFor={(name) => opacities[name]}
 			onSearch={onSearch}
-			onAddAccount={onAddAccount}
 		/>,
 	);
-	return { onSearch, onAddAccount, ...utils };
+	return { onSearch, ...utils };
 }
 
 describe("TabHeader", () => {
@@ -60,15 +57,11 @@ describe("TabHeader", () => {
 				.accessibilityElementsHidden,
 		).toBe(false);
 		expect(
-			screen.getByTestId("tab-header-layer-assets", {
+			screen.getByTestId("tab-header-layer-ledger", {
 				includeHiddenElements: true,
 			}).props.accessibilityElementsHidden,
 		).toBe(true);
-		expect(
-			screen.getByTestId("tab-header-layer-stats", {
-				includeHiddenElements: true,
-			}),
-		).toBeTruthy();
+
 		expect(
 			screen.getByTestId("tab-header-layer-profile", {
 				includeHiddenElements: true,
@@ -77,35 +70,33 @@ describe("TabHeader", () => {
 	});
 
 	it("binds actions to their title layer and disables moving actions", () => {
-		const { onSearch, onAddAccount, rerender } = renderHeader("index");
+		const { onSearch, rerender } = renderHeader("index");
 		const search = screen.getByLabelText("搜索交易");
 		fireEvent.press(search);
 		expect(onSearch).toHaveBeenCalledTimes(1);
 
 		const opacities = {
 			index: sharedValue(1),
-			assets: sharedValue(1),
-			stats: sharedValue(0),
+			ledger: sharedValue(1),
 			profile: sharedValue(0),
 		};
 		rerender(
 			<TabHeader
-				activeName="assets"
+				activeName="ledger"
 				phase="animating"
 				anchorIndex={sharedValue(0)}
 				translateX={sharedValue(-180)}
 				viewportWidth={sharedValue(360)}
 				opacityFor={(name) => opacities[name]}
 				onSearch={onSearch}
-				onAddAccount={onAddAccount}
 			/>,
 		);
 
 		expect(
-			screen.getByLabelText("新增账户").props.accessibilityState?.disabled ??
-				screen.getByLabelText("新增账户").props.disabled,
+			screen.getByLabelText("\u641c\u7d22\u4ea4\u6613").props.accessibilityState?.disabled ??
+				screen.getByLabelText("\u641c\u7d22\u4ea4\u6613").props.disabled,
 		).toBe(true);
-		fireEvent.press(screen.getByLabelText("新增账户"));
-		expect(onAddAccount).not.toHaveBeenCalled();
+		fireEvent.press(screen.getByLabelText("\u641c\u7d22\u4ea4\u6613"));
+		expect(onSearch).toHaveBeenCalledTimes(1);
 	});
 });

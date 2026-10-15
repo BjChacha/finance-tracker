@@ -155,6 +155,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 	const openingFrameRef = useRef<number | null>(null);
 	const pendingDismissRef = useRef<ResidentEditorTarget | null>(null);
 	const closingRef = useRef(false);
+	const dismissCheckingRef = useRef(false);
 	const [surfaceVisible, setSurfaceVisible] = useState(false);
 	const [surfacePreparing, setSurfacePreparing] = useState(false);
 	const [interactive, setInteractive] = useState(false);
@@ -296,15 +297,20 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 	}, [target]);
 
 	const requestDismiss = useCallback(() => {
-		if (!target || closingRef.current) return;
+		if (!target || closingRef.current || dismissCheckingRef.current) return;
+		dismissCheckingRef.current = true;
 		void (async () => {
-			if (target.kind === "account" && accountRef.current?.handleBackPress())
-				return;
-			const canDismiss =
-				target.kind === "transaction"
-					? await transactionRef.current?.prepareDismiss()
-					: await accountRef.current?.prepareDismiss();
-			if (canDismiss ?? true) startDismiss();
+			try {
+				if (target.kind === "account" && accountRef.current?.handleBackPress())
+					return;
+				const canDismiss =
+					target.kind === "transaction"
+						? await transactionRef.current?.prepareDismiss()
+						: await accountRef.current?.prepareDismiss();
+				if (canDismiss ?? true) startDismiss();
+			} finally {
+				dismissCheckingRef.current = false;
+			}
 		})();
 	}, [startDismiss, target]);
 
@@ -358,20 +364,6 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 		);
 	}, [account, removeAccount, startDismiss, target]);
 
-	const handleSaveTransaction = useCallback(() => {
-		void (async () => {
-			const ok = await transactionRef.current?.save();
-			if (ok) startDismiss();
-		})();
-	}, [startDismiss]);
-
-	const handleSaveAccount = useCallback(() => {
-		void (async () => {
-			const ok = await accountRef.current?.save();
-			if (ok) startDismiss();
-		})();
-	}, [startDismiss]);
-
 	const handleTransactionHydrated = useCallback((key: string | number) => {
 		setHydratedSessionKey(String(key));
 	}, []);
@@ -412,13 +404,6 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 					}
 				/>
 			)}
-			<SheetHeaderIconButton
-				icon="check"
-				label={zh.common.save}
-				onPress={
-					target?.kind === "account" ? handleSaveAccount : handleSaveTransaction
-				}
-			/>
 		</View>
 	);
 
@@ -466,6 +451,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 									: undefined
 							}
 							submitting={updateTransaction.isPending}
+							onSaved={startDismiss}
 							onSessionHydrated={handleTransactionHydrated}
 							onEditorReady={() => setTransactionWarmed(true)}
 							onSubmit={(input) => {

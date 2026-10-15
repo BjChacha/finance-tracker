@@ -30,10 +30,8 @@ import Animated, {
 	Easing,
 	FadeIn,
 	FadeOut,
-	interpolateColor,
 	SlideInDown,
 	SlideOutDown,
-	useAnimatedStyle,
 	useReducedMotion,
 	useSharedValue,
 	withTiming,
@@ -44,6 +42,10 @@ import Animated, {
 import { scheduleOnRN } from "react-native-worklets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/Icon";
+import { FormActionBar } from "@/components/form/form-action-bar";
+import { scrollInputIntoView } from "@/components/form/scroll-input-into-view";
+import { confirmDiscard } from "@/components/form/confirm-discard";
+import { formLabels } from "@/components/form/labels";
 import { SingleLineTextInput } from "@/components/single-line-text-input";
 import type { TransactionType } from "@/db/schema";
 import { useAccountBalances } from "@/features/accounts";
@@ -148,6 +150,7 @@ type Props = {
 	/** 客户端幂等键（如快捷记账 handoffId）：重复提交返回既有记录 */
 	clientTag?: string | null;
 	onSubmit: (input: TxInput) => void | Promise<void>;
+	onSaved?: () => void;
 };
 
 export interface TransactionFormHandle {
@@ -155,7 +158,7 @@ export interface TransactionFormHandle {
 	prepareDismiss: () => Promise<boolean>;
 	/** Close any open overlay (keypad/pickers/submenu/keyboard). Returns true if one was open (and closed); false if none. */
 	closeOverlaysIfAny: () => boolean;
-	/** Submit current form values. Closes overlays first (returns false if any was open). Returns true on successful submit. */
+	/** Submit current values, dismissing the keyboard without an extra tap. */
 	save: () => Promise<boolean>;
 }
 
@@ -176,6 +179,7 @@ function TransactionFormComponent(
 		onEditorReady,
 		clientTag,
 		onSubmit,
+		onSaved,
 	}: Props,
 	ref: ForwardedRef<TransactionFormHandle>,
 ) {
@@ -184,6 +188,8 @@ function TransactionFormComponent(
 	const insets = useSafeAreaInsets();
 	const reduceMotion = useReducedMotion();
 	const mode = modeProp ?? (initialValues ? "edit" : "create");
+	const submissionLock = useRef(false);
+	const baselineRef = useRef<string | null>(null);
 	// 原始交易类型/分类（仅编辑模式有意义）：切换类型切回原类型时恢复原分类。
 	const originalType = initialValues?.type;
 	const originalCategoryId = initialValues?.categoryId ?? null;
@@ -317,6 +323,7 @@ function TransactionFormComponent(
 		if (sessionKey === null || hydratedSessionKeyRef.current === sessionKey)
 			return;
 		hydratedSessionKeyRef.current = sessionKey;
+		baselineRef.current = null;
 		reportedSessionKeyRef.current = null;
 		const nextDate =
 			initialValues?.dateMs != null
@@ -428,35 +435,10 @@ function TransactionFormComponent(
 		};
 	}, []);
 
-	// Android 上 sheet 是 absolute+translateY 浮层，KeyboardAvoidingView 对其失效：
-	// keyboardDidShow 在键盘起弹即触发，立即测量并启动动画滚动，
-	// 让内容上移与键盘弹出动画并行（不再等 300ms 后才滚，避免「先弹键盘再挪位」）。
-	useEffect(() => {
-		if (!keyboardVisible || keyboardHeight === 0) return;
-		activeInputRef.current?.measureInWindow((_x, y, _w, h) => {
-			if (h === 0) return;
-			const kbTop = Dimensions.get("screen").height - keyboardHeight;
-			const overlap = y + h - kbTop + 48;
-			if (overlap > 0 && scrollRef.current) {
-				scrollRef.current.scrollTo({
-					y: scrollYRef.current + overlap,
-					animated: true,
-				});
-			}
-		});
-	}, [keyboardVisible, keyboardHeight]);
-
-	// saveFooter 随键盘平滑上移/回落（时长对齐键盘面板），替代瞬时跳变。
-	const saveFooterTranslateY = useSharedValue(0);
-	useEffect(() => {
-		saveFooterTranslateY.value = withTiming(
-			keyboardVisible && keyboardHeight > 0 ? -keyboardHeight : 0,
-			{ duration: motion.enter, easing: Easing.out(Easing.cubic) },
-		);
-	}, [keyboardHeight, keyboardVisible, saveFooterTranslateY]);
-	const saveFooterAnimatedStyle = useAnimatedStyle(() => ({
-		transform: [{ translateY: saveFooterTranslateY.value }],
-	}));
+	const revealFocusedInput = useCallback(() => {
+		if (!Keyboard.isVisible()) return;
+		scrollInputIntoView(scrollRef.current, activeInputRef.current, scrollYRef.current, !reduceMotion);
+	}, [reduceMotion]);
 
 	useEffect(() => {
 		if (!onInteractive || interactiveReported.current || !formInteractive)
@@ -638,6 +620,20 @@ function TransactionFormComponent(
 		],
 	);
 	const canSave = inputResult.input !== null;
+	const snapshot = JSON.stringify([type, amountText, feeText, accountId, toAccountId, categoryId, projectId, dateText, timeText, note, currency]);
+	useLayoutEffect(() => {
+		if (sessionKey !== null && hydratedSessionKey !== sessionKey) return;
+		if (baselineRef.current === null) baselineRef.current = snapshot;
+	}, [hydratedSessionKey, sessionKey, snapshot]);
+	const dirty = baselineRef.current !== null && baselineRef.current !== snapshot;
+	const validationMessage = inputResult.input ? undefined : {
+		invalidAmount: zh.txList.invalidAmount,
+		needAccount: zh.txList.needAccount,
+		needCategory: zh.txList.needCategory,
+		sameAccount: zh.txList.sameAccount,
+		invalidFee: zh.txList.invalidFee,
+		invalidDate: zh.txList.invalidDate,
+	}[inputResult.error];
 	// 关闭所有弹层（键盘/各类选择器/子菜单/软键盘）；返回 true 表示有关闭。供返回/保存按钮协调。
 	const closeOverlaysIfAny = useCallback((): boolean => {
 		if (
@@ -834,40 +830,42 @@ function TransactionFormComponent(
 		Alert.alert(message);
 	}
 
-	function handleSave() {
-		// Swallow the stray second tap that lands on 保存 right after the native keypad's
-		// OK closes on top of it (see nativeKeypadClosedAtRef).
-		if (Date.now() - nativeKeypadClosedAtRef.current < 600) return;
+	async function save(): Promise<boolean> {
+		if (submissionLock.current || submitting || typeTransition) return false;
+		if (Date.now() - nativeKeypadClosedAtRef.current < 600) return false;
 		if (!inputResult.input) {
 			showValidationError(inputResult.error);
-			return;
+			return false;
 		}
-		void onSubmit(inputResult.input);
+		submissionLock.current = true;
+		Keyboard.dismiss();
+		try {
+			await onSubmit(inputResult.input);
+			baselineRef.current = snapshot;
+			return true;
+		} catch (error) {
+			Alert.alert(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
+			return false;
+		} finally {
+			submissionLock.current = false;
+		}
+	}
+
+	async function handleSave() {
+		if (await save()) onSaved?.();
 	}
 
 	useImperativeHandle(
 		ref,
 		() => ({
 			prepareDismiss: async () => {
-				closeOverlaysIfAny();
-				return true;
+				if (submissionLock.current || submitting) return false;
+				if (closeOverlaysIfAny()) return false;
+				return mode === "edit" && dirty ? confirmDiscard() : true;
 			},
 			closeOverlaysIfAny,
-			save: async () => {
-				if (closeOverlaysIfAny()) return false;
-				if (!inputResult.input) {
-					showValidationError(inputResult.error);
-					return false;
-				}
-				try {
-					await onSubmit(inputResult.input);
-					return true;
-				} catch {
-					return false;
-				}
-			},
+			save,
 		}),
-		[closeOverlaysIfAny, inputResult, onSubmit],
 	);
 
 	function renderCategoryCell(node: CategoryNode) {
@@ -880,6 +878,9 @@ function TransactionFormComponent(
 		return (
 			<Pressable
 				key={node.id}
+				accessibilityRole="radio"
+				accessibilityLabel={visualCategory.name}
+				accessibilityState={{ checked: selected }}
 				style={[
 					styles.categoryChip,
 					selected && { backgroundColor: typeColor, borderColor: typeColor },
@@ -981,18 +982,6 @@ function TransactionFormComponent(
 			};
 		};
 	}, [typeSlideDirection, typeSlideDistance]);
-	const saveButtonColorStyle = useAnimatedStyle(() => ({
-		backgroundColor: interpolateColor(
-			typeVisualPosition.get(),
-			[0, 1, 2],
-			[colors.expense, colors.income, colors.transfer],
-		),
-	}), [
-		colors.expense,
-		colors.income,
-		colors.transfer,
-		typeVisualPosition,
-	]);
 
 	// Progressive blocks fade without moving so later stages do not shift earlier content.
 	// Full editor mode mounts every block together and therefore skips this animation.
@@ -1150,14 +1139,13 @@ function TransactionFormComponent(
 			style={{ flex: 1, backgroundColor: colors.background }}
 			onLayout={onInteractive ? () => setFormLaidOut(true) : undefined}
 		>
-			{/* sheet 是 absolute+translateY 浮层，KeyboardAvoidingView 在 Android 上对其失效，
-			   故 Android 关闭 KAV，改由 keyboardDidShow 时手动 scrollTo + saveFooter 上移避让。 */}
 			<KeyboardAvoidingView
 				style={{ flex: 1 }}
 				behavior={Platform.OS === "ios" ? "padding" : undefined}
 			>
 				<ScrollView
 					ref={scrollRef}
+					onLayout={() => requestAnimationFrame(revealFocusedInput)}
 					removeClippedSubviews={Platform.OS === "android"}
 					style={{ flex: 1 }}
 					contentContainerStyle={{
@@ -1407,6 +1395,7 @@ function TransactionFormComponent(
 											onFocus={() => {
 												setKeypadVisible(false);
 												activeInputRef.current = feeInputRef.current;
+												revealFocusedInput();
 											}}
 										/>
 									</View>
@@ -1445,6 +1434,7 @@ function TransactionFormComponent(
 									onFocus={() => {
 										setKeypadVisible(false);
 										activeInputRef.current = noteInputRef.current;
+										revealFocusedInput();
 									}}
 								/>
 							</Animated.View>
@@ -1526,36 +1516,16 @@ function TransactionFormComponent(
 					</View>
 				</ScrollView>
 
-				{editorStage >= saveStage && mode === "create" && (
-					<Animated.View
-						entering={blockEntering}
-						style={[
-							styles.saveFooter,
-							saveFooterAnimatedStyle,
-							{
-								backgroundColor: colors.card,
-								borderTopColor: colors.border,
-								paddingBottom: insets.bottom + 8,
-							},
-						]}
-					>
-						<AnimatedPressable
-							style={[
-								styles.saveBtn,
-								saveButtonColorStyle,
-								{
-									opacity:
-										submitting || !canSave || typeTransition ? 0.6 : 1,
-								},
-							]}
-							onPress={handleSave}
-							disabled={submitting || !canSave || typeTransition !== null}
-						>
-							<Text style={[styles.saveBtnText, { color: colors.onPrimary }]}>
-								{zh.common.save}
-							</Text>
-						</AnimatedPressable>
-					</Animated.View>
+				{editorStage >= saveStage && (
+					<FormActionBar
+						testID="transaction-save"
+						label={mode === "edit" ? formLabels.saveChanges : zh.common.save}
+						hint={validationMessage ?? (mode === "edit" && dirty ? formLabels.unsaved : undefined)}
+						onPress={handleSave}
+						pending={submitting}
+						disabled={!canSave || typeTransition !== null}
+						keyboardAware={Platform.OS === "android"}
+					/>
 				)}
 				{keypadVisible && (
 					<Animated.View
@@ -1898,6 +1868,7 @@ function makeStyles({ colors }: AppTheme) {
 		},
 		categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
 		categoryChip: {
+			minHeight: 44,
 			flexDirection: "row",
 			alignItems: "center",
 			gap: 4,
@@ -1910,6 +1881,7 @@ function makeStyles({ colors }: AppTheme) {
 		categoryChipName: { fontSize: 13 },
 		categoryMoreBtn: { marginLeft: 2, padding: 2 },
 		allBtn: {
+			minHeight: 48,
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
@@ -1950,6 +1922,8 @@ function makeStyles({ colors }: AppTheme) {
 		submenuRowText: { flex: 1, fontSize: 14 },
 		chipRow: { flexDirection: "row", gap: 8 },
 		chip: {
+			minHeight: 44,
+			justifyContent: "center",
 			paddingHorizontal: 12,
 			paddingVertical: 7,
 			borderRadius: 16,
@@ -1958,7 +1932,7 @@ function makeStyles({ colors }: AppTheme) {
 			marginBottom: 4,
 		},
 		textInput: {
-			height: 40,
+			minHeight: 48,
 			color: colors.text,
 			fontSize: 15,
 			paddingHorizontal: 10,
@@ -1966,17 +1940,6 @@ function makeStyles({ colors }: AppTheme) {
 			borderColor: colors.border,
 			borderRadius: 8,
 		},
-		saveFooter: {
-			paddingTop: 8,
-			paddingHorizontal: 16,
-			borderTopWidth: StyleSheet.hairlineWidth,
-		},
-		saveBtn: {
-			borderRadius: 12,
-			paddingVertical: 14,
-			alignItems: "center",
-		},
-		saveBtnText: { fontSize: 16, fontWeight: "600" },
 		pickerMask: {
 			flex: 1,
 			backgroundColor: "rgba(0,0,0,0.4)",

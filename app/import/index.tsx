@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
@@ -54,6 +55,7 @@ export default function ImportScreen() {
   const { colors } = theme;
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const qc = useQueryClient();
 
   const [session] = useState(() => new ImportSession(adapterRegistry));
@@ -372,12 +374,7 @@ export default function ImportScreen() {
             );
           })}
         </View>
-        {renderFooter(
-          () => setStep(0),
-          handleAdapterNext,
-          t.next,
-          !adapterId,
-        )}
+
       </>
     );
   }
@@ -533,7 +530,7 @@ export default function ImportScreen() {
           />
         </View>
 
-        {renderFooter(() => setStep(1), handleParseCsv, t.parse, false)}
+
       </>
     );
   }
@@ -602,12 +599,7 @@ export default function ImportScreen() {
             {mappingPlan.accounts.map(renderMappingItem)}
           </View>
         )}
-        {renderFooter(
-          () => setStep(adapterId === 'generic-csv' ? 2 : 1),
-          handleMappingNext,
-          t.next,
-          false,
-        )}
+
       </>
     );
   }
@@ -723,7 +715,7 @@ export default function ImportScreen() {
           )}
         </View>
 
-        {renderFooter(() => setStep(3), handleCommit, busy ? t.importing : t.confirmImport, busy)}
+
       </>
     );
   }
@@ -854,20 +846,26 @@ export default function ImportScreen() {
   }
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
-      keyboardShouldPersistTaps="handled"
-    >
-      {renderStepBar()}
-      {step === 0 && renderStep0()}
-      {step === 1 && renderStep1()}
-      {step === 2 && renderStep2()}
-      {step === 3 && renderStep3()}
-      {step === 4 && renderStep4()}
-      {step === 5 && renderStep5()}
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScrollView key={step} contentContainerStyle={{ padding: 16, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+        {renderStepBar()}
+        {step === 0 && renderStep0()}
+        {step === 1 && renderStep1()}
+        {step === 2 && renderStep2()}
+        {step === 3 && renderStep3()}
+        {step === 4 && renderStep4()}
+        {step === 5 && renderStep5()}
+      </ScrollView>
+      {step > 0 && step < 5 && (
+        <View style={{ padding: 16, paddingBottom: Math.max(insets.bottom, 16), backgroundColor: colors.card, borderTopColor: colors.border, borderTopWidth: StyleSheet.hairlineWidth }}>
+          {step === 1 && renderFooter(() => setStep(0), handleAdapterNext, t.next, !adapterId)}
+          {step === 2 && renderFooter(() => setStep(1), handleParseCsv, t.parse, false)}
+          {step === 3 && renderFooter(() => setStep(adapterId === 'generic-csv' ? 2 : 1), handleMappingNext, t.next, false)}
+          {step === 4 && renderFooter(() => setStep(3), handleCommit, busy ? t.importing : t.confirmImport, busy)}
+        </View>
+      )}
       {renderPickerModal()}
-    </ScrollView>
+    </View>
   );
 }
 

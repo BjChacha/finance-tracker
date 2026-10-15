@@ -23,6 +23,17 @@ export default function AccountsScreen() {
   const archive = useArchiveAccount();
   const [editor, setEditor] = useState<EditorState | null>(null);
   const editorRef = useRef<AccountEditorHandle>(null);
+  const dismissPending = useRef(false);
+
+  async function closeEditor() {
+    if (dismissPending.current) return;
+    dismissPending.current = true;
+    try {
+      if (await editorRef.current?.prepareDismiss()) setEditor(null);
+    } finally {
+      dismissPending.current = false;
+    }
+  }
 
   function confirmArchive(id: string, name: string) {
     Alert.alert(`${zh.accounts.archive}「${name}」`, zh.accounts.archiveConfirm, [
@@ -46,7 +57,7 @@ export default function AccountsScreen() {
           <SheetHeaderIconButton
             icon="chevron-left"
             label={zh.common.back}
-            onPress={() => setEditor(null)}
+            onPress={() => void closeEditor()}
           />
         ) : undefined
       }
@@ -62,9 +73,10 @@ export default function AccountsScreen() {
       onBackPress={() => {
         if (editorRef.current?.handleBackPress()) return true;
         if (!editor) return false;
-        setEditor(null);
+        void closeEditor();
         return true;
       }}
+      onBeforeDismiss={() => editorRef.current?.prepareDismiss() ?? true}
     >
       {editor ? (
         <AccountEditor

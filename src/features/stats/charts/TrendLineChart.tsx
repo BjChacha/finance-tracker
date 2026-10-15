@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { useTheme } from '@/theme';
-import { formatCompactYuan } from '@/lib/money';
+import { formatCompactYuan, formatCentsWithSymbol } from '@/lib/money';
 import { ChartEmpty } from './ChartEmpty';
 import { dashboardChartLayout } from './chart-layout';
+import { lineAxis } from './line-axis';
+import { dashboardText as copy } from '@/features/dashboard/labels';
 
 export type LinePoint = {
   label: string;
+  detailLabel?: string;
+  secondaryDetailLabel?: string;
   /** 主序列（分） */
   primary: number;
   /** 次序列（分），可选 */
@@ -19,23 +24,13 @@ type Props = {
   primaryLabel: string;
   secondaryColor?: string;
   secondaryLabel?: string;
-  /** 图表高度，默认 200 */
   height?: number;
-  /** 曲线平滑化 */
   curved?: boolean;
-  /** 迷你火花线模式：隐藏图例/坐标轴/网格，仅保留曲线（含淡入填充） */
   compact?: boolean;
+  secondaryDashed?: boolean;
+  fillPrimary?: boolean;
 };
 
-/** 向上取整到「漂亮刻度」1/2/5×10^k */
-function niceCeil(v: number): number {
-  if (v <= 0) return 1;
-  const mag = Math.pow(10, Math.floor(Math.log10(v)));
-  const norm = v / mag;
-  return (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
-}
-
-/** 双序列趋势折线图（隔离 gifted-charts）；金额分转元展示 */
 export function TrendLineChart({
   points,
   primaryColor,
@@ -45,11 +40,21 @@ export function TrendLineChart({
   height,
   curved = true,
   compact,
+  secondaryDashed = false,
+  fillPrimary = false,
 }: Props) {
   const theme = useTheme();
   const { width: windowW } = useWindowDimensions();
-  const hasData = points.some((p) => p.primary !== 0 || (p.secondary ?? 0) !== 0);
-  if (points.length === 0 || !hasData) return <ChartEmpty />;
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+  const signature = `${primaryLabel}:${JSON.stringify(points)}`;
+  const [selection, setSelection] = useState<{
+    signature: string;
+    index: number;
+  } | null>(null);
+  if (points.length === 0) return <ChartEmpty />;
+  const selectedIndex =
+    selection?.signature === signature ? selection.index : points.length - 1;
+  const selected = points[selectedIndex]!;
 
   const axisStyle = { color: theme.colors.textSecondary, fontSize: 10 };
 
@@ -61,40 +66,20 @@ export function TrendLineChart({
     vals.push(p.primary / 100);
     if (p.secondary != null) vals.push(p.secondary / 100);
   }
-  const rawMax = Math.max(...vals);
-  const rawMin = Math.min(...vals);
-  const range = rawMax - rawMin;
-  const pad = range * 0.1 || rawMax * 0.1 || 1;
-  let yAxisOffset = 0;
-  let maxValue: number;
-  if (rawMin > rawMax * 0.3) {
-    // 抬下限让折线充满图表高度：step 取能覆盖数据带的最小漂亮刻度，
-    // yAxisOffset 落到 step 整倍 → 纵轴标签都是规整数；必要时加粗 step 保证顶端盖住数据。
-    let step = niceCeil((range + 2 * pad) / 4);
-    let floor = Math.max(0, Math.floor((rawMin - pad) / step) * step);
-    while (floor + step * 4 < rawMax) {
-      step = niceCeil(step + 1e-6);
-      floor = Math.max(0, Math.floor((rawMin - pad) / step) * step);
-    }
-    yAxisOffset = floor;
-    maxValue = step * 4;
-  } else {
-    // 收支趋势等含 0 值的图：维持 0 锚
-    maxValue = niceCeil(rawMax);
-  }
-
+  if (fillPrimary) vals.push(0);
   // Keep a conservative 64px horizontal inset that fits both dashboard and asset cards.
   const yAxisLabelWidth = compact ? 0 : 48;
-  const sideSpacing = 8;
-  const containerWidth = windowW - 64;
-  const spacing = Math.max(
-    6,
-    (containerWidth - yAxisLabelWidth - sideSpacing * 2) / Math.max(points.length - 1, 1),
-  );
+  const sideSpacing = 20;
+  const containerWidth = measuredWidth ?? windowW - 64;
+  const plotWidth = containerWidth - yAxisLabelWidth;
+  // Every history bucket must fit, including the latest balance, on first render.
+  const spacing = (plotWidth - sideSpacing * 2) / Math.max(points.length, 1);
   const labelCount = Math.min(points.length, 6);
   const labelIndexes = new Set(
     Array.from({ length: labelCount }, (_, index) =>
-      labelCount === 1 ? 0 : Math.round((index * (points.length - 1)) / (labelCount - 1)),
+      labelCount === 1
+        ? 0
+        : Math.round((index * (points.length - 1)) / (labelCount - 1)),
     ),
   );
   const xAxisLabelWidth = 38;
@@ -102,6 +87,7 @@ export function TrendLineChart({
     const showLabel = !compact && labelIndexes.has(index);
     return {
       value: point.primary / 100,
+      source: point,
       label: '',
       labelComponent: showLabel
         ? () => (
@@ -124,20 +110,48 @@ export function TrendLineChart({
     };
   });
   const hasSecondary = points.some((p) => p.secondary !== undefined);
-  const data2 = hasSecondary ? points.map((p) => ({ value: (p.secondary ?? 0) / 100 })) : undefined;
+  const data2 = hasSecondary
+    ? points.map((p) => ({ value: (p.secondary ?? 0) / 100, source: p }))
+    : undefined;
+  const axis = lineAxis(vals);
+  // The chart library adds the negative area below its configured positive height.
+  const positiveHeight =
+    ((height ?? 200) * axis.noOfSections) /
+    (axis.noOfSections + axis.noOfSectionsBelowXAxis);
 
   return (
-    <View>
+    <View
+      onLayout={(event) => setMeasuredWidth(event.nativeEvent.layout.width)}
+    >
       {!compact && (
         <View style={styles.legend}>
           <View style={[styles.dot, { backgroundColor: primaryColor }]} />
-          <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
+          <Text
+            style={[styles.legendText, { color: theme.colors.textSecondary }]}
+          >
             {primaryLabel}
           </Text>
           {hasSecondary && secondaryColor && secondaryLabel ? (
             <>
-              <View style={[styles.dot, { backgroundColor: secondaryColor }]} />
-              <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
+              <View
+                style={
+                  secondaryDashed
+                    ? {
+                        width: 18,
+                        borderTopWidth: 2,
+                        borderColor: secondaryColor,
+                        borderStyle: 'dashed',
+                        marginLeft: 8,
+                      }
+                    : [styles.dot, { backgroundColor: secondaryColor }]
+                }
+              />
+              <Text
+                style={[
+                  styles.legendText,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 {secondaryLabel}
               </Text>
             </>
@@ -145,20 +159,35 @@ export function TrendLineChart({
         </View>
       )}
       <LineChart
-        height={height ?? 200}
+        key={signature}
+        height={positiveHeight}
+        width={plotWidth}
+        disableScroll
         data={data}
         data2={data2}
         color1={primaryColor}
         color2={secondaryColor}
+        strokeDashArray2={secondaryDashed ? [5, 4] : undefined}
         thickness={2}
         curved={!!curved}
         hideDataPoints
         spacing={spacing}
         initialSpacing={sideSpacing}
         endSpacing={sideSpacing}
-        maxValue={maxValue}
-        yAxisOffset={yAxisOffset}
-        noOfSections={4}
+        {...axis}
+        focusEnabled={!compact}
+        focusTogether
+        showStripOnFocus
+        showDataPointOnFocus
+        unFocusOnPressOut={false}
+        focusedDataPointIndex={compact ? undefined : selectedIndex}
+        onFocus={(_item: unknown, index: number) =>
+          setSelection({ signature, index })
+        }
+        stripColor={theme.colors.textSecondary}
+        stripOpacity={0.25}
+        rulesLength={plotWidth}
+        xAxisLength={plotWidth}
         hideRules={compact}
         hideYAxisText={compact}
         hideOrigin={compact}
@@ -169,12 +198,40 @@ export function TrendLineChart({
         rulesType="dashed"
         yAxisLabelWidth={yAxisLabelWidth}
         areaChart={compact}
+        areaChart1={fillPrimary || compact}
+        areaChart2={false}
+        startFillColor1={primaryColor}
+        endFillColor1={primaryColor}
+        startOpacity1={0.14}
+        endOpacity1={0.01}
         startFillColor={primaryColor}
         endFillColor={primaryColor}
         startOpacity={0.22}
         endOpacity={0}
         formatYLabel={(v) => formatCompactYuan(Number(v))}
       />
+      {!compact && (
+        <View
+          accessibilityLiveRegion="polite"
+          style={{ paddingTop: 10, gap: 4 }}
+        >
+          <Text style={{ color: theme.colors.textSecondary, fontSize: 11 }}>
+            {selected.secondaryDetailLabel
+              ? `${primaryLabel} ${selected.detailLabel ?? selected.label} · ${secondaryLabel} ${selected.secondaryDetailLabel}`
+              : `${selected.detailLabel ?? selected.label} · ${copy.choosePoint}`}
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+            <Text style={{ color: primaryColor, fontSize: 12 }}>
+              {primaryLabel} {formatCentsWithSymbol(selected.primary)}
+            </Text>
+            {selected.secondary != null && (
+              <Text style={{ color: secondaryColor, fontSize: 12 }}>
+                {secondaryLabel} {formatCentsWithSymbol(selected.secondary)}
+              </Text>
+            )}
+          </View>
+        </View>
+      )}
     </View>
   );
 }

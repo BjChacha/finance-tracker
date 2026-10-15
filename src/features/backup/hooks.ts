@@ -1,3 +1,4 @@
+import { withBackupLock } from './automatic';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { exportBackup, exportCsv, getLastBackupAt, restoreBackup } from './repository';
 
@@ -24,7 +25,7 @@ export function useExportCsv() {
 export function useRestoreBackup() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (fileUri: string) => restoreBackup(fileUri),
+    mutationFn: (fileUri: string) => withBackupLock(() => restoreBackup(fileUri)),
     // 恢复是整库覆盖，全量失效所有缓存
     onSuccess: () => qc.invalidateQueries(),
   });

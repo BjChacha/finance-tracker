@@ -27,6 +27,9 @@ import Animated, {
 	SlideOutDown,
 } from "react-native-reanimated";
 import { Icon } from "@/components/Icon";
+import { FormActionBar } from "@/components/form/form-action-bar";
+import { confirmDiscard } from "@/components/form/confirm-discard";
+import { formLabels } from "@/components/form/labels";
 import { SingleLineTextInput } from "@/components/single-line-text-input";
 import { ACCOUNT_TYPES, normalizeAccountType } from "@/db/account-types";
 import type { AccountType } from "@/db/schema";
@@ -122,6 +125,8 @@ function AccountEditorComponent(
 	);
 	const [adjustOpen, setAdjustOpen] = useState(false);
 	const [keyboardVisible, setKeyboardVisible] = useState(false);
+	const [keyboardHeight, setKeyboardHeight] = useState(0);
+	const submissionLock = useRef(false);
 	const [adjustText, setAdjustText] = useState("");
 	const replaceBalanceOnNextNumericRef = useRef(false);
 	const hydratedAccountIdRef = useRef<string | number | null>(null);
@@ -188,12 +193,14 @@ function AccountEditorComponent(
 	}, [editorStage, onEditorReady]);
 
 	useEffect(() => {
-		const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
-			setKeyboardVisible(true),
-		);
-		const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
-			setKeyboardVisible(false),
-		);
+		const showSubscription = Keyboard.addListener("keyboardDidShow", (event) => {
+			setKeyboardVisible(true);
+			setKeyboardHeight(event.endCoordinates.height);
+		});
+		const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+			setKeyboardVisible(false);
+			setKeyboardHeight(0);
+		});
 		return () => {
 			showSubscription.remove();
 			hideSubscription.remove();
@@ -203,7 +210,8 @@ function AccountEditorComponent(
 	const create = useCreateAccount();
 	const updateDetails = useUpdateAccountDetails();
 	const adjust = useAdjustAccountBalance();
-	const pending = create.isPending || adjust.isPending;
+	const pending = create.isPending || adjust.isPending || updateDetails.isPending;
+	const dirty = existing ? name.trim() !== existing.name || type !== normalizeAccountType(existing.type) || icon !== resolveIconKey(existing.icon, "account") || color !== existing.color || includeInTotal !== (existing.includeInTotal === 1) : name.trim().length > 0;
 
 	const details: AccountDetailsInput | null =
 		existing && name.trim()
@@ -220,6 +228,7 @@ function AccountEditorComponent(
 			},
 			prepareDismiss: async () => {
 				if (bypassDismissGateRef.current) return true;
+				if (submissionLock.current || pending) return false;
 				if (adjustOpen) {
 					setAdjustOpen(false);
 					return false;
@@ -228,33 +237,10 @@ function AccountEditorComponent(
 					Keyboard.dismiss();
 					return false;
 				}
-				return true;
+				return dirty ? confirmDiscard() : true;
 			},
-			save: async () => {
-				if (bypassDismissGateRef.current) return true;
-				if (adjustOpen) {
-					setAdjustOpen(false);
-					return false;
-				}
-				if (keyboardVisible) {
-					Keyboard.dismiss();
-					return false;
-				}
-				if (!existing) return false;
-				if (!name.trim()) {
-					Alert.alert(zh.accounts.nameRequired);
-					return false;
-				}
-				if (!details) return false;
-				try {
-					await updateDetails.mutateAsync({ id: existing.id, input: details });
-					return true;
-				} catch {
-					return false;
-				}
-			},
+			save,
 		}),
-		[adjustOpen, details, existing, keyboardVisible, name, updateDetails],
 	);
 
 	async function openBalanceKeypad(): Promise<void> {
@@ -358,15 +344,16 @@ function AccountEditorComponent(
 		);
 	}
 
-	function handleSave(): void {
+	async function save(): Promise<boolean> {
+		if (submissionLock.current || pending || adjustOpen) return false;
 		if (!name.trim()) {
 			Alert.alert(zh.accounts.nameRequired);
-			return;
+			return false;
 		}
 		const initialBalance = parseMoneyToCents(balanceText || "0");
 		if (initialBalance === null) {
 			Alert.alert(zh.accounts.invalidBalance);
-			return;
+			return false;
 		}
 		const input: AccountInput = {
 			name: name.trim(),
@@ -376,12 +363,26 @@ function AccountEditorComponent(
 			initialBalance,
 			includeInTotal,
 		};
-		create.mutate(input, {
-			onSuccess: () => {
-				bypassDismissGateRef.current = true;
-				onComplete();
-			},
-		});
+		submissionLock.current = true;
+		Keyboard.dismiss();
+		try {
+			if (existing && details) {
+				await updateDetails.mutateAsync({ id: existing.id, input: details });
+			} else {
+				await create.mutateAsync(input);
+			}
+			bypassDismissGateRef.current = true;
+			return true;
+		} catch (error) {
+			Alert.alert(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
+			return false;
+		} finally {
+			submissionLock.current = false;
+		}
+	}
+
+	async function handleSave() {
+		if (await save()) onComplete();
 	}
 
 	if (editorStage === 0) {
@@ -436,7 +437,7 @@ function AccountEditorComponent(
 				ref={scrollRef}
 				removeClippedSubviews={Platform.OS === "android"}
 				style={{ flex: 1 }}
-				contentContainerStyle={{ padding: 16 }}
+				contentContainerStyle={{ padding: 16, paddingBottom: 16 + keyboardHeight }}
 				keyboardShouldPersistTaps="handled"
 			>
 				<Pressable
@@ -462,6 +463,7 @@ function AccountEditorComponent(
 						{zh.accounts.name}
 					</Text>
 					<SingleLineTextInput
+						accessibilityLabel={zh.accounts.name}
 						style={[
 							styles.input,
 							{ color: colors.text, borderColor: colors.border },
@@ -519,6 +521,9 @@ function AccountEditorComponent(
 								{ACCOUNT_ICON_KEYS.slice(0, mountedIconCount).map((iconKey) => (
 									<Pressable
 										key={iconKey}
+										accessibilityRole="radio"
+										accessibilityLabel={iconKey}
+										accessibilityState={{ checked: icon === iconKey }}
 										style={[
 											styles.iconChip,
 											{
@@ -548,6 +553,10 @@ function AccountEditorComponent(
 								{COLOR_OPTIONS.map((option) => (
 									<Pressable
 										key={option}
+										accessibilityRole="radio"
+										accessibilityLabel={`${zh.accounts.color} ${option}`}
+										accessibilityState={{ checked: color === option }}
+										hitSlop={4}
 										style={[
 											styles.colorDot,
 											{ backgroundColor: option },
@@ -577,21 +586,17 @@ function AccountEditorComponent(
 					)}
 				</View>
 
-				{editorStage >= 10 && !existing && (
-					<Pressable
-						style={[
-							styles.saveBtn,
-							{ backgroundColor: colors.primary, opacity: pending ? 0.6 : 1 },
-						]}
-						onPress={handleSave}
-						disabled={pending}
-					>
-						<Text style={[styles.saveBtnText, { color: colors.onPrimary }]}>
-							{zh.common.save}
-						</Text>
-					</Pressable>
-				)}
 			</ScrollView>
+			{editorStage >= 10 && (
+				<FormActionBar
+					testID="account-save"
+					label={existing ? formLabels.saveChanges : zh.common.save}
+					hint={!name.trim() ? zh.accounts.nameRequired : undefined}
+					onPress={handleSave}
+					pending={pending}
+					disabled={!name.trim()}
+				/>
+			)}
 
 			{adjustOpen && (
 				<Animated.View
@@ -668,7 +673,7 @@ const styles = StyleSheet.create({
 	card: { borderRadius: 12, padding: 16, marginBottom: 16 },
 	label: { fontSize: 13, marginBottom: 8, marginTop: 14 },
 	input: {
-		height: 40,
+		minHeight: 48,
 		borderWidth: 1,
 		borderRadius: 8,
 		paddingHorizontal: 12,
@@ -676,28 +681,28 @@ const styles = StyleSheet.create({
 	},
 	chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
 	chip: {
+		minHeight: 48,
+		justifyContent: "center",
 		paddingHorizontal: 12,
 		paddingVertical: 7,
 		borderRadius: 16,
 		borderWidth: 1,
 	},
 	iconChip: {
-		width: 42,
-		height: 42,
+		width: 48,
+		height: 48,
 		borderRadius: 10,
 		borderWidth: 1,
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	colorDot: { width: 32, height: 32, borderRadius: 16 },
+	colorDot: { width: 40, height: 40, borderRadius: 20 },
 	switchRow: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		marginTop: 18,
 	},
-	saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: "center" },
-	saveBtnText: { fontSize: 16, fontWeight: "600" },
 });
 
 export default AccountEditor;

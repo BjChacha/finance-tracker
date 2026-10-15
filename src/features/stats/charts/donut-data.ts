@@ -65,7 +65,8 @@ function assignDistinctColors(slices: DonutSlice[], otherColor: string): DonutSl
 }
 
 export function buildDonutSlices(data: DonutSlice[], otherColor: string): DonutSlice[] {
-  const sorted = [...data].sort((left, right) => right.value - left.value);
+  const sorted = data.filter((slice) => Number.isFinite(slice.value) && slice.value > 0)
+    .sort((left, right) => right.value - left.value || left.id.localeCompare(right.id));
   const total = sorted.reduce((sum, slice) => sum + slice.value, 0);
   const visible = sorted.slice(0, TOP_SLICE_COUNT);
 

@@ -1,232 +1,79 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { type LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
-import { PieChart } from "react-native-gifted-charts";
-import { G, Polyline, Rect, Svg, Text as SvgText } from "react-native-svg";
-import {
-	formatAdaptiveCentsWithSymbol,
-	formatCentsWithSymbol,
-} from "@/lib/money";
-import { useTheme } from "@/theme";
-import { ChartEmpty } from "./ChartEmpty";
-import { buildDonutSlices, type DonutSlice } from "./donut-data";
-import {
-	DONUT_CHART_HEIGHT,
-	DONUT_INNER_RADIUS,
-	DONUT_OUTER_RADIUS,
-	DONUT_START_ANGLE,
-	layoutDonutLabels,
-} from "./donut-layout";
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { PieChart } from 'react-native-gifted-charts';
+import { formatAdaptiveCentsWithSymbol, formatCentsWithSymbol } from '@/lib/money';
+import { useTheme } from '@/theme';
+import { ChartEmpty } from './ChartEmpty';
+import { buildDonutSlices, OTHER_SLICE_ID, type DonutSlice } from './donut-data';
+import { dashboardText as copy } from '@/features/dashboard/labels';
 
-export type { DonutSlice } from "./donut-data";
+export type { DonutSlice } from './donut-data';
 
-type Props = {
-	data: DonutSlice[];
-	/** Label displayed in the donut center when no slice is selected. */
-	centerLabel: string;
-};
+type Props = { data: DonutSlice[]; centerLabel: string; onDetails?: (id: string) => void };
 
-const CENTER_CONTENT_WIDTH = DONUT_INNER_RADIUS * 2 - 8;
-
-/** Render category shares with deterministic external labels and leader lines. */
-export function DonutChart({ data, centerLabel }: Props) {
-	const theme = useTheme();
-	const [chartWidth, setChartWidth] = useState(0);
-	const [selectedId, setSelectedId] = useState<string | null>(null);
-	const total = data.reduce((sum, slice) => sum + slice.value, 0);
-	const hasData = data.length > 0 && total > 0;
-	const slices = useMemo(
-		() => buildDonutSlices(data, theme.colors.textSecondary),
-		[data, theme.colors.textSecondary],
-	);
-	// Drop a stale selection when the slice set changes (type/range switch).
-	useEffect(() => {
-		if (selectedId && !slices.some((slice) => slice.id === selectedId)) {
-			setSelectedId(null);
-		}
-	}, [selectedId, slices]);
-	const labels = useMemo(
-		() =>
-			chartWidth > 0
-				? layoutDonutLabels(slices, {
-						width: chartWidth,
-						height: DONUT_CHART_HEIGHT,
-					})
-				: [],
-		[chartWidth, slices],
-	);
-	const select = useCallback((id: string) => {
-		setSelectedId((current) => (current === id ? null : id));
-	}, []);
-	const pieData = useMemo(
-		() =>
-			slices.map((slice) => ({
-				value: slice.value,
-				color:
-					selectedId && selectedId !== slice.id
-						? theme.colors.border
-						: slice.color,
-				onPress: () => select(slice.id),
-			})),
-		[select, selectedId, slices, theme.colors.border],
-	);
-	const selectedSlice = selectedId
-		? (slices.find((slice) => slice.id === selectedId) ?? null)
-		: null;
-	const exactTotal = formatCentsWithSymbol(total);
-	const displayTotal = formatAdaptiveCentsWithSymbol(total);
-	const accessibilityLabel = useMemo(
-		() =>
-			[
-				`${centerLabel} ${exactTotal}`,
-				...slices.map((slice) => `${slice.label} ${slice.pct}%`),
-			].join(", "),
-		[centerLabel, exactTotal, slices],
-	);
-
-	const handleLayout = useCallback((event: LayoutChangeEvent) => {
-		const nextWidth = Math.floor(event.nativeEvent.layout.width);
-		setChartWidth((current) => (current === nextWidth ? current : nextWidth));
-	}, []);
-
-	if (!hasData) return <ChartEmpty />;
-
-	return (
-		<View
-			accessible
-			accessibilityRole="image"
-			accessibilityLabel={accessibilityLabel}
-			onLayout={handleLayout}
-			style={styles.wrap}
-		>
-			{chartWidth > 0 ? (
-				<>
-					<View
-						style={[
-							styles.pie,
-							{
-								left: chartWidth / 2 - DONUT_OUTER_RADIUS,
-								top: DONUT_CHART_HEIGHT / 2 - DONUT_OUTER_RADIUS,
-							},
-						]}
-					>
-						<PieChart
-							data={pieData}
-							donut
-							radius={DONUT_OUTER_RADIUS}
-							innerRadius={DONUT_INNER_RADIUS}
-							initialAngle={DONUT_START_ANGLE}
-							extraRadius={0}
-							paddingHorizontal={0}
-							paddingVertical={0}
-							innerCircleColor={theme.colors.card}
-							centerLabelComponent={() => (
-								<View style={styles.center}>
-									<Text
-										style={[
-											styles.centerLabel,
-											{ color: theme.colors.textSecondary },
-										]}
-										numberOfLines={1}
-									>
-										{selectedSlice ? selectedSlice.label : centerLabel}
-									</Text>
-									<Text
-										accessibilityLabel={
-											selectedSlice
-												? formatCentsWithSymbol(selectedSlice.value)
-												: exactTotal
-										}
-										numberOfLines={1}
-										adjustsFontSizeToFit
-										minimumFontScale={0.72}
-										style={[styles.centerValue, { color: theme.colors.text }]}
-									>
-										{selectedSlice
-											? formatCentsWithSymbol(selectedSlice.value)
-											: displayTotal}
-									</Text>
-									{selectedSlice ? (
-										<Text
-											style={[
-												styles.centerSub,
-												{ color: theme.colors.textSecondary },
-											]}
-										>
-											{selectedSlice.pct}%
-										</Text>
-									) : null}
-								</View>
-							)}
-						/>
-					</View>
-					<Svg
-						width={chartWidth}
-						height={DONUT_CHART_HEIGHT}
-						pointerEvents="box-none"
-						style={StyleSheet.absoluteFill}
-					>
-						{labels.map((label) => {
-							const points = label.linePoints
-								.map((point) => `${point.x},${point.y}`)
-								.join(" ");
-							return (
-								<G key={label.id}>
-									<Polyline
-										points={points}
-										fill="none"
-										stroke={theme.colors.textSecondary}
-										strokeOpacity={0.58}
-										strokeWidth={1}
-										strokeLinejoin="round"
-										strokeLinecap="round"
-									/>
-									<SvgText
-										x={label.x}
-										y={label.y + 4}
-										fill={theme.colors.textSecondary}
-										fontSize={12}
-										textAnchor={label.textAnchor}
-									>
-										{label.text}
-									</SvgText>
-									<Rect
-										x={label.bounds.left}
-										y={label.bounds.top}
-										width={label.bounds.right - label.bounds.left}
-										height={label.bounds.bottom - label.bounds.top}
-										fill={theme.colors.card}
-										fillOpacity={0.001}
-										onPress={() => select(label.id)}
-									/>
-								</G>
-							);
-						})}
-					</Svg>
-				</>
-			) : null}
-		</View>
-	);
+export function DonutChart({ data, centerLabel, onDetails }: Props) {
+  const { colors } = useTheme();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const slices = useMemo(() => buildDonutSlices(data, colors.textSecondary), [data, colors.textSecondary]);
+  const total = slices.reduce((sum, slice) => sum + slice.value, 0);
+  const selected = slices.find((slice) => slice.id === selectedId);
+  useEffect(() => { setSelectedId(null); }, [data]);
+  const select = (id: string) => setSelectedId((current) => current === id ? null : id);
+  const visibleIds = new Set(slices.map((slice) => slice.id));
+  const remainder = data.filter((slice) => !visibleIds.has(slice.id) && slice.value > 0)
+    .sort((a, b) => b.value - a.value);
+  if (total <= 0) return <ChartEmpty />;
+  return (
+    <View style={{ gap: 12 }}>
+      <View style={{ alignItems: 'center' }} accessible accessibilityRole="image"
+        accessibilityLabel={`${centerLabel} ${formatCentsWithSymbol(total)}`}>
+        <PieChart donut radius={78} innerRadius={57} extraRadius={0}
+          paddingHorizontal={0} paddingVertical={0} innerCircleColor={colors.card}
+          data={slices.map((slice) => ({ value: slice.value,
+            color: selected && selected.id !== slice.id ? colors.border : slice.color,
+            onPress: () => select(slice.id) }))}
+          centerLabelComponent={() => (
+            <View style={{ width: 108, alignItems: 'center', gap: 4 }}>
+              <Text numberOfLines={2} style={{ color: colors.textSecondary, fontSize: 12, textAlign: 'center' }}>{selected?.label ?? centerLabel}</Text>
+              <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: colors.text, fontSize: 17, fontWeight: '700' }}
+                accessibilityLabel={formatCentsWithSymbol(selected?.value ?? total)}>
+                {formatAdaptiveCentsWithSymbol(selected?.value ?? total)}
+              </Text>
+              {selected ? <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{selected.pct}%</Text> : null}
+            </View>
+          )}
+        />
+      </View>
+      <View style={styles.legend}>
+        {slices.map((slice) => (
+          <Pressable key={slice.id} accessibilityRole="button" accessibilityState={{ selected: selectedId === slice.id }}
+            accessibilityLabel={`${slice.label} ${formatCentsWithSymbol(slice.value)} ${slice.pct}%`}
+            onPress={() => select(slice.id)} style={[styles.item, { borderColor: selectedId === slice.id ? slice.color : colors.border }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: slice.color }} />
+              <Text style={{ color: colors.text, fontSize: 12, flex: 1 }}>{slice.label}</Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{slice.pct}%</Text>
+            </View>
+            <Text style={{ color: colors.textSecondary, fontSize: 12, marginLeft: 14 }}>{formatCentsWithSymbol(slice.value)}</Text>
+          </Pressable>
+        ))}
+      </View>
+      {selected && selected.id !== OTHER_SLICE_ID && onDetails && <Pressable accessibilityRole="button"
+        onPress={() => onDetails(selected.id)} style={{ minHeight: 44, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: colors.primary, fontWeight: '600' }}>{selected.label} · {copy.details}</Text>
+      </Pressable>}
+      {selectedId === OTHER_SLICE_ID ? remainder.map((slice) => (
+        <Pressable key={slice.id} accessibilityRole="button" onPress={() => onDetails?.(slice.id)}
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, minHeight: 44 }}>
+          <Text style={{ color: colors.textSecondary, flex: 1, fontSize: 12 }}>{slice.label}</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{formatCentsWithSymbol(slice.value)} · {Math.round(slice.value / total * 1000) / 10}%</Text>
+        </Pressable>
+      )) : null}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-	wrap: {
-		width: "100%",
-		height: DONUT_CHART_HEIGHT,
-		position: "relative",
-	},
-	pie: { position: "absolute" },
-	center: {
-		width: CENTER_CONTENT_WIDTH,
-		alignItems: "center",
-	},
-	centerLabel: { fontSize: 12 },
-	centerValue: {
-		width: "100%",
-		fontSize: 16,
-		fontWeight: "700",
-		fontVariant: ["tabular-nums"],
-		marginTop: 2,
-		textAlign: "center",
-	},
-	centerSub: { fontSize: 11, marginTop: 2, fontVariant: ["tabular-nums"] },
+  legend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
+  item: { width: '49%', minHeight: 48, padding: 6, gap: 3, borderWidth: 1, borderRadius: 8 },
 });

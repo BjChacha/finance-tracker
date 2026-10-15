@@ -283,8 +283,9 @@ async function totalExpense(start: string, end: string): Promise<number> {
  * - 总预算：区间内 expense + transfer fee（与 monthSummary / expenseSum 同口径）
  * 三类聚合并行查询。
  */
-export async function budgetStatus(period: BudgetPeriod, periodKey: string): Promise<BudgetStatus> {
-  const [start, end] = periodRange(period, periodKey);
+export async function budgetStatus(period: BudgetPeriod, periodKey: string, asOfDate = todayKey()): Promise<BudgetStatus> {
+  const [start, periodEnd] = periodRange(period, periodKey);
+  const end = periodEnd < asOfDate ? periodEnd : asOfDate;
 
   const budgetRows = await db
     .select({

@@ -1,14 +1,16 @@
+import { useQueryClient } from '@tanstack/react-query';
+import { previewCategoryOrganization, organizeCategories } from '@/features/categories/organization';
+import { organizationLabels as organization } from '@/features/categories/organization-labels';
 import { useState } from 'react';
 import {
   Alert,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { SingleLineTextInput } from '@/components/single-line-text-input';
+import { IdentityEditor } from '@/components/form/identity-editor';
 import {
   SecondarySheetScreen,
   SheetHeaderIconButton,
@@ -37,12 +39,30 @@ type EditorState = {
 
 export default function CategoriesScreen() {
   const { colors } = useTheme();
+  const queryClient = useQueryClient();
+  const [organizing, setOrganizing] = useState(false);
   const [tab, setTab] = useState<CategoryType>('expense');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [editor, setEditor] = useState<EditorState>(null);
 
   const { data: tree = [] } = useCategoryTree(tab);
   const archive = useArchiveCategory();
+
+  function onOrganize() {
+    const plan = previewCategoryOrganization();
+    if (!plan.length) { Alert.alert(organization.title, organization.empty); return; }
+    Alert.alert(organization.title, organization.confirm + '\n\n' + plan.map((move) => `${move.name} → ${move.parentName}`).join('\n'), [
+      { text: organization.cancel, style: 'cancel' },
+      { text: organization.apply, onPress: () => {
+        setOrganizing(true);
+        void organizeCategories(plan).then(async () => {
+          await queryClient.invalidateQueries();
+          Alert.alert(organization.title, organization.done);
+        }).catch((error: unknown) => Alert.alert(organization.error, error instanceof Error ? error.message : String(error)))
+          .finally(() => setOrganizing(false));
+      } },
+    ]);
+  }
 
   function confirmArchive(cat: Category) {
     Alert.alert(`${zh.categories.archive}「${cat.name}」`, zh.categories.archiveConfirm, [
@@ -56,11 +76,11 @@ export default function CategoriesScreen() {
       <View key={child.id} style={[styles.childRow, { borderTopColor: colors.border }]}>
         <Icon name={resolveIconKey(child.icon, 'category')} size={18} color={child.color} />
         <Text style={{ color: colors.text, fontSize: 14, flex: 1 }}>{child.name}</Text>
-        <Pressable onPress={() => setEditor({ editing: child, parentId: child.parentId })} hitSlop={8}>
-          <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.common.edit}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={`${zh.common.edit} ${child.name}`} style={({ pressed }) => [styles.rowAction, { opacity: pressed ? 0.55 : 1 }]} onPress={() => setEditor({ editing: child, parentId: child.parentId })}>
+          <Text style={{ color: colors.text, fontSize: 14 }}>{zh.common.edit}</Text>
         </Pressable>
-        <Pressable onPress={() => confirmArchive(child)} hitSlop={8}>
-          <Text style={{ color: colors.expense, fontSize: 13, marginLeft: 14 }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`${zh.categories.archive} ${child.name}`} style={({ pressed }) => [styles.rowAction, { opacity: pressed ? 0.55 : 1 }]} onPress={() => confirmArchive(child)}>
+          <Text style={{ color: colors.expense, fontSize: 14 }}>
             {zh.categories.archive}
           </Text>
         </Pressable>
@@ -81,11 +101,11 @@ export default function CategoriesScreen() {
             {node.name}
             {node.children.length > 0 ? `（${node.children.length}）` : ''}
           </Text>
-          <Pressable onPress={() => setEditor({ editing: node, parentId: null })} hitSlop={8}>
-            <Text style={{ color: colors.primary, fontSize: 13 }}>{zh.common.edit}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={`${zh.common.edit} ${node.name}`} style={({ pressed }) => [styles.rowAction, { opacity: pressed ? 0.55 : 1 }]} onPress={() => setEditor({ editing: node, parentId: null })}>
+            <Text style={{ color: colors.text, fontSize: 14 }}>{zh.common.edit}</Text>
           </Pressable>
-          <Pressable onPress={() => confirmArchive(node)} hitSlop={8}>
-            <Text style={{ color: colors.expense, fontSize: 13, marginLeft: 14 }}>
+          <Pressable accessibilityRole="button" accessibilityLabel={`${zh.categories.archive} ${node.name}`} style={({ pressed }) => [styles.rowAction, { opacity: pressed ? 0.55 : 1 }]} onPress={() => confirmArchive(node)}>
+            <Text style={{ color: colors.expense, fontSize: 14 }}>
               {zh.categories.archive}
             </Text>
           </Pressable>
@@ -150,6 +170,11 @@ export default function CategoriesScreen() {
           ))}
         </View>
         <ScrollView contentContainerStyle={{ padding: 12 }}>
+          {tab === 'expense' ? <Pressable disabled={organizing} onPress={onOrganize}
+            style={{ padding: 14, borderRadius: 12, backgroundColor: colors.card, marginBottom: 12, opacity: organizing ? 0.5 : 1 }}>
+            <Text style={{ color: colors.primary, fontWeight: '600' }}>{organization.title}</Text>
+            <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 6 }}>{organization.hint}</Text>
+          </Pressable> : null}
           {tree.length === 0 && (
             <Text style={{ color: colors.textSecondary, textAlign: 'center', marginTop: 24 }}>
               {zh.categories.empty}
@@ -173,100 +198,36 @@ export default function CategoriesScreen() {
   );
 }
 
-function CategoryEditor({
-  type,
-  editing,
-  parentId,
-  onClose,
-}: {
+function CategoryEditor({ type, editing, parentId, onClose }: {
   type: CategoryType;
   editing: Category | null;
   parentId: string | null;
   onClose: () => void;
 }) {
   const { colors } = useTheme();
-  const [name, setName] = useState(editing?.name ?? '');
-  const [icon, setIcon] = useState(resolveIconKey(editing?.icon, 'category'));
-  const [color, setColor] = useState(
-    editing?.color ?? (type === 'transfer' ? colors.transfer : COLOR_OPTIONS[0]!),
-  );
   const create = useCreateCategory();
   const update = useUpdateCategory();
-
-  function handleSave() {
-    if (!name.trim()) {
-      Alert.alert(zh.categories.nameRequired);
-      return;
-    }
-    const done = { onSuccess: onClose };
-    if (editing) {
-      update.mutate({ id: editing.id, input: { name: name.trim(), icon, color } }, done);
-    } else {
-      create.mutate({ name: name.trim(), type, icon, color, parentId }, done);
-    }
-  }
-
   return (
-    <Modal transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={[styles.sheet, { backgroundColor: colors.card }]} onPress={() => {}}>
-          <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginBottom: 12 }}>
-            {editing ? zh.categories.edit : zh.categories.add}
-          </Text>
-          <SingleLineTextInput
-            style={[styles.input, { color: colors.text, borderColor: colors.border }]}
-            value={name}
-            onChangeText={setName}
-            placeholder={zh.categories.namePlaceholder}
-            placeholderTextColor={colors.textSecondary}
-          />
-          <View style={styles.chipRow}>
-            {CATEGORY_ICON_KEYS.map((key) => (
-              <Pressable
-                key={key}
-                style={[styles.iconChip, { borderColor: icon === key ? colors.primary : colors.border }]}
-                onPress={() => setIcon(key)}
-              >
-                <Icon name={key} size={20} color={icon === key ? colors.primary : colors.text} />
-              </Pressable>
-            ))}
-          </View>
-          <View style={styles.chipRow}>
-            {COLOR_OPTIONS.map((c) => (
-              <Pressable
-                key={c}
-                style={[
-                  styles.colorDot,
-                  { backgroundColor: c },
-                  color === c && { borderWidth: 3, borderColor: colors.text },
-                ]}
-                onPress={() => setColor(c)}
-              />
-            ))}
-          </View>
-          <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
-            <Pressable
-              style={[styles.btn, { backgroundColor: colors.border }]}
-              onPress={onClose}
-            >
-              <Text style={{ color: colors.text, fontWeight: '600' }}>{zh.common.cancel}</Text>
-            </Pressable>
-            <Pressable style={[styles.btn, { backgroundColor: colors.primary }]} onPress={handleSave}>
-              <Text style={{ color: colors.onPrimary, fontWeight: '600' }}>{zh.common.save}</Text>
-            </Pressable>
-          </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <IdentityEditor
+      title={editing ? zh.categories.edit : zh.categories.add}
+      initial={{ name: editing?.name ?? '', icon: resolveIconKey(editing?.icon, 'category'), color: editing?.color ?? (type === 'transfer' ? colors.transfer : COLOR_OPTIONS[0]!) }}
+      icons={CATEGORY_ICON_KEYS}
+      colors={COLOR_OPTIONS}
+      placeholder={zh.categories.namePlaceholder}
+      onClose={onClose}
+      onSave={(input) => editing ? update.mutateAsync({ id: editing.id, input }) : create.mutateAsync({ ...input, type, parentId })}
+    />
   );
 }
 
 const styles = StyleSheet.create({
+  rowAction: { minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
   segment: { flexDirection: 'row', margin: 12, borderRadius: 10, padding: 4 },
-  segmentItem: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
+  segmentItem: { flex: 1, minHeight: 48, paddingVertical: 8, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
   card: { borderRadius: 12, marginBottom: 8, overflow: 'hidden' },
   parentRow: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 10 },
   childRow: {
+    minHeight: 48,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -274,31 +235,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  sheet: { borderRadius: 14, padding: 16, width: '100%' },
-  input: {
-    height: 40,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 15,
-    marginBottom: 12,
-  },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  iconChip: {
-    width: 38,
-    height: 38,
-    borderRadius: 9,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  colorDot: { width: 28, height: 28, borderRadius: 14 },
-  btn: { flex: 1, borderRadius: 10, paddingVertical: 11, alignItems: 'center' },
 });

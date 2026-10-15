@@ -4,7 +4,7 @@ import { alias, type SQLiteTable } from 'drizzle-orm/sqlite-core';
 import Papa from 'papaparse';
 import { normalizeAccountType } from '@/db/account-types';
 import { toCsvRecord } from './csv';
-import { db, withTransaction } from '@/db/client';
+import { db } from '@/db/client';
 import { BACKUP_FORMAT, BACKUP_SCHEMA_VERSION } from '@/db/backup-version';
 import {
   accounts,
@@ -20,6 +20,7 @@ import {
 import { getSetting, setSetting } from '@/db/settings';
 import { dayjs } from '@/lib/date';
 import { readTextFromUri, shareFile, writeTextToCache } from '@/lib/fs';
+import { saveLocalSnapshot } from './storage';
 import { backupEnvelopeSchema, backupFileSchema, type BackupData, type BackupFile } from './schema';
 import { runUpgradeChain, type RawBackupPayload } from './upgraders';
 
@@ -36,27 +37,19 @@ export function getLastBackupAt(): Promise<number | null> {
 
 /** 读取 9 张表全量数据，组装当前版本的备份对象 */
 export async function buildBackupFile(): Promise<BackupFile> {
-  const [
-    accountRows,
-    categoryRows,
-    projectRows,
-    transactionRows,
-    budgetRows,
-    recurringRuleRows,
-    importBatchRows,
-    importMappingRows,
-    settingRows,
-  ] = await Promise.all([
-    db.select().from(accounts),
-    db.select().from(categories),
-    db.select().from(projects),
-    db.select().from(transactions),
-    db.select().from(budgets),
-    db.select().from(recurringRules),
-    db.select().from(importBatches),
-    db.select().from(importMappings),
-    db.select().from(settings),
-  ]);
+  const snapshot = db.transaction((tx) => ({
+    accountRows: tx.select().from(accounts).all(),
+    categoryRows: tx.select().from(categories).all(),
+    projectRows: tx.select().from(projects).all(),
+    transactionRows: tx.select().from(transactions).all(),
+    budgetRows: tx.select().from(budgets).all(),
+    recurringRuleRows: tx.select().from(recurringRules).all(),
+    importBatchRows: tx.select().from(importBatches).all(),
+    importMappingRows: tx.select().from(importMappings).all(),
+    settingRows: tx.select().from(settings).all(),
+  }));
+  const { accountRows, categoryRows, projectRows, transactionRows, budgetRows,
+    recurringRuleRows, importBatchRows, importMappingRows, settingRows } = snapshot;
   return {
     format: BACKUP_FORMAT,
     schemaVersion: BACKUP_SCHEMA_VERSION,
@@ -91,15 +84,15 @@ export async function exportBackup(): Promise<void> {
 /* ---------------------------------- 恢复备份 ---------------------------------- */
 
 /** 分批插入，避免超出 SQLite 绑定变量上限；每批 ≤ 200 行且参数数 ≤ 900 */
-async function insertInBatches<TTable extends SQLiteTable>(
+function insertInBatches<TTable extends SQLiteTable>(
   table: TTable,
   rows: TTable['$inferInsert'][],
-): Promise<void> {
+): void {
   if (rows.length === 0) return;
   const columnCount = Math.max(1, Object.keys(rows[0] as Record<string, unknown>).length);
   const batchSize = Math.max(1, Math.min(200, Math.floor(900 / columnCount)));
   for (let i = 0; i < rows.length; i += batchSize) {
-    await db.insert(table).values(rows.slice(i, i + batchSize));
+    db.insert(table).values(rows.slice(i, i + batchSize)).run();
   }
 }
 
@@ -150,35 +143,35 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
   }
   const data = parsed.data.data;
 
-  // 恢复前把当前库留档到缓存目录（不分享），出问题时可手动找回
+  // Keep the recovery snapshot outside the disposable cache directory.
   const safety = await buildBackupFile();
-  const safetyBackupUri = await writeTextToCache(
-    `safety-backup-${dayjs().format('YYYYMMDD-HHmmss')}.json`,
+  const safetyBackupUri = await saveLocalSnapshot(
+    `safety-backup-${Date.now()}.json`,
     JSON.stringify(safety),
   );
 
-  await withTransaction(async () => {
+  db.transaction(() => {
     // 先删引用方，再删被引用方（transactions/budgets/recurring 引用 accounts/categories/projects）
-    await db.delete(transactions);
-    await db.delete(projects);
-    await db.delete(recurringRules);
-    await db.delete(budgets);
-    await db.delete(importBatches);
-    await db.delete(importMappings);
-    await db.delete(settings);
-    await db.delete(accounts);
-    await db.delete(categories);
+    db.delete(transactions).run();
+    db.delete(projects).run();
+    db.delete(recurringRules).run();
+    db.delete(budgets).run();
+    db.delete(importBatches).run();
+    db.delete(importMappings).run();
+    db.delete(settings).run();
+    db.delete(accounts).run();
+    db.delete(categories).run();
 
     // 先插被引用方，再插引用方
-    await insertInBatches(accounts, data.accounts);
-    await insertInBatches(categories, data.categories);
-    await insertInBatches(projects, data.projects);
-    await insertInBatches(transactions, data.transactions);
-    await insertInBatches(budgets, data.budgets);
-    await insertInBatches(recurringRules, data.recurringRules);
-    await insertInBatches(importBatches, data.importBatches);
-    await insertInBatches(importMappings, data.importMappings);
-    await insertInBatches(settings, data.settings);
+    insertInBatches(accounts, data.accounts);
+    insertInBatches(categories, data.categories);
+    insertInBatches(projects, data.projects);
+    insertInBatches(transactions, data.transactions);
+    insertInBatches(budgets, data.budgets);
+    insertInBatches(recurringRules, data.recurringRules);
+    insertInBatches(importBatches, data.importBatches);
+    insertInBatches(importMappings, data.importMappings);
+    insertInBatches(settings, data.settings);
   });
 
   return {

@@ -16,6 +16,7 @@ import { getRatesSync, isStale, refreshRates } from "@/features/currency";
 import { runCatchUpIfNeeded } from "@/features/recurring";
 import { useQuickActionsBootstrap } from "@/features/quick-actions/useQuickActions";
 import { invalidateTransactionData } from "@/features/transactions";
+import { AutomaticBackupRunner } from "@/features/backup/AutomaticBackupRunner";
 import { zh } from "@/i18n/zh";
 import { ThemeProvider, useTheme } from "@/theme";
 
@@ -166,6 +167,7 @@ function AppShell() {
 				<Seeder />
 				<RecurringCatchUpRunner />
 				<RatesAutoRefresh />
+				<AutomaticBackupRunner />
 				<QuickActionsGate />
 				<StatusBar style={theme.dark ? "light" : "dark"} />
 				<Stack
@@ -177,6 +179,8 @@ function AppShell() {
 				>
 					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 					<Stack.Screen name="transactions/index" options={sheetOptions} />
+					<Stack.Screen name="assets" options={sheetOptions} />
+					<Stack.Screen name="stats" options={sheetOptions} />
 					<Stack.Screen name="transactions/search" options={sheetOptions} />
 					<Stack.Screen name="add-transaction" options={sheetOptions} />
 					<Stack.Screen name="quick-add-transaction" options={sheetOptions} />
