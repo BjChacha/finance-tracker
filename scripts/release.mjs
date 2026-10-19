@@ -58,7 +58,7 @@ function run(cmd, cmdArgs, opts = {}) {
   });
 }
 
-async function github(pathname, { method = "GET", body, token, raw = false } = {}) {
+async function github(pathname, { method = "GET", body, token, raw = false, contentType } = {}) {
   const url = pathname.startsWith("http") ? pathname : `${API}${pathname}`;
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -68,6 +68,8 @@ async function github(pathname, { method = "GET", body, token, raw = false } = {
   const init = { method, headers };
   if (body !== undefined) {
     if (raw) {
+      // uploads.github.com rejects requests without an explicit Content-Type
+      headers["Content-Type"] = contentType ?? "application/octet-stream";
       init.body = body;
     } else {
       headers["Content-Type"] = "application/json";
@@ -152,14 +154,17 @@ if (!existsSync(apkPath)) {
   console.log(`Reusing existing ${path.relative(root, apkPath)} (use --skip-bump to force a rebuild by hand).`);
 }
 
-// ---- 3. Publish git commit + tag, then push ----------------------------------
+// ---- 3. Publish git commit + tag, then push (skipped when re-running --skip-bump:
+// the release commit/tag already exist, an empty commit would fail) --------------
 
-run("git", ["add", "app.json", "package.json"]);
-run("git", ["commit", "-m", `chore(release): ${plan.tagName}`]);
-run("git", ["tag", "-a", plan.tagName, "-m", `Release ${plan.tagName}`]);
-run("git", ["push", "origin", `HEAD:${branch}`]);
-run("git", ["push", "origin", plan.tagName]);
-console.log(`Pushed commit + tag ${plan.tagName}.`);
+if (!args.skipBump) {
+  run("git", ["add", "app.json", "package.json"]);
+  run("git", ["commit", "-m", `chore(release): ${plan.tagName}`]);
+  run("git", ["tag", "-a", plan.tagName, "-m", `Release ${plan.tagName}`]);
+  run("git", ["push", "origin", `HEAD:${branch}`]);
+  run("git", ["push", "origin", plan.tagName]);
+  console.log(`Pushed commit + tag ${plan.tagName}.`);
+}
 
 // ---- 4. GitHub Release + APK asset -------------------------------------------
 
@@ -196,6 +201,7 @@ await github(
     method: "POST",
     token,
     raw: true,
+    contentType: "application/vnd.android.package-archive",
     body: readFileSync(apkPath),
   },
 );
