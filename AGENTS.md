@@ -30,6 +30,21 @@ EXPO_PUBLIC_DEEPSEEK_API_KEY=<key> GH_TOKEN=<token> npm run release
 
 应用内自更新(`src/features/update/`):启动后台静默查 GitHub `releases/latest`(6h 缓存,失败不打扰),有新版时「个人」页顶部弹卡片;「个人 → 检查更新」页展示 changelog、下载 APK(带进度)并调系统安装器覆盖安装。Android 8+ 首次点"安装"需授予「安装未知应用」权限(HyperOS 有二次确认),安装失败时页面提供「去授权」按钮。覆盖安装要求 debug keystore 不变。
 
+# 消费报告 (自动生成)
+
+报告在周期**结束后**生成:上一个已结束的 月/季/年,由 `ReportsRunner`(`src/features/reports/ReportsRunner.tsx`)在启动后 12s 或回前台时触发 `runAutoReportsIfNeeded()`(`auto-generate.ts`)。规则:
+
+- 只处理最近一个已结束周期,每类最多 1 份;**不回填更早历史**(控制调用费用)。
+- 该周期无交易则跳过;已存在同契约版本的报告则跳过。
+- 失败(缺 key/断网)退避 6 小时;同一天最多成功跑一次;并发互斥。
+- 持久化在 `reports` 表,`analysis_version` 标识契约版本;契约升级后旧行视为缺失并重生成。
+- 查看一律读存档,不调用模型;「重新生成」是显式计费动作。
+- 契约与提示词:`src/features/reports/analysis-contract.ts`、`labels.ts` 的 `systemPrompt`;渲染在 `components/report-detail.tsx`。
+
+# 工具链注记
+
+`.pi-lens.json` 禁用了 kotlin LSP 并忽略 Android 原生目录:该 LSP 在本机没有 Android/Expo classpath,会对所有 `.kt` 报假的 `Unresolved reference: android/kotlin/androidx`(未改动的文件同样报几百条)。Android/Kotlin 的正确性以 `cd android && ./gradlew :quick-keypad:compileReleaseKotlin`(模块级)或完整 `npm run build:apk` 为准。
+
 # 真机调试 (adb)
 
 允许且鼓励使用 adb 对真机进行调试、复现与性能观测。当前已连接设备:红米 M098FE (HyperOS 2),serial `57721e63`。
