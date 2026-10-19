@@ -62,7 +62,9 @@ async function github(pathname, { method = "GET", body, token, raw = false, cont
   const url = pathname.startsWith("http") ? pathname : `${API}${pathname}`;
   const headers = {
     Authorization: `Bearer ${token}`,
-    Accept: raw ? "application/octet-stream" : "application/vnd.github+json",
+    // uploads.github.com rejects Accept: application/octet-stream (that is the
+    // *download* media type); every call here consumes a JSON response
+    Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
   const init = { method, headers };
