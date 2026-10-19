@@ -18,7 +18,11 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.financetracker"
+      "package": "com.anonymous.financetracker",
+      "permissions": [
+        "REQUEST_INSTALL_PACKAGES"
+      ],
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
