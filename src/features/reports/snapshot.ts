@@ -52,7 +52,17 @@ export const reportSnapshotSchema = z.object({
     incomeChangePct: z.number().nullable(),
   }),
   categories: z.array(
-    z.object({ name: z.string().min(1), totalCents: centsSchema, pct: shareSchema }),
+    z.object({
+      /** Real category id; "__other__" for the aggregated tail. */
+      id: z.string().min(1),
+      name: z.string().min(1),
+      /** Theme-independent category color from the user's own category. */
+      color: z.string().min(1),
+      /** Icon key resolved by the renderer (see lib/iconResolvers). */
+      icon: z.string().min(1),
+      totalCents: centsSchema,
+      pct: shareSchema,
+    }),
   ),
   series: z.array(
     z.object({ label: z.string().min(1), expenseCents: centsSchema }),
@@ -198,15 +208,21 @@ export async function buildReportSnapshot(
   const topSlices = slices.slice(0, CATEGORY_LIMIT);
   const remainingSlices = slices.slice(CATEGORY_LIMIT);
   const categoryTotal = slices.reduce((sum, row) => sum + row.total, 0);
-  const categoryShares = topSlices.map((row) => ({
+  const categoryShares: ReportSnapshot["categories"] = topSlices.map((row) => ({
+    id: row.categoryId,
     name: row.name,
+    color: row.color,
+    icon: row.icon,
     totalCents: row.total,
     pct: sharePct(row.total, categoryTotal),
   }));
   if (remainingSlices.length > 0) {
     const restTotal = remainingSlices.reduce((sum, row) => sum + row.total, 0);
     categoryShares.push({
+      id: "__other__",
       name: reportsText.otherCategories(remainingSlices.length),
+      color: "#94A3B8",
+      icon: "package",
       totalCents: restTotal,
       pct: sharePct(restTotal, categoryTotal),
     });

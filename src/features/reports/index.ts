@@ -1,6 +1,6 @@
 export { EmptyPeriodError, generateReport } from "./generate";
-export { useGenerateReport, useReportSnapshot, useStoredReport } from "./hooks";
-export { getReport, saveReport, type StoredReport } from "./repository";
+export { useGenerateReport, useLatestReport, useReportList, useReportSnapshot, useStoredReport } from "./hooks";
+export { getReport, listReports, saveReport, type ReportSummary, type StoredReport } from "./repository";
 export {
   buildReportSnapshot,
   reportSnapshotSchema,
@@ -15,4 +15,12 @@ export {
 } from "./analysis-contract";
 export { toAnalysisInput, type ReportAnalysisInput } from "./llm-payload";
 export { reportsText } from "./labels";
-export { ReportScreen } from "./components/report-screen";
+export { LatestReportCard } from "./components/latest-report-card";
+export { ReportDetail, ReportDetailScreen } from "./components/report-detail";
+export { ReportList } from "./components/report-list";
+export {
+  closedPeriodSelections,
+  runAutoReportsIfNeeded,
+  type AutoReportResult,
+} from "./auto-generate";
+export { ReportsRunner } from "./ReportsRunner";

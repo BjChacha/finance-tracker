@@ -4,6 +4,8 @@ import { useFloatingTabBarInset } from '@/components/navigation/floating-tab-bar
 import { useCategoryBreakdown } from '@/features/stats/hooks';
 import type { CategorySlice } from '@/features/stats/repository';
 import { useLargestExpenses } from '@/features/transactions/hooks';
+import { LatestReportCard } from '@/features/reports/components/latest-report-card';
+import { reportsText } from '@/features/reports/labels';
 import { TransactionRow } from '@/features/transactions/components/TransactionRow';
 import { transactionParams } from '@/features/transactions/filters';
 import { useTheme } from '@/theme';
@@ -64,6 +66,17 @@ export function DashboardScreen() {
           onTransactions={openTransactions}
           onCategory={openCategory}
         />
+        <Section
+          title={reportsText.title}
+          action={
+            <TextAction
+              label={reportsText.historyTitle}
+              onPress={() => router.push('/reports')}
+            />
+          }
+        >
+          <LatestReportCard />
+        </Section>
         <AssetSummary
           range={range}
           granularity={granularity}

@@ -223,6 +223,11 @@ export const reports = sqliteTable(
     snapshot: text('snapshot').notNull(),
     /** JSON ReportAnalysis returned by the model */
     analysis: text('analysis').notNull(),
+    /**
+     * Contract version of `analysis`. Older rows are treated as missing so the scheduler
+     * regenerates them instead of rendering a payload the UI no longer understands.
+     */
+    analysisVersion: integer('analysis_version').notNull().default(1),
     model: text('model').notNull(),
     /** Cost of the generating call in micro-yuan, snapshotted like llm_usage */
     costMicros: integer('cost_micros').notNull().default(0),

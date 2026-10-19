@@ -67,6 +67,7 @@ object QuickAddHandoffController {
     private var retainedSource: RetainedSource? = null
     private var mainActivityRef: WeakReference<Activity>? = null
     private var pendingLaunch: QuickAddLaunch? = null
+
     /**
      * Timestamp of a natural-language shortcut launch whose deep link may never reach JS.
      * ReactActivityDelegateWrapper.onNewIntent returns early while its app load is settling,

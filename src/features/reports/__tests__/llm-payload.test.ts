@@ -24,7 +24,16 @@ function snapshot(): ReportSnapshot {
       expenseChangePct: -40.8,
       incomeChangePct: 25,
     },
-    categories: [{ name: "餐饮", totalCents: 35_000, pct: 98.6 }],
+    categories: [
+      {
+        id: "cat-food",
+        name: "餐饮",
+        color: "#F59E0B",
+        icon: "utensils",
+        totalCents: 35_000,
+        pct: 98.6,
+      },
+    ],
     series: [{ label: "第1周", expenseCents: 30_500 }],
     weekdayPattern: {
       weekdayExpenseCents: 10_500,

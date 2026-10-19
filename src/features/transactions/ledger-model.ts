@@ -60,7 +60,11 @@ export function buildLedgerItems(
         ...(groups.get(key) ?? { income: 0, expense: 0, count: 0 }),
       });
     }
-    if (!collapsed.has(year) && !collapsed.has(month))
+    if (
+      !collapsed.has(year) &&
+      !collapsed.has(month) &&
+      !collapsed.has(transaction.dateKey)
+    )
       items.push({ kind: 'transaction', key: transaction.id, transaction });
   }
   return items;

@@ -37,10 +37,31 @@ const input: ReportAnalysisInput = {
 };
 
 const analysis = {
-  spendingStyle: "餐饮为主的稳定型消费",
-  styleTags: ["餐饮主导"],
-  insights: [{ title: "餐饮集中", detail: "餐饮占支出九成" }],
-  suggestions: [{ title: "减少外卖", detail: "外卖降低 20%" }],
+  headline: "餐饮撑起了这个月",
+  mood: {
+    label: "松弛",
+    score: 4,
+    narrative: "餐饮占九成，但周末没有失控",
+  },
+  values: [
+    { id: "self_care", label: "吃得开心", narrative: "餐饮占支出九成" },
+  ],
+  dataPoints: [
+    { label: "餐饮占比", value: "90%", note: "几乎全部支出" },
+    { label: "笔数", value: "12 笔", note: "平均每笔 29 元" },
+  ],
+  categoryStories: [
+    { category: "餐饮", emotion: "日常慰藉", note: "工作日的稳定支出" },
+  ],
+  suggestions: [
+    {
+      title: "午餐自带",
+      action: "每周两次自带午餐",
+      target: "本月外卖≤8次",
+      impact: "预计每月省下180元",
+    },
+  ],
+  savingPotentialYuan: 180,
 };
 
 function completion(content: string, finishReason = "stop") {

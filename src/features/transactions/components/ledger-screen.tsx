@@ -15,7 +15,7 @@ import { dashboardText as copy } from '@/features/dashboard/labels';
 import { formatDayHeader } from '@/lib/date';
 import { formatCentsWithSymbol } from '@/lib/money';
 import { useTodayKey } from '@/lib/use-today-key';
-import { useTheme } from '@/theme';
+import { useTheme, withAlpha } from '@/theme';
 import { TRANSFER_FEES_ID, type TxFilters } from '../filters';
 import {
   useDaySummary,
@@ -80,13 +80,17 @@ export function LedgerScreen({
   const ready =
     !invalid && !totals.isPending && !totals.isError && !pages.isPending;
   const renderItem = ({ item }: { item: LedgerItem }) => {
-    if (item.kind === 'transaction')
+    if (item.kind === 'transaction') {
+      const isToday = item.transaction.dateKey === today;
       return (
         <View
           style={{
             marginHorizontal: 16,
             paddingHorizontal: 14,
             backgroundColor: colors.card,
+            // 今天的交易加一道主色左沿：单日分组很多，仅靠日期标题难以快速定位。
+            borderLeftWidth: isToday ? 2 : 0,
+            borderLeftColor: withAlpha(colors.primary, 0.6),
           }}
         >
           {item.transaction.dateKey > today && (
@@ -107,36 +111,38 @@ export function LedgerScreen({
           />
         </View>
       );
+    }
     const title = item.kind === 'day' ? formatDayHeader(item.key) : item.key;
+    const isToday = item.kind === 'day' && item.key === today;
+    let headerBackground = colors.background;
+    if (item.kind === 'year') headerBackground = colors.card;
+    if (isToday) headerBackground = withAlpha(colors.primary, 0.12);
     return (
       <Pressable
-        accessibilityRole={item.kind === 'day' ? 'header' : 'button'}
-        accessibilityState={
-          item.kind === 'day' ? undefined : { expanded: !item.collapsed }
-        }
-        disabled={item.kind === 'day'}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: !item.collapsed }}
+        accessibilityLabel={title}
         onPress={() => toggle(item.key)}
         style={{
           paddingHorizontal: 20,
           paddingVertical: item.kind === 'day' ? 10 : 14,
-          backgroundColor:
-            item.kind === 'year' ? colors.card : colors.background,
+          backgroundColor: headerBackground,
+          borderLeftWidth: isToday ? 3 : 0,
+          borderLeftColor: colors.primary,
           gap: 5,
         }}
       >
         <View style={dashboardStyles.between}>
           <View style={dashboardStyles.row}>
-            {item.kind !== 'day' && (
-              <Icon
-                name={item.collapsed ? 'chevron-right' : 'chevron-down'}
-                size={16}
-                color={colors.textSecondary}
-              />
-            )}
+            <Icon
+              name={item.collapsed ? 'chevron-right' : 'chevron-down'}
+              size={16}
+              color={isToday ? colors.primary : colors.textSecondary}
+            />
             <Text
               style={{
                 color: colors.text,
-                fontWeight: item.kind === 'day' ? '400' : '600',
+                fontWeight: isToday ? '700' : item.kind === 'day' ? '400' : '600',
                 fontSize: item.kind === 'year' ? 17 : 13,
               }}
             >

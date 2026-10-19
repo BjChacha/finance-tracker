@@ -1,0 +1,1 @@
+ALTER TABLE `reports` ADD `analysis_version` integer DEFAULT 1 NOT NULL;

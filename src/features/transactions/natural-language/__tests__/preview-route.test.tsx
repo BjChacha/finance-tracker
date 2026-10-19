@@ -122,8 +122,32 @@ it("parses the typed sentence once and prefills the shared form", async () => {
     note: "【智能识别】午饭",
     currency: "CNY",
   });
+  // Reuses the shared form's account prediction instead of inventing its own default.
+  expect(props.prefillPolicy).toBe("suggest");
   // Saving is no longer gated behind a manual confirmation step.
   expect(props.saveBlockedReason).toBeUndefined();
+});
+
+it("explains that the account was predicted when the sentence does not name one", async () => {
+  jest
+    .mocked(parseTransactionText)
+    .mockResolvedValue({ preview: preview({ accountId: null }) } as never);
+  render(<NaturalLanguageTransactionScreen />);
+  type("午饭 28");
+  await submit();
+  expect(mockForm.mock.calls.at(-1)?.[0].initialValues.accountId).toBeUndefined();
+  expect(screen.getByText(copy.reviewPredictedAccount)).toBeTruthy();
+});
+
+it("keeps the neutral banner when the sentence names the account", async () => {
+  jest
+    .mocked(parseTransactionText)
+    .mockResolvedValue({ preview: preview() } as never);
+  render(<NaturalLanguageTransactionScreen />);
+  type("午饭 28");
+  await submit();
+  expect(screen.getByText(copy.review)).toBeTruthy();
+  expect(screen.queryByText(copy.reviewPredictedAccount)).toBeNull();
 });
 
 it("refuses to invent a note when the model returns none", async () => {

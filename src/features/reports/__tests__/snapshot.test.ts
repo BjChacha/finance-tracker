@@ -146,8 +146,22 @@ describe("buildReportSnapshot", () => {
       TODAY,
     );
     expect(snapshot.categories).toEqual([
-      { name: "Food", totalCents: 35_000, pct: 98.6 },
-      { name: "转账手续费", totalCents: 500, pct: 1.4 },
+      {
+        id: "food",
+        name: "Food",
+        color: "#123456",
+        icon: "utensils",
+        totalCents: 35_000,
+        pct: 98.6,
+      },
+      {
+        id: "__transfer_fees__",
+        name: "转账手续费",
+        color: "#64748B",
+        icon: "credit-card",
+        totalCents: 500,
+        pct: 1.4,
+      },
     ]);
   });
 

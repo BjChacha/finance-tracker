@@ -19,6 +19,7 @@ import { useLatestRelease } from "@/features/update";
 import { useQuickActionsBootstrap } from "@/features/quick-actions/useQuickActions";
 import { invalidateTransactionData } from "@/features/transactions";
 import { AutomaticBackupRunner } from "@/features/backup/AutomaticBackupRunner";
+import { ReportsRunner } from "@/features/reports";
 import { zh } from "@/i18n/zh";
 import { ThemeProvider, useTheme } from "@/theme";
 
@@ -178,6 +179,7 @@ function AppShell() {
 				<RecurringCatchUpRunner />
 				<RatesAutoRefresh />
 				<AutomaticBackupRunner />
+				<ReportsRunner />
 				<QuickActionsGate />
 				<UpdateCheckRunner />
 				<StatusBar style={theme.dark ? "light" : "dark"} />
@@ -193,6 +195,7 @@ function AppShell() {
 					<Stack.Screen name="assets" options={sheetOptions} />
 					<Stack.Screen name="stats" options={sheetOptions} />
 					<Stack.Screen name="reports/index" options={sheetOptions} />
+					<Stack.Screen name="reports/detail" options={sheetOptions} />
 					<Stack.Screen name="transactions/search" options={sheetOptions} />
 					<Stack.Screen name="add-transaction" options={sheetOptions} />
 					<Stack.Screen name="quick-add-transaction" options={sheetOptions} />

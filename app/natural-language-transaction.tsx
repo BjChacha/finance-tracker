@@ -141,7 +141,12 @@ function NaturalLanguageEntry({ source }: { source: "app" | "launcher" }) {
     if (phase.kind === "input") inputRef.current?.focus();
   }, [phase.kind]);
 
-  if (phase.kind === "preview")
+  if (phase.kind === "preview") {
+    // The account comes from the sentence when the model resolved one; otherwise the shared
+    // form predicts it from history (prefillPolicy="suggest"), so say which one happened.
+    let bannerText = copy.reviewPredictedAccount;
+    if (phase.values.accountId) bannerText = copy.review;
+    if (phase.dateRequired) bannerText = copy.dateReview;
     return (
       <SecondarySheetScreen
         title={copy.title}
@@ -154,7 +159,7 @@ function NaturalLanguageEntry({ source }: { source: "app" | "launcher" }) {
             <View style={[styles.banner, { backgroundColor: colors.card }]}>
               <Icon name="sparkles" size={16} color={colors.primary} />
               <Text style={[styles.bannerText, { color: colors.textSecondary }]}>
-                {phase.dateRequired ? copy.dateReview : copy.review}
+                {bannerText}
               </Text>
               <Pressable
                 accessibilityRole="button"
@@ -189,6 +194,7 @@ function NaturalLanguageEntry({ source }: { source: "app" | "launcher" }) {
         </View>
       </SecondarySheetScreen>
     );
+  }
 
   return (
     <SecondarySheetScreen

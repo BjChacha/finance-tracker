@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PeriodSelection } from "@/lib/analytics-range";
 import { useTodayKey } from "@/lib/use-today-key";
 import { generateReport } from "./generate";
-import { getReport } from "./repository";
+import { getReport, listReports, type ReportSummary } from "./repository";
 import { buildReportSnapshot } from "./snapshot";
 
 const storedKey = (period: string, periodKey: string) =>
@@ -10,6 +10,8 @@ const storedKey = (period: string, periodKey: string) =>
 
 const snapshotKey = (period: string, periodKey: string, today: string) =>
   ["reports", "snapshot", period, periodKey, today] as const;
+
+const listKey = ["reports", "list"] as const;
 
 /** Local aggregates: shown immediately, never billed and safe to view offline. */
 export function useReportSnapshot(selection: PeriodSelection) {
@@ -26,6 +28,25 @@ export function useStoredReport(selection: PeriodSelection) {
     queryKey: storedKey(selection.period, selection.key),
     queryFn: () => getReport(selection.period, selection.key),
   });
+}
+
+/** Persisted history, newest first. Drives the report list and the dashboard card. */
+export function useReportList() {
+	return useQuery({ queryKey: listKey, queryFn: () => listReports() });
+}
+
+/** The newest stored report, or null when nothing has been generated yet. */
+export function useLatestReport(): {
+	isPending: boolean;
+	isError: boolean;
+	data: ReportSummary | null;
+} {
+	const query = useReportList();
+	return {
+		isPending: query.isPending,
+		isError: query.isError,
+		data: query.data?.[0] ?? null,
+	};
 }
 
 /**
@@ -46,6 +67,7 @@ export function useGenerateReport() {
         snapshotKey(selection.period, selection.key, today),
         report.snapshot,
       );
+      void queryClient.invalidateQueries({ queryKey: listKey });
       void queryClient.invalidateQueries({ queryKey: ["llm-usage"] });
     },
   });

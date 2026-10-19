@@ -6,13 +6,19 @@ type MigrationBundle = {
 const migrationBundle = require('../migrations/migrations').default as MigrationBundle;
 
 describe('migrations', () => {
-  it('registers the reports table as the latest migration', () => {
+  it('registers the analysis-version migration as the latest one', () => {
     expect(migrationBundle.journal.entries.at(-1)).toMatchObject({
-      idx: 8,
-      tag: '0008_familiar_luminals',
+      idx: 9,
+      tag: '0009_spooky_reaper',
     });
-    expect(migrationBundle.migrations.m0008).toEqual(expect.any(String));
-    expect(migrationBundle.migrations.m0008.length).toBeGreaterThan(0);
+    expect(migrationBundle.migrations.m0009).toEqual(expect.any(String));
+    expect(migrationBundle.migrations.m0009.length).toBeGreaterThan(0);
+  });
+
+  it('0009 adds the report analysis contract version', () => {
+    const sql = migrationBundle.migrations.m0009;
+    expect(sql).toContain('ALTER TABLE `reports` ADD `analysis_version`');
+    expect(sql).toContain('DEFAULT 1 NOT NULL');
   });
 
   it('0008 creates the reports table keyed by period', () => {
