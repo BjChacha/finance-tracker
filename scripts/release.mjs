@@ -53,7 +53,8 @@ function run(cmd, cmdArgs, opts = {}) {
   execFileSync(cmd, cmdArgs, {
     cwd: root,
     stdio: opts.inherit ? "inherit" : "pipe",
-    shell: isWin && cmd === "npm",
+    // npm/npx on Windows are .cmd shims that only resolve through a shell
+    shell: isWin && (cmd === "npm" || cmd === "npx"),
   });
 }
 
@@ -137,6 +138,10 @@ if (!args.skipBump) {
 }
 
 if (!existsSync(apkPath)) {
+  // app.json was just bumped; sync versionCode/versionName/permissions into
+  // android/ (a gitignored prebuild artifact) or Gradle ships stale values.
+  console.log("Syncing android/ from app.json via expo prebuild ...");
+  run("npx", ["expo", "prebuild", "--platform", "android"], { inherit: true });
   console.log("Building APK via npm run build:apk ...");
   run("npm", ["run", "build:apk"], { inherit: true });
   if (!existsSync(apkPath)) {
