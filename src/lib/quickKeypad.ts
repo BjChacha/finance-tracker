@@ -90,6 +90,18 @@ export function getPendingQuickAddLaunch(): PendingQuickAddLaunch | null {
 }
 
 /**
+ * One-shot pull for a launcher-originated 一句话记账 launch.
+ *
+ * The shortcut carries a deep link, but Expo's activity delegate returns early from onNewIntent
+ * while its app load is settling, so a reused MainActivity can swallow it and leave the previous
+ * route on screen. The native side records the launch (30s TTL); pulling it here lets the router
+ * recover. Returns false on iOS and when no launch is pending or it already expired.
+ */
+export function consumePendingNaturalLanguageLaunch(): boolean {
+  return getNativeModule()?.consumePendingNaturalLanguageLaunch() ?? false;
+}
+
+/**
  * Opens QuickKeypadActivity in result mode on Android.
  * Returns null after cancellation or on unsupported platforms.
  *

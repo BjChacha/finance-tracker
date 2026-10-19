@@ -12,9 +12,12 @@ import { useResidentEditorDismiss } from "@/components/navigation/resident-edito
 import { zh } from "@/i18n/zh";
 import {
   getPendingQuickAddLaunch,
+  consumePendingNaturalLanguageLaunch,
 } from "@/lib/quickKeypad";
 import {
+  NATURAL_LANGUAGE_PATH,
   QUICK_ADD_TRANSACTION_PATH,
+  toNaturalLanguageHref,
   toQuickAddTransactionHref,
 } from "./pendingQuickAdd";
 
@@ -65,6 +68,7 @@ export function useQuickActionsBootstrap() {
   useEffect(() => {
     if (Platform.OS !== "android" || !rootNavigationState?.key) return;
     consumePendingLaunch();
+    consumePendingNaturalLanguage();
     // rootNavigationState.key changes when the router remounts (new root after CLEAR_TASK);
     // re-pulling then covers the startup race where the deep link was dropped entirely.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,6 +84,7 @@ export function useQuickActionsBootstrap() {
         // while React is still settling; by the time the user is back, the root is stable.
         // The pendingLaunch native side keeps a 30s TTL and is cleared once routed/completed.
         consumePendingLaunch();
+        consumePendingNaturalLanguage();
       },
     );
     return () => subscription.remove();
@@ -104,5 +109,21 @@ export function useQuickActionsBootstrap() {
     // A single replace avoids exposing an intermediate root route during the handoff.
     dismissResidentEditor();
     router.replace(toQuickAddTransactionHref(launch));
+  };
+
+  /**
+   * Fallback for the 一句话记账 shortcut. Expo's activity delegate can swallow onNewIntent, in
+   * which case the deep link never reaches the router and the previous route stays on screen.
+   * The native side records the launch, so pull it and route ourselves.
+   */
+  const consumePendingNaturalLanguage = () => {
+    if (pathname === NATURAL_LANGUAGE_PATH) {
+      // Already routed by the deep link; just drop the flag so it cannot fire later.
+      consumePendingNaturalLanguageLaunch();
+      return;
+    }
+    if (!consumePendingNaturalLanguageLaunch()) return;
+    dismissResidentEditor();
+    router.navigate(toNaturalLanguageHref());
   };
 }

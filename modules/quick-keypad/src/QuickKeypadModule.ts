@@ -38,6 +38,12 @@ declare class QuickKeypadModule extends NativeModule {
   revealQuickAddPresentation(handoffId: string): Promise<boolean>;
   completeQuickAddInteractive(handoffId: string): void;
   getPendingQuickAddLaunch(): PendingQuickAddLaunch | null;
+  /**
+   * One-shot pull for a launcher-originated natural-language launch. Returns true when the
+   * shortcut intent was recorded natively within the TTL, regardless of whether its deep link
+   * reached JS. Used as a fallback when the deep link is dropped.
+   */
+  consumePendingNaturalLanguageLaunch(): boolean;
 }
 
 export default requireOptionalNativeModule<QuickKeypadModule>("QuickKeypad");

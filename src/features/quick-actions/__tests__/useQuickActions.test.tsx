@@ -3,11 +3,13 @@ import { AppState, Platform, type AppStateStatus } from "react-native";
 import { useQuickActionsBootstrap } from "../useQuickActions";
 
 const mockReplace = jest.fn();
+const mockNavigate = jest.fn();
 const mockDismissAll = jest.fn();
 const mockCanDismiss = jest.fn(() => false);
 const mockDismissResidentEditor = jest.fn();
 let mockPathname = "/";
 let mockParams: { handoffId?: string } = {};
+let mockPendingNaturalLanguage = false;
 
 let mockPendingLaunch: {
   amountCents: number;
@@ -21,7 +23,7 @@ jest.mock("expo-router", () => ({
     replace: mockReplace,
     dismissAll: mockDismissAll,
     canDismiss: mockCanDismiss,
-    navigate: jest.fn(),
+    navigate: mockNavigate,
   }),
   usePathname: () => mockPathname,
   useGlobalSearchParams: () => mockParams,
@@ -40,6 +42,12 @@ jest.mock("@/components/navigation/resident-editor-sheet-host", () => ({
 
 jest.mock("@/lib/quickKeypad", () => ({
   getPendingQuickAddLaunch: () => mockPendingLaunch,
+  // One-shot like the native side: reading clears the flag.
+  consumePendingNaturalLanguageLaunch: () => {
+    const pending = mockPendingNaturalLanguage;
+    mockPendingNaturalLanguage = false;
+    return pending;
+  },
 }));
 
 function Harness() {
@@ -76,9 +84,11 @@ describe("useQuickActionsBootstrap (android)", () => {
 
   beforeEach(() => {
     mockPendingLaunch = null;
+    mockPendingNaturalLanguage = false;
     mockPathname = "/";
     mockParams = {};
     mockReplace.mockClear();
+    mockNavigate.mockClear();
     mockDismissAll.mockClear();
     mockCanDismiss.mockClear().mockReturnValue(false);
     mockDismissResidentEditor.mockClear();
@@ -169,5 +179,42 @@ describe("useQuickActionsBootstrap (android)", () => {
 
     expect(mockDismissResidentEditor).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("routes the natural-language sheet when its deep link was dropped", () => {
+    mockPendingNaturalLanguage = true;
+
+    render(<Harness />);
+
+    expect(mockDismissResidentEditor).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: "/natural-language-transaction",
+      params: { source: "launcher" },
+    });
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("consumes the natural-language flag without navigating when the deep link landed", () => {
+    mockPendingNaturalLanguage = true;
+    mockPathname = "/natural-language-transaction";
+
+    render(<Harness />);
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockDismissResidentEditor).not.toHaveBeenCalled();
+    // Flag is one-shot: a later foreground pull must not route.
+    foreground();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("pulls a natural-language launch that arrived while backgrounded", () => {
+    render(<Harness />);
+    expect(mockNavigate).not.toHaveBeenCalled();
+
+    mockPendingNaturalLanguage = true;
+    foreground();
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
   });
 });

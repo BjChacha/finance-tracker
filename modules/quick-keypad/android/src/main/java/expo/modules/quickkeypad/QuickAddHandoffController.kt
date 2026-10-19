@@ -67,6 +67,13 @@ object QuickAddHandoffController {
     private var retainedSource: RetainedSource? = null
     private var mainActivityRef: WeakReference<Activity>? = null
     private var pendingLaunch: QuickAddLaunch? = null
+    /**
+     * Timestamp of a natural-language shortcut launch whose deep link may never reach JS.
+     * ReactActivityDelegateWrapper.onNewIntent returns early while its app load is settling,
+     * so a reused MainActivity can swallow `finance-tracker://natural-language-transaction`
+     * and leave the previous route on screen. Pull-only, like [pendingLaunch].
+     */
+    private var pendingNaturalLanguageLaunchAt: Long? = null
     private var completedHandoffId: String? = null
     private var interactiveReadyHandoffId: String? = null
     private var performanceSession: PerformanceSession? = null
@@ -333,6 +340,8 @@ object QuickAddHandoffController {
                 clearPendingLaunch(handoffId)
                 abortVisualHandoffOnMain(handoffId, finishSource = true)
             }
+            // A plain launch (tapping the app icon) means the user is not entering the sheet.
+            synchronized(launchLock) { pendingNaturalLanguageLaunchAt = null }
             clearTranslucency(activity)
         }
     }
@@ -344,10 +353,25 @@ object QuickAddHandoffController {
      */
     fun beginTranslucentLaunch(activity: Activity) {
         runOnMainThread {
+            synchronized(launchLock) {
+                pendingNaturalLanguageLaunchAt = SystemClock.elapsedRealtime()
+            }
             AppLaunchController.cancelForQuickAdd(activity)
             applyTranslucency(activity)
         }
     }
+
+    /**
+     * Consumes a pending natural-language launch (one-shot). JavaScript pulls this after the
+     * router root is ready and whenever the app returns to the foreground: if the deep link was
+     * dropped, this is the only signal left that the user tapped the shortcut.
+     */
+    fun consumePendingNaturalLanguageLaunch(): Boolean =
+        synchronized(launchLock) {
+            val launchedAt = pendingNaturalLanguageLaunchAt ?: return@synchronized false
+            pendingNaturalLanguageLaunchAt = null
+            SystemClock.elapsedRealtime() - launchedAt <= PENDING_LAUNCH_TTL_MS
+        }
 
     /**
      * API 30+ can keep the final sheet over the launcher. Older releases retain the opaque fallback.

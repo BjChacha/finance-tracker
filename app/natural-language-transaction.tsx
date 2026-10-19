@@ -172,7 +172,7 @@ function NaturalLanguageEntry({ source }: { source: "app" | "launcher" }) {
             <TransactionForm
               ref={form}
               mode="create"
-              prefillPolicy="explicit"
+              prefillPolicy="suggest"
               initialValues={phase.values}
               sessionKey={`natural-language:${phase.text}`}
               clientTag={phase.tag}

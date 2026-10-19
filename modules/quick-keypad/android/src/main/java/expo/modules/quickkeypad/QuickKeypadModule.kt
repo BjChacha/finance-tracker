@@ -106,6 +106,12 @@ class QuickKeypadModule : Module() {
                 QuickAddHandoffController.getPendingLaunch()?.toPayload()
             }
 
+            // Fallback signal for the natural-language shortcut: Expo's activity delegate can
+            // swallow onNewIntent, so JS pulls this when the router root is ready and on resume.
+            Function("consumePendingNaturalLanguageLaunch") {
+                QuickAddHandoffController.consumePendingNaturalLanguageLaunch()
+            }
+
             OnActivityResult { activity, (requestCode, resultCode, data) ->
                 if (requestCode != REQUEST_CODE) {
                     return@OnActivityResult
