@@ -1,0 +1,21 @@
+id	group	text	amount_cents	type	category	account	to_account	day	status	context_variant	source	source_id	review_status
+dev-081	missing_amount	买了早餐但忘记多少钱							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-081	pending_human_review
+dev-082	missing_amount	记录今天的午餐							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-082	pending_human_review
+dev-083	missing_amount	交了房租							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-083	pending_human_review
+dev-084	missing_amount	工资到账了							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-084	pending_human_review
+dev-085	missing_amount	给我的公交卡充了钱							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-085	pending_human_review
+dev-086	multi_meal	早餐15，打车30							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-086	pending_human_review
+dev-087	multi_meal	午饭20元，晚饭30元，各记一笔							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-087	pending_human_review
+dev-088	multi_meal	买面包8块又买咖啡16块							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-088	pending_human_review
+dev-089	multi_meal	上午吃饭12元，下午零食9元							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-089	pending_human_review
+dev-090	multi_meal	今天两笔，豆浆3元和午餐22元							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-090	pending_human_review
+dev-091	future_purchase	明天准备花300元买鞋							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-091	pending_human_review
+dev-092	future_purchase	打算用50块买零食，还没付款							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-092	pending_human_review
+dev-093	future_purchase	下周预计交房租2000元							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-093	pending_human_review
+dev-094	future_purchase	想买一件200元的外套							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-094	pending_human_review
+dev-095	future_purchase	准备充值100元话费但尚未操作							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-095	pending_human_review
+dev-096	ambiguous_account	从储蓄卡转100到微信，两张储蓄卡我忘记哪张							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-096	pending_human_review
+dev-097	ambiguous_account	银行卡互转200，忘了用哪张卡转出							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-097	pending_human_review
+dev-098	ambiguous_account	工资卡往储蓄卡转了300，储蓄卡有两个同名账户							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-098	pending_human_review
+dev-099	ambiguous_account	把500块转到我的卡里，具体哪张不确定							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-099	pending_human_review
+dev-100	ambiguous_account	我的两个微信账户之间转了80块							clarify	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-100	pending_human_review

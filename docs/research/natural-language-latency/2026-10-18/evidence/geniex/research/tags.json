@@ -1,0 +1,152 @@
+[
+  {
+    "name": "v0.9.1",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.9.1",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.9.1",
+    "commit": {
+      "sha": "d769b2aea2b6e4bb203b07c0a28c8dd99b87e52d",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/d769b2aea2b6e4bb203b07c0a28c8dd99b87e52d"
+    },
+    "node_id": "REF_kwDOMkfeiLByZWZzL3RhZ3MvdjAuOS4x"
+  },
+  {
+    "name": "v0.9.0",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.9.0",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.9.0",
+    "commit": {
+      "sha": "acc60b60fd507c86e82f4bc29bc526077b0730bd",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/acc60b60fd507c86e82f4bc29bc526077b0730bd"
+    },
+    "node_id": "REF_kwDOMkfeiLByZWZzL3RhZ3MvdjAuOS4w"
+  },
+  {
+    "name": "v0.9.0-rc.1",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.9.0-rc.1",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.9.0-rc.1",
+    "commit": {
+      "sha": "acc60b60fd507c86e82f4bc29bc526077b0730bd",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/acc60b60fd507c86e82f4bc29bc526077b0730bd"
+    },
+    "node_id": "REF_kwDOMkfeiLVyZWZzL3RhZ3MvdjAuOS4wLXJjLjE"
+  },
+  {
+    "name": "v0.8.2-alpha.5",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.2-alpha.5",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.2-alpha.5",
+    "commit": {
+      "sha": "7b01bae8fc57ed233e0d2c2daaf71f56444e688c",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/7b01bae8fc57ed233e0d2c2daaf71f56444e688c"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4yLWFscGhhLjU"
+  },
+  {
+    "name": "v0.8.2-alpha.4",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.2-alpha.4",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.2-alpha.4",
+    "commit": {
+      "sha": "0718d5607beac01f9dcd21ed60207275b12f8f85",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/0718d5607beac01f9dcd21ed60207275b12f8f85"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4yLWFscGhhLjQ"
+  },
+  {
+    "name": "v0.8.2-alpha.3",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.2-alpha.3",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.2-alpha.3",
+    "commit": {
+      "sha": "4457e88d95996b31b8fa8c2a50b1081a9896fba6",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/4457e88d95996b31b8fa8c2a50b1081a9896fba6"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4yLWFscGhhLjM"
+  },
+  {
+    "name": "v0.8.2-alpha.2",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.2-alpha.2",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.2-alpha.2",
+    "commit": {
+      "sha": "5cec27556f7ead7a60760f1de189ddd323bcca2a",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/5cec27556f7ead7a60760f1de189ddd323bcca2a"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4yLWFscGhhLjI"
+  },
+  {
+    "name": "v0.8.2-alpha.1",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.2-alpha.1",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.2-alpha.1",
+    "commit": {
+      "sha": "c2ff28f0f08167406e7efb4ecaea5a5db899ccda",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/c2ff28f0f08167406e7efb4ecaea5a5db899ccda"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4yLWFscGhhLjE"
+  },
+  {
+    "name": "v0.8.1-rc.5",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-rc.5",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-rc.5",
+    "commit": {
+      "sha": "d05da5d35cc2e22696ad1dcfbc90742419c0cfa4",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/d05da5d35cc2e22696ad1dcfbc90742419c0cfa4"
+    },
+    "node_id": "REF_kwDOMkfeiLVyZWZzL3RhZ3MvdjAuOC4xLXJjLjU"
+  },
+  {
+    "name": "v0.8.1-rc.4",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-rc.4",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-rc.4",
+    "commit": {
+      "sha": "158adfbe848e0be964632561d262a2a03f4e57d9",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/158adfbe848e0be964632561d262a2a03f4e57d9"
+    },
+    "node_id": "REF_kwDOMkfeiLVyZWZzL3RhZ3MvdjAuOC4xLXJjLjQ"
+  },
+  {
+    "name": "v0.8.1-rc.3",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-rc.3",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-rc.3",
+    "commit": {
+      "sha": "93bf854627075e34457cd147cefe5ab7c4111da9",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/93bf854627075e34457cd147cefe5ab7c4111da9"
+    },
+    "node_id": "REF_kwDOMkfeiLVyZWZzL3RhZ3MvdjAuOC4xLXJjLjM"
+  },
+  {
+    "name": "v0.8.1-rc.2",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-rc.2",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-rc.2",
+    "commit": {
+      "sha": "93bf854627075e34457cd147cefe5ab7c4111da9",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/93bf854627075e34457cd147cefe5ab7c4111da9"
+    },
+    "node_id": "REF_kwDOMkfeiLVyZWZzL3RhZ3MvdjAuOC4xLXJjLjI"
+  },
+  {
+    "name": "v0.8.1-rc.1",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-rc.1",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-rc.1",
+    "commit": {
+      "sha": "ecb13d4255c9e0f9f8267539eb8047d3ce09c8b9",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/ecb13d4255c9e0f9f8267539eb8047d3ce09c8b9"
+    },
+    "node_id": "REF_kwDOMkfeiLVyZWZzL3RhZ3MvdjAuOC4xLXJjLjE"
+  },
+  {
+    "name": "v0.8.1-alpha.5",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-alpha.5",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-alpha.5",
+    "commit": {
+      "sha": "47b4c4e3774ac060a59ab8aed977450316dc3998",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/47b4c4e3774ac060a59ab8aed977450316dc3998"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4xLWFscGhhLjU"
+  },
+  {
+    "name": "v0.8.1-alpha.4",
+    "zipball_url": "https://api.github.com/repos/qualcomm/GenieX/zipball/refs/tags/v0.8.1-alpha.4",
+    "tarball_url": "https://api.github.com/repos/qualcomm/GenieX/tarball/refs/tags/v0.8.1-alpha.4",
+    "commit": {
+      "sha": "e36f6ab0585c0add6bb6cf05519cb5773d2ed83a",
+      "url": "https://api.github.com/repos/qualcomm/GenieX/commits/e36f6ab0585c0add6bb6cf05519cb5773d2ed83a"
+    },
+    "node_id": "REF_kwDOMkfeiLhyZWZzL3RhZ3MvdjAuOC4xLWFscGhhLjQ"
+  }
+]

@@ -1,0 +1,209 @@
+{
+  "total": 200,
+  "failure_count": 104,
+  "accepted_core_fields_joint_correct": 70,
+  "ready_and_all_annotated_fields_correct": 66,
+  "ready_but_incorrect": 48,
+  "groups": {
+    "parking": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "toll": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "cinema": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "theme_park": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "gaming": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "haircut": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "swimming": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "pet_grooming": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "pet_food": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "cloud_subscription": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "broadband": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "property_fee": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "donation": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 3
+    },
+    "camera_accessory": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "custom_craft": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "dinner_party": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "deposit_interest": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "stock_dividend": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "bond_coupon": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "birthday_received": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "new_year_received": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "resale_camera": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "resale_bicycle": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "misc_received": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "alipay_to_bank": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "cash_to_bank": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 1
+    },
+    "credit_repayment": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bank_to_wechat": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "savings_to_alipay": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bank_to_savings": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "salary_to_alipay": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "wechat_to_alipay": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 2
+    },
+    "denied_parking": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "future_renewal": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "two_transactions": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "amount_conflict": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "hypothetical": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "missing_actual": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "ambiguous_account": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 0
+    },
+    "instruction_in_data": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 0
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "file": "uie.fp32.onnx",
+      "bytes": 93097234,
+      "sha256": "774f965984413d377734389859ff50f0eb97a7e9ed458814f9f64c033dc62331"
+    },
+    {
+      "file": "uie.int8.onnx",
+      "bytes": 23529905,
+      "sha256": "cd56ad751d94d991d253c2f38a7afd7d8b8b3b80424005a785ac744145267353"
+    },
+    {
+      "file": "bge.fp32.onnx",
+      "bytes": 94835760,
+      "sha256": "cabf8c34f976e807459c43b5223462ac035ba44ed63acfaf24f05ca2e679cb40"
+    },
+    {
+      "file": "bge.int8.onnx",
+      "bytes": 23996863,
+      "sha256": "1f264e77b6051311cf6e45e1d04d58cf9d14ce83416974905df594763061a408"
+    }
+  ],
+  "packages": {
+    "torch": "2.11.0",
+    "transformers": "5.6.2",
+    "numpy": "2.5.4",
+    "onnx": "1.23.2",
+    "onnxruntime": "1.31.0",
+    "safetensors": "0.7.0",
+    "tokenizers": "0.23.0rc0"
+  },
+  "quantization": "dynamic QInt8 MatMul and Gather, per_channel=True",
+  "mobile_validation": "pending"
+}

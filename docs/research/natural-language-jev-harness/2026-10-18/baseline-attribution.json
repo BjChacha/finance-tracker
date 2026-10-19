@@ -1,0 +1,417 @@
+{
+  "exclusive_losses": {
+    "amount_cents": {
+      "correct_but_status_blocked": 23,
+      "status_blocked_also_violation": 1,
+      "usable_correct": 116,
+      "correct_but_violation_only": 21
+    },
+    "type": {
+      "correct_but_status_blocked": 22,
+      "status_blocked_also_violation": 1,
+      "usable_correct": 95,
+      "raw_wrong": 22,
+      "correct_but_violation_only": 21
+    },
+    "category": {
+      "raw_wrong": 85,
+      "usable_correct": 54,
+      "correct_but_status_blocked": 11,
+      "status_blocked_also_violation": 1,
+      "correct_but_violation_only": 10
+    }
+  },
+  "category_gold_rank": {
+    "2": 26,
+    "3": 12,
+    "4": 4,
+    "5": 7,
+    "7": 2,
+    "8": 6,
+    "9": 1,
+    "1": 75,
+    "13": 1,
+    "10": 1,
+    "6": 3
+  },
+  "category_gold_excluded_by_type": 22,
+  "category_confusions": {
+    "transfer_account -> transfer_account": 21,
+    "investment -> investment": 15,
+    "transport -> adjust_expense": 10,
+    "red_packet -> red_packet": 10,
+    "entertainment -> adjust_expense": 7,
+    "pet -> shopping": 7,
+    "subscription -> adjust_expense": 5,
+    "other_expense -> other_expense": 5,
+    "shopping -> shopping": 5,
+    "secondhand -> salary": 5,
+    "other_income -> other_income": 5,
+    "transfer_account -> withdrawal": 5,
+    "entertainment -> entertainment": 4,
+    "housing -> adjust_income": 4,
+    "secondhand -> refund": 4,
+    "repayment -> communication": 4,
+    "entertainment -> adjust_income": 3,
+    "beauty -> adjust_income": 3,
+    "pet -> pet": 3,
+    "communication -> adjust_expense": 3,
+    "craft -> craft": 3,
+    "deposit -> withdrawal": 3,
+    "transfer_account -> other_transfer": 3,
+    "beauty -> shopping": 2,
+    "sport -> investment": 2,
+    "sport -> adjust_expense": 2,
+    "communication -> communication": 2,
+    "craft -> shopping": 2,
+    "food -> food": 2,
+    "food -> adjust_expense": 2,
+    "deposit -> salary": 2,
+    "entertainment -> investment": 1,
+    "sport -> adjust_income": 1,
+    "housing -> subscription": 1,
+    "food -> shopping": 1,
+    "secondhand -> other_income": 1,
+    "repayment -> adjust_expense": 1,
+    "transfer_account -> salary": 1
+  },
+  "violations_all_records": {
+    "same_transfer_account": 27
+  },
+  "single_same_account_recoverable_as_incomplete": 22,
+  "groups": {
+    "parking": {
+      "count": 5,
+      "status_clarify": 4,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_single": 1
+    },
+    "toll": {
+      "count": 5,
+      "status_single": 4,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 2,
+      "status_clarify": 1
+    },
+    "cinema": {
+      "count": 5,
+      "status_single": 3,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 2
+    },
+    "theme_park": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 1,
+      "category_wrong": 1,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "gaming": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 3,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "haircut": {
+      "count": 5,
+      "status_single": 4,
+      "type_wrong": 3,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 1
+    },
+    "swimming": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 3,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "pet_grooming": {
+      "count": 5,
+      "status_single": 3,
+      "type_wrong": 0,
+      "category_wrong": 2,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 2
+    },
+    "pet_food": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 2
+    },
+    "cloud_subscription": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "broadband": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 3,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "property_fee": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 4,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "donation": {
+      "count": 5,
+      "status_single": 4,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 3,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 1
+    },
+    "camera_accessory": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "custom_craft": {
+      "count": 5,
+      "status_clarify": 4,
+      "type_wrong": 0,
+      "category_wrong": 2,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_single": 1
+    },
+    "dinner_party": {
+      "count": 5,
+      "status_single": 4,
+      "type_wrong": 0,
+      "category_wrong": 3,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 1
+    },
+    "deposit_interest": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "stock_dividend": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "bond_coupon": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "birthday_received": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 0
+    },
+    "new_year_received": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "resale_camera": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "resale_bicycle": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 2
+    },
+    "misc_received": {
+      "count": 5,
+      "status_clarify": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 2
+    },
+    "alipay_to_bank": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 1,
+      "to_account_wrong": 3,
+      "day_wrong": 1
+    },
+    "cash_to_bank": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 2,
+      "category_wrong": 5,
+      "account_wrong": 5,
+      "to_account_wrong": 2,
+      "day_wrong": 1
+    },
+    "credit_repayment": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 5,
+      "category_wrong": 5,
+      "account_wrong": 5,
+      "to_account_wrong": 5,
+      "day_wrong": 1
+    },
+    "bank_to_wechat": {
+      "count": 5,
+      "status_single": 4,
+      "type_wrong": 0,
+      "category_wrong": 3,
+      "account_wrong": 5,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 1
+    },
+    "savings_to_alipay": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 5,
+      "account_wrong": 5,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "bank_to_savings": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 0,
+      "to_account_wrong": 0,
+      "day_wrong": 1
+    },
+    "salary_to_alipay": {
+      "count": 5,
+      "status_single": 5,
+      "type_wrong": 1,
+      "category_wrong": 1,
+      "account_wrong": 5,
+      "to_account_wrong": 1,
+      "day_wrong": 1
+    },
+    "wechat_to_alipay": {
+      "count": 5,
+      "status_single": 4,
+      "type_wrong": 0,
+      "category_wrong": 0,
+      "account_wrong": 1,
+      "to_account_wrong": 0,
+      "day_wrong": 1,
+      "status_clarify": 1
+    },
+    "denied_parking": {
+      "count": 5,
+      "status_clarify": 5
+    },
+    "future_renewal": {
+      "count": 5,
+      "status_clarify": 5
+    },
+    "two_transactions": {
+      "count": 5,
+      "status_single": 5
+    },
+    "amount_conflict": {
+      "count": 5,
+      "status_clarify": 5
+    },
+    "hypothetical": {
+      "count": 5,
+      "status_clarify": 5
+    },
+    "missing_actual": {
+      "count": 5,
+      "status_clarify": 5
+    },
+    "ambiguous_account": {
+      "count": 5,
+      "status_single": 2,
+      "status_clarify": 3
+    },
+    "instruction_in_data": {
+      "count": 5,
+      "status_single": 3,
+      "status_clarify": 2
+    }
+  },
+  "interpretation": "Raw errors are not proof of model incapacity; prompt and candidate interventions are needed. Safety checks remain unchanged."
+}

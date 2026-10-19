@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "pull_exit_code": 0,
+  "pull_error": "/data/misc/perfetto-traces/finance-nl-instruct.pb: 1 file pulled, 0 skipped. 39.0 MB/s (5723611 bytes in 0.140s)\n"
+}

@@ -1,0 +1,33 @@
+{
+  "device": {
+    "model": "M098FE",
+    "soc": "SM8850",
+    "android": "16",
+    "abi": "arm64-v8a"
+  },
+  "configuration": {
+    "model": "jev-qwen3-0.6b-q4_k_m.gguf",
+    "output": "device-q4",
+    "cold_runs": 20,
+    "warm_runs": 60,
+    "trace": true
+  },
+  "cold_process_p95_ms": 5183.147389997976,
+  "warm_p95_ms": 1356.8371349996594,
+  "isolated_runtime_peak_pss_bytes": 840303616,
+  "memory_sample_count": 640,
+  "memory_errors": [],
+  "cold_schema_successes": 20,
+  "warm_schema_successes": 60,
+  "battery_before": "Current Battery Service state:\n  AC powered: false\n  USB powered: true\n  Wireless powered: false\n  Dock powered: false\n  Max charging current: 0\n Time when the latest updated value of the Max charging current was sent via battery changed broadcast: +7s906ms\n  Max charging voltage: 0\n  Charge counter: 8686000\n  status: 2\n  health: 2\n  present: true\n  level: 100\n  scale: 100\n  voltage: 4410\n Time when the latest updated value of the voltage was sent via battery changed broadcast: +11d13h16m15s932ms\n The last voltage value sent via the battery changed broadcast: 4402\n  temperature: 381\n  technology: Li-poly\n  Charging state: 0\n  Charging policy: 0\n  Capacity level: 5\nMiuiBatteryService first usage time:\n  mSetBatteryUsageTimeCount=1\n  mNtpTime=1786537315187\n  mParseNtpTime=20260812\n",
+  "battery_after": "Current Battery Service state:\n  AC powered: false\n  USB powered: true\n  Wireless powered: false\n  Dock powered: false\n  Max charging current: 0\n Time when the latest updated value of the Max charging current was sent via battery changed broadcast: +7s906ms\n  Max charging voltage: 0\n  Charge counter: 8659000\n  status: 2\n  health: 2\n  present: true\n  level: 100\n  scale: 100\n  voltage: 4420\n Time when the latest updated value of the voltage was sent via battery changed broadcast: +11d13h16m15s932ms\n The last voltage value sent via the battery changed broadcast: 4402\n  temperature: 383\n  technology: Li-poly\n  Charging state: 0\n  Charging policy: 0\n  Capacity level: 5\nMiuiBatteryService first usage time:\n  mSetBatteryUsageTimeCount=1\n  mNtpTime=1786537315187\n  mParseNtpTime=20260812\n",
+  "scope": [
+    "Isolated native CPU runtime, four threads; not React Native incremental PSS.",
+    "Process-cold includes loading and all candidate embeddings; OS file cache is not flushed.",
+    "Warm caches candidate documents only; query embeddings are recomputed for every request.",
+    "One warm-up input; new or changed category/account/amount candidates are charged to timed requests.",
+    "Host orchestration, scoring, validation and USB forwarding are included in request latency.",
+    "Host candidate cache and Python interpreter memory are excluded from device PSS.",
+    "PSS sampled every 200ms plus adb time; shorter peaks can be missed."
+  ]
+}

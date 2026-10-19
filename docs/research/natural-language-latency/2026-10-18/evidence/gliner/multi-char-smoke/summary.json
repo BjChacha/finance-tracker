@@ -1,0 +1,59 @@
+{
+  "total": 10,
+  "schema_valid": 10,
+  "business_consistent": 4,
+  "preview_ready": 0,
+  "semantics": {
+    "amount_cents": {
+      "correct": 4,
+      "raw_field_correct_diagnostic": 10,
+      "total": 10,
+      "accuracy": 0.4,
+      "target": 0.99,
+      "passed": false
+    },
+    "type": {
+      "correct": 1,
+      "raw_field_correct_diagnostic": 2,
+      "total": 10,
+      "accuracy": 0.1,
+      "target": 0.95,
+      "passed": false
+    },
+    "category": {
+      "correct": 1,
+      "raw_field_correct_diagnostic": 1,
+      "total": 10,
+      "accuracy": 0.1,
+      "target": 0.9,
+      "passed": false
+    }
+  },
+  "needs_manual_input": 10,
+  "auxiliary": {
+    "account": {
+      "raw_correct": 10,
+      "total": 10
+    },
+    "to_account": {
+      "raw_correct": 8,
+      "total": 10
+    },
+    "day": {
+      "raw_correct": 10,
+      "total": 10
+    }
+  },
+  "guards": {
+    "total": 0,
+    "correct_abstentions": 0,
+    "false_single": 0,
+    "clear_single_accepted": 10,
+    "clear_single_total": 10
+  },
+  "observed_desktop_latency_ms": {
+    "p50": 1545.5274500054657,
+    "p95": 1606.2387650003075,
+    "count": 10
+  }
+}

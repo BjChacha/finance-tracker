@@ -1,0 +1,5 @@
+{
+  "count": 120,
+  "float32_payload_bytes": 491520,
+  "scope": "Host-side prototype cache; Python object overhead excluded from this payload count"
+}

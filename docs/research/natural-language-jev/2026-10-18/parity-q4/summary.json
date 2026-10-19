@@ -1,0 +1,9 @@
+{
+  "model": "jev-qwen3-0.6b-q4_k_m.gguf",
+  "count": 96,
+  "tokens_match": 96,
+  "cosine_min": 0.72692358012777,
+  "cosine_mean": 0.9150669948756528,
+  "cosine_p05": 0.8463367493554024,
+  "max_abs_error": 0.07933730632066727
+}

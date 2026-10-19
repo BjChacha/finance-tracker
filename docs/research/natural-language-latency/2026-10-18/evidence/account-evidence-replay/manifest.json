@@ -1,0 +1,17 @@
+{
+  "scope": "Offline validation replay of observed synthetic data, no new model inference or semantic accuracy improvement",
+  "inputs": {
+    "qwen4b-lean-dev": "fe5d9981937f1900f42a4d0dc3d6343cce40eee40b9c910476f131019b5a2290",
+    "qwen4b-example-dev": "fd2fb5fe1b800ca5fb5fa914bc8a21f9fedcd79a0307c89cd3839c38d5d58c03",
+    "qwen4b-lean-dev-guards": "a4d2e95e4ae796767a8bc559412e0af56e00fd66519c9f645c1d16835e46cbf1",
+    "qwen4b-example-guards": "39eeb3dd27914d9591526396ee7979f210fe4af96cf75571cac671b8b0a76e3c",
+    "qwen4b-example-named-probes": "324468a31102d2aa10ee80fda639953f5ca25cfa8850d89abd4df1407e6f7ba5"
+  },
+  "source_hashes": {
+    "account_evidence.py": "6f0cc922899cfdfbb497e42fce2c7db96087624a796934dd21e00747af11355d",
+    "replay_account_audit.py": "d87b7b63368dd721cc579dc866756a272378ecd8c85bc4607ea00a3bb29280a6",
+    "test_account_evidence.py": "2bfd01471fd52b2ecc2724941ef6072b8dbb584585e1e7a607988bfa61365022"
+  },
+  "context_sha256": "ac51b24ce777c0c83a6d6815f98a7bdfe041e317ca6d0add18367cd9ba64c16e",
+  "validator_sha256": "0c786e416b55ee19f65c06458ca68a026a0e1d8faeefec395c84747275e72e7a"
+}

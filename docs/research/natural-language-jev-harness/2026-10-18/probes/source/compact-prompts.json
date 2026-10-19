@@ -1,0 +1,26 @@
+{
+  "status": {
+    "instruction": "这段话描述的交易是什么状态？",
+    "criteria": {
+      "single": "已经付钱或收到钱，一笔交易。",
+      "multiple": "分别付了两笔钱，多笔交易。",
+      "unrealized": "想买、准备买，但还没付钱；或者没有发生交易。",
+      "conflict": "不记得多少钱、金额不确定或账户不确定。"
+    }
+  },
+  "type": {
+    "instruction": "这笔钱是花出去、收进来，还是在自己的账户之间转移？",
+    "criteria": {
+      "expense": "我花钱、付款、消费、买东西、给别人钱。",
+      "income": "我收钱、进账、收到报酬、收到退款、卖东西收款。",
+      "transfer": "我把钱从自己的一个账户转到另一个账户、取现金、存现金、还信用卡。"
+    }
+  },
+  "category_instruction": "这笔交易的用途或收入来源属于哪个分类？",
+  "category_unknown": "无法确定交易用途或收入来源。",
+  "pair_instruction": "识别钱从哪个本人的账户转出，转入哪个本人的账户。",
+  "pair_template": "从{source}转出钱，转入{destination}。",
+  "source_only_template": "从{source}转出钱，收款账户没有说。",
+  "destination_only_template": "转入{destination}，付款账户没有说。",
+  "pair_unknown": "转出和转入账户都不确定。"
+}

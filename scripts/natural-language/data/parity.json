@@ -1,0 +1,12 @@
+{
+  "uie": [
+    {"id":"amount","prompt":"金额","text":"我的车充电花了30块","threshold":0.3},
+    {"id":"decimal","prompt":"金额","text":"早餐三元五角六分","threshold":0.3},
+    {"id":"unicode","prompt":"金额","text":"☕️咖啡Café花了１２．５元😀","threshold":0.3},
+    {"id":"mixed","prompt":"金额","text":"订单AB-1234，实付28.60元","threshold":0.3},
+    {"id":"sentiment_control","prompt":"情感倾向[正向,负向]","text":"这个产品真的很好用","threshold":0.5},
+    {"id":"finance_type","prompt":"交易类型[收入,支出,转账]","text":"到账工资8000元","threshold":0.3},
+    {"id":"longer","prompt":"金额","text":"昨天我从公司回家顺路去了商场，本来打算买衣服但是没买，最后在楼下付了停车费十二元五角。","threshold":0.3}
+  ],
+  "embedding": ["我的车充电花了30块","交通 出行、车辆使用及通勤费用","收到工资8000元","自定义分类 咖啡探店","中文与English、emoji😀、全角１２．５混合"]
+}

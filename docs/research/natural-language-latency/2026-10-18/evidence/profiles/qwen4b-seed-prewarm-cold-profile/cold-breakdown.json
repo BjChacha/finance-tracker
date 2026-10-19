@@ -1,0 +1,366 @@
+{
+  "process_identities": [
+    {
+      "upid": 59,
+      "pid": 10753,
+      "start_ts": 3002733492221585,
+      "end_ts": null,
+      "name": "llama-server"
+    },
+    {
+      "upid": 66,
+      "pid": 10753,
+      "start_ts": null,
+      "end_ts": null,
+      "name": "snapdragon-b11669/bin/llama-server"
+    }
+  ],
+  "note": "Trace has split process identities for one PID; aggregate their non-overlapping scheduling slices. Phase boundaries approximate host-observed times plus device process creation; not native instrumentation.",
+  "phases": {
+    "initialization_approx": {
+      "wall_ms": 7429.5903,
+      "cpu_ms": 6937.643926,
+      "threads": [
+        {
+          "tid": 10753,
+          "name": "llama-server",
+          "cpu_ms": 6849.933701
+        },
+        {
+          "tid": 10763,
+          "name": "llama-server",
+          "cpu_ms": 25.841458
+        },
+        {
+          "tid": 10947,
+          "name": "llama-server",
+          "cpu_ms": 10.239521
+        },
+        {
+          "tid": 10946,
+          "name": "llama-server",
+          "cpu_ms": 10.166709
+        },
+        {
+          "tid": 10948,
+          "name": "llama-server",
+          "cpu_ms": 10.149053
+        },
+        {
+          "tid": 10768,
+          "name": "llama-server",
+          "cpu_ms": 7.028952
+        },
+        {
+          "tid": 10773,
+          "name": "llama-server",
+          "cpu_ms": 4.524788
+        },
+        {
+          "tid": 10757,
+          "name": "llama-server",
+          "cpu_ms": 3.433853
+        },
+        {
+          "tid": 10761,
+          "name": "llama-server",
+          "cpu_ms": 3.041979
+        },
+        {
+          "tid": 10762,
+          "name": "llama-server",
+          "cpu_ms": 2.532035
+        },
+        {
+          "tid": 10764,
+          "name": "llama-server",
+          "cpu_ms": 2.436195
+        },
+        {
+          "tid": 10766,
+          "name": "llama-server",
+          "cpu_ms": 2.429688
+        },
+        {
+          "tid": 10765,
+          "name": "llama-server",
+          "cpu_ms": 2.37412
+        },
+        {
+          "tid": 10767,
+          "name": "llama-server",
+          "cpu_ms": 2.263802
+        },
+        {
+          "tid": 10775,
+          "name": "llama-server",
+          "cpu_ms": 0.390676
+        },
+        {
+          "tid": 10774,
+          "name": "llama-server",
+          "cpu_ms": 0.312135
+        },
+        {
+          "tid": 10776,
+          "name": "llama-server",
+          "cpu_ms": 0.175104
+        },
+        {
+          "tid": 10968,
+          "name": "llama-server",
+          "cpu_ms": 0.11974
+        },
+        {
+          "tid": 10760,
+          "name": "AdrenoOsLib",
+          "cpu_ms": 0.071875
+        },
+        {
+          "tid": 10759,
+          "name": "AdrenoOsLib",
+          "cpu_ms": 0.069219
+        },
+        {
+          "tid": 10756,
+          "name": "llama-server",
+          "cpu_ms": 0.06625
+        },
+        {
+          "tid": 10758,
+          "name": "llama-server",
+          "cpu_ms": 0.043073
+        }
+      ]
+    },
+    "static_priming_approx": {
+      "wall_ms": 2670.0009,
+      "cpu_ms": 473.760145,
+      "threads": [
+        {
+          "tid": 10948,
+          "name": "llama-server",
+          "cpu_ms": 138.012978
+        },
+        {
+          "tid": 10753,
+          "name": "llama-server",
+          "cpu_ms": 109.375676
+        },
+        {
+          "tid": 10946,
+          "name": "llama-server",
+          "cpu_ms": 100.663763
+        },
+        {
+          "tid": 10947,
+          "name": "llama-server",
+          "cpu_ms": 100.306996
+        },
+        {
+          "tid": 10764,
+          "name": "llama-server",
+          "cpu_ms": 22.735683
+        },
+        {
+          "tid": 10763,
+          "name": "llama-server",
+          "cpu_ms": 1.060988
+        },
+        {
+          "tid": 10757,
+          "name": "llama-server",
+          "cpu_ms": 0.535206
+        },
+        {
+          "tid": 10775,
+          "name": "llama-server",
+          "cpu_ms": 0.427029
+        },
+        {
+          "tid": 10968,
+          "name": "llama-server",
+          "cpu_ms": 0.360837
+        },
+        {
+          "tid": 10768,
+          "name": "llama-server",
+          "cpu_ms": 0.280989
+        }
+      ]
+    },
+    "first_request_after_ready_approx": {
+      "wall_ms": 2723.9681,
+      "cpu_ms": 2736.358922,
+      "threads": [
+        {
+          "tid": 10947,
+          "name": "llama-server",
+          "cpu_ms": 817.452293
+        },
+        {
+          "tid": 10948,
+          "name": "llama-server",
+          "cpu_ms": 801.12505
+        },
+        {
+          "tid": 10946,
+          "name": "llama-server",
+          "cpu_ms": 797.92609
+        },
+        {
+          "tid": 10753,
+          "name": "llama-server",
+          "cpu_ms": 300.694946
+        },
+        {
+          "tid": 10765,
+          "name": "llama-server",
+          "cpu_ms": 12.226334
+        },
+        {
+          "tid": 10764,
+          "name": "llama-server",
+          "cpu_ms": 3.870775
+        },
+        {
+          "tid": 10968,
+          "name": "llama-server",
+          "cpu_ms": 1.460521
+        },
+        {
+          "tid": 10775,
+          "name": "llama-server",
+          "cpu_ms": 0.739161
+        },
+        {
+          "tid": 10757,
+          "name": "llama-server",
+          "cpu_ms": 0.661512
+        },
+        {
+          "tid": 10768,
+          "name": "llama-server",
+          "cpu_ms": 0.20224
+        }
+      ]
+    },
+    "subsequent_requests_approx": {
+      "wall_ms": 5651.498818,
+      "cpu_ms": 6026.252494,
+      "threads": [
+        {
+          "tid": 10947,
+          "name": "llama-server",
+          "cpu_ms": 1787.446872
+        },
+        {
+          "tid": 10948,
+          "name": "llama-server",
+          "cpu_ms": 1772.751092
+        },
+        {
+          "tid": 10946,
+          "name": "llama-server",
+          "cpu_ms": 1765.789834
+        },
+        {
+          "tid": 10753,
+          "name": "llama-server",
+          "cpu_ms": 656.441457
+        },
+        {
+          "tid": 10766,
+          "name": "llama-server",
+          "cpu_ms": 23.727501
+        },
+        {
+          "tid": 10765,
+          "name": "llama-server",
+          "cpu_ms": 12.901735
+        },
+        {
+          "tid": 10968,
+          "name": "llama-server",
+          "cpu_ms": 3.220775
+        },
+        {
+          "tid": 10775,
+          "name": "llama-server",
+          "cpu_ms": 1.692449
+        },
+        {
+          "tid": 10757,
+          "name": "llama-server",
+          "cpu_ms": 1.122291
+        },
+        {
+          "tid": 10768,
+          "name": "llama-server",
+          "cpu_ms": 0.205051
+        },
+        {
+          "tid": 10773,
+          "name": "llama-server",
+          "cpu_ms": 0.14375
+        },
+        {
+          "tid": 10764,
+          "name": "llama-server",
+          "cpu_ms": 0.126354
+        },
+        {
+          "tid": 11185,
+          "name": "llama-server",
+          "cpu_ms": 0.112605
+        },
+        {
+          "tid": 10776,
+          "name": "llama-server",
+          "cpu_ms": 0.103125
+        },
+        {
+          "tid": 10762,
+          "name": "llama-server",
+          "cpu_ms": 0.084478
+        },
+        {
+          "tid": 10760,
+          "name": "AdrenoOsLib",
+          "cpu_ms": 0.072395
+        },
+        {
+          "tid": 10759,
+          "name": "AdrenoOsLib",
+          "cpu_ms": 0.065729
+        },
+        {
+          "tid": 10761,
+          "name": "llama-server",
+          "cpu_ms": 0.062136
+        },
+        {
+          "tid": 10763,
+          "name": "llama-server",
+          "cpu_ms": 0.059167
+        },
+        {
+          "tid": 10774,
+          "name": "llama-server",
+          "cpu_ms": 0.04875
+        },
+        {
+          "tid": 10758,
+          "name": "llama-server",
+          "cpu_ms": 0.044688
+        },
+        {
+          "tid": 10767,
+          "name": "llama-server",
+          "cpu_ms": 0.03026
+        }
+      ]
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,19 @@
+{
+  "uie": {"name": "UIE-micro", "version": "uie_micro_v1.1", "license": "Apache-2.0", "upstream": "https://github.com/PaddlePaddle/PaddleNLP"},
+  "bge": {"name": "BAAI/bge-small-zh-v1.5", "revision": "7999e1d3359715c523056ef9478215996d62a620", "license": "MIT", "upstream": "https://huggingface.co/BAAI/bge-small-zh-v1.5"},
+  "files": [
+    {"path":"uie-license.txt","url":"https://raw.githubusercontent.com/PaddlePaddle/PaddleNLP/develop/LICENSE","sha256":"02fc5269d3a15ee057dab70a9040576f5d7b8f1b1ea31a7768a5b9d54834c139"},
+    {"path":"bge-license.txt","url":"https://raw.githubusercontent.com/FlagOpen/FlagEmbedding/master/LICENSE","sha256":"587a673933425dbc36ec61268d3b954051b2d3ef3c9b322ede357976055ffdd5"},
+    {"path":"uie.pdparams","url":"https://bj.bcebos.com/paddlenlp/taskflow/information_extraction/uie_micro_v1.1/model_state.pdparams","sha256":"e88938fe1a3f8774cd1abe1bf99a83c891d431325b51f58a6584ab450042b968"},
+    {"path":"uie-config.json","url":"https://bj.bcebos.com/paddlenlp/taskflow/information_extraction/uie_micro/config.json","sha256":"1d3fdaf47c7bafc58d52e9ed9ce141ff333bef8b378e5122953ae276b9b64ed0"},
+    {"path":"uie-vocab.txt","url":"https://bj.bcebos.com/paddlenlp/taskflow/information_extraction/uie_base/vocab.txt","sha256":"8b99e7ded859fe015d33329c4a6d75cfba7784cfe8d82db7551fbf481f262fbb"},
+    {"path":"uie-tokenizer.json","url":"https://bj.bcebos.com/paddlenlp/taskflow/information_extraction/uie_base/tokenizer_config.json","sha256":"514e28fd3eac186a14b3a79589565670073c72ab6a513632c494dfe394980cac"},
+    {"path":"bge/config.json","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/config.json","sha256":"3853a7979202c348751b753e36f579c41d8da7d36af617d3d907e1fc9b441f2a"},
+    {"path":"bge/model.safetensors","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/model.safetensors","sha256":"354763b9b1357bc9c44f62c6be2276321081ed2567773608c0d0785b61d5a026"},
+    {"path":"bge/vocab.txt","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/vocab.txt","sha256":"45bbac6b341c319adc98a532532882e91a9cefc0329aa57bac9ae761c27b291c"},
+    {"path":"bge/tokenizer.json","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/tokenizer.json","sha256":"48cea5d44424912a6fd1ea647bf4fe50b55ab8b1e5879c3275f80e339e8fae26"},
+    {"path":"bge/tokenizer_config.json","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/tokenizer_config.json","sha256":"e6f3b96db926a37d4039995fbf5ad17de158dfb8f6343d607e4dbaad18d75f5a"},
+    {"path":"bge/special_tokens_map.json","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/special_tokens_map.json","sha256":"b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3"},
+    {"path":"bge/README.md","url":"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/7999e1d3359715c523056ef9478215996d62a620/README.md","sha256":"c48a4eeea77f6b1d38b48ec1c5b8d4f86d5550cc43fa345a0db1b2ca1d082369"}
+  ]
+}

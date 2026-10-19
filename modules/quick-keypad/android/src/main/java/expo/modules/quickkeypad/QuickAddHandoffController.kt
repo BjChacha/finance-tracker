@@ -26,6 +26,9 @@ import java.lang.ref.WeakReference
 object QuickAddHandoffController {
     const val EXTRA_HANDOFF_ID = "expo.modules.quickkeypad.HANDOFF_ID"
 
+    /** Launcher entries that only need a React sheet over the desktop, without a native source. */
+    const val EXTRA_TRANSLUCENT_LAUNCH = "expo.modules.quickkeypad.TRANSLUCENT_LAUNCH"
+
     private const val TAG = "QuickAddHandoff"
     private const val PERF_TAG = "QuickAddPerf"
     private const val TIMEOUT_MS = 5_000L
@@ -52,7 +55,7 @@ object QuickAddHandoffController {
 
     private data class RetainedSource(
         val handoffId: String,
-        val activityRef: WeakReference<QuickKeypadActivity>,
+        val activityRef: WeakReference<QuickAddHandoffSource>,
     )
 
     private data class TranslucencyState(
@@ -172,7 +175,7 @@ object QuickAddHandoffController {
         }
 
     fun retainSource(
-        activity: QuickKeypadActivity,
+        activity: QuickAddHandoffSource,
         handoffId: String,
     ) {
         runOnMainThread {
@@ -204,7 +207,7 @@ object QuickAddHandoffController {
     }
 
     fun sourceDestroyed(
-        activity: QuickKeypadActivity,
+        activity: QuickAddHandoffSource,
         handoffId: String?,
     ) {
         if (handoffId.isNullOrBlank()) return
@@ -331,6 +334,18 @@ object QuickAddHandoffController {
                 abortVisualHandoffOnMain(handoffId, finishSource = true)
             }
             clearTranslucency(activity)
+        }
+    }
+
+    /**
+     * Launcher entries without a native source activity (for example the natural-language sheet)
+     * only need a translucent window: the desktop stays visible behind the React sheet, and no
+     * opaque launch overlay is drawn.
+     */
+    fun beginTranslucentLaunch(activity: Activity) {
+        runOnMainThread {
+            AppLaunchController.cancelForQuickAdd(activity)
+            applyTranslucency(activity)
         }
     }
 

@@ -1,0 +1,22 @@
+[
+  {
+    "text":"今天早餐吃包子花了6元",
+    "answer":{"status":"single","type":"expense","amount":"m0","category":"food","account":null,"to_account":null,"day":"today"}
+  },
+  {
+    "text":"银行卡收到税后工资7654.32元",
+    "answer":{"status":"single","type":"income","amount":"m0","category":"salary","account":"bank","to_account":null,"day":"today"}
+  },
+  {
+    "text":"从我的微信钱包转五百元到我的银行卡",
+    "answer":{"status":"single","type":"transfer","amount":"m0","category":"transfer_account","account":"wechat","to_account":"bank","day":"today"}
+  },
+  {
+    "text":"给朋友转账66元当生日礼金",
+    "answer":{"status":"single","type":"expense","amount":"m0","category":"social","account":null,"to_account":null,"day":"today"}
+  },
+  {
+    "text":"明天准备花300元买鞋",
+    "answer":{"status":"clarify","type":null,"amount":null,"category":null,"account":null,"to_account":null,"day":"unknown"}
+  }
+]

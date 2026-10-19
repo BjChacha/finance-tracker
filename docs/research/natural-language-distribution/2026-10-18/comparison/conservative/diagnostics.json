@@ -1,0 +1,259 @@
+{
+  "total": 200,
+  "failure_count": 103,
+  "accepted_core_fields_joint_correct": 99,
+  "ready_and_all_annotated_fields_correct": 53,
+  "ready_but_incorrect": 37,
+  "groups": {
+    "alipay_to_bank": {
+      "total": 1,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bank_to_savings": {
+      "total": 1,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bank_to_wechat": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "birthday_received": {
+      "total": 3,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "bond_coupon": {
+      "total": 3,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "broadband": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "camera_accessory": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "cash_to_bank": {
+      "total": 1,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "cinema": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "cloud_subscription": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "credit_repayment": {
+      "total": 1,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "custom_craft": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "deposit_interest": {
+      "total": 2,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "dinner_party": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "donation": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 3
+    },
+    "gaming": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "haircut": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "ev_charging": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "fuel": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "long_trip": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "lunch": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "dinner": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "late_night": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "cafe": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "clothes": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "electronics": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "utilities": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "hotel": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "clinic": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "tuition": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "pet": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "fitness": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "beauty": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "subscription": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "misc": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "misc_received": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "new_year_received": {
+      "total": 2,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "parking": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "pet_food": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "pet_grooming": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "property_fee": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "resale_bicycle": {
+      "total": 3,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "resale_camera": {
+      "total": 2,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "salary_to_alipay": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "savings_to_alipay": {
+      "total": 1,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "stock_dividend": {
+      "total": 3,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "swimming": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "theme_park": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "toll": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "wechat_to_alipay": {
+      "total": 1,
+      "fully_correct": 0,
+      "core_correct": 0
+    }
+  }
+}

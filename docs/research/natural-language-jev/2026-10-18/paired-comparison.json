@@ -1,0 +1,28 @@
+{
+  "comparison-android-q4": {
+    "count": 200,
+    "all_fields_equal": 59,
+    "field_agreement": {
+      "status": 181,
+      "type": 172,
+      "amount": 194,
+      "category": 110,
+      "account": 186,
+      "to_account": 184,
+      "day": 148
+    }
+  },
+  "comparison-android-q8": {
+    "count": 200,
+    "all_fields_equal": 173,
+    "field_agreement": {
+      "status": 194,
+      "type": 198,
+      "amount": 200,
+      "category": 182,
+      "account": 197,
+      "to_account": 200,
+      "day": 196
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "total": 200,
+  "schema_valid": 200,
+  "business_consistent": 173,
+  "preview_ready": 113,
+  "semantics": {
+    "amount_cents": {
+      "correct": 116,
+      "raw_field_correct_diagnostic": 160,
+      "total": 160,
+      "accuracy": 0.725,
+      "target": 0.99,
+      "passed": false
+    },
+    "type": {
+      "correct": 95,
+      "raw_field_correct_diagnostic": 138,
+      "total": 160,
+      "accuracy": 0.59375,
+      "target": 0.95,
+      "passed": false
+    },
+    "category": {
+      "correct": 54,
+      "raw_field_correct_diagnostic": 75,
+      "total": 160,
+      "accuracy": 0.3375,
+      "target": 0.9,
+      "passed": false
+    }
+  },
+  "needs_manual_input": 87,
+  "auxiliary": {
+    "account": {
+      "raw_correct": 130,
+      "total": 160
+    },
+    "to_account": {
+      "raw_correct": 149,
+      "total": 160
+    },
+    "day": {
+      "raw_correct": 125,
+      "total": 160
+    }
+  },
+  "guards": {
+    "total": 40,
+    "correct_abstentions": 30,
+    "false_single": 10,
+    "clear_single_accepted": 137,
+    "clear_single_total": 160
+  },
+  "phone_loopback_latency_ms": {
+    "p50": 1067.0972500010976,
+    "p95": 2032.7106999960972,
+    "count": 200
+  }
+}

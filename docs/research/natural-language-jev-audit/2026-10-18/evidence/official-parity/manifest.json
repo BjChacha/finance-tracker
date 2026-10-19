@@ -1,0 +1,166 @@
+{
+  "config": {
+    "model_id": "jevembed-qwen3-embedding-0.6b",
+    "backend": "sentence_transformers",
+    "model_name_or_path": "F:\\Projects\\App\\finance-tracker\\artifacts\\natural-language-jev\\checkpoint",
+    "revision": null,
+    "code_revision": null,
+    "adapter_name_or_path": null,
+    "adapter_revision": null,
+    "projection_name_or_path": null,
+    "projection_filename": null,
+    "projection_revision": null,
+    "trust_remote_code": false,
+    "local_files_only": true,
+    "device": "cpu",
+    "dtype": "float32",
+    "batch_size": 8,
+    "pooling": "model_default",
+    "query_truncation_side": "right",
+    "document_truncation_side": "right",
+    "normalize_embeddings": true,
+    "max_input_tokens": 1024,
+    "overflow_policy": "error",
+    "attention_implementation": "sdpa",
+    "expected_dimension": 1024,
+    "prompts": {
+      "query_template": "Instruct: {instruction}\nQuery: {text}",
+      "document_template": "{text}",
+      "similarity_instruction": "Retrieve semantically similar text.",
+      "serialization_mode": "compact_json",
+      "choice_candidate_template": "{label}: {text}",
+      "choice_empty_uses_label": false,
+      "noul_input_mapping": "retrieval_queries",
+      "noul_candidate_template": "{label}: {text}",
+      "noul_true_fallback": null,
+      "noul_false_fallback": null,
+      "strip_rendered": false,
+      "version": "v1"
+    },
+    "scoring": {
+      "choice_temperature": 0.1,
+      "score_temperature": 0.1,
+      "noul_with_criteria": {
+        "slope": 10.0,
+        "intercept": 0.0
+      },
+      "noul_without_criteria": {
+        "slope": 10.0,
+        "intercept": 0.0
+      },
+      "confidence": "normalized_entropy",
+      "calibration_status": "uncalibrated",
+      "calibration_record": {}
+    },
+    "cache_capacity": 4096,
+    "usage_mode": "strict",
+    "base_url": "http://127.0.0.1:8001/v1",
+    "api_key_env": null,
+    "timeout": 60.0,
+    "max_retries": 2,
+    "template_owner": "client",
+    "server_enforces_length": false,
+    "aliases": [
+      "HIT-TMG/JevEmbed-Qwen3-Embedding-0.6B",
+      "JevEmbed-Qwen3-Embedding-0.6B"
+    ]
+  },
+  "backend": {
+    "model_name_or_path": "F:\\Projects\\App\\finance-tracker\\artifacts\\natural-language-jev\\checkpoint",
+    "requested_revision": null,
+    "resolved_revision": null,
+    "code_revision": null,
+    "revision_status": "local_snapshot_commit_unknown",
+    "local_files": {
+      "1_Pooling\\config.json": {
+        "size": 313,
+        "mtime_ns": 1792261704197058900,
+        "sha256": "37bf193fa101f19101bfad9c31d3eb0f786e247b7b1e5cb7f007d730eed1ddbd"
+      },
+      "added_tokens.json": {
+        "size": 707,
+        "mtime_ns": 1792261705511551700,
+        "sha256": "c0284b582e14987fbd3d5a2cb2bd139084371ed9acbae488829a1c900833c680"
+      },
+      "config.json": {
+        "size": 720,
+        "mtime_ns": 1792261705509258300,
+        "sha256": "963a06472e5937e45dade2ec35abaa8daa1ce314293b2383c2af186afbce028b"
+      },
+      "config_sentence_transformers.json": {
+        "size": 375,
+        "mtime_ns": 1792261705549582100,
+        "sha256": "994fe2b4348c92a4d6e5aa52b52a6988eaff559e7cd6d7e6031bd90934b67ca7"
+      },
+      "MERGE_MANIFEST.json": {
+        "size": 862,
+        "mtime_ns": 1792261704172394000,
+        "sha256": "4020961b240586e5c69247668decf5c8b24ae7b090ab8ecee0fc0c3323d941ef"
+      },
+      "model.safetensors": {
+        "size": 2383139480,
+        "mtime_ns": 1792261784349515500
+      },
+      "modules.json": {
+        "size": 349,
+        "mtime_ns": 1792261708371090700,
+        "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf"
+      },
+      "sentence_bert_config.json": {
+        "size": 59,
+        "mtime_ns": 1792261708495482700,
+        "sha256": "ae8658c7cf91db1a3ceee800af0f9bda2c7ad60a88b5c2b4d6d5cb0a4394c9c1"
+      },
+      "special_tokens_map.json": {
+        "size": 613,
+        "mtime_ns": 1792261709751508900,
+        "sha256": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd"
+      },
+      "tokenizer.json": {
+        "size": 11423973,
+        "mtime_ns": 1792261147869374800,
+        "sha256": "5f45684bb3bd50e1eb753e6bc438efc14329c293af236ecd331667b46657a3cc"
+      },
+      "tokenizer_config.json": {
+        "size": 9706,
+        "mtime_ns": 1792261709881423700,
+        "sha256": "253153d0738ceb4c668d2eff957714dd2bea0b56de772a9fdccd96cbf517e6a0"
+      },
+      "vocab.json": {
+        "size": 2776833,
+        "mtime_ns": 1792261712529548700,
+        "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      }
+    },
+    "trust_remote_code": false,
+    "device": "cpu",
+    "dtype": "float32",
+    "dimension": 1024,
+    "pooling": [
+      {
+        "word_embedding_dimension": 1024,
+        "pooling_mode_cls_token": false,
+        "pooling_mode_mean_tokens": false,
+        "pooling_mode_max_tokens": false,
+        "pooling_mode_mean_sqrt_len_tokens": false,
+        "pooling_mode_weightedmean_tokens": false,
+        "pooling_mode_lasttoken": true,
+        "include_prompt": true
+      }
+    ],
+    "padding_side": "right",
+    "tokenizer": "Qwen2TokenizerFast",
+    "max_input_tokens": 1024,
+    "attention_implementation": "sdpa",
+    "is_causal": null,
+    "versions": {
+      "torch": "2.14.1",
+      "transformers": "4.51.0",
+      "sentence-transformers": "5.3.0"
+    }
+  },
+  "data_sha256": "cdbe748778aa100f5eba47ab153ed87495300228c8fa272249447d39dd783e1e",
+  "script_sha256": "316e84cf2225f69c3a40f52557cea7f66c84b10bc1617cfd4f1cc05112ff432f",
+  "selection": "Previously observed failures; diagnostic, not an accuracy estimate",
+  "shared": "Weights only; separate encoding calls, no fabricated vectors"
+}

@@ -1,0 +1,11 @@
+[
+  {"text":"今天早餐吃包子花了6元", "expected":"expense"},
+  {"text":"微信收到工资8000元", "expected":"income"},
+  {"text":"从微信转到自己的银行卡200元", "expected":"transfer"},
+  {"text":"给朋友转账30元请他喝咖啡", "expected":"expense"},
+  {"text":"商家退回微信30元", "expected":"income"},
+  {"text":"用银行卡还自己的信用卡账单500元", "expected":"transfer"},
+  {"text":"I paid 6 yuan for breakfast today.", "expected":"expense"},
+  {"text":"I received my monthly salary of 8000 yuan.", "expected":"income"},
+  {"text":"I moved 200 yuan from my WeChat balance to my own bank account.", "expected":"transfer"}
+]

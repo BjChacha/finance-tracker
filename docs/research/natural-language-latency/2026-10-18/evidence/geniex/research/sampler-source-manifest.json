@@ -1,0 +1,14 @@
+{
+  "geniex_commit": "d769b2aea2b6e4bb203b07c0a28c8dd99b87e52d",
+  "qairt_commit": "8bd92180ea1ba7b8515b15025e1bdb2c0c4a5cd8",
+  "proc_commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+  "proc_source_url": "https://codeload.github.com/qualcomm/geniex-proc/zip/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+  "proc_source_sha256": "08fbdb6ddf0ada3f46a0760a0869dc05d0285a3401951cad360d4bae9510329a",
+  "source_hashes": {
+    "qairt-core/core/src/llm/llm_model.cpp": "a679d834620563107d0acbdcbdc8918639d5598a749889de75c73a1816f1e056",
+    "proc/src/sampler/sampler.cpp": "36ff517f3460da8ac19d9f67919958926445b117d0b83303a8132a2eac2ac5c9",
+    "proc/src/geniex-sampling/geniex-sampling.cpp": "ca0eaea24d91954cc3d2dbc7a481dbe2ee31e393ea36be27b286b71f7ee6769e",
+    "proc/src/geniex-sampling/geniex-grammar.cpp": "e2b54d709a8018b65724562d5e4dc6f4b7d3933d90e6e21a1e421e02465909b1"
+  },
+  "scope": "Pinned official source used for sampler diagnosis; no patched runtime deployed"
+}

@@ -1,0 +1,114 @@
+{
+  "policy": {
+    "version": "expense-heavy-v1",
+    "type_percent": {
+      "expense": 85,
+      "income": 10,
+      "transfer": 5
+    },
+    "single_counts": {
+      "dev": 100,
+      "regression": 200
+    },
+    "guard_counts": {
+      "dev": 20,
+      "regression": 40
+    },
+    "selection_seed": "expense-heavy-v1-group-round-robin",
+    "legacy_expense_excluded_groups": [
+      "parking",
+      "property",
+      "film",
+      "game",
+      "internet",
+      "outgoing_red"
+    ],
+    "legacy_auxiliary_annotations": {
+      "accounts": {
+        "8": "bank",
+        "28": "cash",
+        "35": "wechat",
+        "48": "bank",
+        "54": "alipay",
+        "79": "bank",
+        "109": "wechat"
+      },
+      "yesterday": [
+        2,
+        9,
+        18,
+        25,
+        33,
+        40,
+        44,
+        48,
+        54,
+        73,
+        78,
+        83,
+        98,
+        103,
+        108,
+        113,
+        117
+      ],
+      "before_yesterday": [
+        4,
+        30
+      ],
+      "unknown": [
+        75
+      ]
+    },
+    "review_status": "pending_human_review",
+    "evaluation_status": "observed_synthetic_regression_not_blind",
+    "selection_uses_model_predictions": false,
+    "inference_prior_changed": false
+  },
+  "sources": {
+    "scripts/natural-language/jev_harness/dev-annotated.tsv": "f487913ade103230fb360e1a247dadf5d42e629564ea2863975d462440d32d65",
+    "scripts/natural-language/instruct/heldout.tsv": "ae1c8f028d991a877e62b6297d8eda7847c7d0d277b086c0b4c21e1ed4c834e5",
+    "scripts/natural-language/data/test.tsv": "6b0dc21dfbd57b405eb519413c236815e21fe320103ec20fe3158ecc1f1686a6",
+    "scripts/natural-language/distribution_v1/dev-additions.tsv": "07e2de29d058b2037aa3858c0ed938bb33366c533e66e99898420371b6e0b31d",
+    "scripts/natural-language/distribution_v1/policy.json": "0f497a2753c2220890afe066125efe08b2bed485fafcf05b5eb3927abcd095ca",
+    "scripts/natural-language/data/context.json": "ac51b24ce777c0c83a6d6815f98a7bdfe041e317ca6d0add18367cd9ba64c16e"
+  },
+  "builder_sha256": "6c48be378bc0c1861b5e2ff2dcb87657369c75afa6ee858f7bd4c424e4744461",
+  "outputs": {
+    "dev.tsv": {
+      "sha256": "876bd6503e362367ffd41ff36567d007074b80906062126544751374d8d0a96b",
+      "count": 100,
+      "types": {
+        "expense": 85,
+        "income": 10,
+        "transfer": 5
+      }
+    },
+    "dev-guards.tsv": {
+      "sha256": "30f34af9187643c579392fd3ab791029e7b411b395afccc030147aa015cde7f7",
+      "count": 20,
+      "types": {
+        "": 20
+      }
+    },
+    "regression.tsv": {
+      "sha256": "cdbe748778aa100f5eba47ab153ed87495300228c8fa272249447d39dd783e1e",
+      "count": 200,
+      "types": {
+        "transfer": 10,
+        "income": 20,
+        "expense": 170
+      }
+    },
+    "regression-guards.tsv": {
+      "sha256": "9e0a9870a6985e186e65509c6fd4f329edfaee47b5a2eec19690d805b031b552",
+      "count": 40,
+      "types": {
+        "": 40
+      }
+    }
+  },
+  "old_frozen_data_modified": false,
+  "sampling": "Group round-robin, stable hash order; no replacement or prediction-based selection",
+  "legacy_auxiliary_labels": "Assistant annotated; explicit dates and account mentions; case 75 date is unknown"
+}

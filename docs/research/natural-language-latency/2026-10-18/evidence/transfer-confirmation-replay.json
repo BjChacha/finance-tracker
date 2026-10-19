@@ -1,0 +1,967 @@
+{
+  "scope": "Offline policy replay after observing regression; no model score improvement or new device latency claim",
+  "runs": [
+    {
+      "run": "qwen4b-example-sparse-catalog-dev",
+      "total": 100,
+      "transfers": 5,
+      "direction_review_required": 4,
+      "newly_requires_input": 0,
+      "wrong_account_complete_before": 0,
+      "wrong_account_complete_after": 0,
+      "records": [
+        {
+          "id": "dev-071",
+          "text": "微信转银行卡200元",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "preview",
+          "review": {
+            "required": false,
+            "supported_literal_direction": true,
+            "mentions": [
+              {
+                "start": 0,
+                "end": 2,
+                "text": "微信",
+                "candidate_ids": [
+                  "b53f41d4-e3dd-5311-8ade-29ef2545ec8d"
+                ]
+              },
+              {
+                "start": 3,
+                "end": 6,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+            "account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "to_account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "preview",
+            "amount_cents": 20000,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "200元",
+              "start": 6,
+              "end": 10,
+              "cents": 20000
+            },
+            "type": "transfer",
+            "category": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+            "account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "to_account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "微信转银行卡200元",
+            "issues": [],
+            "violations": []
+          }
+        },
+        {
+          "id": "dev-073",
+          "text": "昨天微信余额提现到银行卡1000块",
+          "wrong_raw_account_fields": [
+            "account",
+            "to_account"
+          ],
+          "before_status": "needs_input",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 2,
+                "end": 6,
+                "text": "微信余额",
+                "candidate_ids": [
+                  "b53f41d4-e3dd-5311-8ade-29ef2545ec8d"
+                ]
+              },
+              {
+                "start": 9,
+                "end": 12,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "status": "single",
+            "day": "yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 100000,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "1000块",
+              "start": 12,
+              "end": 17,
+              "cents": 100000
+            },
+            "type": "transfer",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "date": "2026-10-17T12:00:00+08:00",
+            "note": "昨天微信余额提现到银行卡1000块",
+            "issues": [
+              "account_confirmation_required",
+              "to_account_confirmation_required",
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "dev-075",
+          "text": "我的微信转到银行卡三百二十元",
+          "wrong_raw_account_fields": [
+            "account",
+            "to_account"
+          ],
+          "before_status": "needs_input",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 2,
+                "end": 4,
+                "text": "微信",
+                "candidate_ids": [
+                  "b53f41d4-e3dd-5311-8ade-29ef2545ec8d"
+                ]
+              },
+              {
+                "start": 6,
+                "end": 9,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 32000,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "三百二十元",
+              "start": 9,
+              "end": 14,
+              "cents": 32000
+            },
+            "type": "transfer",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "我的微信转到银行卡三百二十元",
+            "issues": [
+              "account_confirmation_required",
+              "to_account_confirmation_required",
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "dev-076",
+          "text": "银行卡取出现金500元",
+          "wrong_raw_account_fields": [
+            "to_account"
+          ],
+          "before_status": "needs_input",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 0,
+                "end": 3,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              },
+              {
+                "start": 5,
+                "end": 7,
+                "text": "现金",
+                "candidate_ids": [
+                  "9d5351af-e39f-5aa9-91e3-1c891c0250f1"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7d922e24-6a5a-50c6-8762-36b6ae297cbf",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": null,
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 50000,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "500元",
+              "start": 7,
+              "end": 11,
+              "cents": 50000
+            },
+            "type": "transfer",
+            "category": "7d922e24-6a5a-50c6-8762-36b6ae297cbf",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": null,
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "银行卡取出现金500元",
+            "issues": [
+              "destination_required",
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "dev-077",
+          "text": "昨天在ATM从银行卡取了两千块现金",
+          "wrong_raw_account_fields": [
+            "to_account"
+          ],
+          "before_status": "needs_input",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 7,
+                "end": 10,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              },
+              {
+                "start": 15,
+                "end": 17,
+                "text": "现金",
+                "candidate_ids": [
+                  "9d5351af-e39f-5aa9-91e3-1c891c0250f1"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7d922e24-6a5a-50c6-8762-36b6ae297cbf",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": null,
+            "status": "single",
+            "day": "yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 200000,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "两千块",
+              "start": 12,
+              "end": 15,
+              "cents": 200000
+            },
+            "type": "transfer",
+            "category": "7d922e24-6a5a-50c6-8762-36b6ae297cbf",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": null,
+            "date": "2026-10-17T12:00:00+08:00",
+            "note": "昨天在ATM从银行卡取了两千块现金",
+            "issues": [
+              "destination_required",
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        }
+      ],
+      "source_sha256": "88a89160910eb907451390faeddf36ba6adc6ecd7f263e173a839b20b684264f"
+    },
+    {
+      "run": "qwen4b-catalog-frozen-regression",
+      "total": 200,
+      "transfers": 10,
+      "direction_review_required": 10,
+      "newly_requires_input": 9,
+      "wrong_account_complete_before": 2,
+      "wrong_account_complete_after": 0,
+      "records": [
+        {
+          "id": "alipay_to_bank-2",
+          "text": "昨天从我的支付宝转四十二元五角到我自己的银行卡，已经到账",
+          "wrong_raw_account_fields": [
+            "account",
+            "to_account"
+          ],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 5,
+                "end": 8,
+                "text": "支付宝",
+                "candidate_ids": [
+                  "b96ffcc3-2b88-550a-b02a-222dcb9fe905"
+                ]
+              },
+              {
+                "start": 20,
+                "end": 23,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "status": "single",
+            "day": "yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 4250,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "四十二元五角",
+              "start": 9,
+              "end": 15,
+              "cents": 4250
+            },
+            "type": "transfer",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "date": "2026-10-17T12:00:00+08:00",
+            "note": "昨天从我的支付宝转四十二元五角到我自己的银行卡，已经到账",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "bank_to_savings-2",
+          "text": "昨天银行卡向我名下储蓄卡划转四十二元五角，款已到账",
+          "wrong_raw_account_fields": [
+            "account",
+            "to_account"
+          ],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 2,
+                "end": 5,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              },
+              {
+                "start": 9,
+                "end": 12,
+                "text": "储蓄卡",
+                "candidate_ids": [
+                  "8699e486-e782-591b-a720-fd7b666869a0"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "8699e486-e782-591b-a720-fd7b666869a0",
+            "to_account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "status": "single",
+            "day": "yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 4250,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "四十二元五角",
+              "start": 14,
+              "end": 20,
+              "cents": 4250
+            },
+            "type": "transfer",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "8699e486-e782-591b-a720-fd7b666869a0",
+            "to_account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "date": "2026-10-17T12:00:00+08:00",
+            "note": "昨天银行卡向我名下储蓄卡划转四十二元五角，款已到账",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "bank_to_wechat-1",
+          "text": "我的银行卡向自己的微信余额转入37.25元，操作完成",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 2,
+                "end": 5,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              },
+              {
+                "start": 9,
+                "end": 13,
+                "text": "微信余额",
+                "candidate_ids": [
+                  "b53f41d4-e3dd-5311-8ade-29ef2545ec8d"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 3725,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "37.25元",
+              "start": 15,
+              "end": 21,
+              "cents": 3725
+            },
+            "type": "transfer",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "我的银行卡向自己的微信余额转入37.25元，操作完成",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "bank_to_wechat-2",
+          "text": "昨天我的银行卡向自己的微信余额转入四十二元五角，操作完成",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 4,
+                "end": 7,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              },
+              {
+                "start": 11,
+                "end": 15,
+                "text": "微信余额",
+                "candidate_ids": [
+                  "b53f41d4-e3dd-5311-8ade-29ef2545ec8d"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "status": "single",
+            "day": "yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 4250,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "四十二元五角",
+              "start": 17,
+              "end": 23,
+              "cents": 4250
+            },
+            "type": "transfer",
+            "category": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "date": "2026-10-17T12:00:00+08:00",
+            "note": "昨天我的银行卡向自己的微信余额转入四十二元五角，操作完成",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "cash_to_bank-4",
+          "text": "今天拿现金九十九元存入我的银行卡，办理成功",
+          "wrong_raw_account_fields": [
+            "account",
+            "to_account"
+          ],
+          "before_status": "needs_input",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 3,
+                "end": 5,
+                "text": "现金",
+                "candidate_ids": [
+                  "9d5351af-e39f-5aa9-91e3-1c891c0250f1"
+                ]
+              },
+              {
+                "start": 13,
+                "end": 16,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": null,
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 9900,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "九十九元",
+              "start": 5,
+              "end": 9,
+              "cents": 9900
+            },
+            "type": "transfer",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": null,
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "今天拿现金九十九元存入我的银行卡，办理成功",
+            "issues": [
+              "destination_required",
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "credit_repayment-1",
+          "text": "从我的银行卡付37.25元还清信用卡账单",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 3,
+                "end": 6,
+                "text": "银行卡",
+                "candidate_ids": [
+                  "0c8ac162-95d1-55c9-b395-04d3c742f0b2"
+                ]
+              },
+              {
+                "start": 15,
+                "end": 18,
+                "text": "信用卡",
+                "candidate_ids": [
+                  "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "3ac50d47-6c8b-535a-a6c3-0491ca05ea7b",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f",
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 3725,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "37.25元",
+              "start": 7,
+              "end": 13,
+              "cents": 3725
+            },
+            "type": "transfer",
+            "category": "3ac50d47-6c8b-535a-a6c3-0491ca05ea7b",
+            "account": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+            "to_account": "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f",
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "从我的银行卡付37.25元还清信用卡账单",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "salary_to_alipay-1",
+          "text": "我把工资卡中的37.25元转进自己的支付宝余额",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 2,
+                "end": 5,
+                "text": "工资卡",
+                "candidate_ids": [
+                  "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb"
+                ]
+              },
+              {
+                "start": 18,
+                "end": 21,
+                "text": "支付宝",
+                "candidate_ids": [
+                  "b96ffcc3-2b88-550a-b02a-222dcb9fe905"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 3725,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "37.25元",
+              "start": 7,
+              "end": 13,
+              "cents": 3725
+            },
+            "type": "transfer",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "我把工资卡中的37.25元转进自己的支付宝余额",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "salary_to_alipay-3",
+          "text": "前天我把工资卡中的18块6转进自己的支付宝余额",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 4,
+                "end": 7,
+                "text": "工资卡",
+                "candidate_ids": [
+                  "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb"
+                ]
+              },
+              {
+                "start": 18,
+                "end": 21,
+                "text": "支付宝",
+                "candidate_ids": [
+                  "b96ffcc3-2b88-550a-b02a-222dcb9fe905"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "status": "single",
+            "day": "before_yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 1860,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "18块6",
+              "start": 9,
+              "end": 13,
+              "cents": 1860
+            },
+            "type": "transfer",
+            "category": "7250bc20-877d-54b0-ac1f-caafa9823192",
+            "account": "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "date": "2026-10-16T12:00:00+08:00",
+            "note": "前天我把工资卡中的18块6转进自己的支付宝余额",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "savings_to_alipay-3",
+          "text": "前天储蓄卡转出18块6到我自己的支付宝，已经完成",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 2,
+                "end": 5,
+                "text": "储蓄卡",
+                "candidate_ids": [
+                  "8699e486-e782-591b-a720-fd7b666869a0"
+                ]
+              },
+              {
+                "start": 16,
+                "end": 19,
+                "text": "支付宝",
+                "candidate_ids": [
+                  "b96ffcc3-2b88-550a-b02a-222dcb9fe905"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+            "account": "8699e486-e782-591b-a720-fd7b666869a0",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "status": "single",
+            "day": "before_yesterday"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 1860,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "18块6",
+              "start": 7,
+              "end": 11,
+              "cents": 1860
+            },
+            "type": "transfer",
+            "category": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+            "account": "8699e486-e782-591b-a720-fd7b666869a0",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "date": "2026-10-16T12:00:00+08:00",
+            "note": "前天储蓄卡转出18块6到我自己的支付宝，已经完成",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        },
+        {
+          "id": "wechat_to_alipay-4",
+          "text": "今天用我的微信余额转九十九元进自己的支付宝，转账完成",
+          "wrong_raw_account_fields": [],
+          "before_status": "preview",
+          "after_status": "needs_input",
+          "review": {
+            "required": true,
+            "supported_literal_direction": false,
+            "mentions": [
+              {
+                "start": 5,
+                "end": 9,
+                "text": "微信余额",
+                "candidate_ids": [
+                  "b53f41d4-e3dd-5311-8ade-29ef2545ec8d"
+                ]
+              },
+              {
+                "start": 18,
+                "end": 21,
+                "text": "支付宝",
+                "candidate_ids": [
+                  "b96ffcc3-2b88-550a-b02a-222dcb9fe905"
+                ]
+              }
+            ],
+            "scope": "Confirmation policy only; model fields are never corrected"
+          },
+          "decision": {
+            "type": "transfer",
+            "amount": "m0",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "status": "single",
+            "day": "today"
+          },
+          "validated": {
+            "status": "needs_input",
+            "amount_cents": 9900,
+            "amount_evidence": {
+              "id": "m0",
+              "text": "九十九元",
+              "start": 10,
+              "end": 14,
+              "cents": 9900
+            },
+            "type": "transfer",
+            "category": "f88765df-6384-5499-9a84-95b84a0785dc",
+            "account": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+            "to_account": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+            "date": "2026-10-18T12:00:00+08:00",
+            "note": "今天用我的微信余额转九十九元进自己的支付宝，转账完成",
+            "issues": [
+              "account_direction_confirmation_required",
+              "to_account_direction_confirmation_required"
+            ],
+            "violations": []
+          }
+        }
+      ],
+      "source_sha256": "bee6abf8203d660363acb466fc551fb110290a7a03b102badf400f7ad40913a6"
+    }
+  ]
+}

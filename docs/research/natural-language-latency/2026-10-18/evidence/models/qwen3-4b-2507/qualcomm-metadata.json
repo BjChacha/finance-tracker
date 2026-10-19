@@ -1,0 +1,76 @@
+{
+  "_id": "69d6a1e1aa9cc60820e84be8",
+  "id": "qualcomm/Qwen3-4B-Instruct-2507",
+  "private": false,
+  "pipeline_tag": "text-generation",
+  "library_name": "pytorch",
+  "tags": [
+    "pytorch",
+    "llm",
+    "generative_ai",
+    "android",
+    "text-generation",
+    "arxiv:2505.09388",
+    "license:apache-2.0",
+    "region:us"
+  ],
+  "downloads": 0,
+  "likes": 3,
+  "modelId": "qualcomm/Qwen3-4B-Instruct-2507",
+  "author": "qualcomm",
+  "sha": "08df7705a92b56e375bb2a9ecbbdcb4ece858106",
+  "lastModified": "2026-10-07T00:09:52.000Z",
+  "gated": false,
+  "disabled": false,
+  "widgetData": [
+    {
+      "text": "Hi, what can you help me with?"
+    },
+    {
+      "text": "What is 84 * 3 / 2?"
+    },
+    {
+      "text": "Tell me an interesting fact about the universe!"
+    },
+    {
+      "text": "Explain quantum computing in simple terms."
+    }
+  ],
+  "model-index": null,
+  "config": {},
+  "cardData": {
+    "library_name": "pytorch",
+    "license": "apache-2.0",
+    "tags": [
+      "llm",
+      "generative_ai",
+      "android"
+    ],
+    "pipeline_tag": "text-generation"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+      "size": 1519
+    },
+    {
+      "rfilename": "LICENSE",
+      "blobId": "04860a8085f0edbcb8bfdf8725e19d1ae88ab105",
+      "size": 128
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "b00660977c98a0ee45c2576df44b78f55373c432",
+      "size": 19369
+    },
+    {
+      "rfilename": "release_assets.json",
+      "blobId": "9315929b2817faa5467ca125de4b49e47772f369",
+      "size": 6282
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2026-04-08T18:43:45.000Z",
+  "usedStorage": 0
+}

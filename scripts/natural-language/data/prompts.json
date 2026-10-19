@@ -1,0 +1,10 @@
+{
+  "amount": ["金额", "交易金额", "实际收付金额"],
+  "type": ["交易类型[收入,支出,转账]", "收支类型[收入,支出,转账]"],
+  "status": "交易状态[已发生的单笔交易,多笔交易,未发生,不确定]",
+  "source_account": "付款账户",
+  "destination_account": "收款账户",
+  "type_labels": {"收入":"income","支出":"expense","转账":"transfer"},
+  "single_label": "已发生的单笔交易",
+  "thresholds": [0.3, 0.5, 0.7]
+}

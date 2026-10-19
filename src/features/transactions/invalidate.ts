@@ -15,5 +15,6 @@ export async function invalidateTransactionData(qc: QueryClient): Promise<void> 
     qc.invalidateQueries({ queryKey: ['budgets'] }),
     qc.invalidateQueries({ queryKey: ['budget-status'] }),
     qc.invalidateQueries({ queryKey: ['suggest-baseline'] }),
+    qc.invalidateQueries({ queryKey: ['reports'] }),
   ]);
 }

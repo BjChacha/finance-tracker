@@ -1,0 +1,33 @@
+{
+  "instruct_freeze": {
+    "files": 8,
+    "mismatches": []
+  },
+  "jev_freeze": {
+    "files": 12,
+    "mismatches": []
+  },
+  "evidence_files_verified": 63,
+  "missing_report_links": [],
+  "comparison-reference": 200,
+  "comparison-android-q4": 200,
+  "comparison-android-q8": 200,
+  "device-q4": {
+    "process_cold": 20,
+    "warm": 60
+  },
+  "device-q4-cool": {
+    "process_cold": 20,
+    "warm": 60
+  },
+  "device-q8": {
+    "process_cold": 20,
+    "warm": 60
+  },
+  "contract_tests": {
+    "passed": 9,
+    "failed": 0,
+    "source": "Captured unittest output in task tool log"
+  },
+  "report_sha256": "8dc08e99e4cf335e7e4c93aae2d6a70c94a27dfd7d6c61da3cb0b7f50404c983"
+}

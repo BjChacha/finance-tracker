@@ -1,0 +1,13 @@
+{
+  "oracle_type": true,
+  "count": 80,
+  "correct": {
+    "original": 58,
+    "plain_names": 29,
+    "plain_examples": 42,
+    "compact": 56,
+    "focused": 57,
+    "response": 60
+  },
+  "note": "Development diagnostic; not deployable accuracy. Same Q8 weights, desktop CPU."
+}

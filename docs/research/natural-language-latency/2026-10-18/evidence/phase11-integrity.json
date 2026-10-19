@@ -1,0 +1,30 @@
+{
+  "frozen_files": 69,
+  "request_parity": [
+    {
+      "run": "qwen4b-lean-dev",
+      "count": 100,
+      "requests_equal": 100
+    },
+    {
+      "run": "qwen4b-alias-dev",
+      "count": 100,
+      "requests_equal": 100
+    },
+    {
+      "run": "qwen4b-seed-label-dev",
+      "count": 100,
+      "requests_equal": 100
+    },
+    {
+      "run": "qwen4b-seed-catalog-dev",
+      "count": 100,
+      "requests_equal": 100
+    }
+  ],
+  "candidate_frozen_entries": 65,
+  "candidate_source_hashes_match": true,
+  "protocol_tests": 81,
+  "ruff_python_files": 60,
+  "app_uid_inference_verified": false
+}

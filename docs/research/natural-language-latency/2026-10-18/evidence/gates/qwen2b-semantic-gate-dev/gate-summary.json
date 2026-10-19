@@ -1,0 +1,27 @@
+{
+  "total": 100,
+  "schema_valid": 100,
+  "status_correct": 86,
+  "false_single": [],
+  "false_clarify": [
+    "dev-009",
+    "dev-029",
+    "dev-030",
+    "dev-034",
+    "dev-039",
+    "dev-044",
+    "dev-046",
+    "dev-048",
+    "dev-050",
+    "dev-062",
+    "dev-065",
+    "dev-071",
+    "dev-075",
+    "mix-dev-024"
+  ],
+  "native_gate_latency_ms": {
+    "p50": 219.6736999976565,
+    "p95": 260.0130299993907,
+    "max": 383.94240000343416
+  }
+}

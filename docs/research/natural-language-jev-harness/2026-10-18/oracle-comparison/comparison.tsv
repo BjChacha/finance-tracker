@@ -1,0 +1,3 @@
+variant	count	singles	schema	business_consistent	raw_amount	raw_type	raw_category	usable_amount	usable_type	usable_category	guard_abstentions	guard_count	guard_ready	single_accepted	ready_correct	ready_incorrect	needs_input	account_correct	destination_correct	day_correct
+oracle-diagnostic_baseline	200	160	200	168	160	139	78	110	94	51	31	40	0	135	38	69	93	128	147	125
+oracle-diagnostic_oracle_type	200	160	200	164	160	160	84	105	105	52	31	40	0	135	39	63	98	128	157	125

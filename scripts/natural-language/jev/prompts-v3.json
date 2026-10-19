@@ -1,0 +1,40 @@
+{
+  "status": {
+    "instruction": "Determine whether the text describes one completed transaction with a clear amount. Reject multiple transactions, negation, future plans and conflicting amounts.",
+    "criteria": {
+      "single": "已经完成的一笔真实交易，只有一个最终成交金额，可以生成一笔记账预览。",
+      "multiple": "发生了多笔独立交易，应该分别记账，不能合成一笔。",
+      "unrealized": "尚未发生的计划、愿望、假设、询价，或者明确否定交易发生，不应该记账。",
+      "conflict": "交易金额缺失、矛盾或不确定，需要用户补充或确认。"
+    }
+  },
+  "type": {
+    "instruction": "Classify the user's transaction as an expense, income or transfer between their own accounts. Paying another person is an expense, not an internal transfer.",
+    "criteria": {
+      "expense": "支出：我付款购买商品、消费服务、送出礼物红包或给别人钱。",
+      "income": "收入：我收到工资、奖金、报酬、退款、红包或出售物品的钱。",
+      "transfer": "账户互转：钱在我自己的两个账户之间转移，例如微信转银行卡、取现、存款或偿还信用卡。"
+    }
+  },
+  "day": {
+    "instruction": "Identify when the transaction happened: today, yesterday or two days ago. Default to today if no date is mentioned. Other dates require clarification.",
+    "criteria": {
+      "today": "今天发生的交易，或者没有说明日期，默认今天。",
+      "yesterday": "昨天发生的交易。",
+      "before_yesterday": "前天发生的交易。",
+      "unknown": "上周、上个月、具体年月日或其他不能确定的日期，需要核对。"
+    }
+  },
+  "amount_instruction": "Select the actual final amount paid, received or transferred. Ignore item counts, dates, balances, original prices and discounts.",
+  "amount_template": "本次实际成交或转账金额是{amount}。原文所在片段：{evidence}",
+  "amount_unknown": "没有唯一、明确、有效的成交金额，或者描述的是多笔交易。",
+  "category_instruction": "Select the best available bookkeeping category for the transaction's purpose or income source. Prefer a specific matching subcategory.",
+  "category_template": "{name}；上级分类：{parent}；常见用途：{examples}",
+  "category_unknown": "没有适合本次交易的现有分类，需要用户选择。",
+  "account_instruction": "Select the user's payment account for expenses, receiving account for income, or source account for internal transfers. Leave unspecified accounts unknown.",
+  "source_template": "本次资金从我的{name}账户转出或支付。",
+  "income_template": "本次收入到账我的{name}账户。",
+  "destination_instruction": "Select the user's receiving account for an internal transfer. It must differ from the source account. Leave unspecified accounts unknown.",
+  "destination_template": "本次资金转入我的{name}账户。",
+  "account_unknown": "没有明确说明本人的这个账户，或账户名称有歧义。"
+}

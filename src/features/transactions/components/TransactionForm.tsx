@@ -128,6 +128,11 @@ type Props = {
 	initialValues?: Partial<TxFormInitialValues>;
 	/** create：启用分类兜底与智能推荐；edit：两者关闭。缺省按 initialValues ? 'edit' : 'create' 推断。 */
 	mode?: "create" | "edit";
+	/** Explicit previews never fill missing fields from history or fallback choices. */
+	prefillPolicy?: "suggest" | "explicit";
+	/** A review requirement outside the editor must be acknowledged before persistence. */
+	saveBlockedReason?: string;
+	dateSelectionRequiredMessage?: string;
 	submitting?: boolean;
 	onInteractive?: () => void;
 	renderMode?: "summary" | "staged-editor" | "editor";
@@ -169,6 +174,9 @@ function TransactionFormComponent(
 	{
 		initialValues,
 		mode: modeProp,
+		prefillPolicy = "suggest",
+		saveBlockedReason,
+		dateSelectionRequiredMessage,
 		submitting,
 		onInteractive,
 		renderMode = "editor",
@@ -189,6 +197,8 @@ function TransactionFormComponent(
 	const reduceMotion = useReducedMotion();
 	const mode = modeProp ?? (initialValues ? "edit" : "create");
 	const submissionLock = useRef(false);
+	const [dateSelected, setDateSelected] = useState(false);
+	const reviewBlock = saveBlockedReason ?? (!dateSelected ? dateSelectionRequiredMessage : undefined);
 	const baselineRef = useRef<string | null>(null);
 	// 原始交易类型/分类（仅编辑模式有意义）：切换类型切回原类型时恢复原分类。
 	const originalType = initialValues?.type;
@@ -286,7 +296,7 @@ function TransactionFormComponent(
 		number | null
 	>(null);
 	const [categoryTouched, setCategoryTouched] = useState(
-		mode === "edit" && initialValues?.categoryId != null,
+		initialValues?.categoryId != null,
 	);
 	const [accountTouched, setAccountTouched] = useState(
 		initialValues?.accountId != null || initialValues?.toAccountId != null,
@@ -350,6 +360,7 @@ function TransactionFormComponent(
 		setCategoryId(initialValues?.categoryId ?? null);
 		setProjectId(initialValues?.projectId ?? null);
 		setDateText(nextDate.format("YYYY-MM-DD"));
+		setDateSelected(false);
 		setTimeText(
 			initialValues?.dateMs != null
 				? nextDate.format("HH:mm")
@@ -367,7 +378,7 @@ function TransactionFormComponent(
 		setKeypadVisible(false);
 		setKeyboardVisible(false);
 		setConfirmedAmountCents(null);
-		setCategoryTouched(mode === "edit" && initialValues?.categoryId != null);
+		setCategoryTouched(initialValues?.categoryId != null);
 		setAccountTouched(
 			initialValues?.accountId != null || initialValues?.toAccountId != null,
 		);
@@ -413,7 +424,7 @@ function TransactionFormComponent(
 	const [formLaidOut, setFormLaidOut] = useState(false);
 	const interactiveReported = useRef(false);
 	const formInteractive = isQuickAddFormInteractive({
-		formLaidOut,
+		formLaidOut: formLaidOut && (sessionKey === null || hydratedSessionKey === sessionKey),
 		accountsFetched: accountsQuery.isFetched,
 		projectsFetched: projectsQuery.isFetched,
 		categoriesFetched: categoryQuery.isFetched,
@@ -453,8 +464,8 @@ function TransactionFormComponent(
 
 	// 账户推荐仅新建启用（编辑保留原始账户）；分类推荐新建与编辑均启用，
 	// 以便编辑时切换类型能像新建一样预测分类（切回原始类型则恢复原分类）。
-	const suggestEnabled = mode === "create";
-	const categorySuggestEnabled = mode === "create" || mode === "edit";
+	const suggestEnabled = prefillPolicy === "suggest" && mode === "create";
+	const categorySuggestEnabled = prefillPolicy === "suggest";
 	const suggestScores = useCategorySuggestion({
 		type: categoryType,
 		amountCents: confirmedAmountCents,
@@ -490,7 +501,7 @@ function TransactionFormComponent(
 		() => orderByScore(accounts, sourceAccountScores),
 		[accounts, sourceAccountScores],
 	);
-	const effectiveAccountId = accountId ?? accounts[0]?.id ?? null;
+	const effectiveAccountId = accountId ?? (prefillPolicy === "suggest" ? accounts[0]?.id : null) ?? null;
 	const destinationAccountScores = useMemo(
 		() => transferDestinationScores(transferPairs, effectiveAccountId),
 		[transferPairs, effectiveAccountId],
@@ -515,6 +526,7 @@ function TransactionFormComponent(
 	// （编辑切换类型后 categoryId 清空时，由此兜底再叠加智能推荐预测）。
 	useEffect(() => {
 		if (
+			prefillPolicy === "suggest" &&
 			(mode === "create" || mode === "edit") &&
 			categoryId === null &&
 			categoryTree.length > 0
@@ -523,7 +535,7 @@ function TransactionFormComponent(
 				categoryTree.find((c) => c.name.startsWith("其他")) ?? categoryTree[0];
 			setCategoryId(fallback.id);
 		}
-	}, [mode, categoryId, categoryTree]);
+	}, [mode, prefillPolicy, categoryId, categoryTree]);
 
 	// 静默预选最高分分类(含展开子分类);无命中或手动选过时不动,保留上方「其他」兜底。
 	// 必须声明在兜底 effect 之后:类型切换清空 categoryId 时,两者同帧触发,预选需后执行以覆盖兜底。
@@ -619,7 +631,7 @@ function TransactionFormComponent(
 			type,
 		],
 	);
-	const canSave = inputResult.input !== null;
+	const canSave = inputResult.input !== null && !reviewBlock;
 	const snapshot = JSON.stringify([type, amountText, feeText, accountId, toAccountId, categoryId, projectId, dateText, timeText, note, currency]);
 	useLayoutEffect(() => {
 		if (sessionKey !== null && hydratedSessionKey !== sessionKey) return;
@@ -832,6 +844,10 @@ function TransactionFormComponent(
 
 	async function save(): Promise<boolean> {
 		if (submissionLock.current || submitting || typeTransition) return false;
+		if (reviewBlock) {
+			Alert.alert(reviewBlock);
+			return false;
+		}
 		if (Date.now() - nativeKeypadClosedAtRef.current < 600) return false;
 		if (!inputResult.input) {
 			showValidationError(inputResult.error);
@@ -861,7 +877,7 @@ function TransactionFormComponent(
 			prepareDismiss: async () => {
 				if (submissionLock.current || submitting) return false;
 				if (closeOverlaysIfAny()) return false;
-				return mode === "edit" && dirty ? confirmDiscard() : true;
+				return (mode === "edit" || prefillPolicy === "explicit") && dirty ? confirmDiscard() : true;
 			},
 			closeOverlaysIfAny,
 			save,
@@ -1520,7 +1536,7 @@ function TransactionFormComponent(
 					<FormActionBar
 						testID="transaction-save"
 						label={mode === "edit" ? formLabels.saveChanges : zh.common.save}
-						hint={validationMessage ?? (mode === "edit" && dirty ? formLabels.unsaved : undefined)}
+						hint={reviewBlock ?? validationMessage ?? (mode === "edit" && dirty ? formLabels.unsaved : undefined)}
 						onPress={handleSave}
 						pending={submitting}
 						disabled={!canSave || typeTransition !== null}
@@ -1570,6 +1586,7 @@ function TransactionFormComponent(
 					onValueChange={(_event, selected) => {
 						setDatePickerOpen(false);
 						setDateText(dayjs(selected).format("YYYY-MM-DD"));
+						setDateSelected(true);
 					}}
 					onDismiss={() => setDatePickerOpen(false)}
 				/>
@@ -1600,6 +1617,7 @@ function TransactionFormComponent(
 								<Pressable
 									onPress={() => {
 										setDateText(dayjs(tempDate).format("YYYY-MM-DD"));
+										setDateSelected(true);
 										setDatePickerOpen(false);
 									}}
 								>

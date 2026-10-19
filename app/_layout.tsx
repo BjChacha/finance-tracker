@@ -13,7 +13,9 @@ import { ResidentEditorSheetProvider } from "@/components/navigation/resident-ed
 import { migrationError } from "@/db/migrate";
 import { migrateMealCategoriesOnce, seedIfEmpty } from "@/db/seed";
 import { getRatesSync, isStale, refreshRates } from "@/features/currency";
+import { migrateCategoryConsolidationOnce } from "@/features/categories";
 import { runCatchUpIfNeeded } from "@/features/recurring";
+import { useLatestRelease } from "@/features/update";
 import { useQuickActionsBootstrap } from "@/features/quick-actions/useQuickActions";
 import { invalidateTransactionData } from "@/features/transactions";
 import { AutomaticBackupRunner } from "@/features/backup/AutomaticBackupRunner";
@@ -69,12 +71,14 @@ const queryClient = new QueryClient({
 /** 首次启动播种 + 一次性分类数据迁移：幂等、后台执行，不阻塞渲染（非首次启动为几次轻量查询）。 */
 function Seeder() {
 	useEffect(() => {
-		void seedIfEmpty().catch(() => {
-			/* 播种失败不阻塞 UI；下次启动会重试 */
-		});
-		void migrateMealCategoriesOnce().catch(() => {
-			/* 迁移失败不阻塞 UI；下次启动会重试（迁移本身幂等） */
-		});
+		void (async () => {
+			await seedIfEmpty().catch(() => {
+				/* 播种失败不阻塞 UI；下次启动会重试 */
+			});
+			// 迁移串行执行：后者依赖前者的最终态（迁移本身幂等，失败下次启动重试）
+			await migrateMealCategoriesOnce().catch(() => {});
+			await migrateCategoryConsolidationOnce().catch(() => {});
+		})();
 	}, []);
 	return null;
 }
@@ -130,6 +134,12 @@ function RatesAutoRefresh() {
 	return null;
 }
 
+/** 启动时后台静默检查更新：失败不打扰；结果供个人页更新卡片与更新页共用（6h 缓存）。 */
+function UpdateCheckRunner() {
+	useLatestRelease();
+	return null;
+}
+
 /** 主题门之内的应用主体：迁移已在模块加载时完成，此处仅做失败兜底 + 渲染路由栈 */
 function AppShell() {
 	const theme = useTheme();
@@ -169,6 +179,7 @@ function AppShell() {
 				<RatesAutoRefresh />
 				<AutomaticBackupRunner />
 				<QuickActionsGate />
+				<UpdateCheckRunner />
 				<StatusBar style={theme.dark ? "light" : "dark"} />
 				<Stack
 					screenOptions={{
@@ -181,9 +192,11 @@ function AppShell() {
 					<Stack.Screen name="transactions/index" options={sheetOptions} />
 					<Stack.Screen name="assets" options={sheetOptions} />
 					<Stack.Screen name="stats" options={sheetOptions} />
+					<Stack.Screen name="reports/index" options={sheetOptions} />
 					<Stack.Screen name="transactions/search" options={sheetOptions} />
 					<Stack.Screen name="add-transaction" options={sheetOptions} />
 					<Stack.Screen name="quick-add-transaction" options={sheetOptions} />
+					<Stack.Screen name="natural-language-transaction" options={sheetOptions} />
 					<Stack.Screen name="transaction/[id]" options={sheetOptions} />
 					<Stack.Screen name="accounts/index" options={sheetOptions} />
 					<Stack.Screen name="accounts/edit" options={sheetOptions} />
@@ -192,6 +205,7 @@ function AppShell() {
 					<Stack.Screen name="budgets" options={sheetOptions} />
 					<Stack.Screen name="appearance" options={sheetOptions} />
 					<Stack.Screen name="rates" options={sheetOptions} />
+					<Stack.Screen name="update" options={sheetOptions} />
 					<Stack.Screen name="backup/index" options={sheetOptions} />
 					<Stack.Screen name="import/index" options={{ title: zh.imp.title }} />
 					<Stack.Screen name="recurring/index" options={sheetOptions} />

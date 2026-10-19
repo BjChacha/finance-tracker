@@ -1,0 +1,98 @@
+[
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/",
+    "bytes": 0,
+    "compressed": 0,
+    "crc": 0
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/tokenizer.json",
+    "bytes": 11422654,
+    "compressed": 2142135,
+    "crc": 2842168624
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/metadata.json",
+    "bytes": 70267,
+    "compressed": 3086,
+    "crc": 14796243
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/part4_of_4.bin",
+    "bytes": 1062846464,
+    "compressed": 846068734,
+    "crc": 2899911492
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/htp_backend_ext_config.json",
+    "bytes": 217,
+    "compressed": 155,
+    "crc": 2944931276
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/tokenizer_config.json",
+    "bytes": 8196,
+    "compressed": 1253,
+    "crc": 2018952443
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/genie_config.json",
+    "bytes": 1597,
+    "compressed": 418,
+    "crc": 1966519757
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/part1_of_4.bin",
+    "bytes": 778174464,
+    "compressed": 709147983,
+    "crc": 1884539809
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/part2_of_4.bin",
+    "bytes": 662548480,
+    "compressed": 481124999,
+    "crc": 919196171
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/vocab.json",
+    "bytes": 2776833,
+    "compressed": 1081837,
+    "crc": 2324988147
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/merges.txt",
+    "bytes": 1671853,
+    "compressed": 713524,
+    "crc": 1117357974
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/special_tokens_map.json",
+    "bytes": 610,
+    "compressed": 185,
+    "crc": 3476708228
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/config.json",
+    "bytes": 729,
+    "compressed": 372,
+    "crc": 4074238375
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/part3_of_4.bin",
+    "bytes": 662609920,
+    "compressed": 494253725,
+    "crc": 1722207939
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/added_tokens.json",
+    "bytes": 707,
+    "compressed": 228,
+    "crc": 62080878
+  },
+  {
+    "file": "qwen3_4b_instruct_2507-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy/sample_prompt.txt",
+    "bytes": 160,
+    "compressed": 114,
+    "crc": 3004401838
+  }
+]

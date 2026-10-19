@@ -1,0 +1,17 @@
+{
+  "amount": {
+    "prompt": "金额",
+    "threshold": 0.3
+  },
+  "type": {
+    "prompt": "交易类型[收入,支出,转账]",
+    "threshold": 0.7
+  },
+  "corpus_hashes": {
+    "dev": "4080af5315473dfdc9a62cd2552d9f7f4e8efe36b94e25d1c4ee974ece31f4bb",
+    "test": "6b0dc21dfbd57b405eb519413c236815e21fe320103ec20fe3158ecc1f1686a6"
+  },
+  "context_hash": "ac51b24ce777c0c83a6d6815f98a7bdfe041e317ca6d0add18367cd9ba64c16e",
+  "prompts_hash": "0e28458a3029a82b23d9421df79cf8fdca861350dbc2d6950d0400bc255423d9",
+  "export_manifest_hash": "2670aeb6856cb1ff9f5b1e8781a941be4ad32634da5beac3d415501bf2e00d93"
+}

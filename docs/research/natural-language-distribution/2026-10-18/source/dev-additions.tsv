@@ -1,0 +1,36 @@
+id	group	text	amount_cents	type	category	account	to_account	day	status	context_variant
+mix-dev-001	grocery_ingredients	菜市场买番茄和鸡蛋，一共付了23块5	2350	expense	food			today	single	default
+mix-dev-002	grocery_ingredients	昨天微信买排骨花四十六元八角	4680	expense	food	wechat		yesterday	single	default
+mix-dev-003	grocery_ingredients	买了一袋大米，现金付68元	6800	expense	food	cash		today	single	default
+mix-dev-004	grocery_ingredients	前天买做饭的蔬菜，支付宝结账12.90元	1290	expense	food	alipay		before_yesterday	single	default
+mix-dev-005	grocery_ingredients	买五斤土豆花了九块六	960	expense	food			today	single	default
+mix-dev-006	city_bus	坐公交投了2元现金	200	expense	transport	cash		today	single	default
+mix-dev-007	city_bus	昨天公交乘车码从支付宝扣了1.8元	180	expense	transport	alipay		yesterday	single	default
+mix-dev-008	city_bus	今天坐3路公交，微信扣款两元	200	expense	transport	wechat		today	single	default
+mix-dev-009	city_bus	前天回家的市内公交票花了四块五	450	expense	transport			before_yesterday	single	default
+mix-dev-010	city_bus	公交车费原价3元，优惠后支付宝实际扣了2.40元	240	expense	transport	alipay		today	single	default
+mix-dev-011	shared_bicycle	骑共享单车花了1块5	150	expense	transport			today	single	default
+mix-dev-012	shared_bicycle	昨天共享自行车骑了25分钟，微信付3元	300	expense	transport	wechat		yesterday	single	default
+mix-dev-013	shared_bicycle	支付宝扣了共享单车骑行费两块	200	expense	transport	alipay		today	single	default
+mix-dev-014	shared_bicycle	前天骑共享电单车到地铁站，付了5.50元	550	expense	transport			before_yesterday	single	default
+mix-dev-015	shared_bicycle	共享自行车这趟结算三元六角，已从微信扣款	360	expense	transport	wechat		today	single	default
+mix-dev-016	certification_exam	英语考试报名费交了450元	45000	expense	education			today	single	default
+mix-dev-017	certification_exam	昨天银行卡付了职业资格考试费二百元	20000	expense	education	bank		yesterday	single	default
+mix-dev-018	certification_exam	计算机等级考试报名，支付宝支付80元	8000	expense	education	alipay		today	single	default
+mix-dev-019	certification_exam	前天交了普通话测试报名费五十块	5000	expense	education			before_yesterday	single	default
+mix-dev-020	certification_exam	会计考试两科合计报名费122元，已经用微信付了	12200	expense	education	wechat		today	single	default
+mix-dev-021	home_lock_repair	家里门锁坏了，请师傅修锁付了120元现金	12000	expense	housing	cash		today	single	default
+mix-dev-022	home_lock_repair	昨天换家里的锁芯，微信付一百八十元	18000	expense	housing	wechat		yesterday	single	default
+mix-dev-023	home_lock_repair	住宅门锁维修费88.50元，支付宝已支付	8850	expense	housing	alipay		today	single	default
+mix-dev-024	home_lock_repair	前天请人来修卧室的门锁花六十块	6000	expense	housing			before_yesterday	single	default
+mix-dev-025	home_lock_repair	家里防盗门换锁，工料合计260元已经付给师傅	26000	expense	housing			today	single	default
+mix-dev-026	theater_ticket	买了张话剧票花180元	18000	expense	entertainment			today	single	default
+mix-dev-027	theater_ticket	昨天用微信付了音乐剧门票二百八十元	28000	expense	entertainment	wechat		yesterday	single	default
+mix-dev-028	theater_ticket	脱口秀演出的票，支付宝付99.90元	9990	expense	entertainment	alipay		today	single	default
+mix-dev-029	theater_ticket	前天买舞台剧门票，现金给了一百二十块	12000	expense	entertainment	cash		before_yesterday	single	default
+mix-dev-030	theater_ticket	话剧两张票打折后总共付了320元	32000	expense	entertainment			today	single	default
+mix-dev-031	laundry_service	洗衣店干洗外套付了35元	3500	expense	other_expense			today	single	default
+mix-dev-032	laundry_service	昨天洗衣店清洗羽绒服，微信付六十块	6000	expense	other_expense	wechat		yesterday	single	default
+mix-dev-033	laundry_service	干洗西装一套，现金支付80元	8000	expense	other_expense	cash		today	single	default
+mix-dev-034	laundry_service	前天付洗衣店床单清洗费28.50元，支付宝出的	2850	expense	other_expense	alipay		before_yesterday	single	default
+mix-dev-035	laundry_service	今天自助洗衣机扫码洗一次衣服花了八元	800	expense	other_expense			today	single	default

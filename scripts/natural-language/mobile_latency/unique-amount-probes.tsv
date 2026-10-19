@@ -1,0 +1,13 @@
+id	group	text	amount_cents	type	category	account	to_account	day	status	context_variant	source	source_id	review_status
+unique-balance-wallet	unique-balance-wallet	微信余额还剩80元，刚才买菜的钱忘了							clarify	default	unique-amount-probes.tsv	unique-balance-wallet	pending_human_review
+unique-balance-bank	unique-balance-bank	银行卡余额8000元，今天晚饭已买但没记价格							clarify	default	unique-amount-probes.tsv	unique-balance-bank	pending_human_review
+unique-count-books	unique-count-books	微信刚买了两本书，价钱忘了							clarify	default	unique-amount-probes.tsv	unique-count-books	pending_human_review
+unique-count-boxes	unique-count-boxes	微信买了两个盲盒，价格没说							clarify	default	unique-amount-probes.tsv	unique-count-boxes	pending_human_review
+unique-price-unpaid	unique-price-unpaid	微信看中标价200元的衣服，暂未付款							clarify	default	unique-amount-probes.tsv	unique-price-unpaid	pending_human_review
+unique-balance-plan	unique-balance-plan	支付宝有100元，想看看够不够买药							clarify	default	unique-amount-probes.tsv	unique-balance-plan	pending_human_review
+unique-negated-price	unique-negated-price	微信刚支付了饭钱，实际金额不是80元，也没有告诉你金额							clarify	default	unique-amount-probes.tsv	unique-negated-price	pending_human_review
+unique-count-payment	unique-count-payment	微信买了2本书，一起支付18元	1800	expense	education	wechat		today	single	default	unique-amount-probes.tsv	unique-count-payment	pending_human_review
+unique-drink-payment	unique-drink-payment	微信买饮料共18元，瓶子已经放好	1800	expense	food	wechat		today	single	default	unique-amount-probes.tsv	unique-drink-payment	pending_human_review
+unique-transfer-payment	unique-transfer-payment	我的银行卡转到我自己的支付宝18元	1800	transfer	transfer_account	bank	alipay	today	single	default	unique-amount-probes.tsv	unique-transfer-payment	pending_human_review
+unique-breakfast-payment	unique-breakfast-payment	微信付早餐18元，余额没看	1800	expense	food	wechat		today	single	default	unique-amount-probes.tsv	unique-breakfast-payment	pending_human_review
+unique-negated-second	unique-negated-second	微信饭费付了80元，并没有再付第二笔	8000	expense	food	wechat		today	single	default	unique-amount-probes.tsv	unique-negated-second	pending_human_review

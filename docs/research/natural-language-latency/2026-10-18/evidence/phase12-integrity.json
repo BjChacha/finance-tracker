@@ -1,0 +1,35 @@
+{
+  "frozen_audit": [
+    {
+      "freeze": "scripts/natural-language/jev/freeze.json",
+      "count": 12,
+      "failures": []
+    },
+    {
+      "freeze": "scripts/natural-language/jev_harness/freeze.json",
+      "count": 25,
+      "failures": []
+    },
+    {
+      "freeze": "artifacts/natural-language-mobile-instruct/freeze.json",
+      "count": 14,
+      "failures": []
+    },
+    {
+      "freeze": "artifacts/natural-language-mobile-instruct/safe-freeze.json",
+      "count": 11,
+      "failures": []
+    },
+    {
+      "freeze": "artifacts/natural-language-mobile-instruct/device-freeze.json",
+      "count": 7,
+      "failures": []
+    }
+  ],
+  "candidate_frozen_entries": 65,
+  "candidate_source_hashes_match": true,
+  "protocol_tests": 83,
+  "ruff_python_files": 63,
+  "app_uid_inference_verified": false,
+  "ui_latency_verified": false
+}

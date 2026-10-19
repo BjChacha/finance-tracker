@@ -1,8 +1,8 @@
-import { Platform } from 'react-native';
-import QuickKeypadModule from '../../modules/quick-keypad';
-import type { PendingQuickAddLaunch } from '../../modules/quick-keypad';
-import type { AppTheme } from '@/theme/themes';
-import { toQuickKeypadThemePayload } from './quick-keypad-theme';
+import { Platform } from "react-native";
+import QuickKeypadModule from "../../modules/quick-keypad";
+import type { PendingQuickAddLaunch } from "../../modules/quick-keypad";
+import type { AppTheme } from "@/theme/themes";
+import { toQuickKeypadThemePayload } from "./quick-keypad-theme";
 
 export type KeypadResult = { amountCents: number; currency: string };
 export type { PendingQuickAddLaunch };
@@ -15,7 +15,7 @@ export type OpenKeypadOptions = {
 };
 
 function getNativeModule() {
-  if (Platform.OS !== 'android') return null;
+  if (Platform.OS !== "android") return null;
   return QuickKeypadModule;
 }
 
@@ -23,13 +23,16 @@ export function isQuickKeypadAvailable(): boolean {
   return getNativeModule() !== null;
 }
 
-export function syncQuickKeypadTheme(theme: AppTheme, followsSystem = false): void {
+export function syncQuickKeypadTheme(
+  theme: AppTheme,
+  followsSystem = false,
+): void {
   const mod = getNativeModule();
   if (!mod) return;
   try {
     mod.syncTheme(toQuickKeypadThemePayload(theme, followsSystem));
   } catch (error) {
-    console.warn('[quick-keypad] Failed to sync native theme', error);
+    console.warn("[quick-keypad] Failed to sync native theme", error);
   }
 }
 
@@ -39,11 +42,13 @@ export function completeAppLaunch(): void {
   try {
     mod.completeAppLaunch();
   } catch (error) {
-    console.warn('[quick-keypad] Failed to complete app launch', error);
+    console.warn("[quick-keypad] Failed to complete app launch", error);
   }
 }
 
-export function completeQuickAddHandoff(handoffId: string | null | undefined): void {
+export function completeQuickAddHandoff(
+  handoffId: string | null | undefined,
+): void {
   if (!handoffId) return;
   getNativeModule()?.completeQuickAddHandoff(handoffId);
 }
@@ -65,12 +70,17 @@ export async function revealQuickAddPresentation(
       }),
     ]);
   } catch (error) {
-    console.warn('[quick-keypad] Failed to reveal quick-add presentation', error);
+    console.warn(
+      "[quick-keypad] Failed to reveal quick-add presentation",
+      error,
+    );
     return false;
   }
 }
 
-export function completeQuickAddInteractive(handoffId: string | null | undefined): void {
+export function completeQuickAddInteractive(
+  handoffId: string | null | undefined,
+): void {
   if (!handoffId) return;
   getNativeModule()?.completeQuickAddInteractive(handoffId);
 }
@@ -89,12 +99,14 @@ export function getPendingQuickAddLaunch(): PendingQuickAddLaunch | null {
  */
 const OPEN_KEYPAD_TIMEOUT_MS = 15_000;
 
-export async function openKeypad(options: OpenKeypadOptions = {}): Promise<KeypadResult | null> {
+export async function openKeypad(
+  options: OpenKeypadOptions = {},
+): Promise<KeypadResult | null> {
   const mod = getNativeModule();
   if (!mod) return null;
   const pending = mod.open(
     options.initialAmountCents ?? 0,
-    options.initialCurrency ?? 'CNY',
+    options.initialCurrency ?? "CNY",
     options.allowCurrencySelection ?? true,
     options.allowZero ?? false,
   );

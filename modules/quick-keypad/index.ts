@@ -1,6 +1,6 @@
-export { default } from './src/QuickKeypadModule';
+export { default } from "./src/QuickKeypadModule";
 export type {
   PendingQuickAddLaunch,
   QuickKeypadResult,
   QuickKeypadThemePayload,
-} from './src/QuickKeypadModule';
+} from "./src/QuickKeypadModule";

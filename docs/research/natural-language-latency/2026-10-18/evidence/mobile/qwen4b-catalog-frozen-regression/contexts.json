@@ -1,0 +1,1022 @@
+{
+  "craft": {
+    "context": {
+      "review": {
+        "status": "pending_human_review",
+        "author": "assistant",
+        "note": "合成候选语料；尚未由用户或独立人工核验，不作为产品验收通过证据。按场景分组划分，不将同义改写分到不同集合。"
+      },
+      "now": "2026-10-18T12:00:00+08:00",
+      "accounts": [
+        {
+          "id": "9d5351af-e39f-5aa9-91e3-1c891c0250f1",
+          "name": "现金",
+          "aliases": [
+            "现金账户",
+            "钱包"
+          ],
+          "active": true
+        },
+        {
+          "id": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+          "name": "微信",
+          "aliases": [
+            "微信钱包",
+            "微信余额"
+          ],
+          "active": true
+        },
+        {
+          "id": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+          "name": "支付宝",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+          "name": "银行卡",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb",
+          "name": "工资卡",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "8699e486-e782-591b-a720-fd7b666869a0",
+          "name": "储蓄卡",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f",
+          "name": "信用卡",
+          "aliases": [],
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "548c2498-cac6-584b-861f-b82d9d0551ca",
+          "type": "expense",
+          "name": "餐饮",
+          "examples": [
+            "吃饭、饮料和零食消费"
+          ]
+        },
+        {
+          "id": "00c87a2f-8805-5057-8d77-8c3db56a01f3",
+          "name": "正餐",
+          "type": "expense",
+          "parentId": "548c2498-cac6-584b-861f-b82d9d0551ca"
+        },
+        {
+          "id": "0edd1ef2-5237-5104-9edc-42d5a080d90b",
+          "name": "零食饮料",
+          "type": "expense",
+          "parentId": "548c2498-cac6-584b-861f-b82d9d0551ca"
+        },
+        {
+          "id": "74e25f35-d168-579f-96e6-006e89682317",
+          "name": "夜宵",
+          "type": "expense",
+          "parentId": "548c2498-cac6-584b-861f-b82d9d0551ca"
+        },
+        {
+          "id": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e",
+          "type": "expense",
+          "name": "交通",
+          "examples": [
+            "出行、车辆使用及通勤费用"
+          ]
+        },
+        {
+          "id": "2cd2a8f8-8086-58b7-b144-97ea8fa6b703",
+          "name": "公交地铁",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "2a27be1c-cefe-58eb-8f7b-74ba3c69bf1b",
+          "name": "打车",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "e1670cd6-f84a-5528-8faf-e8ab737869a6",
+          "name": "加油",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "5be8ff2c-a542-57da-bb3e-53e696a853ca",
+          "name": "停车",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "c207f0c3-ede4-52ec-bcf3-0a463376e055",
+          "type": "expense",
+          "name": "购物",
+          "examples": [
+            "购买生活用品、衣服、数码产品"
+          ]
+        },
+        {
+          "id": "ec6b972f-e146-5a22-ac3f-86dcd863c9a0",
+          "name": "日用品",
+          "type": "expense",
+          "parentId": "c207f0c3-ede4-52ec-bcf3-0a463376e055"
+        },
+        {
+          "id": "8cb0aa04-507a-57a8-ae8c-ba9321ca942b",
+          "name": "服饰",
+          "type": "expense",
+          "parentId": "c207f0c3-ede4-52ec-bcf3-0a463376e055"
+        },
+        {
+          "id": "502c5a87-6f88-5a5c-8b29-f8526525f80b",
+          "name": "数码",
+          "type": "expense",
+          "parentId": "c207f0c3-ede4-52ec-bcf3-0a463376e055"
+        },
+        {
+          "id": "880ba16b-8b11-55d8-aff5-c23174f66c24",
+          "type": "expense",
+          "name": "居住",
+          "examples": [
+            "房租、水电燃气、物业管理费"
+          ]
+        },
+        {
+          "id": "bc874379-e659-58b6-9bcb-b0ce74d21f88",
+          "name": "房租",
+          "type": "expense",
+          "parentId": "880ba16b-8b11-55d8-aff5-c23174f66c24"
+        },
+        {
+          "id": "59e102ce-59de-506e-b6f6-2791628fe466",
+          "name": "水电燃气",
+          "type": "expense",
+          "parentId": "880ba16b-8b11-55d8-aff5-c23174f66c24"
+        },
+        {
+          "id": "763d8a1b-46a9-5320-bc50-b2e048ba3926",
+          "name": "物业",
+          "type": "expense",
+          "parentId": "880ba16b-8b11-55d8-aff5-c23174f66c24"
+        },
+        {
+          "id": "e9905b9d-8761-579d-a82f-80867b40af49",
+          "type": "expense",
+          "name": "娱乐",
+          "examples": [
+            "电影、游戏、旅行游玩消费"
+          ]
+        },
+        {
+          "id": "58b8bdb6-b0f1-5808-8943-1045eae5383a",
+          "name": "电影",
+          "type": "expense",
+          "parentId": "e9905b9d-8761-579d-a82f-80867b40af49"
+        },
+        {
+          "id": "b41e928d-4f35-508f-95e5-413850618d93",
+          "name": "游戏",
+          "type": "expense",
+          "parentId": "e9905b9d-8761-579d-a82f-80867b40af49"
+        },
+        {
+          "id": "11bce9c9-cc7f-54bb-a97e-60782e320ed2",
+          "name": "旅行",
+          "type": "expense",
+          "parentId": "e9905b9d-8761-579d-a82f-80867b40af49"
+        },
+        {
+          "id": "89adebbd-fd7d-5f8e-9422-48646f802079",
+          "type": "expense",
+          "name": "医疗",
+          "examples": [
+            "买药、门诊和检查"
+          ]
+        },
+        {
+          "id": "427edf0a-293a-5418-a5e4-6b3c69e89fb9",
+          "name": "药品",
+          "type": "expense",
+          "parentId": "89adebbd-fd7d-5f8e-9422-48646f802079"
+        },
+        {
+          "id": "355d133f-572c-58b6-803f-743a5dd524da",
+          "name": "门诊",
+          "type": "expense",
+          "parentId": "89adebbd-fd7d-5f8e-9422-48646f802079"
+        },
+        {
+          "id": "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e",
+          "type": "expense",
+          "name": "教育",
+          "examples": [
+            "书籍、课程、学习培训"
+          ]
+        },
+        {
+          "id": "392172bd-e796-594b-89ca-23fc18e7974c",
+          "name": "书籍",
+          "type": "expense",
+          "parentId": "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e"
+        },
+        {
+          "id": "8ca66d88-fce1-588c-bce7-ac816d99dadc",
+          "name": "课程",
+          "type": "expense",
+          "parentId": "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e"
+        },
+        {
+          "id": "ab0a8c1a-41c1-5695-b0ae-99542da70c0a",
+          "type": "expense",
+          "name": "通讯",
+          "examples": [
+            "手机话费和宽带网费"
+          ]
+        },
+        {
+          "id": "c7904c7c-dec6-5ab1-8ce1-4c273b129cb9",
+          "name": "话费",
+          "type": "expense",
+          "parentId": "ab0a8c1a-41c1-5695-b0ae-99542da70c0a"
+        },
+        {
+          "id": "925f7917-e2df-564c-8701-b4de6a90c987",
+          "name": "网费",
+          "type": "expense",
+          "parentId": "ab0a8c1a-41c1-5695-b0ae-99542da70c0a"
+        },
+        {
+          "id": "42cd9bf7-e05d-5c86-84d1-6fe286000e20",
+          "type": "expense",
+          "name": "人情",
+          "examples": [
+            "送出红包、礼物、礼金"
+          ]
+        },
+        {
+          "id": "6bd0f966-f32e-5bc3-aa06-a2ed24676bf1",
+          "name": "红包",
+          "type": "expense",
+          "parentId": "42cd9bf7-e05d-5c86-84d1-6fe286000e20"
+        },
+        {
+          "id": "3b742297-a98a-5571-9f96-82b62121d339",
+          "name": "礼物",
+          "type": "expense",
+          "parentId": "42cd9bf7-e05d-5c86-84d1-6fe286000e20"
+        },
+        {
+          "id": "26377d2c-6fa6-561a-af45-65b144d7f0fd",
+          "type": "expense",
+          "name": "宠物",
+          "examples": [
+            "宠物食品、用品和服务"
+          ]
+        },
+        {
+          "id": "71b3bae4-3d9a-5967-996e-e3689e59f3c5",
+          "type": "expense",
+          "name": "运动",
+          "examples": [
+            "健身和体育锻炼的花费"
+          ]
+        },
+        {
+          "id": "a18b5cf5-2d05-581c-bd4e-0b83d1fe38e7",
+          "type": "expense",
+          "name": "美容",
+          "examples": [
+            "美容美发护理花费"
+          ]
+        },
+        {
+          "id": "eae8cf4d-69b8-5e98-9a32-2f358d957d4f",
+          "type": "expense",
+          "name": "订阅",
+          "examples": [
+            "会员和软件订阅费用"
+          ]
+        },
+        {
+          "id": "3cc2b0a9-77c2-55e8-b53a-cf8ca9b9dc2a",
+          "type": "expense",
+          "name": "其他支出",
+          "examples": [
+            "不属于其他支出分类的消费"
+          ]
+        },
+        {
+          "id": "1a667ea3-0546-5d16-9ba5-85b3a90f7bbc",
+          "type": "expense",
+          "name": "补记漏记",
+          "examples": [
+            "补记遗漏的支出账目"
+          ]
+        },
+        {
+          "id": "b568215f-ea53-593a-834f-7765d0124373",
+          "type": "income",
+          "name": "工资",
+          "examples": [
+            "收到薪水工资"
+          ]
+        },
+        {
+          "id": "ed059496-850c-5148-a6aa-37ac8a3a9c15",
+          "type": "income",
+          "name": "奖金",
+          "examples": [
+            "收到工作奖金、年终奖励"
+          ]
+        },
+        {
+          "id": "d09a905d-19cf-5e22-a23a-c3ed066299a4",
+          "type": "income",
+          "name": "兼职",
+          "examples": [
+            "兼职劳动获得报酬"
+          ]
+        },
+        {
+          "id": "aa38314d-107b-5874-9f4d-7d293ef541b1",
+          "type": "income",
+          "name": "理财收益",
+          "examples": [
+            "利息、分红和理财盈利"
+          ]
+        },
+        {
+          "id": "40cedca5-7d0e-5e74-8c6a-626d694d79ff",
+          "type": "income",
+          "name": "红包",
+          "examples": [
+            "收到亲友的红包和压岁钱"
+          ]
+        },
+        {
+          "id": "6808ebbd-a585-5ab4-9c45-b0301c837f8c",
+          "type": "income",
+          "name": "退款",
+          "examples": [
+            "退货或取消订单后收到退款"
+          ]
+        },
+        {
+          "id": "42be8c7a-9b7a-5fbe-a695-92625815b2e8",
+          "type": "income",
+          "name": "二手闲置",
+          "examples": [
+            "出售闲置物品获得收入"
+          ]
+        },
+        {
+          "id": "4cff08c7-b4bf-501f-ae88-3feaa4d71e1a",
+          "type": "income",
+          "name": "其他收入",
+          "examples": [
+            "其他渠道获得的收入"
+          ]
+        },
+        {
+          "id": "e279256e-ad3b-5e61-aac4-91d65c8d23db",
+          "type": "income",
+          "name": "补记漏记",
+          "examples": [
+            "补记遗漏的收入账目"
+          ]
+        },
+        {
+          "id": "f88765df-6384-5499-9a84-95b84a0785dc",
+          "type": "transfer",
+          "name": "账户互转",
+          "examples": [
+            "自己的两个账户之间转钱"
+          ]
+        },
+        {
+          "id": "3ac50d47-6c8b-535a-a6c3-0491ca05ea7b",
+          "type": "transfer",
+          "name": "账单还款",
+          "examples": [
+            "用自己的账户归还信用卡账单"
+          ]
+        },
+        {
+          "id": "7d922e24-6a5a-50c6-8762-36b6ae297cbf",
+          "type": "transfer",
+          "name": "取钱",
+          "examples": [
+            "银行卡取现转为现金"
+          ]
+        },
+        {
+          "id": "7250bc20-877d-54b0-ac1f-caafa9823192",
+          "type": "transfer",
+          "name": "存钱",
+          "examples": [
+            "现金存入银行卡"
+          ]
+        },
+        {
+          "id": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+          "type": "transfer",
+          "name": "其他",
+          "examples": [
+            "其他本人账户间资金转移"
+          ]
+        },
+        {
+          "id": "dfad7e17-b79a-5e87-8d47-91cbc7d260a4",
+          "name": "手工材料",
+          "type": "expense"
+        }
+      ]
+    },
+    "category_roots": {
+      "548c2498-cac6-584b-861f-b82d9d0551ca": "food",
+      "00c87a2f-8805-5057-8d77-8c3db56a01f3": "food",
+      "0edd1ef2-5237-5104-9edc-42d5a080d90b": "food",
+      "74e25f35-d168-579f-96e6-006e89682317": "food",
+      "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e": "transport",
+      "2cd2a8f8-8086-58b7-b144-97ea8fa6b703": "transport",
+      "2a27be1c-cefe-58eb-8f7b-74ba3c69bf1b": "transport",
+      "e1670cd6-f84a-5528-8faf-e8ab737869a6": "transport",
+      "5be8ff2c-a542-57da-bb3e-53e696a853ca": "transport",
+      "c207f0c3-ede4-52ec-bcf3-0a463376e055": "shopping",
+      "ec6b972f-e146-5a22-ac3f-86dcd863c9a0": "shopping",
+      "8cb0aa04-507a-57a8-ae8c-ba9321ca942b": "shopping",
+      "502c5a87-6f88-5a5c-8b29-f8526525f80b": "shopping",
+      "880ba16b-8b11-55d8-aff5-c23174f66c24": "housing",
+      "bc874379-e659-58b6-9bcb-b0ce74d21f88": "housing",
+      "59e102ce-59de-506e-b6f6-2791628fe466": "housing",
+      "763d8a1b-46a9-5320-bc50-b2e048ba3926": "housing",
+      "e9905b9d-8761-579d-a82f-80867b40af49": "entertainment",
+      "58b8bdb6-b0f1-5808-8943-1045eae5383a": "entertainment",
+      "b41e928d-4f35-508f-95e5-413850618d93": "entertainment",
+      "11bce9c9-cc7f-54bb-a97e-60782e320ed2": "entertainment",
+      "89adebbd-fd7d-5f8e-9422-48646f802079": "health",
+      "427edf0a-293a-5418-a5e4-6b3c69e89fb9": "health",
+      "355d133f-572c-58b6-803f-743a5dd524da": "health",
+      "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e": "education",
+      "392172bd-e796-594b-89ca-23fc18e7974c": "education",
+      "8ca66d88-fce1-588c-bce7-ac816d99dadc": "education",
+      "ab0a8c1a-41c1-5695-b0ae-99542da70c0a": "communication",
+      "c7904c7c-dec6-5ab1-8ce1-4c273b129cb9": "communication",
+      "925f7917-e2df-564c-8701-b4de6a90c987": "communication",
+      "42cd9bf7-e05d-5c86-84d1-6fe286000e20": "social",
+      "6bd0f966-f32e-5bc3-aa06-a2ed24676bf1": "social",
+      "3b742297-a98a-5571-9f96-82b62121d339": "social",
+      "26377d2c-6fa6-561a-af45-65b144d7f0fd": "pet",
+      "71b3bae4-3d9a-5967-996e-e3689e59f3c5": "sport",
+      "a18b5cf5-2d05-581c-bd4e-0b83d1fe38e7": "beauty",
+      "eae8cf4d-69b8-5e98-9a32-2f358d957d4f": "subscription",
+      "3cc2b0a9-77c2-55e8-b53a-cf8ca9b9dc2a": "other_expense",
+      "1a667ea3-0546-5d16-9ba5-85b3a90f7bbc": "adjust_expense",
+      "b568215f-ea53-593a-834f-7765d0124373": "salary",
+      "ed059496-850c-5148-a6aa-37ac8a3a9c15": "bonus",
+      "d09a905d-19cf-5e22-a23a-c3ed066299a4": "parttime",
+      "aa38314d-107b-5874-9f4d-7d293ef541b1": "investment",
+      "40cedca5-7d0e-5e74-8c6a-626d694d79ff": "red_packet",
+      "6808ebbd-a585-5ab4-9c45-b0301c837f8c": "refund",
+      "42be8c7a-9b7a-5fbe-a695-92625815b2e8": "secondhand",
+      "4cff08c7-b4bf-501f-ae88-3feaa4d71e1a": "other_income",
+      "e279256e-ad3b-5e61-aac4-91d65c8d23db": "adjust_income",
+      "f88765df-6384-5499-9a84-95b84a0785dc": "transfer_account",
+      "3ac50d47-6c8b-535a-a6c3-0491ca05ea7b": "repayment",
+      "7d922e24-6a5a-50c6-8762-36b6ae297cbf": "withdrawal",
+      "7250bc20-877d-54b0-ac1f-caafa9823192": "deposit",
+      "16306f97-5156-5aba-9bf3-5cb439d31a84": "other_transfer",
+      "dfad7e17-b79a-5e87-8d47-91cbc7d260a4": "craft"
+    },
+    "account_ids": {
+      "9d5351af-e39f-5aa9-91e3-1c891c0250f1": "cash",
+      "b53f41d4-e3dd-5311-8ade-29ef2545ec8d": "wechat",
+      "b96ffcc3-2b88-550a-b02a-222dcb9fe905": "alipay",
+      "0c8ac162-95d1-55c9-b395-04d3c742f0b2": "bank",
+      "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb": "salary_bank",
+      "8699e486-e782-591b-a720-fd7b666869a0": "savings",
+      "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f": "credit"
+    },
+    "source_hashes": {
+      "src\\db\\seed.ts": "c5e455adc4a799fd164ea331b7c2a75881af6e21a012c21e28e08ebcca2d1be8",
+      "src\\db\\category-presets.ts": "3abaaddabeff7cfc65c7764580eb8aa4b6ce2027b490d1c3167864160ae9393e"
+    },
+    "scope": "Synthetic accounts and IDs; actual seed taxonomy; no user database access"
+  },
+  "default": {
+    "context": {
+      "review": {
+        "status": "pending_human_review",
+        "author": "assistant",
+        "note": "合成候选语料；尚未由用户或独立人工核验，不作为产品验收通过证据。按场景分组划分，不将同义改写分到不同集合。"
+      },
+      "now": "2026-10-18T12:00:00+08:00",
+      "accounts": [
+        {
+          "id": "9d5351af-e39f-5aa9-91e3-1c891c0250f1",
+          "name": "现金",
+          "aliases": [
+            "现金账户",
+            "钱包"
+          ],
+          "active": true
+        },
+        {
+          "id": "b53f41d4-e3dd-5311-8ade-29ef2545ec8d",
+          "name": "微信",
+          "aliases": [
+            "微信钱包",
+            "微信余额"
+          ],
+          "active": true
+        },
+        {
+          "id": "b96ffcc3-2b88-550a-b02a-222dcb9fe905",
+          "name": "支付宝",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "0c8ac162-95d1-55c9-b395-04d3c742f0b2",
+          "name": "银行卡",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb",
+          "name": "工资卡",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "8699e486-e782-591b-a720-fd7b666869a0",
+          "name": "储蓄卡",
+          "aliases": [],
+          "active": true
+        },
+        {
+          "id": "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f",
+          "name": "信用卡",
+          "aliases": [],
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "548c2498-cac6-584b-861f-b82d9d0551ca",
+          "type": "expense",
+          "name": "餐饮",
+          "examples": [
+            "吃饭、饮料和零食消费"
+          ]
+        },
+        {
+          "id": "00c87a2f-8805-5057-8d77-8c3db56a01f3",
+          "name": "正餐",
+          "type": "expense",
+          "parentId": "548c2498-cac6-584b-861f-b82d9d0551ca"
+        },
+        {
+          "id": "0edd1ef2-5237-5104-9edc-42d5a080d90b",
+          "name": "零食饮料",
+          "type": "expense",
+          "parentId": "548c2498-cac6-584b-861f-b82d9d0551ca"
+        },
+        {
+          "id": "74e25f35-d168-579f-96e6-006e89682317",
+          "name": "夜宵",
+          "type": "expense",
+          "parentId": "548c2498-cac6-584b-861f-b82d9d0551ca"
+        },
+        {
+          "id": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e",
+          "type": "expense",
+          "name": "交通",
+          "examples": [
+            "出行、车辆使用及通勤费用"
+          ]
+        },
+        {
+          "id": "2cd2a8f8-8086-58b7-b144-97ea8fa6b703",
+          "name": "公交地铁",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "2a27be1c-cefe-58eb-8f7b-74ba3c69bf1b",
+          "name": "打车",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "e1670cd6-f84a-5528-8faf-e8ab737869a6",
+          "name": "加油",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "5be8ff2c-a542-57da-bb3e-53e696a853ca",
+          "name": "停车",
+          "type": "expense",
+          "parentId": "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e"
+        },
+        {
+          "id": "c207f0c3-ede4-52ec-bcf3-0a463376e055",
+          "type": "expense",
+          "name": "购物",
+          "examples": [
+            "购买生活用品、衣服、数码产品"
+          ]
+        },
+        {
+          "id": "ec6b972f-e146-5a22-ac3f-86dcd863c9a0",
+          "name": "日用品",
+          "type": "expense",
+          "parentId": "c207f0c3-ede4-52ec-bcf3-0a463376e055"
+        },
+        {
+          "id": "8cb0aa04-507a-57a8-ae8c-ba9321ca942b",
+          "name": "服饰",
+          "type": "expense",
+          "parentId": "c207f0c3-ede4-52ec-bcf3-0a463376e055"
+        },
+        {
+          "id": "502c5a87-6f88-5a5c-8b29-f8526525f80b",
+          "name": "数码",
+          "type": "expense",
+          "parentId": "c207f0c3-ede4-52ec-bcf3-0a463376e055"
+        },
+        {
+          "id": "880ba16b-8b11-55d8-aff5-c23174f66c24",
+          "type": "expense",
+          "name": "居住",
+          "examples": [
+            "房租、水电燃气、物业管理费"
+          ]
+        },
+        {
+          "id": "bc874379-e659-58b6-9bcb-b0ce74d21f88",
+          "name": "房租",
+          "type": "expense",
+          "parentId": "880ba16b-8b11-55d8-aff5-c23174f66c24"
+        },
+        {
+          "id": "59e102ce-59de-506e-b6f6-2791628fe466",
+          "name": "水电燃气",
+          "type": "expense",
+          "parentId": "880ba16b-8b11-55d8-aff5-c23174f66c24"
+        },
+        {
+          "id": "763d8a1b-46a9-5320-bc50-b2e048ba3926",
+          "name": "物业",
+          "type": "expense",
+          "parentId": "880ba16b-8b11-55d8-aff5-c23174f66c24"
+        },
+        {
+          "id": "e9905b9d-8761-579d-a82f-80867b40af49",
+          "type": "expense",
+          "name": "娱乐",
+          "examples": [
+            "电影、游戏、旅行游玩消费"
+          ]
+        },
+        {
+          "id": "58b8bdb6-b0f1-5808-8943-1045eae5383a",
+          "name": "电影",
+          "type": "expense",
+          "parentId": "e9905b9d-8761-579d-a82f-80867b40af49"
+        },
+        {
+          "id": "b41e928d-4f35-508f-95e5-413850618d93",
+          "name": "游戏",
+          "type": "expense",
+          "parentId": "e9905b9d-8761-579d-a82f-80867b40af49"
+        },
+        {
+          "id": "11bce9c9-cc7f-54bb-a97e-60782e320ed2",
+          "name": "旅行",
+          "type": "expense",
+          "parentId": "e9905b9d-8761-579d-a82f-80867b40af49"
+        },
+        {
+          "id": "89adebbd-fd7d-5f8e-9422-48646f802079",
+          "type": "expense",
+          "name": "医疗",
+          "examples": [
+            "买药、门诊和检查"
+          ]
+        },
+        {
+          "id": "427edf0a-293a-5418-a5e4-6b3c69e89fb9",
+          "name": "药品",
+          "type": "expense",
+          "parentId": "89adebbd-fd7d-5f8e-9422-48646f802079"
+        },
+        {
+          "id": "355d133f-572c-58b6-803f-743a5dd524da",
+          "name": "门诊",
+          "type": "expense",
+          "parentId": "89adebbd-fd7d-5f8e-9422-48646f802079"
+        },
+        {
+          "id": "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e",
+          "type": "expense",
+          "name": "教育",
+          "examples": [
+            "书籍、课程、学习培训"
+          ]
+        },
+        {
+          "id": "392172bd-e796-594b-89ca-23fc18e7974c",
+          "name": "书籍",
+          "type": "expense",
+          "parentId": "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e"
+        },
+        {
+          "id": "8ca66d88-fce1-588c-bce7-ac816d99dadc",
+          "name": "课程",
+          "type": "expense",
+          "parentId": "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e"
+        },
+        {
+          "id": "ab0a8c1a-41c1-5695-b0ae-99542da70c0a",
+          "type": "expense",
+          "name": "通讯",
+          "examples": [
+            "手机话费和宽带网费"
+          ]
+        },
+        {
+          "id": "c7904c7c-dec6-5ab1-8ce1-4c273b129cb9",
+          "name": "话费",
+          "type": "expense",
+          "parentId": "ab0a8c1a-41c1-5695-b0ae-99542da70c0a"
+        },
+        {
+          "id": "925f7917-e2df-564c-8701-b4de6a90c987",
+          "name": "网费",
+          "type": "expense",
+          "parentId": "ab0a8c1a-41c1-5695-b0ae-99542da70c0a"
+        },
+        {
+          "id": "42cd9bf7-e05d-5c86-84d1-6fe286000e20",
+          "type": "expense",
+          "name": "人情",
+          "examples": [
+            "送出红包、礼物、礼金"
+          ]
+        },
+        {
+          "id": "6bd0f966-f32e-5bc3-aa06-a2ed24676bf1",
+          "name": "红包",
+          "type": "expense",
+          "parentId": "42cd9bf7-e05d-5c86-84d1-6fe286000e20"
+        },
+        {
+          "id": "3b742297-a98a-5571-9f96-82b62121d339",
+          "name": "礼物",
+          "type": "expense",
+          "parentId": "42cd9bf7-e05d-5c86-84d1-6fe286000e20"
+        },
+        {
+          "id": "26377d2c-6fa6-561a-af45-65b144d7f0fd",
+          "type": "expense",
+          "name": "宠物",
+          "examples": [
+            "宠物食品、用品和服务"
+          ]
+        },
+        {
+          "id": "71b3bae4-3d9a-5967-996e-e3689e59f3c5",
+          "type": "expense",
+          "name": "运动",
+          "examples": [
+            "健身和体育锻炼的花费"
+          ]
+        },
+        {
+          "id": "a18b5cf5-2d05-581c-bd4e-0b83d1fe38e7",
+          "type": "expense",
+          "name": "美容",
+          "examples": [
+            "美容美发护理花费"
+          ]
+        },
+        {
+          "id": "eae8cf4d-69b8-5e98-9a32-2f358d957d4f",
+          "type": "expense",
+          "name": "订阅",
+          "examples": [
+            "会员和软件订阅费用"
+          ]
+        },
+        {
+          "id": "3cc2b0a9-77c2-55e8-b53a-cf8ca9b9dc2a",
+          "type": "expense",
+          "name": "其他支出",
+          "examples": [
+            "不属于其他支出分类的消费"
+          ]
+        },
+        {
+          "id": "1a667ea3-0546-5d16-9ba5-85b3a90f7bbc",
+          "type": "expense",
+          "name": "补记漏记",
+          "examples": [
+            "补记遗漏的支出账目"
+          ]
+        },
+        {
+          "id": "b568215f-ea53-593a-834f-7765d0124373",
+          "type": "income",
+          "name": "工资",
+          "examples": [
+            "收到薪水工资"
+          ]
+        },
+        {
+          "id": "ed059496-850c-5148-a6aa-37ac8a3a9c15",
+          "type": "income",
+          "name": "奖金",
+          "examples": [
+            "收到工作奖金、年终奖励"
+          ]
+        },
+        {
+          "id": "d09a905d-19cf-5e22-a23a-c3ed066299a4",
+          "type": "income",
+          "name": "兼职",
+          "examples": [
+            "兼职劳动获得报酬"
+          ]
+        },
+        {
+          "id": "aa38314d-107b-5874-9f4d-7d293ef541b1",
+          "type": "income",
+          "name": "理财收益",
+          "examples": [
+            "利息、分红和理财盈利"
+          ]
+        },
+        {
+          "id": "40cedca5-7d0e-5e74-8c6a-626d694d79ff",
+          "type": "income",
+          "name": "红包",
+          "examples": [
+            "收到亲友的红包和压岁钱"
+          ]
+        },
+        {
+          "id": "6808ebbd-a585-5ab4-9c45-b0301c837f8c",
+          "type": "income",
+          "name": "退款",
+          "examples": [
+            "退货或取消订单后收到退款"
+          ]
+        },
+        {
+          "id": "42be8c7a-9b7a-5fbe-a695-92625815b2e8",
+          "type": "income",
+          "name": "二手闲置",
+          "examples": [
+            "出售闲置物品获得收入"
+          ]
+        },
+        {
+          "id": "4cff08c7-b4bf-501f-ae88-3feaa4d71e1a",
+          "type": "income",
+          "name": "其他收入",
+          "examples": [
+            "其他渠道获得的收入"
+          ]
+        },
+        {
+          "id": "e279256e-ad3b-5e61-aac4-91d65c8d23db",
+          "type": "income",
+          "name": "补记漏记",
+          "examples": [
+            "补记遗漏的收入账目"
+          ]
+        },
+        {
+          "id": "f88765df-6384-5499-9a84-95b84a0785dc",
+          "type": "transfer",
+          "name": "账户互转",
+          "examples": [
+            "自己的两个账户之间转钱"
+          ]
+        },
+        {
+          "id": "3ac50d47-6c8b-535a-a6c3-0491ca05ea7b",
+          "type": "transfer",
+          "name": "账单还款",
+          "examples": [
+            "用自己的账户归还信用卡账单"
+          ]
+        },
+        {
+          "id": "7d922e24-6a5a-50c6-8762-36b6ae297cbf",
+          "type": "transfer",
+          "name": "取钱",
+          "examples": [
+            "银行卡取现转为现金"
+          ]
+        },
+        {
+          "id": "7250bc20-877d-54b0-ac1f-caafa9823192",
+          "type": "transfer",
+          "name": "存钱",
+          "examples": [
+            "现金存入银行卡"
+          ]
+        },
+        {
+          "id": "16306f97-5156-5aba-9bf3-5cb439d31a84",
+          "type": "transfer",
+          "name": "其他",
+          "examples": [
+            "其他本人账户间资金转移"
+          ]
+        }
+      ]
+    },
+    "category_roots": {
+      "548c2498-cac6-584b-861f-b82d9d0551ca": "food",
+      "00c87a2f-8805-5057-8d77-8c3db56a01f3": "food",
+      "0edd1ef2-5237-5104-9edc-42d5a080d90b": "food",
+      "74e25f35-d168-579f-96e6-006e89682317": "food",
+      "bb1b1959-09bd-5fa6-b33b-56ee8ad56e6e": "transport",
+      "2cd2a8f8-8086-58b7-b144-97ea8fa6b703": "transport",
+      "2a27be1c-cefe-58eb-8f7b-74ba3c69bf1b": "transport",
+      "e1670cd6-f84a-5528-8faf-e8ab737869a6": "transport",
+      "5be8ff2c-a542-57da-bb3e-53e696a853ca": "transport",
+      "c207f0c3-ede4-52ec-bcf3-0a463376e055": "shopping",
+      "ec6b972f-e146-5a22-ac3f-86dcd863c9a0": "shopping",
+      "8cb0aa04-507a-57a8-ae8c-ba9321ca942b": "shopping",
+      "502c5a87-6f88-5a5c-8b29-f8526525f80b": "shopping",
+      "880ba16b-8b11-55d8-aff5-c23174f66c24": "housing",
+      "bc874379-e659-58b6-9bcb-b0ce74d21f88": "housing",
+      "59e102ce-59de-506e-b6f6-2791628fe466": "housing",
+      "763d8a1b-46a9-5320-bc50-b2e048ba3926": "housing",
+      "e9905b9d-8761-579d-a82f-80867b40af49": "entertainment",
+      "58b8bdb6-b0f1-5808-8943-1045eae5383a": "entertainment",
+      "b41e928d-4f35-508f-95e5-413850618d93": "entertainment",
+      "11bce9c9-cc7f-54bb-a97e-60782e320ed2": "entertainment",
+      "89adebbd-fd7d-5f8e-9422-48646f802079": "health",
+      "427edf0a-293a-5418-a5e4-6b3c69e89fb9": "health",
+      "355d133f-572c-58b6-803f-743a5dd524da": "health",
+      "03f7d5c0-912c-50ad-8a0d-8e35eabc6a6e": "education",
+      "392172bd-e796-594b-89ca-23fc18e7974c": "education",
+      "8ca66d88-fce1-588c-bce7-ac816d99dadc": "education",
+      "ab0a8c1a-41c1-5695-b0ae-99542da70c0a": "communication",
+      "c7904c7c-dec6-5ab1-8ce1-4c273b129cb9": "communication",
+      "925f7917-e2df-564c-8701-b4de6a90c987": "communication",
+      "42cd9bf7-e05d-5c86-84d1-6fe286000e20": "social",
+      "6bd0f966-f32e-5bc3-aa06-a2ed24676bf1": "social",
+      "3b742297-a98a-5571-9f96-82b62121d339": "social",
+      "26377d2c-6fa6-561a-af45-65b144d7f0fd": "pet",
+      "71b3bae4-3d9a-5967-996e-e3689e59f3c5": "sport",
+      "a18b5cf5-2d05-581c-bd4e-0b83d1fe38e7": "beauty",
+      "eae8cf4d-69b8-5e98-9a32-2f358d957d4f": "subscription",
+      "3cc2b0a9-77c2-55e8-b53a-cf8ca9b9dc2a": "other_expense",
+      "1a667ea3-0546-5d16-9ba5-85b3a90f7bbc": "adjust_expense",
+      "b568215f-ea53-593a-834f-7765d0124373": "salary",
+      "ed059496-850c-5148-a6aa-37ac8a3a9c15": "bonus",
+      "d09a905d-19cf-5e22-a23a-c3ed066299a4": "parttime",
+      "aa38314d-107b-5874-9f4d-7d293ef541b1": "investment",
+      "40cedca5-7d0e-5e74-8c6a-626d694d79ff": "red_packet",
+      "6808ebbd-a585-5ab4-9c45-b0301c837f8c": "refund",
+      "42be8c7a-9b7a-5fbe-a695-92625815b2e8": "secondhand",
+      "4cff08c7-b4bf-501f-ae88-3feaa4d71e1a": "other_income",
+      "e279256e-ad3b-5e61-aac4-91d65c8d23db": "adjust_income",
+      "f88765df-6384-5499-9a84-95b84a0785dc": "transfer_account",
+      "3ac50d47-6c8b-535a-a6c3-0491ca05ea7b": "repayment",
+      "7d922e24-6a5a-50c6-8762-36b6ae297cbf": "withdrawal",
+      "7250bc20-877d-54b0-ac1f-caafa9823192": "deposit",
+      "16306f97-5156-5aba-9bf3-5cb439d31a84": "other_transfer"
+    },
+    "account_ids": {
+      "9d5351af-e39f-5aa9-91e3-1c891c0250f1": "cash",
+      "b53f41d4-e3dd-5311-8ade-29ef2545ec8d": "wechat",
+      "b96ffcc3-2b88-550a-b02a-222dcb9fe905": "alipay",
+      "0c8ac162-95d1-55c9-b395-04d3c742f0b2": "bank",
+      "4a12a1c9-f8c0-5f87-af29-2b4a0a6716eb": "salary_bank",
+      "8699e486-e782-591b-a720-fd7b666869a0": "savings",
+      "9fdf33b1-39ea-5ddd-9bc5-37e3c727490f": "credit"
+    },
+    "source_hashes": {
+      "src\\db\\seed.ts": "c5e455adc4a799fd164ea331b7c2a75881af6e21a012c21e28e08ebcca2d1be8",
+      "src\\db\\category-presets.ts": "3abaaddabeff7cfc65c7764580eb8aa4b6ce2027b490d1c3167864160ae9393e"
+    },
+    "scope": "Synthetic accounts and IDs; actual seed taxonomy; no user database access"
+  }
+}

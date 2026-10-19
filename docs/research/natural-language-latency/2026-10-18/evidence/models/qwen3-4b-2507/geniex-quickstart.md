@@ -1,0 +1,204 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://geniex.aihub.qualcomm.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Quickstart
+
+> Run your first model from the GenieX Android SDK in Kotlin.
+
+This page walks through running your first model from a Kotlin app, then swapping in a different model. For a complete reference app with chat UI, model picker, and VLM support, see the [sample app](https://github.com/qualcomm/ai-hub-apps/blob/release/geniex_chat_android/README.md).
+
+## **Prerequisites**
+
+* The SDK added to your Gradle project — see [Install](/en/run/android/install).
+* A phone running **Snapdragon 8 Elite** or **Snapdragon 8 Elite Gen 5**.
+* `INTERNET` permission in your `AndroidManifest.xml` (the SDK pulls weights from Hugging Face / Qualcomm AI Hub on first use).
+
+## **Run your first model**
+
+The flow is the same regardless of model: **init the SDK → pull weights → load → generate**. Below is a minimal end-to-end example using `unsloth/Qwen3-0.6B-GGUF` — a small Qwen3 0.6B chat model that runs on any supported chipset.
+
+<Steps>
+  <Step title="Init the SDK">
+    Call once on app startup (idempotent — safe inside `Activity.onCreate`):
+
+    ```kotlin theme={"dark"}
+    GenieXSdk.getInstance().init(context)
+    ```
+  </Step>
+
+  <Step title="Pull the model">
+    `pullFlow` streams progress events. Run inside a coroutine on `Dispatchers.IO`:
+
+    ```kotlin theme={"dark"}
+    ModelManagerWrapper.pullFlow(
+        ModelPullInput(
+            model_name = "unsloth/Qwen3-0.6B-GGUF",
+            precision  = "Q4_0",
+            hub        = HubSource.HUGGINGFACE,
+        )
+    ).collect { event ->
+        when (event) {
+            is ModelManagerWrapper.PullEvent.Progress  -> /* update UI */
+            ModelManagerWrapper.PullEvent.Completed    -> /* done */
+            is ModelManagerWrapper.PullEvent.Error     -> /* show error */
+        }
+    }
+    ```
+
+    Downloads are resumable — killing the app mid-pull and re-running picks up where it left off.
+  </Step>
+
+  <Step title="Load the model">
+    Resolve the on-disk paths and build an `LlmWrapper`:
+
+    ```kotlin theme={"dark"}
+    val paths = ModelManagerWrapper.getPaths("unsloth/Qwen3-0.6B-GGUF")
+        ?: error("Model not downloaded")
+
+    val llm = LlmWrapper.builder()
+        .llmCreateInput(
+            LlmCreateInput(
+                model_path = paths.model_path,
+                config     = ModelConfig(nCtx = 4096),
+                runtime_id  = "llama_cpp",
+                compute_unit  = null,   // null → NPU on Snapdragon (recommended)
+            )
+        )
+        .build()
+        .getOrThrow()
+    ```
+  </Step>
+
+  <Step title="Generate">
+    Apply the chat template, then collect tokens from the streaming flow:
+
+    ```kotlin theme={"dark"}
+    val chat = arrayListOf(ChatMessage("user", "What is AI?"))
+    val templated = llm.applyChatTemplate(chat.toTypedArray(), null, false).getOrThrow()
+
+    llm.generateStreamFlow(
+        templated.formattedText,
+        GenerationConfig(maxTokens = 2048),
+    ).collect { result ->
+        when (result) {
+            is LlmStreamResult.Token     -> print(result.text)
+            is LlmStreamResult.Completed -> println("\nDone")
+            is LlmStreamResult.Error     -> println("Error: ${result.throwable}")
+        }
+    }
+    ```
+
+    <Warning>
+      Always pass `templated.formattedText` (the chat-templated prompt) into `generateStreamFlow`, **not** the raw user text. The native pipeline expects an already-templated prompt.
+    </Warning>
+  </Step>
+</Steps>
+
+## **Switching models**
+
+Swapping models is mostly a matter of changing the `model_name` and the `runtime_id`. There are two runtimes:
+
+* **`llama_cpp`** — runs any GGUF model. Supports NPU / GPU / CPU compute units via `compute_unit`.
+* **`qairt`** (Qualcomm AI Engine Direct) — runs Qualcomm AI Hub Models. NPU-only, requires an explicit `chipset` on Android.
+
+### Another GGUF model (llama.cpp)
+
+Just change the `model_name` (and `precision` if you want a different one) — the rest of the flow is identical:
+
+```kotlin theme={"dark"}
+ModelPullInput(
+    model_name = "unsloth/Qwen3-VL-2B-Instruct-GGUF",
+    precision  = "Q4_0",
+    hub        = HubSource.HUGGINGFACE,
+)
+```
+
+For VLMs, also pass `paths.mmproj_path` into `VlmCreateInput` — see [API reference → VLM](/en/run/android/api-reference#vlm).
+
+### A Qualcomm AI Hub Model (NPU via Qualcomm AI Engine Direct)
+
+Qualcomm AI Hub Models are pre-compiled per chipset and only run on the NPU. You **must** pass `chipset` on Android:
+
+```kotlin theme={"dark"}
+ModelManagerWrapper.pullFlow(
+    ModelPullInput(
+        model_name = "ai-hub-models/Qwen3-4B-Instruct-2507",
+        hub        = HubSource.AUTO,   // routes ai-hub-models/* to Qualcomm AI Hub
+        chipset    = "SM8750",         // SM8750 = 8 Elite, SM8850 = 8 Elite Gen 5
+    )
+).collect { /* … */ }
+```
+
+Then switch `runtime_id = "qairt"` in `LlmCreateInput`. See the supported Qualcomm AI Hub repos in the [API reference](/en/run/android/api-reference#supported-models).
+
+### Switching compute unit (NPU / GPU / CPU)
+
+For `llama_cpp` only — set `compute_unit` on `LlmCreateInput`:
+
+| `compute_unit` | Compute unit |
+| - | - |
+| `null` or `"npu"` | Hexagon NPU (recommended on Snapdragon). |
+| `"gpu"` | Adreno GPU via OpenCL. |
+| `"cpu"` | Pure CPU. Works on any ARM64 chipset. |
+
+Qualcomm AI Engine Direct ignores this — `cpu`/`gpu` are coerced to NPU with a warning.
+
+## **Using a local model**
+
+If the weights are already on the device — side-loaded via `adb push`, bundled in your app's files dir, or produced by another tool — point the model manager at that directory instead of a hub: set `hub = HubSource.LOCALFS` and `local_path` to the on-disk location. `pullFlow` imports it into the SDK cache (no network), after which `getPaths` / `LlmWrapper` work exactly as they do for a downloaded model.
+
+The full Android snippets for importing a local GGUF model and a local Qualcomm AI Engine Direct bundle live on the Models page:
+
+* [Run a local Qualcomm AI Engine Direct bundle → Android](/en/models/supported#run-a-local-qualcomm-ai-engine-direct-bundle)
+* [Run a local GGUF model → Android](/en/models/supported#run-a-local-gguf-model)
+
+## **Using the sample app**
+
+The [sample app](https://github.com/qualcomm/ai-hub-apps/blob/release/geniex_chat_android/README.md) is a fully wired chat client built on top of the snippets above. A few patterns worth borrowing when you build your own UI:
+
+* **Model picker UI** — the dropdown is driven by `app/src/main/assets/model_list.json`. Each entry pins a `model_name`, `hub`, and (for Qualcomm AI Engine Direct) a `chipset`. Edit this file to add new models without touching code.
+* **Resumable downloads with progress** — the `Progress` events from `pullFlow` carry per-file byte counts; the sample wires them straight into a `LinearProgressIndicator`.
+* **Runtime-aware compute-unit picker** — when the selected model uses Qualcomm AI Engine Direct, the picker hides GPU/CPU options. See `LoadDialog.kt`.
+* **VLM image picker** — for VLMs, the sample passes the absolute file path into `VlmContent("image", path)`. Don't pass content URIs — the native side reads the file directly.
+
+Clone [`qualcomm/ai-hub-apps`](https://github.com/qualcomm/ai-hub-apps/blob/release/geniex_chat_android/README.md), open it in Android Studio, and hit **Run ▶**.
+
+## **Next steps**
+
+<CardGroup cols={2}>
+  <Card title="API reference" href="/en/run/android/api-reference" icon="book">
+    Wrapper classes, runtime / compute-unit selection, and data structures.
+  </Card>
+
+  <Card title="Platforms & runtimes" href="/en/get-started/platforms" icon="route">
+    Snapdragon platforms and when to pick llama.cpp vs Qualcomm AI Engine Direct.
+  </Card>
+</CardGroup>
+
+<br />
+
+<div class="feedback-wrapper">
+  <span class="feedback-label">Was this page helpful?</span>
+
+  <div class="feedback-toggle">
+    <input type="radio" name="feedback" id="feedback-yes" class="feedback-input" />
+
+    <label for="feedback-yes" class="feedback-button">
+      <img src="https://mintlify.s3.us-west-1.amazonaws.com/qualcomm-0801e48b/Images/FeedBack/thumbs-up.svg" alt="Thumbs up" class="feedback-icon" noZoom />
+
+      Yes
+    </label>
+
+    <input type="radio" name="feedback" id="feedback-no" class="feedback-input" />
+
+    <label for="feedback-no" class="feedback-button">
+      <img src="https://mintlify.s3.us-west-1.amazonaws.com/qualcomm-0801e48b/Images/FeedBack/thumbs-down.svg" alt="Thumbs down" class="feedback-icon" noZoom />
+
+      No
+    </label>
+  </div>
+</div>
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

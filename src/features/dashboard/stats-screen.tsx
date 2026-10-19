@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Icon } from '@/components/Icon';
+import { reportsText } from '@/features/reports/labels';
 import {
   CalendarHeat,
   CompareBarChart,
@@ -72,6 +74,29 @@ export function StatsScreen() {
       contentContainerStyle={[dashboardStyles.content, { paddingBottom: 40 }]}
     >
       <PeriodControl {...period} />
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push('/reports')}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          padding: 16,
+          borderRadius: 16,
+          backgroundColor: colors.card,
+        }}
+      >
+        <Icon name="sparkles" color={colors.primary} size={22} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>
+            {reportsText.title}
+          </Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+            {reportsText.entryHint}
+          </Text>
+        </View>
+        <Icon name="chevron-right" color={colors.textSecondary} size={18} />
+      </Pressable>
       <Text style={{ fontSize: 12, color: colors.textSecondary }}>
         {range.start} — {range.end}
       </Text>

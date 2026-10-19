@@ -1,0 +1,52 @@
+{
+  "repeat": 2,
+  "threads": 8,
+  "battery_before": "Current Battery Service state:\n  AC powered: false\n  USB powered: true\n  Wireless powered: false\n  Dock powered: false\n  Max charging current: 900000\n Time when the latest updated value of the Max charging current was sent via battery changed broadcast: +34d14h13m48s397ms\n  Max charging voltage: 5000000\n  Charge counter: 3597120\n  status: 4\n  health: 2\n  present: true\n  level: 48\n  scale: 100\n  voltage: 3854\n Time when the latest updated value of the voltage was sent via battery changed broadcast: +34d16h32m43s352ms\n The last voltage value sent via the battery changed broadcast: 3844\n  temperature: 331\n  technology: Li-ion\n  Charging state: 0\n  Charging policy: 0\n  Capacity level: -1\nMiuiBatteryService first usage time:\n  mSetBatteryUsageTimeCount=0\n  mNtpTime=-1\n  mParseNtpTime=\n",
+  "load_ms": 5298.897799992119,
+  "first_result_ms": 9227.416299996548,
+  "decisions_equal": true,
+  "request_ms": [
+    3928.2927999884123,
+    2490.776700011338,
+    2364.303899987135
+  ],
+  "environment": {
+    "LD_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/snapdragon-repack-b11669-v2/lib",
+    "ADSP_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/snapdragon-repack-b11669-v2/lib",
+    "GGML_HEXAGON_POWER_MODE": "balanced",
+    "GGML_OPENCL_KERNEL_CACHE_DIR": "/data/local/tmp/finance-nl-bench/opencl-cache",
+    "GGML_HEXAGON_REPACK_THREADS": "8"
+  },
+  "arguments": [
+    "-m",
+    "Qwen3.5-4B-Q4_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18487",
+    "-c",
+    "4096",
+    "-b",
+    "512",
+    "-ub",
+    "512",
+    "-t",
+    "4",
+    "-tb",
+    "4",
+    "-np",
+    "1",
+    "-ngl",
+    "99",
+    "--device",
+    "HTP0",
+    "--ctx-checkpoints",
+    "4",
+    "--jinja",
+    "--chat-template-file",
+    "qwen35-official-template.jinja",
+    "--no-webui",
+    "--no-warmup",
+    "--no-context-shift"
+  ]
+}

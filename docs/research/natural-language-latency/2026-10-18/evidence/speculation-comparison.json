@@ -1,0 +1,44 @@
+{
+  "scope": "Same first ten development cases and model; separate sequential diagnostics, not repeated randomized performance evidence",
+  "results": [
+    {
+      "run": "qwen4b-lean-dev",
+      "count": 10,
+      "decisions_equal": 10,
+      "request_bodies_equal": 10,
+      "subsequent_count": 9,
+      "subsequent_mean_ms": 2536.352422220969,
+      "subsequent_max_ms": 2599.678099999437,
+      "cold_first_ms": 11718.483599994215,
+      "draft_accepted": 0,
+      "draft_generated": 0,
+      "source_sha256": "fe5d9981937f1900f42a4d0dc3d6343cce40eee40b9c910476f131019b5a2290"
+    },
+    {
+      "run": "qwen4b-ngram2-smoke",
+      "count": 10,
+      "decisions_equal": 10,
+      "request_bodies_equal": 10,
+      "subsequent_count": 9,
+      "subsequent_mean_ms": 3070.80096666727,
+      "subsequent_max_ms": 3201.388200002839,
+      "cold_first_ms": 12404.00850000151,
+      "draft_accepted": 33,
+      "draft_generated": 372,
+      "source_sha256": "383fec3003988ffabf57c2cf2ba0f6a7e51528ad5ab79a14a7ce37e35223bccd"
+    },
+    {
+      "run": "qwen4b-static-cache-smoke",
+      "count": 10,
+      "decisions_equal": 10,
+      "request_bodies_equal": 10,
+      "subsequent_count": 9,
+      "subsequent_mean_ms": 2564.6515000019767,
+      "subsequent_max_ms": 2661.330299990368,
+      "cold_first_ms": 11515.028499998152,
+      "draft_accepted": 136,
+      "draft_generated": 451,
+      "source_sha256": "bfd69258ec2775f66355c5d5140431cd148280e8199099752e582f507bdb0560"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "amount_cents": {
+    "counts": {
+      "both_correct": 160
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "type": {
+    "counts": {
+      "both_correct": 139,
+      "corrected": 21
+    },
+    "corrected_ids": [
+      "parking-3",
+      "gaming-2",
+      "gaming-3",
+      "haircut-2",
+      "haircut-3",
+      "haircut-4",
+      "swimming-1",
+      "swimming-4",
+      "swimming-5",
+      "property_fee-1",
+      "property_fee-2",
+      "property_fee-3",
+      "property_fee-5",
+      "camera_accessory-3",
+      "cash_to_bank-2",
+      "cash_to_bank-4",
+      "credit_repayment-1",
+      "credit_repayment-2",
+      "credit_repayment-3",
+      "credit_repayment-4",
+      "credit_repayment-5"
+    ],
+    "regressed_ids": []
+  },
+  "category": {
+    "counts": {
+      "both_wrong": 76,
+      "both_correct": 78,
+      "corrected": 6
+    },
+    "corrected_ids": [
+      "camera_accessory-3",
+      "credit_repayment-1",
+      "credit_repayment-2",
+      "credit_repayment-3",
+      "credit_repayment-4",
+      "credit_repayment-5"
+    ],
+    "regressed_ids": []
+  },
+  "account": {
+    "counts": {
+      "both_correct": 128,
+      "both_wrong": 32
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "to_account": {
+    "counts": {
+      "both_correct": 147,
+      "corrected": 10,
+      "both_wrong": 3
+    },
+    "corrected_ids": [
+      "parking-3",
+      "swimming-4",
+      "camera_accessory-3",
+      "cash_to_bank-2",
+      "cash_to_bank-4",
+      "credit_repayment-1",
+      "credit_repayment-2",
+      "credit_repayment-3",
+      "credit_repayment-4",
+      "credit_repayment-5"
+    ],
+    "regressed_ids": []
+  },
+  "day": {
+    "counts": {
+      "both_correct": 125,
+      "both_wrong": 35
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "status": {
+    "counts": {
+      "both_wrong": 34,
+      "both_correct": 166
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  }
+}

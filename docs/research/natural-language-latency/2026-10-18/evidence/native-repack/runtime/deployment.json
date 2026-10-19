@@ -1,0 +1,80 @@
+{
+  "serial": "HA29H4B6",
+  "remote": "/data/local/tmp/finance-nl-bench/snapdragon-repack-b11669-v2",
+  "backend_links": [
+    {
+      "path": "bin/libggml-cpu.so",
+      "target": "../lib/libggml-cpu.so"
+    },
+    {
+      "path": "bin/libggml-hexagon.so",
+      "target": "../lib/libggml-hexagon.so"
+    },
+    {
+      "path": "bin/libggml-opencl.so",
+      "target": "../lib/libggml-opencl.so"
+    }
+  ],
+  "files": [
+    {
+      "path": "lib/libggml-base.so",
+      "sha256": "ccd061521ff502109cd7edd9ad136db8f54c7c66c0be9f5b733e9f81db5ba803"
+    },
+    {
+      "path": "lib/libggml-cpu.so",
+      "sha256": "30c9f0d8dfacfc087f1b2fafc7d2e36e40365e14f187ed4afa25626a432f0872"
+    },
+    {
+      "path": "lib/libggml-hexagon.so",
+      "sha256": "80b4736d8ea84f96b9ebddd9947d83ed0dac9f37a9109ead661d31ee84c42fa9"
+    },
+    {
+      "path": "lib/libggml-opencl.so",
+      "sha256": "af1357ffebccdbb6cbcb097ed98a1eecf2a86620bb6e4eb6866c97ff2f0737f3"
+    },
+    {
+      "path": "lib/libggml.so",
+      "sha256": "0ab62cdb655d1ab6904da26ea175901e2a55d4bd23d5a99c4512ce76ab90827c"
+    },
+    {
+      "path": "lib/libllama-common.so",
+      "sha256": "550dab2be993abb6d4d864cbb44aaa6a33bf79f85f502eeaf09f03f916f9a2dc"
+    },
+    {
+      "path": "lib/libllama-server-impl.so",
+      "sha256": "ef2d9468427ba8886fa9315b27cfc6d40d2fbc74b3c318be9090ac5647049296"
+    },
+    {
+      "path": "lib/libllama.so",
+      "sha256": "939bd3a27d8ec58c690fc3c680f5a9ecd7409e628f3e8ecf691eb1665f71c468"
+    },
+    {
+      "path": "lib/libmtmd.so",
+      "sha256": "c3e3c63c30d44f9acae622666e1e824d5df18cc317591719fa7b3e95688624e2"
+    },
+    {
+      "path": "lib/libggml-htp-v73.so",
+      "sha256": "96a642cbdebf2c576a92d6ddc533740bdf354bb3400a4c61fdf3a5374418af87"
+    },
+    {
+      "path": "lib/libggml-htp-v75.so",
+      "sha256": "b4a575eadb98a8b1f584539ff495b230d8440b9d3b163f394691017bdea5af0d"
+    },
+    {
+      "path": "lib/libggml-htp-v79.so",
+      "sha256": "930494f74e98e57f692a64088b5c2bb438403251aca9071c37fab8f41ecb3881"
+    },
+    {
+      "path": "lib/libggml-htp-v81.so",
+      "sha256": "7a6ee3fd92b455d5bf56b49b3c5446096f6bfbee4bc90c45630ae374911343a7"
+    },
+    {
+      "path": "bin/llama-server",
+      "sha256": "652a231056885d53454408c3c27ac3c761aa69ea34671674dedade7e4d6f1fcc"
+    },
+    {
+      "path": "bin/repack-roundtrip",
+      "sha256": "97a683c1eb4bd62894b475962ddd5524918e5e1301be0491d9e082c773fc3b19"
+    }
+  ]
+}

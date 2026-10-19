@@ -1,0 +1,27 @@
+[
+  {
+    "freeze": "scripts/natural-language/jev/freeze.json",
+    "count": 12,
+    "failures": []
+  },
+  {
+    "freeze": "scripts/natural-language/jev_harness/freeze.json",
+    "count": 25,
+    "failures": []
+  },
+  {
+    "freeze": "artifacts/natural-language-mobile-instruct/freeze.json",
+    "count": 14,
+    "failures": []
+  },
+  {
+    "freeze": "artifacts/natural-language-mobile-instruct/safe-freeze.json",
+    "count": 11,
+    "failures": []
+  },
+  {
+    "freeze": "artifacts/natural-language-mobile-instruct/device-freeze.json",
+    "count": 7,
+    "failures": []
+  }
+]

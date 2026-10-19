@@ -1,0 +1,73 @@
+{
+  "bounds": [
+    {
+      "start_ts": 995109337578210,
+      "end_ts": 995129309870494
+    }
+  ],
+  "processes": [
+    {
+      "pid": 8670,
+      "name": "runtime/llama-server",
+      "cpu_ms": 75332.649469,
+      "switches": 10563
+    }
+  ],
+  "cpu_distribution": [
+    {
+      "cpu": 0,
+      "cpu_ms": 16873.247916
+    },
+    {
+      "cpu": 1,
+      "cpu_ms": 14714.439314
+    },
+    {
+      "cpu": 2,
+      "cpu_ms": 1552.583087
+    },
+    {
+      "cpu": 3,
+      "cpu_ms": 15002.079668
+    },
+    {
+      "cpu": 4,
+      "cpu_ms": 15647.494843
+    },
+    {
+      "cpu": 5,
+      "cpu_ms": 4274.865625
+    },
+    {
+      "cpu": 6,
+      "cpu_ms": 4642.265995
+    },
+    {
+      "cpu": 7,
+      "cpu_ms": 2625.673021
+    }
+  ],
+  "thread_states": [
+    {
+      "state": "Running",
+      "duration_ms": 75332.649469
+    },
+    {
+      "state": "S",
+      "duration_ms": 60276.221008
+    },
+    {
+      "state": "R",
+      "duration_ms": 299.313828
+    },
+    {
+      "state": "D",
+      "duration_ms": 39.209318
+    },
+    {
+      "state": "R+",
+      "duration_ms": 6.742565
+    }
+  ],
+  "errors": []
+}

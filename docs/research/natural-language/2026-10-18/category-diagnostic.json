@@ -1,0 +1,1991 @@
+{
+  "scope": "Supplied gold transaction type. Not end-to-end accuracy and not a release gate pass.",
+  "results": {
+    "fp32": {
+      "correct": 111,
+      "total": 160,
+      "failures": [
+        {
+          "id": "test-001",
+          "text": "我的车充电花了30块",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.485196590423584
+            },
+            {
+              "id": "transport",
+              "score": 0.47646576166152954
+            },
+            {
+              "id": "sport",
+              "score": 0.4394066035747528
+            }
+          ]
+        },
+        {
+          "id": "test-002",
+          "text": "昨晚电车充电付了四十二元五角",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.4813905358314514
+            },
+            {
+              "id": "transport",
+              "score": 0.46915102005004883
+            },
+            {
+              "id": "adjust_expense",
+              "score": 0.41157251596450806
+            }
+          ]
+        },
+        {
+          "id": "test-003",
+          "text": "充电桩给汽车充了20度电，实付18.60元",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5169997811317444
+            },
+            {
+              "id": "transport",
+              "score": 0.4845503568649292
+            },
+            {
+              "id": "adjust_expense",
+              "score": 0.39839717745780945
+            }
+          ]
+        },
+        {
+          "id": "test-004",
+          "text": "前天高速服务区充电花六十八块",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5165069103240967
+            },
+            {
+              "id": "transport",
+              "score": 0.49409013986587524
+            },
+            {
+              "id": "communication",
+              "score": 0.4895990788936615
+            }
+          ]
+        },
+        {
+          "id": "test-010",
+          "text": "中石化加油实付二百元整",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.4435117244720459
+            },
+            {
+              "id": "transport",
+              "score": 0.4196890592575073
+            },
+            {
+              "id": "beauty",
+              "score": 0.37521207332611084
+            }
+          ]
+        },
+        {
+          "id": "test-014",
+          "text": "小区车位月租已付300元",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5638399124145508
+            },
+            {
+              "id": "transport",
+              "score": 0.5562704801559448
+            },
+            {
+              "id": "other_expense",
+              "score": 0.40675806999206543
+            }
+          ]
+        },
+        {
+          "id": "test-036",
+          "text": "咖啡店买拿铁花28元",
+          "expected": "food",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.41369760036468506
+            },
+            {
+              "id": "shopping",
+              "score": 0.4113273322582245
+            },
+            {
+              "id": "sport",
+              "score": 0.40435272455215454
+            }
+          ]
+        },
+        {
+          "id": "test-038",
+          "text": "今天咖啡券抵扣后实付9.90元",
+          "expected": "food",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.4404500424861908
+            },
+            {
+              "id": "transport",
+              "score": 0.4381779134273529
+            },
+            {
+              "id": "food",
+              "score": 0.43531090021133423
+            }
+          ]
+        },
+        {
+          "id": "test-041",
+          "text": "买新外套花299元",
+          "expected": "shopping",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.45315492153167725
+            },
+            {
+              "id": "beauty",
+              "score": 0.45038267970085144
+            },
+            {
+              "id": "shopping",
+              "score": 0.45023536682128906
+            }
+          ]
+        },
+        {
+          "id": "test-045",
+          "text": "买衬衫标价200，折后付160元",
+          "expected": "shopping",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.4853416085243225
+            },
+            {
+              "id": "shopping",
+              "score": 0.48487722873687744
+            },
+            {
+              "id": "transport",
+              "score": 0.44566893577575684
+            }
+          ]
+        },
+        {
+          "id": "test-046",
+          "text": "买蓝牙耳机花199元",
+          "expected": "shopping",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.45380455255508423
+            },
+            {
+              "id": "shopping",
+              "score": 0.4328223168849945
+            },
+            {
+              "id": "sport",
+              "score": 0.42370665073394775
+            }
+          ]
+        },
+        {
+          "id": "test-047",
+          "text": "换新手机付了四千九百九十九元",
+          "expected": "shopping",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.5504695773124695
+            },
+            {
+              "id": "subscription",
+              "score": 0.4837797284126282
+            },
+            {
+              "id": "transport",
+              "score": 0.4745330214500427
+            }
+          ]
+        },
+        {
+          "id": "test-048",
+          "text": "昨天键盘到手，银行卡付款289.50元",
+          "expected": "shopping",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.43812987208366394
+            },
+            {
+              "id": "social",
+              "score": 0.4178725481033325
+            },
+            {
+              "id": "shopping",
+              "score": 0.4165460467338562
+            }
+          ]
+        },
+        {
+          "id": "test-049",
+          "text": "买一个充电器付59块9",
+          "expected": "shopping",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.47901517152786255
+            },
+            {
+              "id": "other_expense",
+              "score": 0.47058773040771484
+            },
+            {
+              "id": "communication",
+              "score": 0.4696941673755646
+            }
+          ]
+        },
+        {
+          "id": "test-050",
+          "text": "电脑显示器订单编号20261018，实付899元",
+          "expected": "shopping",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.4588205814361572
+            },
+            {
+              "id": "shopping",
+              "score": 0.4268309772014618
+            },
+            {
+              "id": "health",
+              "score": 0.40029823780059814
+            }
+          ]
+        },
+        {
+          "id": "test-054",
+          "text": "昨天支付宝交电费89.65元",
+          "expected": "housing",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.5575093626976013
+            },
+            {
+              "id": "communication",
+              "score": 0.5548295974731445
+            },
+            {
+              "id": "housing",
+              "score": 0.5429482460021973
+            }
+          ]
+        },
+        {
+          "id": "test-069",
+          "text": "昨天买游戏皮肤花128.80元",
+          "expected": "entertainment",
+          "predicted": "beauty",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "beauty",
+              "score": 0.4896157383918762
+            },
+            {
+              "id": "entertainment",
+              "score": 0.48398101329803467
+            },
+            {
+              "id": "sport",
+              "score": 0.447655588388443
+            }
+          ]
+        },
+        {
+          "id": "test-072",
+          "text": "度假民宿住两晚合计八百元",
+          "expected": "entertainment",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.507455050945282
+            },
+            {
+              "id": "transport",
+              "score": 0.44996219873428345
+            },
+            {
+              "id": "entertainment",
+              "score": 0.44143763184547424
+            }
+          ]
+        },
+        {
+          "id": "test-074",
+          "text": "旅游团报名费支付1500块",
+          "expected": "entertainment",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.5334683060646057
+            },
+            {
+              "id": "transport",
+              "score": 0.5167833566665649
+            },
+            {
+              "id": "entertainment",
+              "score": 0.4994293451309204
+            }
+          ]
+        },
+        {
+          "id": "test-075",
+          "text": "周末旅行的酒店尾款实付二百六十元五角",
+          "expected": "entertainment",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.45245230197906494
+            },
+            {
+              "id": "entertainment",
+              "score": 0.445234477519989
+            },
+            {
+              "id": "food",
+              "score": 0.412003755569458
+            }
+          ]
+        },
+        {
+          "id": "test-077",
+          "text": "牙科洗牙支付一百九十八块",
+          "expected": "health",
+          "predicted": "beauty",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "beauty",
+              "score": 0.4932081699371338
+            },
+            {
+              "id": "other_expense",
+              "score": 0.4519153833389282
+            },
+            {
+              "id": "health",
+              "score": 0.42679017782211304
+            }
+          ]
+        },
+        {
+          "id": "test-079",
+          "text": "体检费用银行卡扣了800元",
+          "expected": "health",
+          "predicted": "sport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "sport",
+              "score": 0.5457597970962524
+            },
+            {
+              "id": "health",
+              "score": 0.5208719968795776
+            },
+            {
+              "id": "transport",
+              "score": 0.4818270802497864
+            }
+          ]
+        },
+        {
+          "id": "test-080",
+          "text": "看皮肤科挂号付三十五元",
+          "expected": "health",
+          "predicted": "beauty",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "beauty",
+              "score": 0.5312808752059937
+            },
+            {
+              "id": "health",
+              "score": 0.527208685874939
+            },
+            {
+              "id": "sport",
+              "score": 0.4590657949447632
+            }
+          ]
+        },
+        {
+          "id": "test-082",
+          "text": "线上编程课付款九十九元",
+          "expected": "education",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.5144801735877991
+            },
+            {
+              "id": "education",
+              "score": 0.45816513895988464
+            },
+            {
+              "id": "communication",
+              "score": 0.4320048987865448
+            }
+          ]
+        },
+        {
+          "id": "test-083",
+          "text": "昨天交驾校培训费3500元",
+          "expected": "education",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.595118522644043
+            },
+            {
+              "id": "sport",
+              "score": 0.5453786253929138
+            },
+            {
+              "id": "education",
+              "score": 0.4851325750350952
+            }
+          ]
+        },
+        {
+          "id": "test-084",
+          "text": "钢琴课十节合计2000块已经交了",
+          "expected": "education",
+          "predicted": "sport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "sport",
+              "score": 0.47153764963150024
+            },
+            {
+              "id": "transport",
+              "score": 0.4397128224372864
+            },
+            {
+              "id": "education",
+              "score": 0.43820518255233765
+            }
+          ]
+        },
+        {
+          "id": "test-085",
+          "text": "课程续费实付二百九十九元五角",
+          "expected": "education",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.49632149934768677
+            },
+            {
+              "id": "transport",
+              "score": 0.4849478006362915
+            },
+            {
+              "id": "sport",
+              "score": 0.4776447117328644
+            }
+          ]
+        },
+        {
+          "id": "test-115",
+          "text": "云存储月费六元已经扣款",
+          "expected": "subscription",
+          "predicted": "adjust_expense",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "adjust_expense",
+              "score": 0.5029520392417908
+            },
+            {
+              "id": "subscription",
+              "score": 0.49278780817985535
+            },
+            {
+              "id": "communication",
+              "score": 0.48220497369766235
+            }
+          ]
+        },
+        {
+          "id": "test-116",
+          "text": "补办证件工本费20元",
+          "expected": "other_expense",
+          "predicted": "adjust_expense",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "adjust_expense",
+              "score": 0.5476093292236328
+            },
+            {
+              "id": "housing",
+              "score": 0.4898373782634735
+            },
+            {
+              "id": "beauty",
+              "score": 0.47544169425964355
+            }
+          ]
+        },
+        {
+          "id": "test-117",
+          "text": "昨天交了行政罚款一百元",
+          "expected": "other_expense",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.5038824081420898
+            },
+            {
+              "id": "housing",
+              "score": 0.4615843892097473
+            },
+            {
+              "id": "adjust_expense",
+              "score": 0.4360123872756958
+            }
+          ]
+        },
+        {
+          "id": "test-118",
+          "text": "捐款给公益组织50元",
+          "expected": "other_expense",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.4729577600955963
+            },
+            {
+              "id": "sport",
+              "score": 0.4629245102405548
+            },
+            {
+              "id": "adjust_expense",
+              "score": 0.45377370715141296
+            }
+          ]
+        },
+        {
+          "id": "test-119",
+          "text": "快递寄件费付了12元",
+          "expected": "other_expense",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.5216778516769409
+            },
+            {
+              "id": "subscription",
+              "score": 0.514146089553833
+            },
+            {
+              "id": "transport",
+              "score": 0.5099969506263733
+            }
+          ]
+        },
+        {
+          "id": "test-120",
+          "text": "打印私人材料花了三元五角",
+          "expected": "other_expense",
+          "predicted": "adjust_expense",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "adjust_expense",
+              "score": 0.47368064522743225
+            },
+            {
+              "id": "social",
+              "score": 0.44209426641464233
+            },
+            {
+              "id": "beauty",
+              "score": 0.439474493265152
+            }
+          ]
+        },
+        {
+          "id": "test-136",
+          "text": "拾金不昧得到酬谢100元已收到",
+          "expected": "other_income",
+          "predicted": "bonus",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "bonus",
+              "score": 0.6175209879875183
+            },
+            {
+              "id": "parttime",
+              "score": 0.5354297161102295
+            },
+            {
+              "id": "secondhand",
+              "score": 0.5274753570556641
+            }
+          ]
+        },
+        {
+          "id": "test-137",
+          "text": "保险赔付款到账三千元",
+          "expected": "other_income",
+          "predicted": "salary",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "salary",
+              "score": 0.4830530881881714
+            },
+            {
+              "id": "bonus",
+              "score": 0.4673490524291992
+            },
+            {
+              "id": "red_packet",
+              "score": 0.4523612856864929
+            }
+          ]
+        },
+        {
+          "id": "test-138",
+          "text": "收到平台活动现金奖励5.20元",
+          "expected": "other_income",
+          "predicted": "bonus",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "bonus",
+              "score": 0.6775072813034058
+            },
+            {
+              "id": "salary",
+              "score": 0.5411597490310669
+            },
+            {
+              "id": "parttime",
+              "score": 0.5345336198806763
+            }
+          ]
+        },
+        {
+          "id": "test-139",
+          "text": "昨天收到了交通补贴150元",
+          "expected": "other_income",
+          "predicted": "bonus",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "bonus",
+              "score": 0.5595294237136841
+            },
+            {
+              "id": "salary",
+              "score": 0.531146764755249
+            },
+            {
+              "id": "red_packet",
+              "score": 0.49746954441070557
+            }
+          ]
+        },
+        {
+          "id": "test-140",
+          "text": "邻居补偿款八十元已经收下",
+          "expected": "other_income",
+          "predicted": "adjust_income",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "adjust_income",
+              "score": 0.5311744213104248
+            },
+            {
+              "id": "red_packet",
+              "score": 0.5229170322418213
+            },
+            {
+              "id": "bonus",
+              "score": 0.5130890607833862
+            }
+          ]
+        },
+        {
+          "id": "test-141",
+          "text": "银行卡转到我的微信300元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7175806760787964
+            },
+            {
+              "id": "deposit",
+              "score": 0.6679182052612305
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6325032711029053
+            }
+          ]
+        },
+        {
+          "id": "test-142",
+          "text": "从银行卡给自己的微信充值五百元",
+          "expected": "transfer_account",
+          "predicted": "deposit",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "deposit",
+              "score": 0.6171773672103882
+            },
+            {
+              "id": "repayment",
+              "score": 0.616252064704895
+            },
+            {
+              "id": "withdrawal",
+              "score": 0.6117053031921387
+            }
+          ]
+        },
+        {
+          "id": "test-143",
+          "text": "昨天我的银行卡转出88.50元到微信钱包",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7375457286834717
+            },
+            {
+              "id": "deposit",
+              "score": 0.6811981201171875
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6191821098327637
+            }
+          ]
+        },
+        {
+          "id": "test-144",
+          "text": "银行卡向我自己的微信余额转入120元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.6910912990570068
+            },
+            {
+              "id": "deposit",
+              "score": 0.6762036085128784
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6496919393539429
+            }
+          ]
+        },
+        {
+          "id": "test-145",
+          "text": "将银行卡里的六百元转到本人微信账户",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.6930980086326599
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6867401599884033
+            },
+            {
+              "id": "other_transfer",
+              "score": 0.6655373573303223
+            }
+          ]
+        },
+        {
+          "id": "test-149",
+          "text": "银行卡转500元到信用卡用于还款",
+          "expected": "repayment",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.706019401550293
+            },
+            {
+              "id": "repayment",
+              "score": 0.6906520128250122
+            },
+            {
+              "id": "deposit",
+              "score": 0.6326664090156555
+            }
+          ]
+        },
+        {
+          "id": "test-156",
+          "text": "工资卡转储蓄卡2000元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7110135555267334
+            },
+            {
+              "id": "deposit",
+              "score": 0.6986033320426941
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.5891938805580139
+            }
+          ]
+        },
+        {
+          "id": "test-157",
+          "text": "我的工资卡向我的银行卡转入一千五百元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7353050708770752
+            },
+            {
+              "id": "deposit",
+              "score": 0.7153918743133545
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6256770491600037
+            }
+          ]
+        },
+        {
+          "id": "test-158",
+          "text": "昨天本人银行卡转到工资卡68.80元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7358725070953369
+            },
+            {
+              "id": "deposit",
+              "score": 0.6762433052062988
+            },
+            {
+              "id": "other_transfer",
+              "score": 0.6094530820846558
+            }
+          ]
+        },
+        {
+          "id": "test-159",
+          "text": "储蓄卡转出600元给自己的工资卡",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.6947433948516846
+            },
+            {
+              "id": "deposit",
+              "score": 0.6720211505889893
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6028493046760559
+            }
+          ]
+        },
+        {
+          "id": "test-160",
+          "text": "工资卡里的三千元挪到我另一张银行卡",
+          "expected": "transfer_account",
+          "predicted": "deposit",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "deposit",
+              "score": 0.6913528442382812
+            },
+            {
+              "id": "withdrawal",
+              "score": 0.6659542918205261
+            },
+            {
+              "id": "repayment",
+              "score": 0.5949796438217163
+            }
+          ]
+        }
+      ]
+    },
+    "int8": {
+      "correct": 115,
+      "total": 160,
+      "failures": [
+        {
+          "id": "test-001",
+          "text": "我的车充电花了30块",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5072745084762573
+            },
+            {
+              "id": "transport",
+              "score": 0.4826533794403076
+            },
+            {
+              "id": "sport",
+              "score": 0.4555705785751343
+            }
+          ]
+        },
+        {
+          "id": "test-002",
+          "text": "昨晚电车充电付了四十二元五角",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5020593404769897
+            },
+            {
+              "id": "transport",
+              "score": 0.485431432723999
+            },
+            {
+              "id": "communication",
+              "score": 0.417586088180542
+            }
+          ]
+        },
+        {
+          "id": "test-003",
+          "text": "充电桩给汽车充了20度电，实付18.60元",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5190780758857727
+            },
+            {
+              "id": "transport",
+              "score": 0.4871496558189392
+            },
+            {
+              "id": "sport",
+              "score": 0.4088708758354187
+            }
+          ]
+        },
+        {
+          "id": "test-004",
+          "text": "前天高速服务区充电花六十八块",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5198538303375244
+            },
+            {
+              "id": "transport",
+              "score": 0.4904656410217285
+            },
+            {
+              "id": "communication",
+              "score": 0.4890410900115967
+            }
+          ]
+        },
+        {
+          "id": "test-010",
+          "text": "中石化加油实付二百元整",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.4543376863002777
+            },
+            {
+              "id": "transport",
+              "score": 0.43018269538879395
+            },
+            {
+              "id": "beauty",
+              "score": 0.376548707485199
+            }
+          ]
+        },
+        {
+          "id": "test-014",
+          "text": "小区车位月租已付300元",
+          "expected": "transport",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5810515284538269
+            },
+            {
+              "id": "transport",
+              "score": 0.5548490285873413
+            },
+            {
+              "id": "food",
+              "score": 0.4136682450771332
+            }
+          ]
+        },
+        {
+          "id": "test-036",
+          "text": "咖啡店买拿铁花28元",
+          "expected": "food",
+          "predicted": "sport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "sport",
+              "score": 0.41424620151519775
+            },
+            {
+              "id": "social",
+              "score": 0.4130961000919342
+            },
+            {
+              "id": "shopping",
+              "score": 0.40703505277633667
+            }
+          ]
+        },
+        {
+          "id": "test-038",
+          "text": "今天咖啡券抵扣后实付9.90元",
+          "expected": "food",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.45993444323539734
+            },
+            {
+              "id": "transport",
+              "score": 0.44636285305023193
+            },
+            {
+              "id": "food",
+              "score": 0.43998953700065613
+            }
+          ]
+        },
+        {
+          "id": "test-041",
+          "text": "买新外套花299元",
+          "expected": "shopping",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.452129065990448
+            },
+            {
+              "id": "shopping",
+              "score": 0.4348061680793762
+            },
+            {
+              "id": "beauty",
+              "score": 0.4294513463973999
+            }
+          ]
+        },
+        {
+          "id": "test-045",
+          "text": "买衬衫标价200，折后付160元",
+          "expected": "shopping",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.47871360182762146
+            },
+            {
+              "id": "shopping",
+              "score": 0.475608229637146
+            },
+            {
+              "id": "transport",
+              "score": 0.44001954793930054
+            }
+          ]
+        },
+        {
+          "id": "test-046",
+          "text": "买蓝牙耳机花199元",
+          "expected": "shopping",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.4616624414920807
+            },
+            {
+              "id": "sport",
+              "score": 0.44356676936149597
+            },
+            {
+              "id": "shopping",
+              "score": 0.432701975107193
+            }
+          ]
+        },
+        {
+          "id": "test-047",
+          "text": "换新手机付了四千九百九十九元",
+          "expected": "shopping",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.557325005531311
+            },
+            {
+              "id": "subscription",
+              "score": 0.5011931657791138
+            },
+            {
+              "id": "transport",
+              "score": 0.48199543356895447
+            }
+          ]
+        },
+        {
+          "id": "test-048",
+          "text": "昨天键盘到手，银行卡付款289.50元",
+          "expected": "shopping",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.43771758675575256
+            },
+            {
+              "id": "other_expense",
+              "score": 0.41727662086486816
+            },
+            {
+              "id": "social",
+              "score": 0.4151598811149597
+            }
+          ]
+        },
+        {
+          "id": "test-049",
+          "text": "买一个充电器付59块9",
+          "expected": "shopping",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.4929004907608032
+            },
+            {
+              "id": "communication",
+              "score": 0.4842810034751892
+            },
+            {
+              "id": "other_expense",
+              "score": 0.4773809015750885
+            }
+          ]
+        },
+        {
+          "id": "test-050",
+          "text": "电脑显示器订单编号20261018，实付899元",
+          "expected": "shopping",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.4752855896949768
+            },
+            {
+              "id": "shopping",
+              "score": 0.42527300119400024
+            },
+            {
+              "id": "health",
+              "score": 0.4167119860649109
+            }
+          ]
+        },
+        {
+          "id": "test-054",
+          "text": "昨天支付宝交电费89.65元",
+          "expected": "housing",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.564610481262207
+            },
+            {
+              "id": "transport",
+              "score": 0.558506965637207
+            },
+            {
+              "id": "housing",
+              "score": 0.5546759366989136
+            }
+          ]
+        },
+        {
+          "id": "test-072",
+          "text": "度假民宿住两晚合计八百元",
+          "expected": "entertainment",
+          "predicted": "housing",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "housing",
+              "score": 0.5103654861450195
+            },
+            {
+              "id": "transport",
+              "score": 0.4433472156524658
+            },
+            {
+              "id": "entertainment",
+              "score": 0.42677849531173706
+            }
+          ]
+        },
+        {
+          "id": "test-074",
+          "text": "旅游团报名费支付1500块",
+          "expected": "entertainment",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.5423358082771301
+            },
+            {
+              "id": "transport",
+              "score": 0.5053175687789917
+            },
+            {
+              "id": "entertainment",
+              "score": 0.4996163845062256
+            }
+          ]
+        },
+        {
+          "id": "test-075",
+          "text": "周末旅行的酒店尾款实付二百六十元五角",
+          "expected": "entertainment",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.46075117588043213
+            },
+            {
+              "id": "entertainment",
+              "score": 0.4400029182434082
+            },
+            {
+              "id": "food",
+              "score": 0.4068942666053772
+            }
+          ]
+        },
+        {
+          "id": "test-077",
+          "text": "牙科洗牙支付一百九十八块",
+          "expected": "health",
+          "predicted": "beauty",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "beauty",
+              "score": 0.48605865240097046
+            },
+            {
+              "id": "other_expense",
+              "score": 0.4544678330421448
+            },
+            {
+              "id": "health",
+              "score": 0.4378427267074585
+            }
+          ]
+        },
+        {
+          "id": "test-079",
+          "text": "体检费用银行卡扣了800元",
+          "expected": "health",
+          "predicted": "sport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "sport",
+              "score": 0.546042263507843
+            },
+            {
+              "id": "health",
+              "score": 0.5195407271385193
+            },
+            {
+              "id": "communication",
+              "score": 0.48137831687927246
+            }
+          ]
+        },
+        {
+          "id": "test-082",
+          "text": "线上编程课付款九十九元",
+          "expected": "education",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.5200986862182617
+            },
+            {
+              "id": "education",
+              "score": 0.47160768508911133
+            },
+            {
+              "id": "communication",
+              "score": 0.4415130317211151
+            }
+          ]
+        },
+        {
+          "id": "test-083",
+          "text": "昨天交驾校培训费3500元",
+          "expected": "education",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.5911132097244263
+            },
+            {
+              "id": "sport",
+              "score": 0.545636773109436
+            },
+            {
+              "id": "education",
+              "score": 0.48523128032684326
+            }
+          ]
+        },
+        {
+          "id": "test-084",
+          "text": "钢琴课十节合计2000块已经交了",
+          "expected": "education",
+          "predicted": "sport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "sport",
+              "score": 0.4751209616661072
+            },
+            {
+              "id": "transport",
+              "score": 0.4531448483467102
+            },
+            {
+              "id": "education",
+              "score": 0.44868412613868713
+            }
+          ]
+        },
+        {
+          "id": "test-085",
+          "text": "课程续费实付二百九十九元五角",
+          "expected": "education",
+          "predicted": "subscription",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "subscription",
+              "score": 0.514093279838562
+            },
+            {
+              "id": "sport",
+              "score": 0.4927446246147156
+            },
+            {
+              "id": "transport",
+              "score": 0.4769802689552307
+            }
+          ]
+        },
+        {
+          "id": "test-116",
+          "text": "补办证件工本费20元",
+          "expected": "other_expense",
+          "predicted": "adjust_expense",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "adjust_expense",
+              "score": 0.5324512720108032
+            },
+            {
+              "id": "housing",
+              "score": 0.48133742809295654
+            },
+            {
+              "id": "beauty",
+              "score": 0.4587571918964386
+            }
+          ]
+        },
+        {
+          "id": "test-117",
+          "text": "昨天交了行政罚款一百元",
+          "expected": "other_expense",
+          "predicted": "transport",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "transport",
+              "score": 0.5051267147064209
+            },
+            {
+              "id": "housing",
+              "score": 0.4614039659500122
+            },
+            {
+              "id": "health",
+              "score": 0.436293363571167
+            }
+          ]
+        },
+        {
+          "id": "test-118",
+          "text": "捐款给公益组织50元",
+          "expected": "other_expense",
+          "predicted": "social",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "social",
+              "score": 0.4835960566997528
+            },
+            {
+              "id": "sport",
+              "score": 0.46973592042922974
+            },
+            {
+              "id": "other_expense",
+              "score": 0.44892027974128723
+            }
+          ]
+        },
+        {
+          "id": "test-119",
+          "text": "快递寄件费付了12元",
+          "expected": "other_expense",
+          "predicted": "communication",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "communication",
+              "score": 0.5275694131851196
+            },
+            {
+              "id": "subscription",
+              "score": 0.5115935802459717
+            },
+            {
+              "id": "transport",
+              "score": 0.508751392364502
+            }
+          ]
+        },
+        {
+          "id": "test-120",
+          "text": "打印私人材料花了三元五角",
+          "expected": "other_expense",
+          "predicted": "adjust_expense",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "adjust_expense",
+              "score": 0.46983563899993896
+            },
+            {
+              "id": "social",
+              "score": 0.4543516933917999
+            },
+            {
+              "id": "other_expense",
+              "score": 0.43194901943206787
+            }
+          ]
+        },
+        {
+          "id": "test-136",
+          "text": "拾金不昧得到酬谢100元已收到",
+          "expected": "other_income",
+          "predicted": "bonus",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "bonus",
+              "score": 0.6196094155311584
+            },
+            {
+              "id": "secondhand",
+              "score": 0.5342082977294922
+            },
+            {
+              "id": "parttime",
+              "score": 0.5196912288665771
+            }
+          ]
+        },
+        {
+          "id": "test-137",
+          "text": "保险赔付款到账三千元",
+          "expected": "other_income",
+          "predicted": "salary",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "salary",
+              "score": 0.4712064564228058
+            },
+            {
+              "id": "bonus",
+              "score": 0.46170198917388916
+            },
+            {
+              "id": "red_packet",
+              "score": 0.4450796842575073
+            }
+          ]
+        },
+        {
+          "id": "test-138",
+          "text": "收到平台活动现金奖励5.20元",
+          "expected": "other_income",
+          "predicted": "bonus",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "bonus",
+              "score": 0.6634777784347534
+            },
+            {
+              "id": "salary",
+              "score": 0.5303418636322021
+            },
+            {
+              "id": "parttime",
+              "score": 0.5247316956520081
+            }
+          ]
+        },
+        {
+          "id": "test-139",
+          "text": "昨天收到了交通补贴150元",
+          "expected": "other_income",
+          "predicted": "bonus",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "bonus",
+              "score": 0.547697901725769
+            },
+            {
+              "id": "salary",
+              "score": 0.5216931104660034
+            },
+            {
+              "id": "red_packet",
+              "score": 0.49429506063461304
+            }
+          ]
+        },
+        {
+          "id": "test-140",
+          "text": "邻居补偿款八十元已经收下",
+          "expected": "other_income",
+          "predicted": "red_packet",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "red_packet",
+              "score": 0.5137438178062439
+            },
+            {
+              "id": "adjust_income",
+              "score": 0.5070893168449402
+            },
+            {
+              "id": "bonus",
+              "score": 0.4924542307853699
+            }
+          ]
+        },
+        {
+          "id": "test-141",
+          "text": "银行卡转到我的微信300元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7040073871612549
+            },
+            {
+              "id": "deposit",
+              "score": 0.6524580717086792
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6267682909965515
+            }
+          ]
+        },
+        {
+          "id": "test-142",
+          "text": "从银行卡给自己的微信充值五百元",
+          "expected": "transfer_account",
+          "predicted": "deposit",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "deposit",
+              "score": 0.6143246293067932
+            },
+            {
+              "id": "repayment",
+              "score": 0.612635612487793
+            },
+            {
+              "id": "withdrawal",
+              "score": 0.6041178703308105
+            }
+          ]
+        },
+        {
+          "id": "test-143",
+          "text": "昨天我的银行卡转出88.50元到微信钱包",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7319557070732117
+            },
+            {
+              "id": "deposit",
+              "score": 0.6714524030685425
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.620132327079773
+            }
+          ]
+        },
+        {
+          "id": "test-144",
+          "text": "银行卡向我自己的微信余额转入120元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.6795509457588196
+            },
+            {
+              "id": "deposit",
+              "score": 0.6650335192680359
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6501931548118591
+            }
+          ]
+        },
+        {
+          "id": "test-145",
+          "text": "将银行卡里的六百元转到本人微信账户",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.6763973236083984
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6716760396957397
+            },
+            {
+              "id": "other_transfer",
+              "score": 0.6583318114280701
+            }
+          ]
+        },
+        {
+          "id": "test-156",
+          "text": "工资卡转储蓄卡2000元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.713448166847229
+            },
+            {
+              "id": "deposit",
+              "score": 0.6877483129501343
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.587408721446991
+            }
+          ]
+        },
+        {
+          "id": "test-157",
+          "text": "我的工资卡向我的银行卡转入一千五百元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7256432771682739
+            },
+            {
+              "id": "deposit",
+              "score": 0.7090672254562378
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6261414885520935
+            }
+          ]
+        },
+        {
+          "id": "test-158",
+          "text": "昨天本人银行卡转到工资卡68.80元",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.7374537587165833
+            },
+            {
+              "id": "deposit",
+              "score": 0.671050488948822
+            },
+            {
+              "id": "other_transfer",
+              "score": 0.621457576751709
+            }
+          ]
+        },
+        {
+          "id": "test-159",
+          "text": "储蓄卡转出600元给自己的工资卡",
+          "expected": "transfer_account",
+          "predicted": "withdrawal",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "withdrawal",
+              "score": 0.6972482204437256
+            },
+            {
+              "id": "deposit",
+              "score": 0.6607339978218079
+            },
+            {
+              "id": "transfer_account",
+              "score": 0.6065093874931335
+            }
+          ]
+        },
+        {
+          "id": "test-160",
+          "text": "工资卡里的三千元挪到我另一张银行卡",
+          "expected": "transfer_account",
+          "predicted": "deposit",
+          "correct": false,
+          "candidates": [
+            {
+              "id": "deposit",
+              "score": 0.6970309019088745
+            },
+            {
+              "id": "withdrawal",
+              "score": 0.6653023958206177
+            },
+            {
+              "id": "repayment",
+              "score": 0.6015306711196899
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

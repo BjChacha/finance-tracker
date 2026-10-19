@@ -6,11 +6,39 @@ type MigrationBundle = {
 const migrationBundle = require('../migrations/migrations').default as MigrationBundle;
 
 describe('migrations', () => {
-  it('registers transfer categories as the latest migration', () => {
+  it('registers the reports table as the latest migration', () => {
     expect(migrationBundle.journal.entries.at(-1)).toMatchObject({
-      idx: 6,
-      tag: '0006_transfer_categories',
+      idx: 8,
+      tag: '0008_familiar_luminals',
     });
+    expect(migrationBundle.migrations.m0008).toEqual(expect.any(String));
+    expect(migrationBundle.migrations.m0008.length).toBeGreaterThan(0);
+  });
+
+  it('0008 creates the reports table keyed by period', () => {
+    const sql = migrationBundle.migrations.m0008;
+    expect(sql).toContain('CREATE TABLE `reports`');
+    expect(sql).toContain('`period_key` text NOT NULL');
+    expect(sql).toContain('`snapshot` text NOT NULL');
+    expect(sql).toContain('`analysis` text NOT NULL');
+    expect(sql).toContain(
+      'CREATE UNIQUE INDEX `uq_reports_period_key` ON `reports` (`period`,`period_key`)',
+    );
+  });
+
+  it('keeps the llm usage table registered', () => {
+    expect(migrationBundle.migrations.m0007).toEqual(expect.any(String));
+    expect(migrationBundle.migrations.m0007.length).toBeGreaterThan(0);
+  });
+
+  it('0007 creates the llm usage table with its time index', () => {
+    const sql = migrationBundle.migrations.m0007;
+    expect(sql).toContain('CREATE TABLE `llm_usage`');
+    expect(sql).toContain('`cost_micros` integer DEFAULT 0 NOT NULL');
+    expect(sql).toContain('CREATE INDEX `idx_llm_usage_created`');
+  });
+
+  it('keeps the transfer category migration registered', () => {
     expect(migrationBundle.migrations.m0006).toEqual(expect.any(String));
     expect(migrationBundle.migrations.m0006.length).toBeGreaterThan(0);
   });

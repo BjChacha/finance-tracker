@@ -1,0 +1,20 @@
+{
+  "frozen_at": "2026-10-17T18:39:24.454723+00:00",
+  "selected_prompts": "prompts-v2.json",
+  "files": {
+    "scripts/natural-language/jev/decision.py": "7bf955e4e17d1857361446647deeeccc314e889ab981d9b0a40c5b4d7ae9274f",
+    "scripts/natural-language/jev/encoder.py": "7cdc7751752dba8c1064f86ba1cddffa3ed849db3974cdea2368a07a4145963c",
+    "scripts/natural-language/jev/support.py": "e452a6be23dbc3e1bc1c0966200fd642c51fcad360853100b5d50303708a7699",
+    "scripts/natural-language/jev/evaluation.py": "34f107fdaaefc40a711e280177af82f44f106f1f046d65a87f8dddd40d0f9d23",
+    "scripts/natural-language/jev/device_benchmark.py": "2391e7320075f9d9edb8238a9b66a2d329ca6c7f771fb2dbc14da28bdf177bc5",
+    "scripts/natural-language/jev/prompts.json": "137c3328ec49c053fd8c4459a99f6901b2cd9ecb415d7b76f1831dde629095a6",
+    "scripts/natural-language/data/dev.tsv": "4080af5315473dfdc9a62cd2552d9f7f4e8efe36b94e25d1c4ee974ece31f4bb",
+    "scripts/natural-language/data/context.json": "ac51b24ce777c0c83a6d6815f98a7bdfe041e317ca6d0add18367cd9ba64c16e",
+    "scripts/natural-language/instruct/heldout.tsv": "ae1c8f028d991a877e62b6297d8eda7847c7d0d277b086c0b4c21e1ed4c834e5",
+    "scripts/natural-language/instruct/harness.py": "0c786e416b55ee19f65c06458ca68a026a0e1d8faeefec395c84747275e72e7a",
+    "scripts/natural-language/instruct/evaluate.py": "afcb5314ec07a1892ae82f30ff9c50ebbc583e94c4d7f8430aeab892825ac067",
+    "scripts/natural-language/money.py": "c0b583b026767134bf747ef79bca9bdad3f521819b9d08f027621ef2e269305a"
+  },
+  "comparison_scope": "Previously observed synthetic 200-row benchmark; not an independent blind test; human review pending.",
+  "tuning": "Development data only; no project fine-tuning or quantization calibration."
+}

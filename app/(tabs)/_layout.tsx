@@ -3,6 +3,8 @@ import { useRouter } from "expo-router";
 import { useReducedMotion } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FloatingTabBar } from "@/components/navigation/tab-bar";
+import { useFloatingTabBarInset } from "@/components/navigation/floating-tab-bar";
+import { AddTransactionButton } from "@/features/dashboard/add-transaction-button";
 import { TabHeader } from "@/components/navigation/tab-header";
 import {
 	TabPagerViewport,
@@ -16,6 +18,7 @@ import { useTheme } from "@/theme";
 export default function TabLayout() {
 	const theme = useTheme();
 	const insets = useSafeAreaInsets();
+	const tabBarInset = useFloatingTabBarInset();
 	const router = useRouter();
 	const reduceMotion = useReducedMotion();
 
@@ -64,6 +67,7 @@ export default function TabLayout() {
 				onPressTab={pager.pressTab}
 				onLongPressTab={pager.longPressTab}
 			/>
+			<AddTransactionButton bottom={tabBarInset + 8} />
 		</View>
 	);
 }

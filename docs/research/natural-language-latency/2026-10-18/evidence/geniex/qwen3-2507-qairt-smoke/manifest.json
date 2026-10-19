@@ -1,0 +1,30 @@
+{
+  "serial": "HA29H4B6",
+  "plugin": "qairt",
+  "model_path": "/data/local/tmp/finance-nl-bench/qwen3-2507-qairt/genie_config.json",
+  "template_sha256": "0ab115e84509e86db2bb05a63edf63778ae7fe624972cdfa982b1e59053d6710",
+  "data_sha256": "876bd6503e362367ffd41ff36567d007074b80906062126544751374d8d0a96b",
+  "request_sha256": "1abf2a9c5d5426a6e4e34cb5499cdd86bb08ccb6c5a9062613cbab7a6243ef8d",
+  "source_hashes": {
+    "backend.py": "e2c34fc0100ed42db24e89eb08f5da8b3db926f50c348654631bf0754a7a18ab",
+    "build.sh": "a891f3c91e7ffc07099d4a1417cf532fa460a87fe1e64991856f5053f56e3a0e",
+    "compact.py": "d100ce89a66f859988ee2b60ea421dd8a748772f6b74248f0fe9451caadd2f1a",
+    "evaluate.py": "500bc680ad66d1521ece11a8ea7a3d5525c0f76e25cf465cd057e3df8440d8f9",
+    "lean.py": "b42edd763fd95ee02db3adc957990aebd9d54c0c9f67315808eb305a0e37ecd0",
+    "runner.cpp": "3420b4a35014cc75545ce343ffad2539a860aceddc89f942ded1d0fcfe270fec"
+  },
+  "environment": {
+    "LD_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib:/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/llama_cpp:/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/qairt:/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/qairt/htp-files",
+    "GENIEX_PLUGIN_PATH": "/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib",
+    "ADSP_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/llama_cpp;/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/qairt/htp-files"
+  },
+  "scope": "Native batch, independent reset and full prompt per request, no application UI, no model manager, no online inference",
+  "temperature": -1.0,
+  "power_mode": "balanced",
+  "battery_before": "Current Battery Service state:\n  AC powered: false\n  USB powered: true\n  Wireless powered: false\n  Dock powered: false\n  Max charging current: 900000\n Time when the latest updated value of the Max charging current was sent via battery changed broadcast: +34d14h13m48s397ms\n  Max charging voltage: 5000000\n  Charge counter: 3298680\n  status: 4\n  health: 2\n  present: true\n  level: 44\n  scale: 100\n  voltage: 3853\n Time when the latest updated value of the voltage was sent via battery changed broadcast: +34d17h15m47s981ms\n The last voltage value sent via the battery changed broadcast: 3833\n  temperature: 313\n  technology: Li-ion\n  Charging state: 0\n  Charging policy: 0\n  Capacity level: -1\nMiuiBatteryService first usage time:\n  mSetBatteryUsageTimeCount=0\n  mNtpTime=-1\n  mParseNtpTime=\n",
+  "event": "ready",
+  "load_ms": 12273.120047,
+  "plugin_version": "2.50",
+  "sdk_version": "v0.9.1",
+  "battery_after": "Current Battery Service state:\n  AC powered: false\n  USB powered: true\n  Wireless powered: false\n  Dock powered: false\n  Max charging current: 900000\n Time when the latest updated value of the Max charging current was sent via battery changed broadcast: +34d14h13m48s397ms\n  Max charging voltage: 5000000\n  Charge counter: 3293400\n  status: 4\n  health: 2\n  present: true\n  level: 44\n  scale: 100\n  voltage: 3774\n Time when the latest updated value of the voltage was sent via battery changed broadcast: +34d17h20m13s102ms\n The last voltage value sent via the battery changed broadcast: 3774\n  temperature: 313\n  technology: Li-ion\n  Charging state: 0\n  Charging policy: 0\n  Capacity level: -1\nMiuiBatteryService first usage time:\n  mSetBatteryUsageTimeCount=0\n  mNtpTime=-1\n  mParseNtpTime=\n"
+}

@@ -1,0 +1,19 @@
+{
+  "serial": "HA29H4B6",
+  "scope": "Unconstrained backend diagnostic only, not a quality benchmark",
+  "request_sha256": "1e0d769c487be430ad03cb9a6fd6d2c8fbed5cd44562a45154c87619c6951fbe",
+  "original_request_sha256": "1abf2a9c5d5426a6e4e34cb5499cdd86bb08ccb6c5a9062613cbab7a6243ef8d",
+  "template_sha256": "0ab115e84509e86db2bb05a63edf63778ae7fe624972cdfa982b1e59053d6710",
+  "source_hashes": {
+    "diagnose.py": "a1d09039f1f9790c51b50c074a0d3ea0dcda3ebccbd2345edadea35533616546",
+    "runner.cpp": "3420b4a35014cc75545ce343ffad2539a860aceddc89f942ded1d0fcfe270fec"
+  },
+  "environment": {
+    "LD_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib:/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/llama_cpp:/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/qairt:/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/qairt/htp-files",
+    "GENIEX_PLUGIN_PATH": "/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib",
+    "ADSP_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/llama_cpp;/data/local/tmp/finance-nl-bench/geniex-v0.9.1/lib/qairt/htp-files"
+  },
+  "timeout_seconds": 90,
+  "exit_code": 0,
+  "elapsed_ms": 14741.349600008107
+}

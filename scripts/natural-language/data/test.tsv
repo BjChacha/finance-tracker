@@ -1,0 +1,201 @@
+group	text	amount_cents	type	category	status
+ev_charging	我的车充电花了30块	3000	expense	transport	single
+ev_charging	昨晚电车充电付了四十二元五角	4250	expense	transport	single
+ev_charging	充电桩给汽车充了20度电，实付18.60元	1860	expense	transport	single
+ev_charging	前天高速服务区充电花六十八块	6800	expense	transport	single
+ev_charging	车充电优惠券抵5元后支付25元	2500	expense	transport	single
+fuel	加汽油花了300元	30000	expense	transport	single
+fuel	油站给车加满油，付三百八十块六	38060	expense	transport	single
+fuel	加了40升汽油，银行卡扣款320元	32000	expense	transport	single
+fuel	昨天给摩托车加油，支出55.20元	5520	expense	transport	single
+fuel	中石化加油实付二百元整	20000	expense	transport	single
+parking	停车场缴费10元	1000	expense	transport	single
+parking	停了3小时，停车费十五块	1500	expense	transport	single
+parking	昨天路边停车支付八元五角	850	expense	transport	single
+parking	小区车位月租已付300元	30000	expense	transport	single
+parking	扫码出场付停车费6.60元	660	expense	transport	single
+long_trip	高铁票花了235元	23500	expense	transport	single
+long_trip	买火车票支付一百零五元五角	10550	expense	transport	single
+long_trip	昨天坐长途汽车票价68块已付	6800	expense	transport	single
+long_trip	从广州到深圳的高铁票实付74.50元	7450	expense	transport	single
+long_trip	机场大巴购票二十五元	2500	expense	transport	single
+lunch	午餐吃盖饭花18元	1800	expense	food	single
+lunch	中午食堂付款十二块五	1250	expense	food	single
+lunch	午饭外卖原价30，券后实付22元	2200	expense	food	single
+lunch	午餐套餐两份，合计46元	4600	expense	food	single
+lunch	昨天中午面馆消费二十元六角	2060	expense	food	single
+dinner	晚上吃火锅付了188元	18800	expense	food	single
+dinner	晚餐家庭聚餐花三百二十块	32000	expense	food	single
+dinner	晚饭用现金结账35.80元	3580	expense	food	single
+dinner	和朋友吃晚饭AA，我付了60元	6000	expense	food	single
+dinner	前天晚餐牛肉饭花二十七块五	2750	expense	food	single
+late_night	夜宵烧烤花85元	8500	expense	food	single
+late_night	凌晨吃了一碗宵夜面，付16块	1600	expense	food	single
+late_night	昨晚夜宵买炸串总共三十三元	3300	expense	food	single
+late_night	半夜点粥当夜宵实付19.90元	1990	expense	food	single
+late_night	小龙虾夜宵微信付一百五十元	15000	expense	food	single
+cafe	咖啡店买拿铁花28元	2800	expense	food	single
+cafe	买奶茶花十五块八	1580	expense	food	single
+cafe	今天咖啡券抵扣后实付9.90元	990	expense	food	single
+cafe	买两杯果茶一共三十二元	3200	expense	food	single
+cafe	昨天喝柠檬茶付七元五角	750	expense	food	single
+clothes	买新外套花299元	29900	expense	shopping	single
+clothes	网购裤子支付一百三十九元	13900	expense	shopping	single
+clothes	两双袜子合计18.80元已付	1880	expense	shopping	single
+clothes	昨天买鞋付款399块	39900	expense	shopping	single
+clothes	买衬衫标价200，折后付160元	16000	expense	shopping	single
+electronics	买蓝牙耳机花199元	19900	expense	shopping	single
+electronics	换新手机付了四千九百九十九元	499900	expense	shopping	single
+electronics	昨天键盘到手，银行卡付款289.50元	28950	expense	shopping	single
+electronics	买一个充电器付59块9	5990	expense	shopping	single
+electronics	电脑显示器订单编号20261018，实付899元	89900	expense	shopping	single
+utilities	家里电费交了128元	12800	expense	housing	single
+utilities	缴纳水费四十三元八角	4380	expense	housing	single
+utilities	燃气充值200元已经到账燃气账户	20000	expense	housing	single
+utilities	昨天支付宝交电费89.65元	8965	expense	housing	single
+utilities	本月水费账单30吨，实付96元	9600	expense	housing	single
+property	物业费交了600元	60000	expense	housing	single
+property	小区季度物业费已付九百元	90000	expense	housing	single
+property	昨天缴纳物业管理费180.50元	18050	expense	housing	single
+property	住宅物业扣费二百四十块	24000	expense	housing	single
+property	交整年物业费1200元	120000	expense	housing	single
+film	买电影票花45元	4500	expense	entertainment	single
+film	电影院两张票合计八十块	8000	expense	entertainment	single
+film	昨天看电影付款39.90元	3990	expense	entertainment	single
+film	周末IMAX电影票付了65元	6500	expense	entertainment	single
+film	电影票优惠后花三十二元五角	3250	expense	entertainment	single
+game	购买游戏花了98元	9800	expense	entertainment	single
+game	Steam买游戏实付六十八块	6800	expense	entertainment	single
+game	手游充值30元	3000	expense	entertainment	single
+game	昨天买游戏皮肤花128.80元	12880	expense	entertainment	single
+game	游戏扩展包付款四十五元	4500	expense	entertainment	single
+hotel	旅游住宿酒店花350元	35000	expense	entertainment	single
+hotel	度假民宿住两晚合计八百元	80000	expense	entertainment	single
+hotel	昨天景区门票买了120元	12000	expense	entertainment	single
+hotel	旅游团报名费支付1500块	150000	expense	entertainment	single
+hotel	周末旅行的酒店尾款实付二百六十元五角	26050	expense	entertainment	single
+clinic	医院挂号花20元	2000	expense	health	single
+clinic	牙科洗牙支付一百九十八块	19800	expense	health	single
+clinic	昨天门诊检查费实付256.70元	25670	expense	health	single
+clinic	体检费用银行卡扣了800元	80000	expense	health	single
+clinic	看皮肤科挂号付三十五元	3500	expense	health	single
+tuition	报名英语课程花1200元	120000	expense	education	single
+tuition	线上编程课付款九十九元	9900	expense	education	single
+tuition	昨天交驾校培训费3500元	350000	expense	education	single
+tuition	钢琴课十节合计2000块已经交了	200000	expense	education	single
+tuition	课程续费实付二百九十九元五角	29950	expense	education	single
+internet	家里宽带续费600元	60000	expense	communication	single
+internet	交一年网费七百二十块	72000	expense	communication	single
+internet	宽带月费今天扣了59.90元	5990	expense	communication	single
+internet	昨天给网络运营商交了120元宽带费	12000	expense	communication	single
+internet	办理宽带套餐付款四百八十元	48000	expense	communication	single
+outgoing_red	给侄子发红包200元	20000	expense	social	single
+outgoing_red	朋友结婚随礼八百块	80000	expense	social	single
+outgoing_red	给家人发微信红包88.88元	8888	expense	social	single
+outgoing_red	昨天给朋友转账100元当份子钱	10000	expense	social	single
+outgoing_red	给妹妹生日红包六十六元六角六分	6666	expense	social	single
+pet	买猫粮花168元	16800	expense	pet	single
+pet	带狗洗澡付八十元	8000	expense	pet	single
+pet	昨天宠物驱虫实付65.50元	6550	expense	pet	single
+pet	猫砂两袋总共49块9	4990	expense	pet	single
+pet	给兔子买饲料花三十二元	3200	expense	pet	single
+fitness	健身房月卡付了200元	20000	expense	sport	single
+fitness	羽毛球场地费六十块	6000	expense	sport	single
+fitness	昨天游泳门票花35元	3500	expense	sport	single
+fitness	瑜伽体验课付款49.90元	4990	expense	sport	single
+fitness	去攀岩馆消费一百二十八元	12800	expense	sport	single
+beauty	理发花了50元	5000	expense	beauty	single
+beauty	美甲付了一百二十元	12000	expense	beauty	single
+beauty	昨天美容护理消费299.50元	29950	expense	beauty	single
+beauty	剪头发微信支付38块	3800	expense	beauty	single
+beauty	做脸清洁花了九十八元	9800	expense	beauty	single
+subscription	视频会员续费25元	2500	expense	subscription	single
+subscription	音乐会员自动扣款十五块	1500	expense	subscription	single
+subscription	昨天网盘会员年费支付198元	19800	expense	subscription	single
+subscription	记笔记软件订阅扣了12.90元	1290	expense	subscription	single
+subscription	云存储月费六元已经扣款	600	expense	subscription	single
+misc	补办证件工本费20元	2000	expense	other_expense	single
+misc	昨天交了行政罚款一百元	10000	expense	other_expense	single
+misc	捐款给公益组织50元	5000	expense	other_expense	single
+misc	快递寄件费付了12元	1200	expense	other_expense	single
+misc	打印私人材料花了三元五角	350	expense	other_expense	single
+investment	收到银行存款利息12.50元	1250	income	investment	single
+investment	基金分红到账二百元	20000	income	investment	single
+investment	昨天理财收益入账88.88元	8888	income	investment	single
+investment	股票现金分红实收350元	35000	income	investment	single
+investment	余额宝收益到账一元二角三分	123	income	investment	single
+incoming_red	收到朋友红包66元	6600	income	red_packet	single
+incoming_red	妈妈发的压岁钱两千块到账了	200000	income	red_packet	single
+incoming_red	昨天领到微信红包8.88元	888	income	red_packet	single
+incoming_red	生日收到亲戚红包500元	50000	income	red_packet	single
+incoming_red	收下朋友转来的祝福红包五十二元	5200	income	red_packet	single
+secondhand	卖闲置键盘收入100元	10000	income	secondhand	single
+secondhand	二手手机卖出收到一千二百元	120000	income	secondhand	single
+secondhand	昨天闲鱼卖旧书到账45.50元	4550	income	secondhand	single
+secondhand	旧自行车出售款300元已经收到	30000	income	secondhand	single
+secondhand	转卖不用的显示器收款六百元	60000	income	secondhand	single
+other_income	拾金不昧得到酬谢100元已收到	10000	income	other_income	single
+other_income	保险赔付款到账三千元	300000	income	other_income	single
+other_income	收到平台活动现金奖励5.20元	520	income	other_income	single
+other_income	昨天收到了交通补贴150元	15000	income	other_income	single
+other_income	邻居补偿款八十元已经收下	8000	income	other_income	single
+bank_wechat	银行卡转到我的微信300元	30000	transfer	transfer_account	single
+bank_wechat	从银行卡给自己的微信充值五百元	50000	transfer	transfer_account	single
+bank_wechat	昨天我的银行卡转出88.50元到微信钱包	8850	transfer	transfer_account	single
+bank_wechat	银行卡向我自己的微信余额转入120元	12000	transfer	transfer_account	single
+bank_wechat	将银行卡里的六百元转到本人微信账户	60000	transfer	transfer_account	single
+credit_repayment	银行卡还信用卡1000元	100000	transfer	repayment	single
+credit_repayment	从支付宝给自己的信用卡还款两千元	200000	transfer	repayment	single
+credit_repayment	昨天微信还本人信用卡账单356.78元	35678	transfer	repayment	single
+credit_repayment	银行卡转500元到信用卡用于还款	50000	transfer	repayment	single
+credit_repayment	本人的信用卡欠款用银行卡还了八百元	80000	transfer	repayment	single
+cash_deposit	现金存到银行卡1000元	100000	transfer	deposit	single
+cash_deposit	把钱包里的五百元现金存进自己的银行卡	50000	transfer	deposit	single
+cash_deposit	昨天柜台现金存款3000元到我的银行卡	300000	transfer	deposit	single
+cash_deposit	从现金账户拿200块存到工资卡	20000	transfer	deposit	single
+cash_deposit	现金八百元存入本人的银行卡账户	80000	transfer	deposit	single
+bank_bank	工资卡转储蓄卡2000元	200000	transfer	transfer_account	single
+bank_bank	我的工资卡向我的银行卡转入一千五百元	150000	transfer	transfer_account	single
+bank_bank	昨天本人银行卡转到工资卡68.80元	6880	transfer	transfer_account	single
+bank_bank	储蓄卡转出600元给自己的工资卡	60000	transfer	transfer_account	single
+bank_bank	工资卡里的三千元挪到我另一张银行卡	300000	transfer	transfer_account	single
+negation	今天没有充电30元这笔消费				clarify
+negation	不是我花的200元，别记账				clarify
+negation	电影票50元没买成也没扣款				clarify
+negation	刚才说的停车费10元其实没支付				clarify
+negation	信用卡还款1000元失败，钱没出去				clarify
+multi_travel	停车10元，加油300元，分两笔记				clarify
+multi_travel	高铁235元，酒店350元，都记下来				clarify
+multi_travel	上午充电30元，晚上停车8元				clarify
+multi_travel	电影45元再加购买游戏98元，各自记账				clarify
+multi_travel	刚收到理财收益10元又发红包20元				clarify
+conflicting_amount	充电花了30元，也可能是35元				clarify
+conflicting_amount	买衣服一百还是两百我忘了				clarify
+conflicting_amount	停车付款记录有10元和20元，不知道哪个是这次				clarify
+conflicting_amount	收到200元奖金还是300元，需确认				clarify
+conflicting_amount	网费记60或80元，账单还没核对				clarify
+future_refund	99元退款申请了还没到账				clarify
+future_refund	商家答应下周退回200元				clarify
+future_refund	等退款30元到了再记账				clarify
+future_refund	退款处理中，预计返还一百元				clarify
+future_refund	想把50元电影票退了，目前没退款				clarify
+missing_roles	转了300元，忘了是给别人还是转到自己的卡				clarify
+missing_roles	两个账户之间挪了200元，方向记不清了				clarify
+missing_roles	微信和银行卡互转100元，不知道哪边付款				clarify
+missing_roles	收到500元但分不清是工资还是自己的另一张卡转入				clarify
+missing_roles	朋友说帮我转账80元，我不知道是否已转				clarify
+invalid_amount	买咖啡花了零元				clarify
+invalid_amount	给车充电支付负三十元				clarify
+invalid_amount	停车费是NaN元				clarify
+invalid_amount	记录午餐金额12.345元				clarify
+invalid_amount	买衣服消费无限元				clarify
+quoted_hypothesis	假设一顿饭花30元，一个月多少钱				clarify
+quoted_hypothesis	朋友说他加油花了300元				clarify
+quoted_hypothesis	新闻上说电费涨到100元了				clarify
+quoted_hypothesis	预算里写着旅游花2000元，并不是实际消费				clarify
+quoted_hypothesis	演示一下怎么记录电影票45元，不要真记				clarify
+compound_amount	给车充电30元，另外手续费1元，金额口径不确定				clarify
+compound_amount	信用卡还款200元加利息5元，帮我拆开				clarify
+compound_amount	从银行卡转100美元到港币卡，到账港币多少没查				clarify
+compound_amount	一次结算含工资8000元和报销200元，分开记				clarify
+compound_amount	退掉100元商品又买了80元商品，请分别记录				clarify

@@ -1,0 +1,5 @@
+variant	count	singles	schema	business_consistent	raw_amount	raw_type	raw_category	usable_amount	usable_type	usable_category	guard_abstentions	guard_count	guard_ready	single_accepted	ready_correct	ready_incorrect	needs_input	account_correct	destination_correct	day_correct
+regression_baseline	200	160	200	173	160	138	75	116	95	54	30	40	0	137	41	72	87	130	149	125
+regression_category_only	200	160	200	173	160	138	79	116	95	68	30	40	0	137	50	63	87	130	149	125
+regression_refined	200	160	200	200	160	138	84	137	116	71	30	40	0	137	67	67	66	142	145	160
+regression_category_joint	200	160	200	200	160	142	72	137	120	59	30	40	0	137	58	74	68	149	152	160

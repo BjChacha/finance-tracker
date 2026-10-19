@@ -1,0 +1,9 @@
+{
+  "status": "Determine whether the description is one completed transaction with an unambiguous amount. Request clarification for negation, future plans, multiple transactions, or conflicting amounts.",
+  "type": "Classify the direction of the owner's money. Money received from others is income; payments to others are expenses; only moving money between the owner's own accounts is a transfer.",
+  "day": "Identify the transaction date. If no date is mentioned, default to today. Support only today, yesterday, and the day before yesterday; other dates require confirmation.",
+  "amount": "Select the final amount actually paid, received, or moved between the owner's accounts. Exclude quantities, dates, balances, discounts, list prices, and other non-transaction numbers.",
+  "category": "Classify this transaction.",
+  "account": "Identify the owner's account used for this transaction. For an expense choose the paying account; for income choose the receiving account; for a transfer choose the source account. Leave unknown when not explicitly stated.",
+  "to_account": "Identify the destination receiving account in a transfer between the owner's accounts. Do not choose the source paying account. Leave unknown when not explicitly stated."
+}

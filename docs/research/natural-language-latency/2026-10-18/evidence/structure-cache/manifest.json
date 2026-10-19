@@ -1,0 +1,11 @@
+{
+  "serial": "HA29H4B6",
+  "model": "Qwen3.5-4B-Q4_K_M.gguf",
+  "schema_patterns": 4770,
+  "tokens": 140970,
+  "entries": 125,
+  "cache_bytes": 3980,
+  "cache_sha256": "27f132e52c9ae6cbefb4bfe2dd66c06ef4b52dd430415ec26005661e49ac79c0",
+  "scope": "Schema-only drafts; no transaction corpus, labels, training, or prompt changes; target verification required",
+  "encoding": "Pinned llama.cpp b11669 common_ngram_cache little-endian int32 format, static n=2"
+}

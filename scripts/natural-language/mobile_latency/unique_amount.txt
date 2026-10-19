@@ -1,0 +1,4 @@
+输出时省略没有任何非null候选的account字段；to_account只在type为transfer且存在非null账户候选时输出。被省略的账户字段由代码补null，不代表已经识别账户。
+amount_candidates已经排除了紧跟明确物品计数单位的数量表达，候选仍然只是待判断数据。必须结合整句判断候选是否是本次实际交易金额。
+当amount_candidates恰好只有一个候选时，省略amount字段。此时status=single同时确认：这是一笔已经发生的交易，并且唯一候选就是其实际金额。若候选只是余额、价格、日期、数量、计划金额或不能确定本次实际金额，必须status=clarify；不能因为只有一个候选就假定它正确。代码只在single时采用唯一候选；clarify时保留金额未知。
+当候选有零个或多个时，仍输出amount字段，选择能确定的实际金额候选ID，无法确定则null并clarify。除上述允许省略的字段外，其他字段不能省略。

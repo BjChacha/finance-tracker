@@ -1,4 +1,4 @@
-import { NativeModule, requireOptionalNativeModule } from 'expo';
+import { NativeModule, requireOptionalNativeModule } from "expo";
 export type QuickKeypadResult = {
   amountCents: number;
   currency: string;
@@ -7,7 +7,7 @@ export type QuickKeypadResult = {
 export type PendingQuickAddLaunch = {
   amountCents: number;
   currency: string;
-  type: 'expense' | 'income';
+  type: "expense" | "income";
   handoffId: string;
 };
 
@@ -40,4 +40,4 @@ declare class QuickKeypadModule extends NativeModule {
   getPendingQuickAddLaunch(): PendingQuickAddLaunch | null;
 }
 
-export default requireOptionalNativeModule<QuickKeypadModule>('QuickKeypad');
+export default requireOptionalNativeModule<QuickKeypadModule>("QuickKeypad");

@@ -1,0 +1,124 @@
+{
+  "total": 100,
+  "failure_count": 82,
+  "accepted_core_fields_joint_correct": 19,
+  "ready_and_all_annotated_fields_correct": 5,
+  "ready_but_incorrect": 15,
+  "groups": {
+    "breakfast": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "snacks": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "subway": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "taxi": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "daily_goods": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "rent": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "medicine": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 2
+    },
+    "books": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "phone": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "gifts": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "salary": {
+      "total": 3,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bonus": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "refund": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "parttime": {
+      "total": 3,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "wechat_bank": {
+      "total": 3,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bank_cash": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "grocery_ingredients": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "city_bus": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "shared_bicycle": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "certification_exam": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "home_lock_repair": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "theater_ticket": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "laundry_service": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    }
+  }
+}

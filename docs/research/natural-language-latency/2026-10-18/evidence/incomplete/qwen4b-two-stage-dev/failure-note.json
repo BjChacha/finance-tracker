@@ -1,0 +1,7 @@
+{
+  "outcome": "launch_rejected_before_server_start",
+  "reason": "ADB forward --no-rebind rejected the occupied port while the preceding probe run was active",
+  "completed_records": 0,
+  "server_log_scope": "Legacy finally block pulled the shared log of the preceding live probe run. This is not a log of this failed run. It is preserved but must not be scored or treated as its model output.",
+  "remediation": "Subsequent code collects logs only after obtaining an owned PID; launches are sequential."
+}

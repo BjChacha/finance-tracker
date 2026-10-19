@@ -1,0 +1,18 @@
+{
+  "version": "expense-heavy-v1",
+  "type_percent": {"expense": 85, "income": 10, "transfer": 5},
+  "single_counts": {"dev": 100, "regression": 200},
+  "guard_counts": {"dev": 20, "regression": 40},
+  "selection_seed": "expense-heavy-v1-group-round-robin",
+  "legacy_expense_excluded_groups": ["parking", "property", "film", "game", "internet", "outgoing_red"],
+  "legacy_auxiliary_annotations": {
+    "accounts": {"8": "bank", "28": "cash", "35": "wechat", "48": "bank", "54": "alipay", "79": "bank", "109": "wechat"},
+    "yesterday": [2, 9, 18, 25, 33, 40, 44, 48, 54, 73, 78, 83, 98, 103, 108, 113, 117],
+    "before_yesterday": [4, 30],
+    "unknown": [75]
+  },
+  "review_status": "pending_human_review",
+  "evaluation_status": "observed_synthetic_regression_not_blind",
+  "selection_uses_model_predictions": false,
+  "inference_prior_changed": false
+}

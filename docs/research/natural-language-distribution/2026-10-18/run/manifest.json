@@ -1,0 +1,34 @@
+{
+  "arguments": {
+    "data": "scripts/natural-language/distribution_v1/data/regression.tsv",
+    "variants": [
+      "baseline",
+      "category_only"
+    ],
+    "output": "distribution-v1-regression",
+    "limit": null,
+    "desktop": false
+  },
+  "data_sha256": "cdbe748778aa100f5eba47ab153ed87495300228c8fa272249447d39dd783e1e",
+  "source_hashes": {
+    "annotate_dev.py": "f5026bf29bf516c4f952d5f3a068e4a460a3d7cb53b410aaebd5fc33fa070b49",
+    "archive_results.py": "d4da994b9839b4cfd0180b9d7d63678eb147f3ba50169eec94dfce2aca25d06f",
+    "attribution.py": "3ac0f649631e4b666bf8c96b091061d9ed3e7601b8841d1a2b7056e879800f54",
+    "bridge.py": "ca478104b42ff53b103458a677cc76747d99da01a2a2af6805aeab7acdb3f6eb",
+    "category_sweep.py": "9edb35c54ffb3cc4bfe909a1c3b7fcad1b142ed0428a57820cb6fb7971fdcbe1",
+    "compact-prompts.json": "d13d4b4f72e3b7fa6cd64c7e8497dd2c2056b56e5723b16bd4e9b030d03b4232",
+    "counterfactual.py": "b2d1077e25984d485077829caff0a2ecb87d9833e0ceff6c3780d14f244bee43",
+    "experiment.py": "3589de1d8a04d6e339ccde3ec52ee866692b16a23f6bbc2325ccd38b84806b23",
+    "freeze.json": "93e41b5971026ffe2c7c557851c0c1bae1ed40eb2fa6244612fe79ac7b5deb86",
+    "prototypes.json": "8510ba2f5b85754fb6078674437740c6ab33970a7c54f3092ede818527595bd4",
+    "revision.py": "672a288597a9f5ac3d09f9bc43e5affe7e8066c765fa8e27035888d28fe9c48b",
+    "summarize_experiments.py": "958b798664da7e3417f8d3f6d53239235ec6762ae4f39eb9cc7eba3d33450779",
+    "test_revision.py": "83f75fc28573ffbc8eaf66c517779a9305cfb12ee67765a8b923e8f37120659d",
+    "transition_analysis.py": "a012ecc8463394566310fef47399a0b523bb4849a2517304c638e03575786642"
+  },
+  "model": "jev-qwen3-0.6b-q8_0.gguf",
+  "model_sha256": "437710e6fe1a7c21f3b9bb7dfda5efd58cfe3c3d3bbe8fdd1dbd83302e7de18f",
+  "device": "57721e63",
+  "inference": "Offline CPU4, loopback; no training",
+  "oracle_type_is_diagnostic_only": false
+}

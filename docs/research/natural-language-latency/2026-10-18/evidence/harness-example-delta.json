@@ -1,0 +1,1111 @@
+{
+  "dev": {
+    "count": 100,
+    "changed": [
+      {
+        "id": "dev-021",
+        "expected": {
+          "id": "dev-021",
+          "group": "daily_goods",
+          "text": "买洗衣液花39元",
+          "amount_cents": 3900,
+          "type": "expense",
+          "category": "shopping",
+          "account": "",
+          "to_account": "",
+          "day": "today",
+          "status": "single",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-021",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": "m0",
+          "category": "other_expense",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "expense",
+          "amount": "m0",
+          "category": "shopping",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": 3900,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "39元",
+            "start": 5,
+            "end": 8,
+            "cents": 3900
+          },
+          "type": "expense",
+          "category": "other_expense",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "买洗衣液花39元",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 3900,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "39元",
+            "start": 5,
+            "end": 8,
+            "cents": 3900
+          },
+          "type": "expense",
+          "category": "shopping",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "买洗衣液花39元",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-039",
+        "expected": {
+          "id": "dev-039",
+          "group": "books",
+          "text": "两本练习册总共二十三元",
+          "amount_cents": 2300,
+          "type": "expense",
+          "category": "education",
+          "account": "",
+          "to_account": "",
+          "day": "today",
+          "status": "single",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-039",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": "m1",
+          "category": "education",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "after": {
+          "type": "expense",
+          "amount": "m1",
+          "category": "education",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": 2300,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "二十三元",
+            "start": 7,
+            "end": 11,
+            "cents": 2300
+          },
+          "type": "expense",
+          "category": "education",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "两本练习册总共二十三元",
+          "issues": [
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 2300,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "二十三元",
+            "start": 7,
+            "end": 11,
+            "cents": 2300
+          },
+          "type": "expense",
+          "category": "education",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "两本练习册总共二十三元",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-073",
+        "expected": {
+          "id": "dev-073",
+          "group": "wechat_bank",
+          "text": "昨天微信余额提现到银行卡1000块",
+          "amount_cents": 100000,
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "wechat",
+          "to_account": "bank",
+          "day": "yesterday",
+          "status": "single",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-073",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "deposit",
+          "account": "wechat",
+          "to_account": "bank",
+          "status": "single",
+          "day": "yesterday"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "deposit",
+          "account": "bank",
+          "to_account": "wechat",
+          "status": "single",
+          "day": "yesterday"
+        },
+        "before_validated": {
+          "status": "preview",
+          "amount_cents": 100000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "1000块",
+            "start": 12,
+            "end": 17,
+            "cents": 100000
+          },
+          "type": "transfer",
+          "category": "deposit",
+          "account": "wechat",
+          "to_account": "bank",
+          "date": "2026-10-17T12:00:00+08:00",
+          "note": "昨天微信余额提现到银行卡1000块",
+          "issues": [],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "preview",
+          "amount_cents": 100000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "1000块",
+            "start": 12,
+            "end": 17,
+            "cents": 100000
+          },
+          "type": "transfer",
+          "category": "deposit",
+          "account": "bank",
+          "to_account": "wechat",
+          "date": "2026-10-17T12:00:00+08:00",
+          "note": "昨天微信余额提现到银行卡1000块",
+          "issues": [],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-075",
+        "expected": {
+          "id": "dev-075",
+          "group": "wechat_bank",
+          "text": "我的微信转到银行卡三百二十元",
+          "amount_cents": 32000,
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "wechat",
+          "to_account": "bank",
+          "day": "today",
+          "status": "single",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-075",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": "wechat",
+          "to_account": "bank",
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": "bank",
+          "to_account": "wechat",
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "preview",
+          "amount_cents": 32000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "三百二十元",
+            "start": 9,
+            "end": 14,
+            "cents": 32000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "wechat",
+          "to_account": "bank",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "我的微信转到银行卡三百二十元",
+          "issues": [],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "preview",
+          "amount_cents": 32000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "三百二十元",
+            "start": 9,
+            "end": 14,
+            "cents": 32000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "bank",
+          "to_account": "wechat",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "我的微信转到银行卡三百二十元",
+          "issues": [],
+          "violations": []
+        }
+      },
+      {
+        "id": "mix-dev-003",
+        "expected": {
+          "id": "mix-dev-003",
+          "group": "grocery_ingredients",
+          "text": "买了一袋大米，现金付68元",
+          "amount_cents": 6800,
+          "type": "expense",
+          "category": "food",
+          "account": "cash",
+          "to_account": "",
+          "day": "today",
+          "status": "single",
+          "context_variant": "default",
+          "source": "scripts/natural-language/distribution_v1/dev-additions.tsv",
+          "source_id": "mix-dev-003",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": "m1",
+          "category": "food",
+          "account": "cash",
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "expense",
+          "amount": "m1",
+          "category": "shopping",
+          "account": "cash",
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "preview",
+          "amount_cents": 6800,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "68元",
+            "start": 10,
+            "end": 13,
+            "cents": 6800
+          },
+          "type": "expense",
+          "category": "food",
+          "account": "cash",
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "买了一袋大米，现金付68元",
+          "issues": [],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "preview",
+          "amount_cents": 6800,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "68元",
+            "start": 10,
+            "end": 13,
+            "cents": 6800
+          },
+          "type": "expense",
+          "category": "shopping",
+          "account": "cash",
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "买了一袋大米，现金付68元",
+          "issues": [],
+          "violations": []
+        }
+      }
+    ]
+  },
+  "guards": {
+    "count": 20,
+    "changed": [
+      {
+        "id": "dev-082",
+        "expected": {
+          "id": "dev-082",
+          "group": "missing_amount",
+          "text": "记录今天的午餐",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-082",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": null,
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "after": {
+          "type": null,
+          "amount": null,
+          "category": null,
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": null,
+          "amount_evidence": null,
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "记录今天的午餐",
+          "issues": [
+            "amount_required",
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": null,
+          "amount_evidence": null,
+          "type": null,
+          "category": null,
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "记录今天的午餐",
+          "issues": [
+            "amount_required",
+            "type_required",
+            "category_required",
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-085",
+        "expected": {
+          "id": "dev-085",
+          "group": "missing_amount",
+          "text": "给我的公交卡充了钱",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-085",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": null,
+          "category": "transport",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": null,
+          "category": null,
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": null,
+          "amount_evidence": null,
+          "type": "expense",
+          "category": "transport",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "给我的公交卡充了钱",
+          "issues": [
+            "amount_required",
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": null,
+          "amount_evidence": null,
+          "type": "transfer",
+          "category": null,
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "给我的公交卡充了钱",
+          "issues": [
+            "amount_required",
+            "category_required",
+            "account_required",
+            "destination_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-086",
+        "expected": {
+          "id": "dev-086",
+          "group": "multi_meal",
+          "text": "早餐15，打车30",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-086",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": "m0",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "expense",
+          "amount": "m0",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": 1500,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "15",
+            "start": 2,
+            "end": 4,
+            "cents": 1500
+          },
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "早餐15，打车30",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 1500,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "15",
+            "start": 2,
+            "end": 4,
+            "cents": 1500
+          },
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "早餐15，打车30",
+          "issues": [
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-087",
+        "expected": {
+          "id": "dev-087",
+          "group": "multi_meal",
+          "text": "午饭20元，晚饭30元，各记一笔",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-087",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": "m0",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "expense",
+          "amount": "m0",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": 2000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "20元",
+            "start": 2,
+            "end": 5,
+            "cents": 2000
+          },
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "午饭20元，晚饭30元，各记一笔",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 2000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "20元",
+            "start": 2,
+            "end": 5,
+            "cents": 2000
+          },
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "午饭20元，晚饭30元，各记一笔",
+          "issues": [
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-090",
+        "expected": {
+          "id": "dev-090",
+          "group": "multi_meal",
+          "text": "今天两笔，豆浆3元和午餐22元",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-090",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "expense",
+          "amount": "m1",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "expense",
+          "amount": "m2",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": 300,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "3元",
+            "start": 7,
+            "end": 9,
+            "cents": 300
+          },
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "今天两笔，豆浆3元和午餐22元",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 2200,
+          "amount_evidence": {
+            "id": "m2",
+            "text": "22元",
+            "start": 12,
+            "end": 15,
+            "cents": 2200
+          },
+          "type": "expense",
+          "category": "food",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "今天两笔，豆浆3元和午餐22元",
+          "issues": [
+            "account_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-097",
+        "expected": {
+          "id": "dev-097",
+          "group": "ambiguous_account",
+          "text": "银行卡互转200，忘了用哪张卡转出",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-097",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": "bank",
+          "to_account": "bank",
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": "bank",
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "invalid",
+          "amount_cents": 20000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "200",
+            "start": 5,
+            "end": 8,
+            "cents": 20000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "bank",
+          "to_account": "bank",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "银行卡互转200，忘了用哪张卡转出",
+          "issues": [],
+          "violations": [
+            "same_transfer_account"
+          ]
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 20000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "200",
+            "start": 5,
+            "end": 8,
+            "cents": 20000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": "bank",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "银行卡互转200，忘了用哪张卡转出",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-098",
+        "expected": {
+          "id": "dev-098",
+          "group": "ambiguous_account",
+          "text": "工资卡往储蓄卡转了300，储蓄卡有两个同名账户",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-098",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": "salary_bank",
+          "to_account": "savings",
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": "salary_bank",
+          "to_account": "savings",
+          "status": "clarify",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "preview",
+          "amount_cents": 30000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "300",
+            "start": 9,
+            "end": 12,
+            "cents": 30000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "salary_bank",
+          "to_account": "savings",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "工资卡往储蓄卡转了300，储蓄卡有两个同名账户",
+          "issues": [],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 30000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "300",
+            "start": 9,
+            "end": 12,
+            "cents": 30000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "salary_bank",
+          "to_account": "savings",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "工资卡往储蓄卡转了300，储蓄卡有两个同名账户",
+          "issues": [
+            "not_clear_single"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-099",
+        "expected": {
+          "id": "dev-099",
+          "group": "ambiguous_account",
+          "text": "把500块转到我的卡里，具体哪张不确定",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-099",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": null,
+          "status": "clarify",
+          "day": "today"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": "m0",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": null,
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "needs_input",
+          "amount_cents": 50000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "500块",
+            "start": 1,
+            "end": 5,
+            "cents": 50000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "把500块转到我的卡里，具体哪张不确定",
+          "issues": [
+            "account_required",
+            "destination_required",
+            "not_clear_single"
+          ],
+          "violations": []
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 50000,
+          "amount_evidence": {
+            "id": "m0",
+            "text": "500块",
+            "start": 1,
+            "end": 5,
+            "cents": 50000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": null,
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "把500块转到我的卡里，具体哪张不确定",
+          "issues": [
+            "account_required",
+            "destination_required"
+          ],
+          "violations": []
+        }
+      },
+      {
+        "id": "dev-100",
+        "expected": {
+          "id": "dev-100",
+          "group": "ambiguous_account",
+          "text": "我的两个微信账户之间转了80块",
+          "amount_cents": null,
+          "type": "",
+          "category": "",
+          "account": "",
+          "to_account": "",
+          "day": "",
+          "status": "clarify",
+          "context_variant": "default",
+          "source": "scripts/natural-language/jev_harness/dev-annotated.tsv",
+          "source_id": "dev-100",
+          "review_status": "pending_human_review"
+        },
+        "before": {
+          "type": "transfer",
+          "amount": "m1",
+          "category": "transfer_account",
+          "account": "wechat",
+          "to_account": "wechat",
+          "status": "single",
+          "day": "today"
+        },
+        "after": {
+          "type": "transfer",
+          "amount": "m1",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": "wechat",
+          "status": "single",
+          "day": "today"
+        },
+        "before_validated": {
+          "status": "invalid",
+          "amount_cents": 8000,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "80块",
+            "start": 12,
+            "end": 15,
+            "cents": 8000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": "wechat",
+          "to_account": "wechat",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "我的两个微信账户之间转了80块",
+          "issues": [],
+          "violations": [
+            "same_transfer_account"
+          ]
+        },
+        "after_validated": {
+          "status": "needs_input",
+          "amount_cents": 8000,
+          "amount_evidence": {
+            "id": "m1",
+            "text": "80块",
+            "start": 12,
+            "end": 15,
+            "cents": 8000
+          },
+          "type": "transfer",
+          "category": "transfer_account",
+          "account": null,
+          "to_account": "wechat",
+          "date": "2026-10-18T12:00:00+08:00",
+          "note": "我的两个微信账户之间转了80块",
+          "issues": [
+            "account_required"
+          ],
+          "violations": []
+        }
+      }
+    ],
+    "outcomes": {
+      "before": {
+        "clarify": 12,
+        "unsafe_complete": 2,
+        "multi_clarify": 2
+      },
+      "after": {
+        "clarify": 15,
+        "unsafe_complete": 1,
+        "multi_clarify": 5
+      }
+    }
+  }
+}

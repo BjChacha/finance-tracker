@@ -40,7 +40,7 @@ import java.util.UUID
  *
  * Calculator behavior mirrors src/lib/calc.ts using integer cents.
  */
-class QuickKeypadActivity : AppCompatActivity() {
+class QuickKeypadActivity : AppCompatActivity(), QuickAddHandoffSource {
 
     private lateinit var amountText: TextView
     private lateinit var currencySelector: View
@@ -457,12 +457,12 @@ class QuickKeypadActivity : AppCompatActivity() {
         }
     }
 
-    internal fun cancelRetainedHandoff(handoffId: String) {
+    override fun cancelRetainedHandoff(handoffId: String) {
         if (retainedHandoffId == handoffId) retainedHandoffId = null
     }
 
     @Suppress("DEPRECATION")
-    internal fun finishRetainedHandoff(handoffId: String) {
+    override fun finishRetainedHandoff(handoffId: String) {
         if (retainedHandoffId != handoffId) return
         retainedHandoffId = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

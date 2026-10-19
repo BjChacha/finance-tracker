@@ -1,0 +1,82 @@
+diff --git a/ggml/src/ggml-hexagon/ggml-hexagon.cpp b/ggml/src/ggml-hexagon/ggml-hexagon.cpp
+index 08c15ff..41e0405 100644
+--- a/ggml/src/ggml-hexagon/ggml-hexagon.cpp
++++ b/ggml/src/ggml-hexagon/ggml-hexagon.cpp
+@@ -14,6 +14,8 @@
+ #include <thread>
+ #include <cstddef>
+ #include <stdexcept>
++#include <system_error>
++#include <vector>
+ #include <string>
+ #include <sstream>
+ #include <iomanip>
+@@ -1027,6 +1029,57 @@ static void repack_q4_0_tiled(ggml_tensor * t, const void * data, size_t offset,
+     }
+ }
+ 
++// Split only complete, aligned two-dimensional Q4_0 weights into independent column tiles.
++// Keep the original serial path as the default and for partial or padded tensors.
++static bool repack_q4_0_tiled_parallel(ggml_tensor * tensor, const void * data, size_t size) {
++    const char * setting = getenv("GGML_HEXAGON_REPACK_THREADS");
++    if (!setting || tensor->type != GGML_TYPE_Q4_0 || size < 1024 * 1024 ||
++            tensor->ne[2] != 1 || tensor->ne[3] != 1 || tensor->ne[1] % 32 != 0) {
++        return false;
++    }
++    char * end = nullptr;
++    const long requested = strtol(setting, &end, 10);
++    if (end == setting || *end != '\0' || requested <= 1) {
++        return false;
++    }
++    const size_t row_bytes = ggml_row_size(tensor->type, tensor->ne[0]);
++    if (size != row_bytes * tensor->ne[1]) {
++        return false;
++    }
++    const int64_t tiles = tensor->ne[1] / 32;
++    const int workers_count = (int) std::min<int64_t>(std::min<long>(requested, 8), tiles);
++    if (workers_count <= 1) {
++        return false;
++    }
++    auto repack_part = [&](int worker) {
++        const int64_t first_row = (tiles * worker / workers_count) * 32;
++        const int64_t last_row = (tiles * (worker + 1) / workers_count) * 32;
++        ggml_tensor part = *tensor;
++        part.ne[1] = last_row - first_row;
++        part.nb[2] = part.nb[3] = part.ne[1] * row_bytes;
++        part.data = (uint8_t *) tensor->data + first_row * row_bytes;
++        repack_q4_0_tiled(&part, (const uint8_t *) data + first_row * row_bytes, 0, part.ne[1] * row_bytes);
++    };
++    std::vector<std::thread> workers;
++    workers.reserve(workers_count - 1);
++    int next_worker = 1;
++    try {
++        for (; next_worker < workers_count; ++next_worker) {
++            workers.emplace_back(repack_part, next_worker);
++        }
++    } catch (const std::system_error &) {
++        // Finish unstarted partitions on the caller if the process cannot create more threads.
++        for (; next_worker < workers_count; ++next_worker) {
++            repack_part(next_worker);
++        }
++    }
++    repack_part(0);
++    for (auto & worker : workers) {
++        worker.join();
++    }
++    return true;
++}
++
+ // repack q4_0_tiled tensor into q4_0 data
+ static void repack_tiled_q4_0(void * data, const ggml_tensor * t, size_t offset, size_t size) {
+     block_q4_0 * dst_matrix = (block_q4_0 *) data;
+@@ -2419,7 +2472,9 @@ static void repack_tiled_q5_K(void * data, const ggml_tensor * t, size_t offset,
+ static void repack_tensor_tiled(ggml_tensor * tensor, const void * data, size_t size) {
+     switch (tensor->type) {
+         case GGML_TYPE_Q4_0:
+-            repack_q4_0_tiled(tensor, data, 0, size);
++            if (!repack_q4_0_tiled_parallel(tensor, data, size)) {
++                repack_q4_0_tiled(tensor, data, 0, size);
++            }
+             break;
+ 
+         case GGML_TYPE_Q4_1:

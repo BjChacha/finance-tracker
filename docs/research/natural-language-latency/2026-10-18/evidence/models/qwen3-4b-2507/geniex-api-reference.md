@@ -1,0 +1,471 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://geniex.aihub.qualcomm.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# API reference
+
+> GenieX Android SDK — runtime / compute-unit selection, model management, and inference APIs for LLM and VLM.
+
+## **Runtime & compute unit selection**
+
+### Runtime
+
+Choose the inference runtime via `runtime_id`:
+
+```kotlin theme={"dark"}
+val runtime_id: String?   // "llama_cpp" | "qairt" | null
+```
+
+| `runtime_id` | Runtime | Model format | Compute units |
+| - | - | - | - |
+| `"llama_cpp"` | llama.cpp + GGML Hexagon backend | GGUF | CPU / Adreno GPU / Hexagon NPU |
+| `"qairt"` | Qualcomm® AI Engine Direct | Qualcomm AI Hub pre-compiled bins | Hexagon NPU only |
+| `null` | SDK picks based on model paths | — | — |
+
+Constants are exposed as [`RuntimeIdValue`](https://github.com/qualcomm/GenieX/blob/main/bindings/android/app/src/main/java/com/geniex/sdk/bean/InputPluginBase.kt) (`LLAMA_CPP`, `QAIRT`).
+
+### Compute unit
+
+Friendly compute-unit aliases forwarded to `geniex_resolve_device` in the native SDK.
+
+```kotlin theme={"dark"}
+val compute_unit: String?   // "cpu" | "gpu" | "npu" | null
+```
+
+| Alias | Effect |
+| - | - |
+| `null` | Runtime default — `npu` for `llama_cpp`, `npu` for `qairt`. |
+| `"npu"` | Hexagon NPU acceleration. Recommended on Snapdragon. |
+| `"gpu"` | Adreno GPU via OpenCL (`llama_cpp` only). |
+| `"cpu"` | Pure CPU. Forces `nGpuLayers = 0`. |
+
+<Note>
+  Qualcomm AI Engine Direct only supports NPU. Passing `"cpu"` or `"gpu"` with a Qualcomm AI Hub Model logs a warning and falls back to NPU — it won't error.
+</Note>
+
+***
+
+## **Model manager**
+
+Models are pulled on-device through the bundled Rust model manager. Do **not** manually `adb push` weights — use `ModelManagerWrapper`.
+
+### `ModelManagerWrapper`
+
+```kotlin theme={"dark"}
+// Init (idempotent — safe to call on every Activity.onCreate).
+GenieXSdk.getInstance().init(context)
+
+// Pull with streaming progress.
+ModelManagerWrapper.pullFlow(
+    ModelPullInput(
+        model_name = "unsloth/Qwen3-0.6B-GGUF",
+        precision  = "Q4_0",
+        hub        = HubSource.HUGGINGFACE,
+    )
+).collect { event ->
+    when (event) {
+        is ModelManagerWrapper.PullEvent.Progress  -> /* update UI */
+        ModelManagerWrapper.PullEvent.Completed    -> /* done */
+        is ModelManagerWrapper.PullEvent.Error     -> /* show error */
+    }
+}
+
+// Resolve on-disk paths for a previously-pulled model.
+val paths: ModelPaths? = ModelManagerWrapper.getPaths("unsloth/Qwen3-0.6B-GGUF")
+
+// Inventory / cleanup.
+ModelManagerWrapper.list()              // List<String>
+ModelManagerWrapper.remove("org/repo") // 0 = success
+ModelManagerWrapper.clean()            // wipe all cached models
+```
+
+### `ModelPullInput`
+
+```kotlin theme={"dark"}
+data class ModelPullInput(
+    val model_name:   String,                     // "org/repo" or alias
+    val precision:    String? = null,             // precision (quantization) e.g. "Q4_0", "Q4_K_M"
+    val hub:          HubSource = HubSource.AUTO, // AUTO routes by model_name
+    val local_path:   String? = null,             // only when hub == LOCALFS
+    val hf_token:     String? = null,             // falls back to GENIEX_HFTOKEN env
+    val chipset:      String? = null,             // required for Qualcomm AI Hub on Android (e.g. "SM8750")
+    val display_name: String? = null,
+)
+```
+
+### `HubSource`
+
+```kotlin theme={"dark"}
+enum class HubSource(val value: Int) {
+    AUTO(0),          // routes by prefix (e.g. ai-hub-models/* → AIHUB)
+    HUGGINGFACE(1),
+    MODELSCOPE(2),
+    AIHUB(3),
+    VOLCES(4),
+    LOCALFS(127),
+}
+```
+
+### `ModelPaths`
+
+Returned by `getPaths()`. Feed fields directly into `LlmCreateInput` / `VlmCreateInput`:
+
+```kotlin theme={"dark"}
+data class ModelPaths(
+    val model_path:     String,
+    val model_dir:      String,
+    val model_name:     String,
+    val runtime_id:      String,            // authoritative — prefer over UI selection
+    val mmproj_path:    String? = null,    // VLM projection weights
+    val tokenizer_path: String? = null,
+    val compute_unit:      String? = null,
+)
+```
+
+<Note>
+  Qualcomm AI Hub pulls on Android **require** an explicit `chipset`. The Rust side only auto-detects on Windows on Snapdragon. Use `"SM8750"` for Snapdragon 8 Elite or `"SM8850"` for Snapdragon 8 Elite Gen 5.
+</Note>
+
+***
+
+## **Data structures**
+
+### `LlmCreateInput`
+
+```kotlin theme={"dark"}
+data class LlmCreateInput(
+    val model_path:     String,
+    val tokenizer_path: String? = null,
+    val config:         ModelConfig,
+    val runtime_id:      String? = null,
+    val compute_unit:      String? = null,
+)
+```
+
+### `VlmCreateInput`
+
+```kotlin theme={"dark"}
+data class VlmCreateInput(
+    val model_path:  String,
+    val mmproj_path: String? = null,     // vision projection weights (GGUF VLMs)
+    val config:      ModelConfig,
+    val runtime_id:   String? = null,
+    val compute_unit:   String? = null,
+)
+```
+
+### `ModelConfig`
+
+```kotlin theme={"dark"}
+data class ModelConfig(
+    var nCtx:                  Int     = 2048,     // context size; 0 = model default
+    var nThreads:              Int     = 8,
+    var nThreadsBatch:         Int     = 8,
+    var nBatch:                Int     = 2048,
+    var nUBatch:               Int     = 512,
+    var nSeqMax:               Int     = 1,
+    var nGpuLayers:            Int     = -1,    // -1 = all layers
+    val chat_template_path:    String  = "",
+    val chat_template_content: String  = "",
+)
+```
+
+<Note>
+  `nGpuLayers` is rewritten by the JNI based on `compute_unit`: `cpu` forces 0; `gpu` / `npu` / `hybrid` pass the value through (`-1` = all layers).
+</Note>
+
+### `ChatMessage`
+
+```kotlin theme={"dark"}
+data class ChatMessage(
+    var role:    String,   // "system" | "user" | "assistant"
+    var content: String,
+)
+```
+
+### `VlmChatMessage` / `VlmContent`
+
+```kotlin theme={"dark"}
+data class VlmChatMessage(
+    val role:     String?,                 // "system" | "user" | "assistant"
+    val contents: List<VlmContent>,
+)
+
+data class VlmContent(
+    val type: String?,                     // "text" | "image"
+    val text: String?,                     // text content, or absolute file path for image
+)
+```
+
+### `GenerationConfig`
+
+```kotlin theme={"dark"}
+data class GenerationConfig(
+    var maxTokens:     Int              = 32,
+    var stopWords:     Array<String>?   = null,
+    var stopCount:     Int              = 0,
+    var samplerConfig: SamplerConfig?   = null,
+    var imagePaths:    Array<String>?   = null,
+    var imageCount:    Int              = 0,
+    var audioPaths:    Array<String>?   = null,
+    var audioCount:    Int              = 0,
+)
+```
+
+<Note>
+  The default `maxTokens` is **32**. Most use cases should set a higher value (e.g. `maxTokens = 2048`).
+</Note>
+
+### `LlmStreamResult`
+
+```kotlin theme={"dark"}
+sealed class LlmStreamResult {
+    data class Token(val text: String)              : LlmStreamResult()
+    data class Completed(val profile: ProfilingData) : LlmStreamResult()
+    data class Error(val throwable: Throwable)      : LlmStreamResult()
+}
+```
+
+***
+
+## **llama.cpp (GGUF models)**
+
+Runs any GGUF model on CPU, Adreno GPU, or Hexagon NPU. Compute-unit selection is controlled by `compute_unit`.
+
+### LLM
+
+```kotlin theme={"dark"}
+val paths = ModelManagerWrapper.getPaths("unsloth/Qwen3-0.6B-GGUF")
+    ?: error("Model not downloaded")
+
+LlmWrapper.builder()
+    .llmCreateInput(
+        LlmCreateInput(
+            model_path = paths.model_path,
+            config     = ModelConfig(nCtx = 4096),
+            runtime_id  = "llama_cpp",
+            compute_unit  = null,       // null → npu (recommended on Snapdragon)
+        )
+    )
+    .build()
+    .onSuccess { llmWrapper = it }
+    .onFailure { println("Error: ${it.message}") }
+
+val chat = arrayListOf(ChatMessage("user", "What is AI?"))
+
+llmWrapper.applyChatTemplate(chat.toTypedArray(), null, false).onSuccess { t ->
+    llmWrapper.generateStreamFlow(t.formattedText, GenerationConfig(maxTokens = 2048)).collect { result ->
+        when (result) {
+            is LlmStreamResult.Token     -> print(result.text)
+            is LlmStreamResult.Completed -> println("\nDone")
+            is LlmStreamResult.Error     -> println("Error: ${result.throwable}")
+        }
+    }
+}
+```
+
+#### Compute-unit variants
+
+| Goal | `compute_unit` | Notes |
+| - | - | - |
+| Snapdragon NPU (recommended) | `"npu"` or `null` | Hexagon NPU acceleration. |
+| Adreno GPU (OpenCL) | `"gpu"` | Defaults to `nGpuLayers = -1` (all layers). |
+| Pure CPU | `"cpu"` | Works on any ARM64 chipset. |
+
+### VLM
+
+GGUF VLMs need two artifacts: the LLM weights (`model_path`) and the vision projection (`mmproj_path`). Both come from `getPaths()`:
+
+```kotlin theme={"dark"}
+val paths = ModelManagerWrapper.getPaths("unsloth/Qwen3-VL-2B-Instruct-GGUF")
+    ?: error("Model not downloaded")
+
+VlmWrapper.builder()
+    .vlmCreateInput(
+        VlmCreateInput(
+            model_path  = paths.model_path,
+            mmproj_path = paths.mmproj_path,
+            config      = ModelConfig(nCtx = 4096),
+            runtime_id   = "llama_cpp",
+            compute_unit   = null,
+        )
+    )
+    .build()
+    .onSuccess { vlmWrapper = it }
+
+val msg = VlmChatMessage(
+    role     = "user",
+    contents = listOf(
+        VlmContent("image", "/storage/emulated/0/Pictures/example.jpg"),
+        VlmContent("text",  "Describe this image."),
+    ),
+)
+val chat = arrayListOf(msg)
+
+vlmWrapper.applyChatTemplate(chat.toTypedArray(), null, false).onSuccess { t ->
+    val gen = vlmWrapper.injectMediaPathsToConfig(chat.toTypedArray(), GenerationConfig(maxTokens = 2048))
+    vlmWrapper.generateStreamFlow(t.formattedText, gen).collect { result ->
+        when (result) {
+            is LlmStreamResult.Token     -> print(result.text)
+            is LlmStreamResult.Completed -> println("\nDone")
+            is LlmStreamResult.Error     -> println("Error: ${result.throwable}")
+        }
+    }
+}
+```
+
+<Note>
+  Always pass `t.formattedText` (the chat-templated prompt) into `generateStreamFlow`, **not** the raw user text. The native pipeline treats the prompt as already-templated.
+</Note>
+
+***
+
+## **Qualcomm® AI Hub Models (NPU via Qualcomm AI Engine Direct)**
+
+Pre-compiled models from Qualcomm AI Hub. NPU-only, pinned to a specific chipset (`SM8750` = Snapdragon 8 Elite, `SM8850` = Snapdragon 8 Elite Gen 5).
+
+### Downloading Qualcomm AI Hub Models
+
+```kotlin theme={"dark"}
+ModelManagerWrapper.pullFlow(
+    ModelPullInput(
+        model_name = "ai-hub-models/Qwen2.5-VL-7B-Instruct",
+        hub        = HubSource.AUTO,     // AUTO routes `ai-hub-models/*` to Qualcomm AI Hub
+        chipset    = "SM8750",           // REQUIRED on Android
+    )
+).collect { event ->
+    when (event) {
+        is ModelManagerWrapper.PullEvent.Progress  -> updateProgressBar(event.files)
+        ModelManagerWrapper.PullEvent.Completed    -> println("done")
+        is ModelManagerWrapper.PullEvent.Error     -> println("err ${event.code}: ${event.message}")
+    }
+}
+```
+
+### Supported models
+
+| Modality | Hub repo |
+| - | - |
+| LLM | `ai-hub-models/Qwen3-4B-Instruct-2507` |
+| VLM | `ai-hub-models/Qwen2.5-VL-7B-Instruct` |
+
+### LLM
+
+```kotlin theme={"dark"}
+val paths = ModelManagerWrapper.getPaths("ai-hub-models/Qwen3-4B-Instruct-2507")
+    ?: error("Model not downloaded")
+
+LlmWrapper.builder()
+    .llmCreateInput(
+        LlmCreateInput(
+            model_path = paths.model_path,
+            config     = ModelConfig(),
+            runtime_id  = "qairt",
+            compute_unit  = null,           // null → NPU (only option for Qualcomm AI Engine Direct)
+        )
+    )
+    .build()
+    .onSuccess { llmWrapper = it }
+    .onFailure { println("Error: ${it.message}") }
+
+val chat = arrayListOf(ChatMessage("user", "What is AI?"))
+
+llmWrapper.applyChatTemplate(chat.toTypedArray(), null, false).onSuccess { t ->
+    llmWrapper.generateStreamFlow(t.formattedText, GenerationConfig()).collect { result ->
+        when (result) {
+            is LlmStreamResult.Token     -> print(result.text)
+            is LlmStreamResult.Completed -> println("\nDone")
+            is LlmStreamResult.Error     -> println("Error: ${result.throwable}")
+        }
+    }
+}
+```
+
+<Note>
+  Qualcomm AI Engine Direct rejects `nGpuLayers != 0` and `nCtx != 0` with `PARAM_NOT_SUPPORTED` — the KV cache and context length are fixed at compile time by the Qualcomm AI Hub bundle. Leave both at defaults and use `max_tokens` / `enable_thinking` only.
+</Note>
+
+### VLM
+
+```kotlin theme={"dark"}
+val paths = ModelManagerWrapper.getPaths("ai-hub-models/Qwen2.5-VL-7B-Instruct")
+    ?: error("Model not downloaded")
+
+VlmWrapper.builder()
+    .vlmCreateInput(
+        VlmCreateInput(
+            model_path  = paths.model_path,
+            mmproj_path = paths.mmproj_path,
+            config      = ModelConfig(),
+            runtime_id   = "qairt",
+            compute_unit   = null,
+        )
+    )
+    .build()
+    .onSuccess { vlmWrapper = it }
+
+val msg = VlmChatMessage(
+    role     = "user",
+    contents = listOf(
+        VlmContent("image", "/storage/emulated/0/Pictures/cat.jpg"),
+        VlmContent("text",  "What's in this image?"),
+    ),
+)
+val chat = arrayListOf(msg)
+
+vlmWrapper.applyChatTemplate(chat.toTypedArray(), null, false).onSuccess { t ->
+    val gen = vlmWrapper.injectMediaPathsToConfig(chat.toTypedArray(), GenerationConfig(maxTokens = 2048))
+    vlmWrapper.generateStreamFlow(t.formattedText, gen).collect { result ->
+        when (result) {
+            is LlmStreamResult.Token     -> print(result.text)
+            is LlmStreamResult.Completed -> println("\nDone")
+            is LlmStreamResult.Error     -> println("Error: ${result.throwable}")
+        }
+    }
+}
+```
+
+<Note>
+  Pass the **chat-templated** prompt (`t.formattedText`) to `generateStreamFlow`, never raw user text. Qualcomm AI Engine Direct VLM treats its prompt as already-templated — raw text produces degenerate output.
+</Note>
+
+***
+
+## **Need help?**
+
+<CardGroup cols={2}>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/qualcomm/GenieX/issues">
+    File a bug, request a feature, or browse open issues.
+  </Card>
+
+  <Card title="Slack" icon="slack" href="https://aihub.qualcomm.com/community/slack">
+    Developer collaboration and resources.
+  </Card>
+</CardGroup>
+
+<br />
+
+<div class="feedback-wrapper">
+  <span class="feedback-label">Was this page helpful?</span>
+
+  <div class="feedback-toggle">
+    <input type="radio" name="feedback" id="feedback-yes" class="feedback-input" />
+
+    <label for="feedback-yes" class="feedback-button">
+      <img src="https://mintlify.s3.us-west-1.amazonaws.com/qualcomm-0801e48b/Images/FeedBack/thumbs-up.svg" alt="Thumbs up" class="feedback-icon" noZoom />
+
+      Yes
+    </label>
+
+    <input type="radio" name="feedback" id="feedback-no" class="feedback-input" />
+
+    <label for="feedback-no" class="feedback-button">
+      <img src="https://mintlify.s3.us-west-1.amazonaws.com/qualcomm-0801e48b/Images/FeedBack/thumbs-down.svg" alt="Thumbs down" class="feedback-icon" noZoom />
+
+      No
+    </label>
+  </div>
+</div>
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

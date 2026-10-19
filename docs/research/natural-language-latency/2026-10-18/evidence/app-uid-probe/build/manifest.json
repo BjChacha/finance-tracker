@@ -1,0 +1,12 @@
+{
+  "apk_sha256": "c65cde33706983130f4472a5b7280582b07cbc376917d82ae97060cc5c207b3f",
+  "apk_bytes": 57821404,
+  "template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+  "source_hashes": {
+    "AndroidManifest.xml": "eede16f8b878a00337d727e8163b7fc80a77b33c7fcd0c0353c1aebd3642de97",
+    "build.py": "367211d43d4db0df38c3a13c52bf7488d0b88b5777acb38ac129ec749a0f120b",
+    "MainActivity.java": "046f73d42cb8d440daef7e763f036d9ee73a34c99c056b04be983be4314601bb"
+  },
+  "requests_sha256": "fdb5174198a402539cbbcfa512658a2566ac67247dfd1ca3416f36842c01f129",
+  "scope": "Debug-only APK; synthetic input; no finance database access"
+}

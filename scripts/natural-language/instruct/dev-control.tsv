@@ -1,0 +1,21 @@
+group	text	amount_cents	type	category	status
+breakfast	今天早餐吃包子花了6元	600	expense	food	single
+snacks	买薯片花了15块	1500	expense	food	single
+subway	地铁扣了3元	300	expense	transport	single
+taxi	打车花了30块	3000	expense	transport	single
+daily_goods	买洗衣液花39元	3900	expense	shopping	single
+rent	这个月房租交了2500元	250000	expense	housing	single
+medicine	药店买感冒药花28元	2800	expense	health	single
+books	买一本编程书花68元	6800	expense	education	single
+phone	交手机话费100元	10000	expense	communication	single
+gifts	给朋友买生日礼物花200元	20000	expense	social	single
+salary	到账工资8000元	800000	income	salary	single
+bonus	收到季度奖金3000元	300000	income	bonus	single
+refund	退货款99元已退到微信	9900	income	refund	single
+parttime	兼职收入500元到账	50000	income	parttime	single
+wechat_bank	微信转银行卡200元	20000	transfer	transfer_account	single
+bank_cash	银行卡取出现金500元	50000	transfer	withdrawal	single
+missing_amount	买了早餐但忘记多少钱				clarify
+multi_meal	早餐15，打车30				clarify
+future_purchase	明天准备花300元买鞋				clarify
+ambiguous_account	从储蓄卡转100到微信，两张储蓄卡我忘记哪张				clarify

@@ -1,0 +1,85 @@
+{
+  "model": "LFM2.5-350M-Q2_K_S-emb4.gguf",
+  "model_bytes": 136882176,
+  "model_sha256": "c0bd87b709edd6c774cda6193818d6c7871e8775a1d554d6f5217ad0dc2806a5",
+  "data_sha256": "a2298f65d5700c925329a40717bbdb84975d940b451b398ce0d8f70d2a1c0795",
+  "harness_sha256": "0c786e416b55ee19f65c06458ca68a026a0e1d8faeefec395c84747275e72e7a",
+  "runner_sha256": "588994676a6787a07303c7c21780ead707d4706c3792491f9e1323eccb7c325b",
+  "prompt_sha256": "2eb6d819bbf3470154836f567df7f068aefcf5013edce145f211ea26c70d1380",
+  "configuration": {
+    "model": "artifacts/natural-language-instruct/models/LFM2.5-350M-Q2_K_S-emb4.gguf",
+    "data": "scripts/natural-language/instruct/dev-control.tsv",
+    "output": "q2s-unconstrained-control",
+    "limit": null,
+    "unconstrained": true,
+    "no_examples": true,
+    "cache": false,
+    "prompt": "scripts/natural-language/instruct/prompt-selected.txt"
+  },
+  "summary": {
+    "total": 20,
+    "schema_valid": 0,
+    "business_consistent": 0,
+    "preview_ready": 0,
+    "semantics": {
+      "amount_cents": {
+        "correct": 0,
+        "raw_field_correct_diagnostic": 0,
+        "total": 16,
+        "accuracy": 0.0,
+        "target": 0.99,
+        "passed": false
+      },
+      "type": {
+        "correct": 0,
+        "raw_field_correct_diagnostic": 0,
+        "total": 16,
+        "accuracy": 0.0,
+        "target": 0.95,
+        "passed": false
+      },
+      "category": {
+        "correct": 0,
+        "raw_field_correct_diagnostic": 0,
+        "total": 16,
+        "accuracy": 0.0,
+        "target": 0.9,
+        "passed": false
+      }
+    },
+    "needs_manual_input": 20,
+    "auxiliary": {
+      "account": {
+        "raw_correct": 0,
+        "total": 0
+      },
+      "to_account": {
+        "raw_correct": 0,
+        "total": 0
+      },
+      "day": {
+        "raw_correct": 0,
+        "total": 0
+      }
+    },
+    "guards": {
+      "total": 4,
+      "correct_abstentions": 0,
+      "false_single": 0,
+      "clear_single_accepted": 0,
+      "clear_single_total": 16
+    },
+    "observed_desktop_latency_ms": {
+      "p50": 459.20565000051283,
+      "p95": 1160.7057800018083,
+      "count": 20
+    }
+  },
+  "desktop_memory": {
+    "peak_rss_bytes": 406503424,
+    "peak_private_bytes": 288649216,
+    "sample_period_ms": 20,
+    "not_android_pss": true
+  },
+  "desktop_load_ms_single_observation": 510.89080000383547
+}

@@ -1,0 +1,52 @@
+{
+  "serial": "HA29H4B6",
+  "model": "Qwen3.5-4B-Q4_K_M.gguf",
+  "arguments": [
+    "-m",
+    "Qwen3.5-4B-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18487",
+    "-c",
+    "4096",
+    "-b",
+    "512",
+    "-ub",
+    "512",
+    "-t",
+    "4",
+    "-tb",
+    "4",
+    "-np",
+    "1",
+    "-ngl",
+    "99",
+    "--device",
+    "HTP0",
+    "--ctx-checkpoints",
+    "4",
+    "--jinja",
+    "--chat-template-file",
+    "qwen35-official-template.jinja",
+    "--no-webui",
+    "--no-warmup",
+    "--no-context-shift"
+  ],
+  "data_sha256": "30f34af9187643c579392fd3ab791029e7b411b395afccc030147aa015cde7f7",
+  "source_hashes": {
+    "backend.py": "e2c34fc0100ed42db24e89eb08f5da8b3db926f50c348654631bf0754a7a18ab",
+    "evaluate_gate.py": "c56cd0e63a0904539cb1ca28add39f17ae8d265bb8665a219644145170b7bae9",
+    "gate_prompt.txt": "ec8d4bfa4b66c39d03a2c4b9b500975e8be5e5ebdf5850161b5a019892fc5159",
+    "semantic_gate.py": "270f0f660036348bdef8208c28d91370fe11608bf30f6b2e619817540b9f889e"
+  },
+  "scope": "Isolated local semantic gate, not field accuracy or application latency",
+  "load_ms": 7609.324700009893,
+  "process_cold_first_result_ms": 8507.0446000027,
+  "environment": {
+    "LD_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/snapdragon-b11669/lib",
+    "ADSP_LIBRARY_PATH": "/data/local/tmp/finance-nl-bench/snapdragon-b11669/lib",
+    "GGML_HEXAGON_POWER_MODE": "balanced",
+    "GGML_OPENCL_KERNEL_CACHE_DIR": "/data/local/tmp/finance-nl-bench/opencl-cache"
+  }
+}

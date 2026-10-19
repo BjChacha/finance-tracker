@@ -1,0 +1,189 @@
+{
+  "split": "test",
+  "corpus": {
+    "counts": {
+      "dev": 100,
+      "test": 200
+    },
+    "review": {
+      "status": "pending_human_review",
+      "author": "assistant",
+      "note": "合成候选语料；尚未由用户或独立人工核验，不作为产品验收通过证据。按场景分组划分，不将同义改写分到不同集合。"
+    },
+    "hashes": {
+      "dev": "4080af5315473dfdc9a62cd2552d9f7f4e8efe36b94e25d1c4ee974ece31f4bb",
+      "test": "6b0dc21dfbd57b405eb519413c236815e21fe320103ec20fe3158ecc1f1686a6"
+    }
+  },
+  "frozen_config_sha256": "cf01208840a563f86591a5b5bfd3450a63d89717028fa08400b7e9c25eaadd2a",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "results": {
+    "fp32": {
+      "metrics": {
+        "amount_cents": {
+          "correct": 143,
+          "total": 160,
+          "accuracy": 0.89375,
+          "abstentions": 5,
+          "threshold": 0.99,
+          "passed": false
+        },
+        "type": {
+          "correct": 0,
+          "total": 160,
+          "accuracy": 0.0,
+          "abstentions": 160,
+          "threshold": 0.95,
+          "passed": false
+        },
+        "category": {
+          "correct": 0,
+          "total": 160,
+          "accuracy": 0.0,
+          "abstentions": 160,
+          "threshold": 0.9,
+          "passed": false
+        },
+        "guard_cases": {
+          "total": 40,
+          "unsafe_single_predictions": 0,
+          "clear_single_accepted": 0,
+          "clear_single_total": 160
+        },
+        "manual_completion": {
+          "total": 200,
+          "count": 200
+        }
+      },
+      "desktop_cpu_timing": {
+        "load_ms_single_observation": 329.8101000036695,
+        "parse_p50_ms": 7.454000002326211,
+        "parse_p95_ms": 16.432169999461614,
+        "sample_count": 200,
+        "threads": 4,
+        "includes": "5 sequential UIE prompts, query embedding, ranking and integer normalization; category cache preloaded",
+        "not_mobile_evidence": true
+      }
+    },
+    "int8": {
+      "metrics": {
+        "amount_cents": {
+          "correct": 143,
+          "total": 160,
+          "accuracy": 0.89375,
+          "abstentions": 6,
+          "threshold": 0.99,
+          "passed": false
+        },
+        "type": {
+          "correct": 0,
+          "total": 160,
+          "accuracy": 0.0,
+          "abstentions": 160,
+          "threshold": 0.95,
+          "passed": false
+        },
+        "category": {
+          "correct": 0,
+          "total": 160,
+          "accuracy": 0.0,
+          "abstentions": 160,
+          "threshold": 0.9,
+          "passed": false
+        },
+        "guard_cases": {
+          "total": 40,
+          "unsafe_single_predictions": 0,
+          "clear_single_accepted": 0,
+          "clear_single_total": 160
+        },
+        "manual_completion": {
+          "total": 200,
+          "count": 200
+        }
+      },
+      "desktop_cpu_timing": {
+        "load_ms_single_observation": 200.94099999550963,
+        "parse_p50_ms": 5.290500001137843,
+        "parse_p95_ms": 13.201730000946549,
+        "sample_count": 200,
+        "threads": 4,
+        "includes": "5 sequential UIE prompts, query embedding, ranking and integer normalization; category cache preloaded",
+        "not_mobile_evidence": true
+      }
+    },
+    "rules_baseline": {
+      "metrics": {
+        "amount_cents": {
+          "correct": 89,
+          "total": 160,
+          "accuracy": 0.55625,
+          "abstentions": 70,
+          "threshold": 0.99,
+          "passed": false
+        },
+        "type": {
+          "correct": 141,
+          "total": 160,
+          "accuracy": 0.88125,
+          "abstentions": 0,
+          "threshold": 0.95,
+          "passed": false
+        },
+        "category": {
+          "correct": 5,
+          "total": 160,
+          "accuracy": 0.03125,
+          "abstentions": 155,
+          "threshold": 0.9,
+          "passed": false
+        },
+        "guard_cases": {
+          "total": 40,
+          "unsafe_single_predictions": 20,
+          "clear_single_accepted": 90,
+          "clear_single_total": 160
+        },
+        "manual_completion": {
+          "total": 200,
+          "count": 194
+        }
+      },
+      "desktop_cpu_timing": {
+        "load_ms_single_observation": 12.681899999734014,
+        "parse_p50_ms": 0.07380000170087442,
+        "parse_p95_ms": 0.2604699977382549,
+        "sample_count": 200,
+        "threads": 4,
+        "includes": "5 sequential UIE prompts, query embedding, ranking and integer normalization; category cache preloaded",
+        "not_mobile_evidence": true
+      }
+    }
+  },
+  "quantization_field_disagreements": {
+    "amount_cents": 5,
+    "type": 0,
+    "category": 0,
+    "status": 0
+  },
+  "resources_bytes_provisional": 48824863,
+  "mobile": null,
+  "release_gate": {
+    "passed": false,
+    "checks": {
+      "amount_cents": false,
+      "type": false,
+      "category": false,
+      "human_review": false,
+      "resources": true,
+      "reference_and_quantization_parity": false,
+      "mobile": false
+    }
+  },
+  "limitations": [
+    "Synthetic assistant-authored labels await independent human review.",
+    "Mobile tokenizer, runtime, PSS, cold/warm p95 and first-install offline execution remain unverified.",
+    "Level-one categories only; child categories, date parsing and production form integration are not implemented.",
+    "Resource count includes ONNX weights, tokenizer assets, upstream notices and model card; excludes mobile runtime binary and final application manifest."
+  ]
+}

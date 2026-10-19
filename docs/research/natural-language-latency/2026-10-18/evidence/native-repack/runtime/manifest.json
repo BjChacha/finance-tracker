@@ -1,0 +1,98 @@
+{
+  "source_commit": "620d2225cc436ab0b001e3200e590e3b286ef9ab",
+  "patch_sha256": "622309dc0c02719d15a5d1e2e03bf1475fca5c233b4b359b725237a867a359f5",
+  "toolchain": "ghcr.io/snapdragon-toolchain/arm64-android@sha256:c012b8174f4154088ee027077e9cb80e68cc9a494d46f63454a050fa4789897b",
+  "dsp_skels": "Unchanged official b11669 binaries; all host libraries rebuilt together",
+  "files": [
+    {
+      "path": "lib/libggml-base.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libggml-base.so",
+      "sha256": "ccd061521ff502109cd7edd9ad136db8f54c7c66c0be9f5b733e9f81db5ba803",
+      "bytes": 7786120
+    },
+    {
+      "path": "lib/libggml-cpu.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libggml-cpu.so",
+      "sha256": "30c9f0d8dfacfc087f1b2fafc7d2e36e40365e14f187ed4afa25626a432f0872",
+      "bytes": 4366336
+    },
+    {
+      "path": "lib/libggml-hexagon.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libggml-hexagon.so",
+      "sha256": "80b4736d8ea84f96b9ebddd9947d83ed0dac9f37a9109ead661d31ee84c42fa9",
+      "bytes": 7483704
+    },
+    {
+      "path": "lib/libggml-opencl.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libggml-opencl.so",
+      "sha256": "af1357ffebccdbb6cbcb097ed98a1eecf2a86620bb6e4eb6866c97ff2f0737f3",
+      "bytes": 13530904
+    },
+    {
+      "path": "lib/libggml.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libggml.so",
+      "sha256": "0ab62cdb655d1ab6904da26ea175901e2a55d4bd23d5a99c4512ce76ab90827c",
+      "bytes": 4898528
+    },
+    {
+      "path": "lib/libllama-common.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libllama-common.so",
+      "sha256": "550dab2be993abb6d4d864cbb44aaa6a33bf79f85f502eeaf09f03f916f9a2dc",
+      "bytes": 54090800
+    },
+    {
+      "path": "lib/libllama-server-impl.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libllama-server-impl.so",
+      "sha256": "ef2d9468427ba8886fa9315b27cfc6d40d2fbc74b3c318be9090ac5647049296",
+      "bytes": 38084480
+    },
+    {
+      "path": "lib/libllama.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libllama.so",
+      "sha256": "939bd3a27d8ec58c690fc3c680f5a9ecd7409e628f3e8ecf691eb1665f71c468",
+      "bytes": 38701880
+    },
+    {
+      "path": "lib/libmtmd.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/libmtmd.so",
+      "sha256": "c3e3c63c30d44f9acae622666e1e824d5df18cc317591719fa7b3e95688624e2",
+      "bytes": 13571944
+    },
+    {
+      "path": "lib/libggml-htp-v73.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/snapdragon-b11669/llama-b11669/lib/libggml-htp-v73.so",
+      "sha256": "96a642cbdebf2c576a92d6ddc533740bdf354bb3400a4c61fdf3a5374418af87",
+      "bytes": 852040
+    },
+    {
+      "path": "lib/libggml-htp-v75.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/snapdragon-b11669/llama-b11669/lib/libggml-htp-v75.so",
+      "sha256": "b4a575eadb98a8b1f584539ff495b230d8440b9d3b163f394691017bdea5af0d",
+      "bytes": 852008
+    },
+    {
+      "path": "lib/libggml-htp-v79.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/snapdragon-b11669/llama-b11669/lib/libggml-htp-v79.so",
+      "sha256": "930494f74e98e57f692a64088b5c2bb438403251aca9071c37fab8f41ecb3881",
+      "bytes": 868488
+    },
+    {
+      "path": "lib/libggml-htp-v81.so",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/snapdragon-b11669/llama-b11669/lib/libggml-htp-v81.so",
+      "sha256": "7a6ee3fd92b455d5bf56b49b3c5446096f6bfbee4bc90c45630ae374911343a7",
+      "bytes": 884968
+    },
+    {
+      "path": "bin/llama-server",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/llama-server",
+      "sha256": "652a231056885d53454408c3c27ac3c761aa69ea34671674dedade7e4d6f1fcc",
+      "bytes": 7448
+    },
+    {
+      "path": "bin/repack-roundtrip",
+      "source": "F:/Projects/App/finance-tracker/artifacts/natural-language-latency/llama.cpp/build-repack/bin/repack-roundtrip",
+      "sha256": "97a683c1eb4bd62894b475962ddd5524918e5e1301be0491d9e082c773fc3b19",
+      "bytes": 85744
+    }
+  ]
+}

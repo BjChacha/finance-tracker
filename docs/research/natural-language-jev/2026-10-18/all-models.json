@@ -1,0 +1,17 @@
+[
+  {
+    "name": "jev-qwen3-0.6b-f16.gguf",
+    "bytes": 1197629792,
+    "sha256": "dc5006e8cecfac6a57e2c89a19b669d0a42c6dfcd766f6dce044b27794aa65c5"
+  },
+  {
+    "name": "jev-qwen3-0.6b-q4_k_m.gguf",
+    "bytes": 396474720,
+    "sha256": "75a0d7f7086e2b01222de80d84e2c9fba0bda9b8a1267a14169f2ebc7daff2d5"
+  },
+  {
+    "name": "jev-qwen3-0.6b-q8_0.gguf",
+    "bytes": 639150752,
+    "sha256": "437710e6fe1a7c21f3b9bb7dfda5efd58cfe3c3d3bbe8fdd1dbd83302e7de18f"
+  }
+]

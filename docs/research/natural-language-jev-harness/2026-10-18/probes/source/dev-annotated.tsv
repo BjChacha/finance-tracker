@@ -1,0 +1,101 @@
+group	text	amount_cents	type	category	status	id	account	to_account	day
+breakfast	今天早餐吃包子花了6元	600	expense	food	single	dev-001			today
+breakfast	早饭豆浆油条一共八块五	850	expense	food	single	dev-002			today
+breakfast	早餐用微信付了12.50元	1250	expense	food	single	dev-003	wechat		today
+breakfast	买两个烧饼当早饭，实付7块	700	expense	food	single	dev-004			today
+breakfast	昨天早上小笼包九元六角	960	expense	food	single	dev-005			yesterday
+snacks	买薯片花了15块	1500	expense	food	single	dev-006			today
+snacks	零食店结账三十二元	3200	expense	food	single	dev-007			today
+snacks	用支付宝买饼干付18.8元	1880	expense	food	single	dev-008	alipay		today
+snacks	巧克力第二件半价，合计24元	2400	expense	food	single	dev-009			today
+snacks	前天在便利店买冰淇淋花五块五	550	expense	food	single	dev-010			before_yesterday
+subway	地铁扣了3元	300	expense	transport	single	dev-011			today
+subway	乘公交花两块钱	200	expense	transport	single	dev-012			today
+subway	今天地铁出站扣费四元五角	450	expense	transport	single	dev-013			today
+subway	昨天坐公交用微信支付1.50元	150	expense	transport	single	dev-014	wechat		yesterday
+subway	公交月票付了100块	10000	expense	transport	single	dev-015			today
+taxi	打车花了30块	3000	expense	transport	single	dev-016			today
+taxi	昨晚网约车实付四十八块六	4860	expense	transport	single	dev-017			yesterday
+taxi	从公司叫出租车回家付23.40元	2340	expense	transport	single	dev-018			today
+taxi	滴滴订单尾号2038，支付19元	1900	expense	transport	single	dev-019			today
+taxi	出租车打表56元，优惠后实付50元	5000	expense	transport	single	dev-020			today
+daily_goods	买洗衣液花39元	3900	expense	shopping	single	dev-021			today
+daily_goods	超市纸巾三包，付款十二元九角	1290	expense	shopping	single	dev-022			today
+daily_goods	支付宝买牙刷付了8.80元	880	expense	shopping	single	dev-023	alipay		today
+daily_goods	昨天家用垃圾袋花五块	500	expense	shopping	single	dev-024			yesterday
+daily_goods	买拖把总价七十九元	7900	expense	shopping	single	dev-025			today
+rent	这个月房租交了2500元	250000	expense	housing	single	dev-026			today
+rent	银行卡支付房租三千二百元	320000	expense	housing	single	dev-027	bank		today
+rent	昨天给房东转了1800块房租	180000	expense	housing	single	dev-028			yesterday
+rent	合租房租我的份额是1200，已付	120000	expense	housing	single	dev-029			today
+rent	交四月份租金两千元整	200000	expense	housing	single	dev-030			today
+medicine	药店买感冒药花28元	2800	expense	health	single	dev-031			today
+medicine	买退烧药付十五块六	1560	expense	health	single	dev-032			today
+medicine	昨天配药用支付宝付67.20元	6720	expense	health	single	dev-033	alipay		yesterday
+medicine	维生素两瓶合计89元	8900	expense	health	single	dev-034			today
+medicine	药房买创可贴花三元五角	350	expense	health	single	dev-035			today
+books	买一本编程书花68元	6800	expense	education	single	dev-036			today
+books	书店买教材花了一百二十块	12000	expense	education	single	dev-037			today
+books	昨天购入英语词典，实付45.50元	4550	expense	education	single	dev-038			yesterday
+books	两本练习册总共二十三元	2300	expense	education	single	dev-039			today
+books	买电子书扣了9块9	990	expense	education	single	dev-040			today
+phone	交手机话费100元	10000	expense	communication	single	dev-041			today
+phone	微信充话费五十块	5000	expense	communication	single	dev-042	wechat		today
+phone	手机套餐今天扣了29.90元	2990	expense	communication	single	dev-043			today
+phone	给手机号尾号5678充值30块	3000	expense	communication	single	dev-044			today
+phone	支付宝充话费实付九十八元五角	9850	expense	communication	single	dev-045	alipay		today
+gifts	给朋友买生日礼物花200元	20000	expense	social	single	dev-046			today
+gifts	昨天给妈妈买礼品付三百元	30000	expense	social	single	dev-047			yesterday
+gifts	同事结婚买贺礼花168块	16800	expense	social	single	dev-048			today
+gifts	送老师的纪念礼物支出80.50元	8050	expense	social	single	dev-049			today
+gifts	给朋友转账66元当生日礼金	6600	expense	social	single	dev-050			today
+salary	到账工资8000元	800000	income	salary	single	dev-051			today
+salary	公司发了本月薪水一万二千元	1200000	income	salary	single	dev-052			today
+salary	银行卡收到税后工资7654.32元	765432	income	salary	single	dev-053	bank		today
+salary	昨天发薪，到账六千八百块	680000	income	salary	single	dev-054			yesterday
+salary	工资补发实收450元	45000	income	salary	single	dev-055			today
+bonus	收到季度奖金3000元	300000	income	bonus	single	dev-056			today
+bonus	年终奖到账两万元	2000000	income	bonus	single	dev-057			today
+bonus	公司绩效奖励实收850.50元	85050	income	bonus	single	dev-058			today
+bonus	竞赛奖金五百块已打入银行卡	50000	income	bonus	single	dev-059	bank		today
+bonus	昨天收到了团队奖励1200元	120000	income	bonus	single	dev-060			yesterday
+refund	退货款99元已退到微信	9900	income	refund	single	dev-061	wechat		today
+refund	昨天收到网购退款一百二十块	12000	income	refund	single	dev-062			yesterday
+refund	取消外卖后到账退款18.50元	1850	income	refund	single	dev-063			today
+refund	商品原价200元，部分退款到账30元	3000	income	refund	single	dev-064			today
+refund	支付宝收到退款六元六角	660	income	refund	single	dev-065	alipay		today
+parttime	兼职收入500元到账	50000	income	parttime	single	dev-066			today
+parttime	帮人写程序收到了两千块报酬	200000	income	parttime	single	dev-067			today
+parttime	昨天家教课时费实收300元	30000	income	parttime	single	dev-068			yesterday
+parttime	设计兼职结算到账680.80元	68080	income	parttime	single	dev-069			today
+parttime	周末摆摊赚了150元收入已到账	15000	income	parttime	single	dev-070			today
+wechat_bank	微信转银行卡200元	20000	transfer	transfer_account	single	dev-071	wechat	bank	today
+wechat_bank	从我的微信钱包转五百元到我的银行卡	50000	transfer	transfer_account	single	dev-072	wechat	bank	today
+wechat_bank	昨天微信余额提现到银行卡1000块	100000	transfer	transfer_account	single	dev-073	wechat	bank	yesterday
+wechat_bank	微信里转出88.88元存到我的银行卡	8888	transfer	transfer_account	single	dev-074	wechat	bank	today
+wechat_bank	我的微信转到银行卡三百二十元	32000	transfer	transfer_account	single	dev-075	wechat	bank	today
+bank_cash	银行卡取出现金500元	50000	transfer	withdrawal	single	dev-076	bank	cash	today
+bank_cash	昨天在ATM从银行卡取了两千块现金	200000	transfer	withdrawal	single	dev-077	bank	cash	yesterday
+bank_cash	从我的银行卡取现100元放钱包	10000	transfer	withdrawal	single	dev-078	bank	cash	today
+bank_cash	去柜台从银行卡提取现金三千元	300000	transfer	withdrawal	single	dev-079	bank	cash	today
+bank_cash	今天银行卡取现800块	80000	transfer	withdrawal	single	dev-080	bank	cash	today
+missing_amount	买了早餐但忘记多少钱				clarify	dev-081			
+missing_amount	记录今天的午餐				clarify	dev-082			
+missing_amount	交了房租				clarify	dev-083			
+missing_amount	工资到账了				clarify	dev-084			
+missing_amount	给我的公交卡充了钱				clarify	dev-085			
+multi_meal	早餐15，打车30				clarify	dev-086			
+multi_meal	午饭20元，晚饭30元，各记一笔				clarify	dev-087			
+multi_meal	买面包8块又买咖啡16块				clarify	dev-088			
+multi_meal	上午吃饭12元，下午零食9元				clarify	dev-089			
+multi_meal	今天两笔，豆浆3元和午餐22元				clarify	dev-090			
+future_purchase	明天准备花300元买鞋				clarify	dev-091			
+future_purchase	打算用50块买零食，还没付款				clarify	dev-092			
+future_purchase	下周预计交房租2000元				clarify	dev-093			
+future_purchase	想买一件200元的外套				clarify	dev-094			
+future_purchase	准备充值100元话费但尚未操作				clarify	dev-095			
+ambiguous_account	从储蓄卡转100到微信，两张储蓄卡我忘记哪张				clarify	dev-096			
+ambiguous_account	银行卡互转200，忘了用哪张卡转出				clarify	dev-097			
+ambiguous_account	工资卡往储蓄卡转了300，储蓄卡有两个同名账户				clarify	dev-098			
+ambiguous_account	把500块转到我的卡里，具体哪张不确定				clarify	dev-099			
+ambiguous_account	我的两个微信账户之间转了80块				clarify	dev-100			

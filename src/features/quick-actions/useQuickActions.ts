@@ -1,24 +1,31 @@
-import { useEffect, useRef } from 'react';
-import { AppState, Platform, type AppStateStatus } from 'react-native';
-import { useGlobalSearchParams, usePathname, useRootNavigationState, useRouter } from 'expo-router';
-import * as QuickActions from 'expo-quick-actions';
-import type { Action } from 'expo-quick-actions';
-import { useResidentEditorDismiss } from '@/components/navigation/resident-editor-sheet-host';
-import { zh } from '@/i18n/zh';
-import { getPendingQuickAddLaunch } from '@/lib/quickKeypad';
+import { useEffect, useRef } from "react";
+import { AppState, Platform, type AppStateStatus } from "react-native";
+import {
+  useGlobalSearchParams,
+  usePathname,
+  useRootNavigationState,
+  useRouter,
+} from "expo-router";
+import * as QuickActions from "expo-quick-actions";
+import type { Action } from "expo-quick-actions";
+import { useResidentEditorDismiss } from "@/components/navigation/resident-editor-sheet-host";
+import { zh } from "@/i18n/zh";
+import {
+  getPendingQuickAddLaunch,
+} from "@/lib/quickKeypad";
 import {
   QUICK_ADD_TRANSACTION_PATH,
   toQuickAddTransactionHref,
-} from './pendingQuickAdd';
+} from "./pendingQuickAdd";
 
-const IOS_ADD_TRANSACTION_PATH = '/add-transaction';
+const IOS_ADD_TRANSACTION_PATH = "/add-transaction";
 
 /** iOS launcher shortcut for the standard card-based add flow. */
 const ITEMS: Action[] = [
   {
-    id: 'add-transaction',
+    id: "add-transaction",
     title: zh.shortcut.addTransaction,
-    icon: 'add',
+    icon: "add",
     params: { href: IOS_ADD_TRANSACTION_PATH },
   },
 ];
@@ -43,9 +50,9 @@ export function useQuickActionsBootstrap() {
   const lastRoutedHandoffId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (Platform.OS !== 'ios') return;
+    if (Platform.OS !== "ios") return;
     const handle = (action?: Action | null) => {
-      if (action?.id !== 'add-transaction') return;
+      if (action?.id !== "add-transaction") return;
       router.navigate(IOS_ADD_TRANSACTION_PATH);
     };
 
@@ -56,7 +63,7 @@ export function useQuickActionsBootstrap() {
   }, [router]);
 
   useEffect(() => {
-    if (Platform.OS !== 'android' || !rootNavigationState?.key) return;
+    if (Platform.OS !== "android" || !rootNavigationState?.key) return;
     consumePendingLaunch();
     // rootNavigationState.key changes when the router remounts (new root after CLEAR_TASK);
     // re-pulling then covers the startup race where the deep link was dropped entirely.
@@ -64,17 +71,20 @@ export function useQuickActionsBootstrap() {
   }, [rootNavigationState?.key]);
 
   useEffect(() => {
-    if (Platform.OS !== 'android') return;
-    const subscription = AppState.addEventListener('change', (state: AppStateStatus) => {
-      if (state !== 'active') return;
-      // Foreground pull: a reused singleTask MainActivity can drop its onNewIntent deep link
-      // while React is still settling; by the time the user is back, the root is stable.
-      // The pendingLaunch native side keeps a 30s TTL and is cleared once routed/completed.
-      consumePendingLaunch();
-    });
+    if (Platform.OS !== "android" || !rootNavigationState?.key) return;
+    const subscription = AppState.addEventListener(
+      "change",
+      (state: AppStateStatus) => {
+        if (state !== "active") return;
+        // Foreground pull: a reused singleTask MainActivity can drop its onNewIntent deep link
+        // while React is still settling; by the time the user is back, the root is stable.
+        // The pendingLaunch native side keeps a 30s TTL and is cleared once routed/completed.
+        consumePendingLaunch();
+      },
+    );
     return () => subscription.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname, params.handoffId, rootNavigationState?.key]);
 
   /** Idempotent: skips when this launch was already routed or the deep link already landed. */
   const consumePendingLaunch = () => {

@@ -15,6 +15,7 @@
     "expo-document-picker": "~57.0.1",
     "expo-file-system": "~57.0.0",
     "expo-glass-effect": "~57.0.1",
+    "expo-intent-launcher": "~57.0.1",
     "expo-linear-gradient": "~57.0.1",
     "expo-linking": "~57.0.4",
     "expo-notifications": "~57.0.8",
@@ -62,12 +63,18 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "build:apk": "cd android && .\\gradlew.bat assembleRelease && cd .. && node scripts/copy-apk.mjs"
+    "build:apk": "node scripts/build-apk.mjs",
+    "release": "node scripts/release.mjs"
   },
   "jest": {
     "preset": "jest-expo",
     "roots": [
       "<rootDir>/src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/__tests__/**/*.mjs",
+      "**/?(*.)+(spec|test).[jt]s?(x)"
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"

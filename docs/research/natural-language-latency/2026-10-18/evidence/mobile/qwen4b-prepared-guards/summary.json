@@ -1,0 +1,76 @@
+{
+  "total": 40,
+  "schema_valid": 40,
+  "business_consistent": 35,
+  "preview_ready": 0,
+  "semantics": {
+    "amount_cents": {
+      "correct": 0,
+      "raw_field_correct_diagnostic": 0,
+      "total": 0,
+      "accuracy": null,
+      "target": 0.99,
+      "passed": false
+    },
+    "type": {
+      "correct": 0,
+      "raw_field_correct_diagnostic": 0,
+      "total": 0,
+      "accuracy": null,
+      "target": 0.95,
+      "passed": false
+    },
+    "category": {
+      "correct": 0,
+      "raw_field_correct_diagnostic": 0,
+      "total": 0,
+      "accuracy": null,
+      "target": 0.9,
+      "passed": false
+    }
+  },
+  "needs_manual_input": 40,
+  "auxiliary": {
+    "account": {
+      "raw_correct": 0,
+      "total": 0
+    },
+    "to_account": {
+      "raw_correct": 0,
+      "total": 0
+    },
+    "day": {
+      "raw_correct": 0,
+      "total": 0
+    }
+  },
+  "guards": {
+    "total": 40,
+    "correct_abstentions": 40,
+    "false_single": 0,
+    "clear_single_accepted": 0,
+    "clear_single_total": 0
+  },
+  "category_scope": "Level-1 ancestor accuracy only; child labels are not annotated",
+  "native_request_latency_ms": {
+    "p50": 451.5974500027369,
+    "p95": 3195.4273399998783,
+    "count": 40
+  },
+  "context_waits_ms": [
+    {
+      "before_id": "denied_parking-1",
+      "elapsed_ms": 3398.1893000018317
+    },
+    {
+      "before_id": "ambiguous_account-1",
+      "elapsed_ms": 3909.2261999903712
+    },
+    {
+      "before_id": "instruction_in_data-1",
+      "elapsed_ms": 3834.86579998862
+    }
+  ],
+  "requests_over_3s": 5,
+  "request_max_ms": 3267.807099997299
+}

@@ -1,0 +1,74 @@
+{
+  "total": 24,
+  "failure_count": 12,
+  "accepted_core_fields_joint_correct": 7,
+  "ready_and_all_annotated_fields_correct": 4,
+  "ready_but_incorrect": 8,
+  "groups": {
+    "completion_pair": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 0
+    },
+    "ownership_pair": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "route_pair": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "route_word_order": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "amount_role": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 0
+    },
+    "refund_pair": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 0
+    },
+    "custom_category": {
+      "total": 2,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "missing_account": {
+      "total": 2,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "repayment_pair": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 2
+    },
+    "duplicate_account": {
+      "total": 2,
+      "fully_correct": 1,
+      "core_correct": 0
+    },
+    "unsupported_date": {
+      "total": 2,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "missing_amount": {
+      "total": 1,
+      "fully_correct": 1,
+      "core_correct": 0
+    },
+    "instruction_payload": {
+      "total": 1,
+      "fully_correct": 1,
+      "core_correct": 0
+    }
+  }
+}

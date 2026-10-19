@@ -1,0 +1,25 @@
+{
+  "frozen_at": "2026-10-17T17:55:59.679965+00:00",
+  "model": "LFM2.5-350M-Q2_K_S-emb4.gguf",
+  "model_bytes": 136882176,
+  "model_sha256": "c0bd87b709edd6c774cda6193818d6c7871e8775a1d554d6f5217ad0dc2806a5",
+  "runtime_release": "b11669",
+  "temperature": 0,
+  "seed": 42,
+  "max_generated_tokens": 192,
+  "context_tokens": 4096,
+  "threads": 4,
+  "cpu_only": true,
+  "review_status": "pending_human_review",
+  "files": {
+    "scripts/natural-language/instruct/harness.py": "0c786e416b55ee19f65c06458ca68a026a0e1d8faeefec395c84747275e72e7a",
+    "scripts/natural-language/instruct/runner.py": "588994676a6787a07303c7c21780ead707d4706c3792491f9e1323eccb7c325b",
+    "scripts/natural-language/instruct/evaluate.py": "afcb5314ec07a1892ae82f30ff9c50ebbc583e94c4d7f8430aeab892825ac067",
+    "scripts/natural-language/instruct/prompt-selected.txt": "2eb6d819bbf3470154836f567df7f068aefcf5013edce145f211ea26c70d1380",
+    "scripts/natural-language/instruct/heldout.tsv": "ae1c8f028d991a877e62b6297d8eda7847c7d0d277b086c0b4c21e1ed4c834e5",
+    "scripts/natural-language/instruct/heldout-scenarios.json": "43b180cf1e05a541b901d99888a78e81e1b9a28db87ae1ca9df6f3a3c4966903",
+    "scripts/natural-language/data/dev.tsv": "4080af5315473dfdc9a62cd2552d9f7f4e8efe36b94e25d1c4ee974ece31f4bb",
+    "scripts/natural-language/data/context.json": "ac51b24ce777c0c83a6d6815f98a7bdfe041e317ca6d0add18367cd9ba64c16e"
+  },
+  "note": "Freeze before new holdout inference. Candidate-selection grammar with bounded whitespace; no test-result tuning."
+}

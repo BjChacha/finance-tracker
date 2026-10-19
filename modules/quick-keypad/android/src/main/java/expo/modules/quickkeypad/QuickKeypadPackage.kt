@@ -9,59 +9,76 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import java.lang.ref.WeakReference
 
 class QuickKeypadPackage : Package {
-  override fun createReactActivityLifecycleListeners(
-    activityContext: Context?,
-  ): List<ReactActivityLifecycleListener> {
-    return listOf(MainActivityLaunchLifecycleListener())
-  }
+    override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> =
+        listOf(MainActivityLaunchLifecycleListener())
 }
 
 private class MainActivityLaunchLifecycleListener : ReactActivityLifecycleListener {
-  private var activityRef: WeakReference<Activity>? = null
+    private var activityRef: WeakReference<Activity>? = null
 
-  override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-    activityRef = WeakReference(activity)
-    QuickAddHandoffController.attachMainActivity(activity)
-    beginInitialLaunch(activity, activity.intent)
-  }
-
-  override fun onResume(activity: Activity) {
-    activityRef = WeakReference(activity)
-    QuickAddHandoffController.attachMainActivity(activity)
-  }
-
-  override fun onNewIntent(intent: Intent): Boolean {
-    activityRef?.get()?.let { handleNewIntent(it, intent) }
-    return false
-  }
-
-  override fun onDestroy(activity: Activity) {
-    AppLaunchController.clear(activity)
-    QuickAddHandoffController.clear(activity)
-    if (activityRef?.get() === activity) {
-      activityRef = null
+    override fun onCreate(
+        activity: Activity,
+        savedInstanceState: Bundle?,
+    ) {
+        activityRef = WeakReference(activity)
+        QuickAddHandoffController.attachMainActivity(activity)
+        beginInitialLaunch(activity, activity.intent)
     }
-  }
 
-  private fun beginInitialLaunch(activity: Activity, intent: Intent?) {
-    val handoffId = intent?.getStringExtra(QuickAddHandoffController.EXTRA_HANDOFF_ID)
-    if (handoffId.isNullOrBlank()) {
-      QuickAddHandoffController.restoreOpaque(activity)
-      AppLaunchController.begin(activity)
-      return
+    override fun onResume(activity: Activity) {
+        activityRef = WeakReference(activity)
+        QuickAddHandoffController.attachMainActivity(activity)
     }
-    AppLaunchController.cancelForQuickAdd(activity)
-    QuickAddHandoffController.begin(activity, handoffId)
-  }
 
-  /** A reused singleTask Activity never replays the normal app-launch fade. */
-  private fun handleNewIntent(activity: Activity, intent: Intent?) {
-    val handoffId = intent?.getStringExtra(QuickAddHandoffController.EXTRA_HANDOFF_ID)
-    if (handoffId.isNullOrBlank()) {
-      QuickAddHandoffController.restoreOpaque(activity)
-      return
+    override fun onNewIntent(intent: Intent): Boolean {
+        activityRef?.get()?.let { handleNewIntent(it, intent) }
+        return false
     }
-    AppLaunchController.cancelForQuickAdd(activity)
-    QuickAddHandoffController.begin(activity, handoffId)
-  }
+
+    override fun onDestroy(activity: Activity) {
+        AppLaunchController.clear(activity)
+        QuickAddHandoffController.clear(activity)
+        if (activityRef?.get() === activity) {
+            activityRef = null
+        }
+    }
+
+    private fun beginInitialLaunch(
+        activity: Activity,
+        intent: Intent?,
+    ) {
+        if (isTranslucentLaunch(intent)) {
+            QuickAddHandoffController.beginTranslucentLaunch(activity)
+            return
+        }
+        val handoffId = intent?.getStringExtra(QuickAddHandoffController.EXTRA_HANDOFF_ID)
+        if (handoffId.isNullOrBlank()) {
+            QuickAddHandoffController.restoreOpaque(activity)
+            AppLaunchController.begin(activity)
+            return
+        }
+        AppLaunchController.cancelForQuickAdd(activity)
+        QuickAddHandoffController.begin(activity, handoffId)
+    }
+
+    private fun isTranslucentLaunch(intent: Intent?): Boolean =
+        intent?.getBooleanExtra(QuickAddHandoffController.EXTRA_TRANSLUCENT_LAUNCH, false) == true
+
+    /** A reused singleTask Activity never replays the normal app-launch fade. */
+    private fun handleNewIntent(
+        activity: Activity,
+        intent: Intent?,
+    ) {
+        if (isTranslucentLaunch(intent)) {
+            QuickAddHandoffController.beginTranslucentLaunch(activity)
+            return
+        }
+        val handoffId = intent?.getStringExtra(QuickAddHandoffController.EXTRA_HANDOFF_ID)
+        if (handoffId.isNullOrBlank()) {
+            QuickAddHandoffController.restoreOpaque(activity)
+            return
+        }
+        AppLaunchController.cancelForQuickAdd(activity)
+        QuickAddHandoffController.begin(activity, handoffId)
+    }
 }

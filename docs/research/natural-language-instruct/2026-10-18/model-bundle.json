@@ -1,0 +1,26 @@
+{
+  "model": "LiquidAI/LFM2.5-350M",
+  "source_revision": "657e078c94084481950a2d555a941481f715536b",
+  "license": "LFM Open License v1.0",
+  "runtime": "llama.cpp b11669",
+  "resources": [
+    {
+      "kind": "model",
+      "name": "LFM2.5-350M-Q2_K_S-emb4.gguf",
+      "bytes": 136882176,
+      "sha256": "c0bd87b709edd6c774cda6193818d6c7871e8775a1d554d6f5217ad0dc2806a5"
+    },
+    {
+      "kind": "license",
+      "name": "LICENSE",
+      "bytes": 10596,
+      "sha256": "5188f2b355da20647257a3156db5834c794e5fb5e6d8dc4d4cdbb3180e75b85b"
+    },
+    {
+      "kind": "prompt",
+      "name": "prompt-selected.txt",
+      "bytes": 1305,
+      "sha256": "2eb6d819bbf3470154836f567df7f068aefcf5013edce145f211ea26c70d1380"
+    }
+  ]
+}

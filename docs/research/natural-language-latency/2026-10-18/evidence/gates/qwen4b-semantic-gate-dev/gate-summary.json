@@ -1,0 +1,12 @@
+{
+  "total": 100,
+  "schema_valid": 100,
+  "status_correct": 100,
+  "false_single": [],
+  "false_clarify": [],
+  "native_gate_latency_ms": {
+    "p50": 464.83335000812076,
+    "p95": 505.5201100076374,
+    "max": 861.8681999942055
+  }
+}

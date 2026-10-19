@@ -1,0 +1,16 @@
+{
+  "model": "LiquidAI/LFM2.5-350M",
+  "revision": "657e078c94084481950a2d555a941481f715536b",
+  "license": "LFM Open License v1.0",
+  "files": [
+    {"name":"LFM2.5-350M-F16.gguf","bytes":711485152,"sha256":"18e2f6b61045bed8c3e8575c01fa7898b2df5ae884964322dcf49e5d12f6eb79"},
+    {"name":"LFM2.5-350M-Q4_K_M.gguf","bytes":229312224,"sha256":"7e6f72643caafc9a68256686638c4d7916f2cec76d1df478d4c3ddcd95a6aed4"},
+    {"name":"README.md","bytes":3277,"sha256":"4773739eb49540664b16566dc655d03a51df3937639e9dbf28d48a15d01b2436"},
+    {"name":"LICENSE","bytes":10596,"sha256":"5188f2b355da20647257a3156db5834c794e5fb5e6d8dc4d4cdbb3180e75b85b"}
+  ],
+  "runtime": {
+    "release":"b11669",
+    "windows":{"name":"llama-b11669-bin-win-cpu-x64.zip","sha256":"37b3efcf962847ca869745fd4ccf7f5e7e8dacfeff9fa3523b4ca8cdc66d632b"},
+    "android":{"name":"llama-b11669-bin-android-arm64.tar.gz","sha256":"640f870f795b3b2939ed40d1a31ce529ecc4865abfc5d0f5153168bc4b82e5c8"}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "total": 6,
+  "schema_valid": 6,
+  "status_correct": 5,
+  "false_single": [
+    "delimiter_named_account"
+  ],
+  "false_clarify": [],
+  "native_gate_latency_ms": {
+    "p50": 471.45904999342747,
+    "p95": 813.5773250032798,
+    "max": 908.3698000031291
+  }
+}

@@ -7,7 +7,6 @@ import { useLargestExpenses } from '@/features/transactions/hooks';
 import { TransactionRow } from '@/features/transactions/components/TransactionRow';
 import { transactionParams } from '@/features/transactions/filters';
 import { useTheme } from '@/theme';
-import { AddTransactionButton } from './add-transaction-button';
 import { AssetSummary } from './asset-summary';
 import { CategoryList } from './category-list';
 import {
@@ -123,7 +122,6 @@ export function DashboardScreen() {
           )}
         </Section>
       </ScrollView>
-      <AddTransactionButton bottom={inset + 8} />
     </View>
   );
 }

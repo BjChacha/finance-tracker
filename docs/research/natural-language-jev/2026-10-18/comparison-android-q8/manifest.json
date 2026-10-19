@@ -1,0 +1,36 @@
+{
+  "configuration": {
+    "model": "jev-qwen3-0.6b-q8_0.gguf",
+    "reference": false,
+    "data": "scripts/natural-language/instruct/heldout.tsv",
+    "output": "comparison-android-q8",
+    "limit": null,
+    "prompts": null,
+    "port": 18471,
+    "device": true
+  },
+  "data_sha256": "ae1c8f028d991a877e62b6297d8eda7847c7d0d277b086c0b4c21e1ed4c834e5",
+  "source_files": {
+    "archive_results.py": "2951ec096e2bf993e4f89765415538a4048b7b676fc85360e4b7fe8f1ad1d2e5",
+    "compare_results.py": "a4f05dfdf5c79d8e08617f6d3df6da5840330d670461aeb332814bc40e6003b4",
+    "decision.py": "7bf955e4e17d1857361446647deeeccc314e889ab981d9b0a40c5b4d7ae9274f",
+    "device_benchmark.py": "2391e7320075f9d9edb8238a9b66a2d329ca6c7f771fb2dbc14da28bdf177bc5",
+    "encoder.py": "7cdc7751752dba8c1064f86ba1cddffa3ed849db3974cdea2368a07a4145963c",
+    "english_prompts.py": "0e8e5abb0e902bb98f91f467a8c5b8b889e34757599fd8b27afad24ae56cb5f3",
+    "evaluation.py": "34f107fdaaefc40a711e280177af82f44f106f1f046d65a87f8dddd40d0f9d23",
+    "fetch_model.py": "a0f58e993e913d9261f17578130c29f93090de65491c13b74b7866749f270e75",
+    "freeze.json": "3f23d4826cd5acdecd41770650ae675687d4b4140c22a839f1c46b2bd42c6b93",
+    "freeze_protocol.py": "39148120b26c41a3956153edc087a8d5430f1e804b395acb62901acc63cd0a66",
+    "parity.py": "1e73a09acc95ae867bdd0fc048277a928eefb965c2a502181a45b4583fe242d7",
+    "prepare.py": "9b650e88823b1c3c02917916c08b4b5e06e18e5e29cdb66d2b5d4b0c0ad1f388",
+    "prompts-v1.json": "61ec4c02102510233b1d7ee2064abdcad8d482ddbe75c805ae4e184ef77bd9eb",
+    "prompts-v2.json": "137c3328ec49c053fd8c4459a99f6901b2cd9ecb415d7b76f1831dde629095a6",
+    "prompts-v3.json": "41b0a256c66a192c6a8adbabd4581c720f583a62a012b9765073ebc360776c1d",
+    "prompts.json": "137c3328ec49c053fd8c4459a99f6901b2cd9ecb415d7b76f1831dde629095a6",
+    "support.py": "e452a6be23dbc3e1bc1c0966200fd642c51fcad360853100b5d50303708a7699",
+    "test_decision.py": "8d33b3749008d4c70b1e7606eba955b64db8edd3be90f53da5d419abf38c64d8"
+  },
+  "model_sha256": "437710e6fe1a7c21f3b9bb7dfda5efd58cfe3c3d3bbe8fdd1dbd83302e7de18f",
+  "model_bytes": 639150752,
+  "inference": "CPU only; loopback or local_files_only; no online inference"
+}

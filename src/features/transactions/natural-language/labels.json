@@ -1,0 +1,30 @@
+{
+  "title": "一句话记账",
+  "placeholder": "例如：今天中午去寿司郎吃了 155",
+  "hint": "说出金额、用途和时间，自动填好类型、分类、账户与备注。",
+  "examplesLabel": "试试这些",
+  "examples": ["昨天打车 36 块", "中午寿司郎 155", "收到退款 72 元"],
+  "submit": "识别",
+  "quote": "原文",
+  "parsing": "正在识别…",
+  "parsingHint": "通常 1 秒左右完成",
+  "clarifyTitle": "还差一点信息",
+  "clarify": "这句话里有多笔支出，或金额还不明确。请拆成一句话一笔，或直接手动记账。",
+  "failureTitle": "识别没有成功",
+  "review": "已识别，确认无误可直接保存；缺账户或分类时补选即可。",
+  "dateReview": "日期尚不明确：请在下方选择实际日期后保存。",
+  "retry": "重试",
+  "editText": "修改原文",
+  "manual": "手动记账",
+  "entryHint": "点按输入金额，长按输入一句话记账",
+  "entryFailed": "无法打开一句话记账，请使用记一笔输入金额。",
+  "failures": {
+    "missing_key": "识别服务未配置，请使用手动记账。",
+    "unauthorized": "识别服务鉴权失败，请检查 API Key 后重试。",
+    "rate_limited": "识别请求过于频繁，请稍后再试。",
+    "timeout": "识别超时了，请重试。",
+    "network": "网络不可用，请检查网络后重试。",
+    "server": "识别服务暂时不可用，请稍后再试。",
+    "invalid_response": "识别结果无法使用，请修改描述后重试。"
+  }
+}

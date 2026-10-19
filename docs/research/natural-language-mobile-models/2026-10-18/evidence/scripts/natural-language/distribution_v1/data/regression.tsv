@@ -1,0 +1,201 @@
+id	group	text	amount_cents	type	category	account	to_account	day	status	context_variant	source	source_id	review_status
+alipay_to_bank-2	alipay_to_bank	昨天从我的支付宝转四十二元五角到我自己的银行卡，已经到账	4250	transfer	transfer_account	alipay	bank	yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	alipay_to_bank-2	pending_human_review
+bank_to_savings-2	bank_to_savings	昨天银行卡向我名下储蓄卡划转四十二元五角，款已到账	4250	transfer	transfer_account	bank	savings	yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	bank_to_savings-2	pending_human_review
+bank_to_wechat-1	bank_to_wechat	我的银行卡向自己的微信余额转入37.25元，操作完成	3725	transfer	transfer_account	bank	wechat	today	single	default	scripts/natural-language/instruct/heldout.tsv	bank_to_wechat-1	pending_human_review
+bank_to_wechat-2	bank_to_wechat	昨天我的银行卡向自己的微信余额转入四十二元五角，操作完成	4250	transfer	transfer_account	bank	wechat	yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	bank_to_wechat-2	pending_human_review
+birthday_received-1	birthday_received	朋友给我的生日红包37.25元，微信已收	3725	income	red_packet	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	birthday_received-1	pending_human_review
+birthday_received-3	birthday_received	前天朋友给我的生日红包18块6，微信已收	1860	income	red_packet	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	birthday_received-3	pending_human_review
+birthday_received-4	birthday_received	今天朋友给我的生日红包九十九元，微信已收	9900	income	red_packet	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	birthday_received-4	pending_human_review
+bond_coupon-1	bond_coupon	收到债券利息37.25元，已到账储蓄卡	3725	income	investment	savings		today	single	default	scripts/natural-language/instruct/heldout.tsv	bond_coupon-1	pending_human_review
+bond_coupon-2	bond_coupon	昨天收到债券利息四十二元五角，已到账储蓄卡	4250	income	investment	savings		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	bond_coupon-2	pending_human_review
+bond_coupon-5	bond_coupon	收到债券利息１２.０８元，已到账储蓄卡	1208	income	investment	savings		today	single	default	scripts/natural-language/instruct/heldout.tsv	bond_coupon-5	pending_human_review
+broadband-1	broadband	交家里的宽带网络费用，支付宝付了37.25元	3725	expense	communication	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	broadband-1	pending_human_review
+broadband-2	broadband	昨天交家里的宽带网络费用，支付宝付了四十二元五角	4250	expense	communication	alipay		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	broadband-2	pending_human_review
+broadband-3	broadband	前天交家里的宽带网络费用，支付宝付了18块6	1860	expense	communication	alipay		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	broadband-3	pending_human_review
+broadband-4	broadband	今天交家里的宽带网络费用，支付宝付了九十九元	9900	expense	communication	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	broadband-4	pending_human_review
+broadband-5	broadband	交家里的宽带网络费用，支付宝付了１２.０８元	1208	expense	communication	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	broadband-5	pending_human_review
+camera_accessory-1	camera_accessory	买摄影三脚架，银行卡实付37.25元	3725	expense	shopping	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	camera_accessory-1	pending_human_review
+camera_accessory-2	camera_accessory	昨天买摄影三脚架，银行卡实付四十二元五角	4250	expense	shopping	bank		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	camera_accessory-2	pending_human_review
+camera_accessory-3	camera_accessory	前天买摄影三脚架，银行卡实付18块6	1860	expense	shopping	bank		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	camera_accessory-3	pending_human_review
+camera_accessory-4	camera_accessory	今天买摄影三脚架，银行卡实付九十九元	9900	expense	shopping	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	camera_accessory-4	pending_human_review
+camera_accessory-5	camera_accessory	买摄影三脚架，银行卡实付１２.０８元	1208	expense	shopping	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	camera_accessory-5	pending_human_review
+cash_to_bank-4	cash_to_bank	今天拿现金九十九元存入我的银行卡，办理成功	9900	transfer	deposit	cash	bank	today	single	default	scripts/natural-language/instruct/heldout.tsv	cash_to_bank-4	pending_human_review
+cinema-1	cinema	看电影的票用现金买了，付37.25元	3725	expense	entertainment	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	cinema-1	pending_human_review
+cinema-2	cinema	昨天看电影的票用现金买了，付四十二元五角	4250	expense	entertainment	cash		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	cinema-2	pending_human_review
+cinema-3	cinema	前天看电影的票用现金买了，付18块6	1860	expense	entertainment	cash		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	cinema-3	pending_human_review
+cinema-4	cinema	今天看电影的票用现金买了，付九十九元	9900	expense	entertainment	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	cinema-4	pending_human_review
+cinema-5	cinema	看电影的票用现金买了，付１２.０８元	1208	expense	entertainment	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	cinema-5	pending_human_review
+cloud_subscription-1	cloud_subscription	续费云盘会员，银行卡扣款37.25元	3725	expense	subscription	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	cloud_subscription-1	pending_human_review
+cloud_subscription-2	cloud_subscription	昨天续费云盘会员，银行卡扣款四十二元五角	4250	expense	subscription	bank		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	cloud_subscription-2	pending_human_review
+cloud_subscription-3	cloud_subscription	前天续费云盘会员，银行卡扣款18块6	1860	expense	subscription	bank		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	cloud_subscription-3	pending_human_review
+cloud_subscription-4	cloud_subscription	今天续费云盘会员，银行卡扣款九十九元	9900	expense	subscription	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	cloud_subscription-4	pending_human_review
+cloud_subscription-5	cloud_subscription	续费云盘会员，银行卡扣款１２.０８元	1208	expense	subscription	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	cloud_subscription-5	pending_human_review
+credit_repayment-1	credit_repayment	从我的银行卡付37.25元还清信用卡账单	3725	transfer	repayment	bank	credit	today	single	default	scripts/natural-language/instruct/heldout.tsv	credit_repayment-1	pending_human_review
+custom_craft-1	custom_craft	买制作陶泥手工的材料，支付宝付37.25元，记在手工材料	3725	expense	craft	alipay		today	single	craft	scripts/natural-language/instruct/heldout.tsv	custom_craft-1	pending_human_review
+custom_craft-2	custom_craft	昨天买制作陶泥手工的材料，支付宝付四十二元五角，记在手工材料	4250	expense	craft	alipay		yesterday	single	craft	scripts/natural-language/instruct/heldout.tsv	custom_craft-2	pending_human_review
+custom_craft-3	custom_craft	前天买制作陶泥手工的材料，支付宝付18块6，记在手工材料	1860	expense	craft	alipay		before_yesterday	single	craft	scripts/natural-language/instruct/heldout.tsv	custom_craft-3	pending_human_review
+custom_craft-4	custom_craft	今天买制作陶泥手工的材料，支付宝付九十九元，记在手工材料	9900	expense	craft	alipay		today	single	craft	scripts/natural-language/instruct/heldout.tsv	custom_craft-4	pending_human_review
+custom_craft-5	custom_craft	买制作陶泥手工的材料，支付宝付１２.０８元，记在手工材料	1208	expense	craft	alipay		today	single	craft	scripts/natural-language/instruct/heldout.tsv	custom_craft-5	pending_human_review
+deposit_interest-3	deposit_interest	前天储蓄卡的存款利息到账18块6	1860	income	investment	savings		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	deposit_interest-3	pending_human_review
+deposit_interest-4	deposit_interest	今天储蓄卡的存款利息到账九十九元	9900	income	investment	savings		today	single	default	scripts/natural-language/instruct/heldout.tsv	deposit_interest-4	pending_human_review
+dinner_party-1	dinner_party	和同学聚餐，订单号96125，我用微信付了自己那份37.25元	3725	expense	food	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	dinner_party-1	pending_human_review
+dinner_party-2	dinner_party	昨天和同学聚餐，订单号96125，我用微信付了自己那份四十二元五角	4250	expense	food	wechat		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	dinner_party-2	pending_human_review
+dinner_party-3	dinner_party	前天和同学聚餐，订单号96125，我用微信付了自己那份18块6	1860	expense	food	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	dinner_party-3	pending_human_review
+dinner_party-4	dinner_party	今天和同学聚餐，订单号96125，我用微信付了自己那份九十九元	9900	expense	food	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	dinner_party-4	pending_human_review
+dinner_party-5	dinner_party	和同学聚餐，订单号96125，我用微信付了自己那份１２.０８元	1208	expense	food	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	dinner_party-5	pending_human_review
+donation-1	donation	现金捐款37.25元给公益机构，算其他支出	3725	expense	other_expense	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	donation-1	pending_human_review
+donation-2	donation	昨天现金捐款四十二元五角给公益机构，算其他支出	4250	expense	other_expense	cash		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	donation-2	pending_human_review
+donation-3	donation	前天现金捐款18块6给公益机构，算其他支出	1860	expense	other_expense	cash		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	donation-3	pending_human_review
+donation-4	donation	今天现金捐款九十九元给公益机构，算其他支出	9900	expense	other_expense	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	donation-4	pending_human_review
+donation-5	donation	现金捐款１２.０８元给公益机构，算其他支出	1208	expense	other_expense	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	donation-5	pending_human_review
+gaming-1	gaming	买单机游戏，支付宝已扣37.25元	3725	expense	entertainment	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	gaming-1	pending_human_review
+gaming-2	gaming	昨天买单机游戏，支付宝已扣四十二元五角	4250	expense	entertainment	alipay		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	gaming-2	pending_human_review
+gaming-3	gaming	前天买单机游戏，支付宝已扣18块6	1860	expense	entertainment	alipay		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	gaming-3	pending_human_review
+gaming-4	gaming	今天买单机游戏，支付宝已扣九十九元	9900	expense	entertainment	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	gaming-4	pending_human_review
+gaming-5	gaming	买单机游戏，支付宝已扣１２.０８元	1208	expense	entertainment	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	gaming-5	pending_human_review
+haircut-1	haircut	理发店剪头发，微信结账37.25元	3725	expense	beauty	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	haircut-1	pending_human_review
+haircut-2	haircut	昨天理发店剪头发，微信结账四十二元五角	4250	expense	beauty	wechat		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	haircut-2	pending_human_review
+haircut-3	haircut	前天理发店剪头发，微信结账18块6	1860	expense	beauty	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	haircut-3	pending_human_review
+haircut-4	haircut	今天理发店剪头发，微信结账九十九元	9900	expense	beauty	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	haircut-4	pending_human_review
+haircut-5	haircut	理发店剪头发，微信结账１２.０８元	1208	expense	beauty	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	haircut-5	pending_human_review
+legacy-test-001	ev_charging	我的车充电花了30块	3000	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-001	pending_human_review
+legacy-test-002	ev_charging	昨晚电车充电付了四十二元五角	4250	expense	transport			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-002	pending_human_review
+legacy-test-003	ev_charging	充电桩给汽车充了20度电，实付18.60元	1860	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-003	pending_human_review
+legacy-test-004	ev_charging	前天高速服务区充电花六十八块	6800	expense	transport			before_yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-004	pending_human_review
+legacy-test-005	ev_charging	车充电优惠券抵5元后支付25元	2500	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-005	pending_human_review
+legacy-test-006	fuel	加汽油花了300元	30000	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-006	pending_human_review
+legacy-test-007	fuel	油站给车加满油，付三百八十块六	38060	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-007	pending_human_review
+legacy-test-008	fuel	加了40升汽油，银行卡扣款320元	32000	expense	transport	bank		today	single	default	scripts/natural-language/data/test.tsv	legacy-test-008	pending_human_review
+legacy-test-009	fuel	昨天给摩托车加油，支出55.20元	5520	expense	transport			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-009	pending_human_review
+legacy-test-010	fuel	中石化加油实付二百元整	20000	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-010	pending_human_review
+legacy-test-016	long_trip	高铁票花了235元	23500	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-016	pending_human_review
+legacy-test-017	long_trip	买火车票支付一百零五元五角	10550	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-017	pending_human_review
+legacy-test-018	long_trip	昨天坐长途汽车票价68块已付	6800	expense	transport			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-018	pending_human_review
+legacy-test-019	long_trip	从广州到深圳的高铁票实付74.50元	7450	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-019	pending_human_review
+legacy-test-020	long_trip	机场大巴购票二十五元	2500	expense	transport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-020	pending_human_review
+legacy-test-021	lunch	午餐吃盖饭花18元	1800	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-021	pending_human_review
+legacy-test-022	lunch	中午食堂付款十二块五	1250	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-022	pending_human_review
+legacy-test-023	lunch	午饭外卖原价30，券后实付22元	2200	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-023	pending_human_review
+legacy-test-024	lunch	午餐套餐两份，合计46元	4600	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-024	pending_human_review
+legacy-test-025	lunch	昨天中午面馆消费二十元六角	2060	expense	food			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-025	pending_human_review
+legacy-test-026	dinner	晚上吃火锅付了188元	18800	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-026	pending_human_review
+legacy-test-027	dinner	晚餐家庭聚餐花三百二十块	32000	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-027	pending_human_review
+legacy-test-028	dinner	晚饭用现金结账35.80元	3580	expense	food	cash		today	single	default	scripts/natural-language/data/test.tsv	legacy-test-028	pending_human_review
+legacy-test-029	dinner	和朋友吃晚饭AA，我付了60元	6000	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-029	pending_human_review
+legacy-test-030	dinner	前天晚餐牛肉饭花二十七块五	2750	expense	food			before_yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-030	pending_human_review
+legacy-test-031	late_night	夜宵烧烤花85元	8500	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-031	pending_human_review
+legacy-test-032	late_night	凌晨吃了一碗宵夜面，付16块	1600	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-032	pending_human_review
+legacy-test-033	late_night	昨晚夜宵买炸串总共三十三元	3300	expense	food			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-033	pending_human_review
+legacy-test-034	late_night	半夜点粥当夜宵实付19.90元	1990	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-034	pending_human_review
+legacy-test-035	late_night	小龙虾夜宵微信付一百五十元	15000	expense	food	wechat		today	single	default	scripts/natural-language/data/test.tsv	legacy-test-035	pending_human_review
+legacy-test-036	cafe	咖啡店买拿铁花28元	2800	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-036	pending_human_review
+legacy-test-037	cafe	买奶茶花十五块八	1580	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-037	pending_human_review
+legacy-test-038	cafe	今天咖啡券抵扣后实付9.90元	990	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-038	pending_human_review
+legacy-test-039	cafe	买两杯果茶一共三十二元	3200	expense	food			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-039	pending_human_review
+legacy-test-040	cafe	昨天喝柠檬茶付七元五角	750	expense	food			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-040	pending_human_review
+legacy-test-041	clothes	买新外套花299元	29900	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-041	pending_human_review
+legacy-test-042	clothes	网购裤子支付一百三十九元	13900	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-042	pending_human_review
+legacy-test-043	clothes	两双袜子合计18.80元已付	1880	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-043	pending_human_review
+legacy-test-044	clothes	昨天买鞋付款399块	39900	expense	shopping			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-044	pending_human_review
+legacy-test-045	clothes	买衬衫标价200，折后付160元	16000	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-045	pending_human_review
+legacy-test-046	electronics	买蓝牙耳机花199元	19900	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-046	pending_human_review
+legacy-test-047	electronics	换新手机付了四千九百九十九元	499900	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-047	pending_human_review
+legacy-test-048	electronics	昨天键盘到手，银行卡付款289.50元	28950	expense	shopping	bank		yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-048	pending_human_review
+legacy-test-049	electronics	买一个充电器付59块9	5990	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-049	pending_human_review
+legacy-test-050	electronics	电脑显示器订单编号20261018，实付899元	89900	expense	shopping			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-050	pending_human_review
+legacy-test-051	utilities	家里电费交了128元	12800	expense	housing			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-051	pending_human_review
+legacy-test-052	utilities	缴纳水费四十三元八角	4380	expense	housing			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-052	pending_human_review
+legacy-test-053	utilities	燃气充值200元已经到账燃气账户	20000	expense	housing			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-053	pending_human_review
+legacy-test-054	utilities	昨天支付宝交电费89.65元	8965	expense	housing	alipay		yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-054	pending_human_review
+legacy-test-055	utilities	本月水费账单30吨，实付96元	9600	expense	housing			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-055	pending_human_review
+legacy-test-071	hotel	旅游住宿酒店花350元	35000	expense	entertainment			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-071	pending_human_review
+legacy-test-072	hotel	度假民宿住两晚合计八百元	80000	expense	entertainment			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-072	pending_human_review
+legacy-test-073	hotel	昨天景区门票买了120元	12000	expense	entertainment			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-073	pending_human_review
+legacy-test-074	hotel	旅游团报名费支付1500块	150000	expense	entertainment			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-074	pending_human_review
+legacy-test-075	hotel	周末旅行的酒店尾款实付二百六十元五角	26050	expense	entertainment			unknown	single	default	scripts/natural-language/data/test.tsv	legacy-test-075	pending_human_review
+legacy-test-076	clinic	医院挂号花20元	2000	expense	health			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-076	pending_human_review
+legacy-test-077	clinic	牙科洗牙支付一百九十八块	19800	expense	health			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-077	pending_human_review
+legacy-test-078	clinic	昨天门诊检查费实付256.70元	25670	expense	health			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-078	pending_human_review
+legacy-test-079	clinic	体检费用银行卡扣了800元	80000	expense	health	bank		today	single	default	scripts/natural-language/data/test.tsv	legacy-test-079	pending_human_review
+legacy-test-080	clinic	看皮肤科挂号付三十五元	3500	expense	health			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-080	pending_human_review
+legacy-test-081	tuition	报名英语课程花1200元	120000	expense	education			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-081	pending_human_review
+legacy-test-082	tuition	线上编程课付款九十九元	9900	expense	education			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-082	pending_human_review
+legacy-test-083	tuition	昨天交驾校培训费3500元	350000	expense	education			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-083	pending_human_review
+legacy-test-084	tuition	钢琴课十节合计2000块已经交了	200000	expense	education			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-084	pending_human_review
+legacy-test-085	tuition	课程续费实付二百九十九元五角	29950	expense	education			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-085	pending_human_review
+legacy-test-096	pet	买猫粮花168元	16800	expense	pet			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-096	pending_human_review
+legacy-test-097	pet	带狗洗澡付八十元	8000	expense	pet			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-097	pending_human_review
+legacy-test-098	pet	昨天宠物驱虫实付65.50元	6550	expense	pet			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-098	pending_human_review
+legacy-test-099	pet	猫砂两袋总共49块9	4990	expense	pet			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-099	pending_human_review
+legacy-test-100	pet	给兔子买饲料花三十二元	3200	expense	pet			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-100	pending_human_review
+legacy-test-101	fitness	健身房月卡付了200元	20000	expense	sport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-101	pending_human_review
+legacy-test-102	fitness	羽毛球场地费六十块	6000	expense	sport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-102	pending_human_review
+legacy-test-103	fitness	昨天游泳门票花35元	3500	expense	sport			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-103	pending_human_review
+legacy-test-104	fitness	瑜伽体验课付款49.90元	4990	expense	sport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-104	pending_human_review
+legacy-test-105	fitness	去攀岩馆消费一百二十八元	12800	expense	sport			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-105	pending_human_review
+legacy-test-106	beauty	理发花了50元	5000	expense	beauty			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-106	pending_human_review
+legacy-test-107	beauty	美甲付了一百二十元	12000	expense	beauty			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-107	pending_human_review
+legacy-test-108	beauty	昨天美容护理消费299.50元	29950	expense	beauty			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-108	pending_human_review
+legacy-test-109	beauty	剪头发微信支付38块	3800	expense	beauty	wechat		today	single	default	scripts/natural-language/data/test.tsv	legacy-test-109	pending_human_review
+legacy-test-110	beauty	做脸清洁花了九十八元	9800	expense	beauty			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-110	pending_human_review
+legacy-test-111	subscription	视频会员续费25元	2500	expense	subscription			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-111	pending_human_review
+legacy-test-112	subscription	音乐会员自动扣款十五块	1500	expense	subscription			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-112	pending_human_review
+legacy-test-113	subscription	昨天网盘会员年费支付198元	19800	expense	subscription			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-113	pending_human_review
+legacy-test-114	subscription	记笔记软件订阅扣了12.90元	1290	expense	subscription			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-114	pending_human_review
+legacy-test-115	subscription	云存储月费六元已经扣款	600	expense	subscription			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-115	pending_human_review
+legacy-test-116	misc	补办证件工本费20元	2000	expense	other_expense			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-116	pending_human_review
+legacy-test-117	misc	昨天交了行政罚款一百元	10000	expense	other_expense			yesterday	single	default	scripts/natural-language/data/test.tsv	legacy-test-117	pending_human_review
+legacy-test-118	misc	捐款给公益组织50元	5000	expense	other_expense			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-118	pending_human_review
+legacy-test-119	misc	快递寄件费付了12元	1200	expense	other_expense			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-119	pending_human_review
+legacy-test-120	misc	打印私人材料花了三元五角	350	expense	other_expense			today	single	default	scripts/natural-language/data/test.tsv	legacy-test-120	pending_human_review
+misc_received-2	misc_received	昨天银行卡收到报销款四十二元五角，归其他收入	4250	income	other_income	bank		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	misc_received-2	pending_human_review
+misc_received-3	misc_received	前天银行卡收到报销款18块6，归其他收入	1860	income	other_income	bank		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	misc_received-3	pending_human_review
+new_year_received-2	new_year_received	昨天收到了爸爸给的压岁红包四十二元五角，放进现金钱包	4250	income	red_packet	cash		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	new_year_received-2	pending_human_review
+new_year_received-4	new_year_received	今天收到了爸爸给的压岁红包九十九元，放进现金钱包	9900	income	red_packet	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	new_year_received-4	pending_human_review
+parking-1	parking	小区临时停车，用微信付了37.25元	3725	expense	transport	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	parking-1	pending_human_review
+parking-2	parking	昨天小区临时停车，用微信付了四十二元五角	4250	expense	transport	wechat		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	parking-2	pending_human_review
+parking-3	parking	前天小区临时停车，用微信付了18块6	1860	expense	transport	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	parking-3	pending_human_review
+parking-4	parking	今天小区临时停车，用微信付了九十九元	9900	expense	transport	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	parking-4	pending_human_review
+parking-5	parking	小区临时停车，用微信付了１２.０８元	1208	expense	transport	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	parking-5	pending_human_review
+pet_food-1	pet_food	猫粮买了一袋，微信实付37.25元	3725	expense	pet	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	pet_food-1	pending_human_review
+pet_food-2	pet_food	昨天猫粮买了一袋，微信实付四十二元五角	4250	expense	pet	wechat		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	pet_food-2	pending_human_review
+pet_food-3	pet_food	前天猫粮买了一袋，微信实付18块6	1860	expense	pet	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	pet_food-3	pending_human_review
+pet_food-4	pet_food	今天猫粮买了一袋，微信实付九十九元	9900	expense	pet	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	pet_food-4	pending_human_review
+pet_food-5	pet_food	猫粮买了一袋，微信实付１２.０８元	1208	expense	pet	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	pet_food-5	pending_human_review
+pet_grooming-1	pet_grooming	给猫洗澡美容，支付宝付给宠物店37.25元	3725	expense	pet	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	pet_grooming-1	pending_human_review
+pet_grooming-2	pet_grooming	昨天给猫洗澡美容，支付宝付给宠物店四十二元五角	4250	expense	pet	alipay		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	pet_grooming-2	pending_human_review
+pet_grooming-3	pet_grooming	前天给猫洗澡美容，支付宝付给宠物店18块6	1860	expense	pet	alipay		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	pet_grooming-3	pending_human_review
+pet_grooming-4	pet_grooming	今天给猫洗澡美容，支付宝付给宠物店九十九元	9900	expense	pet	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	pet_grooming-4	pending_human_review
+pet_grooming-5	pet_grooming	给猫洗澡美容，支付宝付给宠物店１２.０８元	1208	expense	pet	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	pet_grooming-5	pending_human_review
+property_fee-1	property_fee	小区物业管理费，微信已经交了37.25元	3725	expense	housing	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	property_fee-1	pending_human_review
+property_fee-2	property_fee	昨天小区物业管理费，微信已经交了四十二元五角	4250	expense	housing	wechat		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	property_fee-2	pending_human_review
+property_fee-3	property_fee	前天小区物业管理费，微信已经交了18块6	1860	expense	housing	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	property_fee-3	pending_human_review
+property_fee-4	property_fee	今天小区物业管理费，微信已经交了九十九元	9900	expense	housing	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	property_fee-4	pending_human_review
+property_fee-5	property_fee	小区物业管理费，微信已经交了１２.０８元	1208	expense	housing	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	property_fee-5	pending_human_review
+resale_bicycle-1	resale_bicycle	旧自行车出售，收到了买家的现金37.25元	3725	income	secondhand	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	resale_bicycle-1	pending_human_review
+resale_bicycle-2	resale_bicycle	昨天旧自行车出售，收到了买家的现金四十二元五角	4250	income	secondhand	cash		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	resale_bicycle-2	pending_human_review
+resale_bicycle-5	resale_bicycle	旧自行车出售，收到了买家的现金１２.０８元	1208	income	secondhand	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	resale_bicycle-5	pending_human_review
+resale_camera-1	resale_camera	卖掉闲置相机，买家通过支付宝给我37.25元，已经收款	3725	income	secondhand	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	resale_camera-1	pending_human_review
+resale_camera-5	resale_camera	卖掉闲置相机，买家通过支付宝给我１２.０８元，已经收款	1208	income	secondhand	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	resale_camera-5	pending_human_review
+salary_to_alipay-1	salary_to_alipay	我把工资卡中的37.25元转进自己的支付宝余额	3725	transfer	transfer_account	salary_bank	alipay	today	single	default	scripts/natural-language/instruct/heldout.tsv	salary_to_alipay-1	pending_human_review
+salary_to_alipay-3	salary_to_alipay	前天我把工资卡中的18块6转进自己的支付宝余额	1860	transfer	transfer_account	salary_bank	alipay	before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	salary_to_alipay-3	pending_human_review
+savings_to_alipay-3	savings_to_alipay	前天储蓄卡转出18块6到我自己的支付宝，已经完成	1860	transfer	transfer_account	savings	alipay	before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	savings_to_alipay-3	pending_human_review
+stock_dividend-2	stock_dividend	昨天持仓股票分红四十二元五角已经打到银行卡	4250	income	investment	bank		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	stock_dividend-2	pending_human_review
+stock_dividend-3	stock_dividend	前天持仓股票分红18块6已经打到银行卡	1860	income	investment	bank		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	stock_dividend-3	pending_human_review
+stock_dividend-4	stock_dividend	今天持仓股票分红九十九元已经打到银行卡	9900	income	investment	bank		today	single	default	scripts/natural-language/instruct/heldout.tsv	stock_dividend-4	pending_human_review
+swimming-1	swimming	游泳馆单次健身入场费，现金付37.25元	3725	expense	sport	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	swimming-1	pending_human_review
+swimming-2	swimming	昨天游泳馆单次健身入场费，现金付四十二元五角	4250	expense	sport	cash		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	swimming-2	pending_human_review
+swimming-3	swimming	前天游泳馆单次健身入场费，现金付18块6	1860	expense	sport	cash		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	swimming-3	pending_human_review
+swimming-4	swimming	今天游泳馆单次健身入场费，现金付九十九元	9900	expense	sport	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	swimming-4	pending_human_review
+swimming-5	swimming	游泳馆单次健身入场费，现金付１２.０８元	1208	expense	sport	cash		today	single	default	scripts/natural-language/instruct/heldout.tsv	swimming-5	pending_human_review
+theme_park-1	theme_park	游乐园游玩入园门票，微信付了37.25元	3725	expense	entertainment	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	theme_park-1	pending_human_review
+theme_park-2	theme_park	昨天游乐园游玩入园门票，微信付了四十二元五角	4250	expense	entertainment	wechat		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	theme_park-2	pending_human_review
+theme_park-3	theme_park	前天游乐园游玩入园门票，微信付了18块6	1860	expense	entertainment	wechat		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	theme_park-3	pending_human_review
+theme_park-4	theme_park	今天游乐园游玩入园门票，微信付了九十九元	9900	expense	entertainment	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	theme_park-4	pending_human_review
+theme_park-5	theme_park	游乐园游玩入园门票，微信付了１２.０８元	1208	expense	entertainment	wechat		today	single	default	scripts/natural-language/instruct/heldout.tsv	theme_park-5	pending_human_review
+toll-1	toll	开车过高速收费站，支付宝扣了37.25元	3725	expense	transport	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	toll-1	pending_human_review
+toll-2	toll	昨天开车过高速收费站，支付宝扣了四十二元五角	4250	expense	transport	alipay		yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	toll-2	pending_human_review
+toll-3	toll	前天开车过高速收费站，支付宝扣了18块6	1860	expense	transport	alipay		before_yesterday	single	default	scripts/natural-language/instruct/heldout.tsv	toll-3	pending_human_review
+toll-4	toll	今天开车过高速收费站，支付宝扣了九十九元	9900	expense	transport	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	toll-4	pending_human_review
+toll-5	toll	开车过高速收费站，支付宝扣了１２.０８元	1208	expense	transport	alipay		today	single	default	scripts/natural-language/instruct/heldout.tsv	toll-5	pending_human_review
+wechat_to_alipay-4	wechat_to_alipay	今天用我的微信余额转九十九元进自己的支付宝，转账完成	9900	transfer	transfer_account	wechat	alipay	today	single	default	scripts/natural-language/instruct/heldout.tsv	wechat_to_alipay-4	pending_human_review

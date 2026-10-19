@@ -1,0 +1,3 @@
+[submodule "third-party/geniex-proc"]
+	path = third-party/geniex-proc
+	url = https://github.com/qualcomm/geniex-proc

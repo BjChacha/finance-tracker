@@ -1,0 +1,109 @@
+{
+  "total": 100,
+  "failure_count": 38,
+  "accepted_core_fields_joint_correct": 45,
+  "ready_and_all_annotated_fields_correct": 13,
+  "ready_but_incorrect": 7,
+  "groups": {
+    "breakfast": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "snacks": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "subway": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "taxi": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "daily_goods": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "rent": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "medicine": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "books": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 3
+    },
+    "phone": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 4
+    },
+    "gifts": {
+      "total": 5,
+      "fully_correct": 2,
+      "core_correct": 2
+    },
+    "salary": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "bonus": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "refund": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 5
+    },
+    "parttime": {
+      "total": 5,
+      "fully_correct": 1,
+      "core_correct": 1
+    },
+    "wechat_bank": {
+      "total": 5,
+      "fully_correct": 0,
+      "core_correct": 0
+    },
+    "bank_cash": {
+      "total": 5,
+      "fully_correct": 3,
+      "core_correct": 5
+    },
+    "missing_amount": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "multi_meal": {
+      "total": 5,
+      "fully_correct": 4,
+      "core_correct": 0
+    },
+    "future_purchase": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    },
+    "ambiguous_account": {
+      "total": 5,
+      "fully_correct": 5,
+      "core_correct": 0
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "bounds": [
+    {
+      "start_ts": 2995157825062496,
+      "end_ts": 2995187801187589
+    }
+  ],
+  "processes": [
+    {
+      "pid": 22560,
+      "name": "llama-server",
+      "cpu_ms": 18.287657,
+      "switches": 67
+    },
+    {
+      "pid": 22560,
+      "name": "snapdragon-b11669/bin/llama-server",
+      "cpu_ms": 11539.833728,
+      "switches": 5044
+    }
+  ],
+  "cpu_distribution": [
+    {
+      "cpu": 0,
+      "cpu_ms": 1512.467887
+    },
+    {
+      "cpu": 1,
+      "cpu_ms": 1448.816935
+    },
+    {
+      "cpu": 2,
+      "cpu_ms": 0.059635
+    },
+    {
+      "cpu": 3,
+      "cpu_ms": 0.169065
+    },
+    {
+      "cpu": 4,
+      "cpu_ms": 1586.754549
+    },
+    {
+      "cpu": 5,
+      "cpu_ms": 1784.28604
+    },
+    {
+      "cpu": 6,
+      "cpu_ms": 3616.213843
+    },
+    {
+      "cpu": 7,
+      "cpu_ms": 1609.353431
+    }
+  ],
+  "thread_states": [
+    {
+      "state": "S",
+      "duration_ms": 275095.283645
+    },
+    {
+      "state": "Running",
+      "duration_ms": 11558.121385
+    },
+    {
+      "state": "D",
+      "duration_ms": 571.837687
+    },
+    {
+      "state": "R",
+      "duration_ms": 153.784562
+    },
+    {
+      "state": "R+",
+      "duration_ms": 16.080423
+    },
+    {
+      "state": "Z",
+      "duration_ms": -1e-06
+    },
+    {
+      "state": "X",
+      "duration_ms": -2.2e-05
+    }
+  ],
+  "errors": []
+}

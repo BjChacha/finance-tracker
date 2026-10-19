@@ -1,0 +1,8 @@
+{
+  "stage": "install",
+  "result": "INSTALL_FAILED_USER_RESTRICTED",
+  "detail": "Install canceled by user",
+  "apk_installed": false,
+  "inference_performed": false,
+  "next": "Wait for explicit user response before retrying installation"
+}

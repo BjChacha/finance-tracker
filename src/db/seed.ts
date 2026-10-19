@@ -13,21 +13,23 @@ import { TRANSFER_CATEGORY_PRESETS } from './category-presets';
 
 type PresetCategory = { name: string; icon: string; color: string; children?: string[] };
 
+// 与线上库实际使用的分类结构对齐（2026-10 快照：漏记/网络服务已并入对应预置分类，
+// 美容归入妆容&护理、订阅归入通讯；自建的居住/网费与通讯/网费重复，不纳入预置）。
 const EXPENSE_PRESETS: PresetCategory[] = [
-  { name: '餐饮', icon: '🍜', color: '#F97316', children: ['正餐', '零食饮料', '夜宵'] },
-  { name: '交通', icon: '🚌', color: '#3B82F6', children: ['公交地铁', '打车', '加油', '停车'] },
-  { name: '购物', icon: '🛒', color: '#EC4899', children: ['日用品', '服饰', '数码'] },
-  { name: '居住', icon: '🏠', color: '#8B5CF6', children: ['房租', '水电燃气', '物业'] },
-  { name: '娱乐', icon: '🎮', color: '#06B6D4', children: ['电影', '游戏', '旅行'] },
+  { name: '餐饮', icon: '🍜', color: '#F97316', children: ['正餐', '零食饮料', '夜宵', '饮食', '聚餐', '水果'] },
+  { name: '交通', icon: '🚌', color: '#3B82F6', children: ['公交地铁', '打车', '加油充电', '停车', '汽车周边', '高速路费'] },
+  { name: '购物', icon: '🛒', color: '#EC4899', children: ['日用品', '服饰', '数码', '电子产品', '生活用品', '衣着&配饰'] },
+  { name: '居住', icon: '🏠', color: '#8B5CF6', children: ['房租', '水电燃气', '物业', '洗衣'] },
+  { name: '娱乐', icon: '🎮', color: '#06B6D4', children: ['电影', '游戏', '旅行', '玩具'] },
   { name: '医疗', icon: '💊', color: '#EF4444', children: ['药品', '门诊'] },
   { name: '教育', icon: '📚', color: '#10B981', children: ['书籍', '课程'] },
-  { name: '通讯', icon: '📱', color: '#6366F1', children: ['话费', '网费'] },
-  { name: '人情', icon: '🎁', color: '#F59E0B', children: ['红包', '礼物'] },
+  { name: '通讯', icon: '📱', color: '#6366F1', children: ['话费', '网费', '订阅'] },
+  { name: '人情', icon: '🎁', color: '#F59E0B', children: ['红包', '礼物', '赡养', '礼品&捐赠'] },
   { name: '宠物', icon: '🐱', color: '#84CC16' },
   { name: '运动', icon: '⚽', color: '#14B8A6' },
-  { name: '美容', icon: '💄', color: '#F43F5E' },
-  { name: '订阅', icon: '📺', color: '#A855F7' },
   { name: '其他支出', icon: '📦', color: '#9CA3AF' },
+  { name: '妆容&护理', icon: '📥', color: '#9CA3AF', children: ['美容', '剪发'] },
+  { name: '理财', icon: '📥', color: '#9CA3AF', children: ['投资费用', '投资亏损'] },
   { name: '补记漏记', icon: '⚖️', color: '#9CA3AF' },
 ];
 

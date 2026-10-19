@@ -1,0 +1,31 @@
+{
+  "arguments": {
+    "data": "F:\\Projects\\App\\finance-tracker\\scripts\\natural-language\\data\\dev.tsv",
+    "variants": [
+      "baseline",
+      "category_only",
+      "refined",
+      "type_prototypes",
+      "all_prototypes",
+      "category_joint"
+    ],
+    "output": "dev-round2",
+    "limit": null
+  },
+  "data_sha256": "4080af5315473dfdc9a62cd2552d9f7f4e8efe36b94e25d1c4ee974ece31f4bb",
+  "source_hashes": {
+    "attribution.py": "9a4d596e110693be2a9b5564bdc1894c887ad428f25fa0270b82be34a29c38b5",
+    "bridge.py": "156d90243a6e35ccf30994cb06eab668d3ef86e87ce5d45180f5c84d32af0ab9",
+    "category_sweep.py": "a229b46d2240a46bc48be088c2ad5322ec394df2017be314e51cacbbdad55cc1",
+    "compact-prompts.json": "d13d4b4f72e3b7fa6cd64c7e8497dd2c2056b56e5723b16bd4e9b030d03b4232",
+    "counterfactual.py": "76a1523d7ac3c4d331434a86f139236e9aea237c8590ff59d010d9698ed2a666",
+    "experiment.py": "02c6ebbf91f44a07487e2659b9713950ff64e5f722f39d68d244d4df346f648a",
+    "prototypes.json": "8510ba2f5b85754fb6078674437740c6ab33970a7c54f3092ede818527595bd4",
+    "revision.py": "817fb9b5ff3431f07c87207e0279fe5c0116ca021f9b19a045b119944fe6147a",
+    "test_revision.py": "483c7d9597ba5b817c27464f77977fe088482fba3afb744dd165a3290d7e9ee5"
+  },
+  "model": "jev-qwen3-0.6b-q8_0.gguf",
+  "model_sha256": "437710e6fe1a7c21f3b9bb7dfda5efd58cfe3c3d3bbe8fdd1dbd83302e7de18f",
+  "device": "57721e63",
+  "inference": "Offline Android CPU4, host loopback; no training"
+}

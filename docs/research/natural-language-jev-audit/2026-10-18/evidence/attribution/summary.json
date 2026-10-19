@@ -1,0 +1,32 @@
+{
+  "baseline": {
+    "total": 200,
+    "counts": {
+      "type_wrong": 35,
+      "category_wrong": 121,
+      "category_wrong_gold_unavailable": 35,
+      "category_wrong_gold_available": 86,
+      "single_abstained": 24,
+      "business_violation": 6,
+      "raw_category_correct_but_unusable": 11,
+      "self_transfer": 6
+    },
+    "source": "artifacts\\natural-language-jev-harness\\distribution-v1-regression\\baseline\\predictions.jsonl",
+    "sha256": "95c756edfe73ebc6081e78004b9740ff9433a66a090f30bb8493760656c9c72d"
+  },
+  "category_only": {
+    "total": 200,
+    "counts": {
+      "type_wrong": 35,
+      "category_wrong": 91,
+      "category_wrong_gold_unavailable": 35,
+      "category_wrong_gold_available": 56,
+      "single_abstained": 24,
+      "business_violation": 6,
+      "raw_category_correct_but_unusable": 10,
+      "self_transfer": 6
+    },
+    "source": "artifacts\\natural-language-jev-harness\\distribution-v1-regression\\category_only\\predictions.jsonl",
+    "sha256": "ba5f2fcb2d110971922732c6badb68a0bde91c4062bf20e806daf6555c849200"
+  }
+}

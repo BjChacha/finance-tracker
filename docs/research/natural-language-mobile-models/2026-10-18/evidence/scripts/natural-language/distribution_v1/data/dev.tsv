@@ -1,0 +1,101 @@
+id	group	text	amount_cents	type	category	account	to_account	day	status	context_variant	source	source_id	review_status
+dev-001	breakfast	今天早餐吃包子花了6元	600	expense	food			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-001	pending_human_review
+dev-002	breakfast	早饭豆浆油条一共八块五	850	expense	food			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-002	pending_human_review
+dev-003	breakfast	早餐用微信付了12.50元	1250	expense	food	wechat		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-003	pending_human_review
+dev-004	breakfast	买两个烧饼当早饭，实付7块	700	expense	food			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-004	pending_human_review
+dev-005	breakfast	昨天早上小笼包九元六角	960	expense	food			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-005	pending_human_review
+dev-006	snacks	买薯片花了15块	1500	expense	food			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-006	pending_human_review
+dev-007	snacks	零食店结账三十二元	3200	expense	food			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-007	pending_human_review
+dev-008	snacks	用支付宝买饼干付18.8元	1880	expense	food	alipay		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-008	pending_human_review
+dev-009	snacks	巧克力第二件半价，合计24元	2400	expense	food			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-009	pending_human_review
+dev-010	snacks	前天在便利店买冰淇淋花五块五	550	expense	food			before_yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-010	pending_human_review
+dev-011	subway	地铁扣了3元	300	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-011	pending_human_review
+dev-012	subway	乘公交花两块钱	200	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-012	pending_human_review
+dev-013	subway	今天地铁出站扣费四元五角	450	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-013	pending_human_review
+dev-014	subway	昨天坐公交用微信支付1.50元	150	expense	transport	wechat		yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-014	pending_human_review
+dev-015	subway	公交月票付了100块	10000	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-015	pending_human_review
+dev-016	taxi	打车花了30块	3000	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-016	pending_human_review
+dev-017	taxi	昨晚网约车实付四十八块六	4860	expense	transport			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-017	pending_human_review
+dev-018	taxi	从公司叫出租车回家付23.40元	2340	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-018	pending_human_review
+dev-019	taxi	滴滴订单尾号2038，支付19元	1900	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-019	pending_human_review
+dev-020	taxi	出租车打表56元，优惠后实付50元	5000	expense	transport			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-020	pending_human_review
+dev-021	daily_goods	买洗衣液花39元	3900	expense	shopping			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-021	pending_human_review
+dev-022	daily_goods	超市纸巾三包，付款十二元九角	1290	expense	shopping			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-022	pending_human_review
+dev-023	daily_goods	支付宝买牙刷付了8.80元	880	expense	shopping	alipay		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-023	pending_human_review
+dev-024	daily_goods	昨天家用垃圾袋花五块	500	expense	shopping			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-024	pending_human_review
+dev-025	daily_goods	买拖把总价七十九元	7900	expense	shopping			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-025	pending_human_review
+dev-026	rent	这个月房租交了2500元	250000	expense	housing			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-026	pending_human_review
+dev-027	rent	银行卡支付房租三千二百元	320000	expense	housing	bank		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-027	pending_human_review
+dev-028	rent	昨天给房东转了1800块房租	180000	expense	housing			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-028	pending_human_review
+dev-029	rent	合租房租我的份额是1200，已付	120000	expense	housing			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-029	pending_human_review
+dev-030	rent	交四月份租金两千元整	200000	expense	housing			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-030	pending_human_review
+dev-031	medicine	药店买感冒药花28元	2800	expense	health			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-031	pending_human_review
+dev-032	medicine	买退烧药付十五块六	1560	expense	health			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-032	pending_human_review
+dev-033	medicine	昨天配药用支付宝付67.20元	6720	expense	health	alipay		yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-033	pending_human_review
+dev-034	medicine	维生素两瓶合计89元	8900	expense	health			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-034	pending_human_review
+dev-035	medicine	药房买创可贴花三元五角	350	expense	health			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-035	pending_human_review
+dev-036	books	买一本编程书花68元	6800	expense	education			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-036	pending_human_review
+dev-037	books	书店买教材花了一百二十块	12000	expense	education			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-037	pending_human_review
+dev-038	books	昨天购入英语词典，实付45.50元	4550	expense	education			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-038	pending_human_review
+dev-039	books	两本练习册总共二十三元	2300	expense	education			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-039	pending_human_review
+dev-040	books	买电子书扣了9块9	990	expense	education			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-040	pending_human_review
+dev-041	phone	交手机话费100元	10000	expense	communication			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-041	pending_human_review
+dev-042	phone	微信充话费五十块	5000	expense	communication	wechat		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-042	pending_human_review
+dev-043	phone	手机套餐今天扣了29.90元	2990	expense	communication			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-043	pending_human_review
+dev-044	phone	给手机号尾号5678充值30块	3000	expense	communication			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-044	pending_human_review
+dev-045	phone	支付宝充话费实付九十八元五角	9850	expense	communication	alipay		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-045	pending_human_review
+dev-046	gifts	给朋友买生日礼物花200元	20000	expense	social			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-046	pending_human_review
+dev-047	gifts	昨天给妈妈买礼品付三百元	30000	expense	social			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-047	pending_human_review
+dev-048	gifts	同事结婚买贺礼花168块	16800	expense	social			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-048	pending_human_review
+dev-049	gifts	送老师的纪念礼物支出80.50元	8050	expense	social			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-049	pending_human_review
+dev-050	gifts	给朋友转账66元当生日礼金	6600	expense	social			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-050	pending_human_review
+dev-051	salary	到账工资8000元	800000	income	salary			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-051	pending_human_review
+dev-052	salary	公司发了本月薪水一万二千元	1200000	income	salary			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-052	pending_human_review
+dev-053	salary	银行卡收到税后工资7654.32元	765432	income	salary	bank		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-053	pending_human_review
+dev-059	bonus	竞赛奖金五百块已打入银行卡	50000	income	bonus	bank		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-059	pending_human_review
+dev-060	bonus	昨天收到了团队奖励1200元	120000	income	bonus			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-060	pending_human_review
+dev-062	refund	昨天收到网购退款一百二十块	12000	income	refund			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-062	pending_human_review
+dev-065	refund	支付宝收到退款六元六角	660	income	refund	alipay		today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-065	pending_human_review
+dev-067	parttime	帮人写程序收到了两千块报酬	200000	income	parttime			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-067	pending_human_review
+dev-068	parttime	昨天家教课时费实收300元	30000	income	parttime			yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-068	pending_human_review
+dev-070	parttime	周末摆摊赚了150元收入已到账	15000	income	parttime			today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-070	pending_human_review
+dev-071	wechat_bank	微信转银行卡200元	20000	transfer	transfer_account	wechat	bank	today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-071	pending_human_review
+dev-073	wechat_bank	昨天微信余额提现到银行卡1000块	100000	transfer	transfer_account	wechat	bank	yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-073	pending_human_review
+dev-075	wechat_bank	我的微信转到银行卡三百二十元	32000	transfer	transfer_account	wechat	bank	today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-075	pending_human_review
+dev-076	bank_cash	银行卡取出现金500元	50000	transfer	withdrawal	bank	cash	today	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-076	pending_human_review
+dev-077	bank_cash	昨天在ATM从银行卡取了两千块现金	200000	transfer	withdrawal	bank	cash	yesterday	single	default	scripts/natural-language/jev_harness/dev-annotated.tsv	dev-077	pending_human_review
+mix-dev-001	grocery_ingredients	菜市场买番茄和鸡蛋，一共付了23块5	2350	expense	food			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-001	pending_human_review
+mix-dev-002	grocery_ingredients	昨天微信买排骨花四十六元八角	4680	expense	food	wechat		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-002	pending_human_review
+mix-dev-003	grocery_ingredients	买了一袋大米，现金付68元	6800	expense	food	cash		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-003	pending_human_review
+mix-dev-004	grocery_ingredients	前天买做饭的蔬菜，支付宝结账12.90元	1290	expense	food	alipay		before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-004	pending_human_review
+mix-dev-005	grocery_ingredients	买五斤土豆花了九块六	960	expense	food			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-005	pending_human_review
+mix-dev-006	city_bus	坐公交投了2元现金	200	expense	transport	cash		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-006	pending_human_review
+mix-dev-007	city_bus	昨天公交乘车码从支付宝扣了1.8元	180	expense	transport	alipay		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-007	pending_human_review
+mix-dev-008	city_bus	今天坐3路公交，微信扣款两元	200	expense	transport	wechat		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-008	pending_human_review
+mix-dev-009	city_bus	前天回家的市内公交票花了四块五	450	expense	transport			before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-009	pending_human_review
+mix-dev-010	city_bus	公交车费原价3元，优惠后支付宝实际扣了2.40元	240	expense	transport	alipay		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-010	pending_human_review
+mix-dev-011	shared_bicycle	骑共享单车花了1块5	150	expense	transport			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-011	pending_human_review
+mix-dev-012	shared_bicycle	昨天共享自行车骑了25分钟，微信付3元	300	expense	transport	wechat		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-012	pending_human_review
+mix-dev-013	shared_bicycle	支付宝扣了共享单车骑行费两块	200	expense	transport	alipay		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-013	pending_human_review
+mix-dev-014	shared_bicycle	前天骑共享电单车到地铁站，付了5.50元	550	expense	transport			before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-014	pending_human_review
+mix-dev-015	shared_bicycle	共享自行车这趟结算三元六角，已从微信扣款	360	expense	transport	wechat		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-015	pending_human_review
+mix-dev-016	certification_exam	英语考试报名费交了450元	45000	expense	education			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-016	pending_human_review
+mix-dev-017	certification_exam	昨天银行卡付了职业资格考试费二百元	20000	expense	education	bank		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-017	pending_human_review
+mix-dev-018	certification_exam	计算机等级考试报名，支付宝支付80元	8000	expense	education	alipay		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-018	pending_human_review
+mix-dev-019	certification_exam	前天交了普通话测试报名费五十块	5000	expense	education			before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-019	pending_human_review
+mix-dev-020	certification_exam	会计考试两科合计报名费122元，已经用微信付了	12200	expense	education	wechat		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-020	pending_human_review
+mix-dev-021	home_lock_repair	家里门锁坏了，请师傅修锁付了120元现金	12000	expense	housing	cash		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-021	pending_human_review
+mix-dev-022	home_lock_repair	昨天换家里的锁芯，微信付一百八十元	18000	expense	housing	wechat		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-022	pending_human_review
+mix-dev-023	home_lock_repair	住宅门锁维修费88.50元，支付宝已支付	8850	expense	housing	alipay		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-023	pending_human_review
+mix-dev-024	home_lock_repair	前天请人来修卧室的门锁花六十块	6000	expense	housing			before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-024	pending_human_review
+mix-dev-025	home_lock_repair	家里防盗门换锁，工料合计260元已经付给师傅	26000	expense	housing			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-025	pending_human_review
+mix-dev-026	theater_ticket	买了张话剧票花180元	18000	expense	entertainment			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-026	pending_human_review
+mix-dev-027	theater_ticket	昨天用微信付了音乐剧门票二百八十元	28000	expense	entertainment	wechat		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-027	pending_human_review
+mix-dev-028	theater_ticket	脱口秀演出的票，支付宝付99.90元	9990	expense	entertainment	alipay		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-028	pending_human_review
+mix-dev-029	theater_ticket	前天买舞台剧门票，现金给了一百二十块	12000	expense	entertainment	cash		before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-029	pending_human_review
+mix-dev-030	theater_ticket	话剧两张票打折后总共付了320元	32000	expense	entertainment			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-030	pending_human_review
+mix-dev-031	laundry_service	洗衣店干洗外套付了35元	3500	expense	other_expense			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-031	pending_human_review
+mix-dev-032	laundry_service	昨天洗衣店清洗羽绒服，微信付六十块	6000	expense	other_expense	wechat		yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-032	pending_human_review
+mix-dev-033	laundry_service	干洗西装一套，现金支付80元	8000	expense	other_expense	cash		today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-033	pending_human_review
+mix-dev-034	laundry_service	前天付洗衣店床单清洗费28.50元，支付宝出的	2850	expense	other_expense	alipay		before_yesterday	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-034	pending_human_review
+mix-dev-035	laundry_service	今天自助洗衣机扫码洗一次衣服花了八元	800	expense	other_expense			today	single	default	scripts/natural-language/distribution_v1/dev-additions.tsv	mix-dev-035	pending_human_review

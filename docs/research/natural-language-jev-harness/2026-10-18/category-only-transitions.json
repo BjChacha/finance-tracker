@@ -1,0 +1,127 @@
+{
+  "amount_cents": {
+    "counts": {
+      "both_correct": 160
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "type": {
+    "counts": {
+      "both_correct": 138,
+      "both_wrong": 22
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "category": {
+    "counts": {
+      "corrected": 35,
+      "both_wrong": 50,
+      "regressed": 31,
+      "both_correct": 44
+    },
+    "corrected_ids": [
+      "parking-1",
+      "parking-2",
+      "parking-3",
+      "parking-4",
+      "parking-5",
+      "toll-1",
+      "toll-2",
+      "toll-3",
+      "toll-4",
+      "toll-5",
+      "haircut-1",
+      "haircut-5",
+      "swimming-3",
+      "pet_grooming-1",
+      "pet_grooming-5",
+      "pet_food-1",
+      "cloud_subscription-1",
+      "cloud_subscription-2",
+      "cloud_subscription-3",
+      "cloud_subscription-4",
+      "broadband-2",
+      "broadband-3",
+      "broadband-4",
+      "property_fee-4",
+      "resale_camera-1",
+      "resale_camera-2",
+      "resale_camera-3",
+      "resale_camera-4",
+      "resale_camera-5",
+      "resale_bicycle-1",
+      "resale_bicycle-2",
+      "resale_bicycle-3",
+      "resale_bicycle-4",
+      "resale_bicycle-5",
+      "cash_to_bank-3"
+    ],
+    "regressed_ids": [
+      "theme_park-1",
+      "theme_park-5",
+      "donation-3",
+      "custom_craft-2",
+      "custom_craft-3",
+      "custom_craft-4",
+      "dinner_party-1",
+      "dinner_party-2",
+      "misc_received-1",
+      "misc_received-2",
+      "misc_received-3",
+      "misc_received-4",
+      "misc_received-5",
+      "alipay_to_bank-1",
+      "alipay_to_bank-2",
+      "alipay_to_bank-3",
+      "alipay_to_bank-4",
+      "alipay_to_bank-5",
+      "bank_to_wechat-1",
+      "bank_to_wechat-5",
+      "bank_to_savings-1",
+      "bank_to_savings-2",
+      "bank_to_savings-3",
+      "bank_to_savings-4",
+      "bank_to_savings-5",
+      "salary_to_alipay-1",
+      "salary_to_alipay-2",
+      "salary_to_alipay-3",
+      "salary_to_alipay-5",
+      "wechat_to_alipay-1",
+      "wechat_to_alipay-5"
+    ]
+  },
+  "account": {
+    "counts": {
+      "both_correct": 130,
+      "both_wrong": 30
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "to_account": {
+    "counts": {
+      "both_correct": 149,
+      "both_wrong": 11
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "day": {
+    "counts": {
+      "both_correct": 125,
+      "both_wrong": 35
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  },
+  "status": {
+    "counts": {
+      "both_wrong": 33,
+      "both_correct": 167
+    },
+    "corrected_ids": [],
+    "regressed_ids": []
+  }
+}

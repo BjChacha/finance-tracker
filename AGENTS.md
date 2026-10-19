@@ -2,6 +2,34 @@
 
 Read the exact versioned docs at <https://docs.expo.dev/versions/v57.0.0/> before writing any code.
 
+# 构建 (release)
+
+一句话记账走线上 DeepSeek API,key 通过构建时环境变量内联进 JS bundle(`EXPO_PUBLIC_DEEPSEEK_API_KEY`,读取点在 `src/features/transactions/natural-language/deepseek.ts`)。`.env*` 不入库,构建前必须显式导出:
+
+```bash
+EXPO_PUBLIC_DEEPSEEK_API_KEY=<key> npm run build:apk
+adb install -r -d build/release/finance-tracker-0.0.1.apk
+```
+
+`npm run build:apk`(`scripts/build-apk.mjs`)会先校验环境变量、删除 `android/app/build/generated/assets/react` 强制 Metro 重跑,再断言产物 bundle 里确实含 key。原因:Gradle 不把环境变量算作 task input,JS 未变时会复用旧 bundle,导致 APK 静默丢失 key。
+
+缺 key 不会崩溃:识别会提示"识别服务未配置",仍可手动记账;若只需验证其他功能,可用 `ALLOW_MISSING_DEEPSEEK_KEY=1` 跳过。key 内联在 bundle 中可被反编译提取,分发前应改为服务端代理。
+
+# 发布 (GitHub Release + 应用内自更新)
+
+发布一条命令完成版本 bump → 构建 → git commit/tag/push → 建 GitHub Release → 上传 APK:
+
+```bash
+EXPO_PUBLIC_DEEPSEEK_API_KEY=<key> GH_TOKEN=<token> npm run release
+# 可选: -- --version 0.1.0 --notes "..." --prerelease --skip-bump --dry-run
+```
+
+- `GH_TOKEN` 需 repo 权限(github.com/settings/tokens);要求 git 工作区干净,发布 commit 只含版本号变更(app.json/package.json,versionCode 随发布 +1)。
+- 幂等重跑:Release/同名 asset 已存在时自动复用/替换;构建失败时不会碰 git。
+- `--prerelease` 发测试版:prerelease 不会被 `/releases/latest` 返回,应用内更新检查会忽略它,适合发版前全链路验证。
+
+应用内自更新(`src/features/update/`):启动后台静默查 GitHub `releases/latest`(6h 缓存,失败不打扰),有新版时「个人」页顶部弹卡片;「个人 → 检查更新」页展示 changelog、下载 APK(带进度)并调系统安装器覆盖安装。Android 8+ 首次点"安装"需授予「安装未知应用」权限(HyperOS 有二次确认),安装失败时页面提供「去授权」按钮。覆盖安装要求 debug keystore 不变。
+
 # 真机调试 (adb)
 
 允许且鼓励使用 adb 对真机进行调试、复现与性能观测。当前已连接设备:红米 M098FE (HyperOS 2),serial `57721e63`。

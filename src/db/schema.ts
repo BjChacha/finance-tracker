@@ -186,6 +186,51 @@ export const settings = sqliteTable('settings', {
   value: text('value').notNull(),
 });
 
+/** One remote inference call. Cost is snapshotted so later price changes never rewrite history. */
+export const llmUsage = sqliteTable(
+  'llm_usage',
+  {
+    id: text('id').primaryKey(),
+    /** Unix ms of the response */
+    createdAt: integer('created_at').notNull(),
+    model: text('model').notNull(),
+    promptTokens: integer('prompt_tokens').notNull().default(0),
+    /** Input tokens billed at the cache-hit rate */
+    cacheHitTokens: integer('cache_hit_tokens').notNull().default(0),
+    /** Input tokens billed at the cache-miss rate */
+    cacheMissTokens: integer('cache_miss_tokens').notNull().default(0),
+    completionTokens: integer('completion_tokens').notNull().default(0),
+    /** Cost in 1e-6 CNY (micro-yuan); 1 token at 1 CNY/1M tokens = 1 */
+    costMicros: integer('cost_micros').notNull().default(0),
+    /** Which published price tier applied when the call was billed */
+    priceTier: text('price_tier').$type<'peak' | 'off_peak'>().notNull(),
+  },
+  (t) => [index('idx_llm_usage_created').on(t.createdAt)],
+);
+
+/**
+ * One persisted period report. `snapshot` is the redacted aggregate the analysis was derived from,
+ * stored so a report can be re-read offline without recomputing or re-billing the model.
+ */
+export const reports = sqliteTable(
+  'reports',
+  {
+    id: text('id').primaryKey(),
+    period: text('period').$type<BudgetPeriod>().notNull(),
+    /** 'YYYY-MM' | 'YYYY-Qn' | 'YYYY' */
+    periodKey: text('period_key').notNull(),
+    /** JSON ReportSnapshot; never contains notes, account names or exact dates */
+    snapshot: text('snapshot').notNull(),
+    /** JSON ReportAnalysis returned by the model */
+    analysis: text('analysis').notNull(),
+    model: text('model').notNull(),
+    /** Cost of the generating call in micro-yuan, snapshotted like llm_usage */
+    costMicros: integer('cost_micros').notNull().default(0),
+    generatedAt: integer('generated_at').notNull(),
+  },
+  (t) => [uniqueIndex('uq_reports_period_key').on(t.period, t.periodKey)],
+);
+
 export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
 export type Category = typeof categories.$inferSelect;
@@ -200,3 +245,7 @@ export type RecurringRule = typeof recurringRules.$inferSelect;
 export type NewRecurringRule = typeof recurringRules.$inferInsert;
 export type ImportBatch = typeof importBatches.$inferSelect;
 export type ImportMapping = typeof importMappings.$inferSelect;
+export type LLMUsage = typeof llmUsage.$inferSelect;
+export type NewLLMUsage = typeof llmUsage.$inferInsert;
+export type ReportRow = typeof reports.$inferSelect;
+export type NewReportRow = typeof reports.$inferInsert;

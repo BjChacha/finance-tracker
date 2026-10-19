@@ -1,0 +1,34 @@
+{
+  "repository": "Qwen/Qwen3-1.7B-GGUF",
+  "revision": "90862c4b9d2787eaed51d12237eafdfe7c5f6077",
+  "upstream": "Qwen/Qwen3-1.7B",
+  "upstream_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "file": "Qwen3-1.7B-Q8_0.gguf",
+  "sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "bytes": 1834426016,
+  "template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+  "supporting": [
+    {
+      "file": "README.md",
+      "sha256": "257e52c419dac2258852643f18af6c974f21f8c6c1b6f371b6cca6201cf29091"
+    },
+    {
+      "file": "LICENSE",
+      "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+    },
+    {
+      "file": "tokenizer_config.json",
+      "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+    },
+    {
+      "file": "tokenizer.json",
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "file": "config.json",
+      "sha256": "1ddb5b89ebc90dcb417a45c213d818577e65976454d29385c8f6140771d95197"
+    }
+  ],
+  "license": "Apache-2.0",
+  "scope": "Official published Q8_0 comparison; no training; quality not yet measured"
+}

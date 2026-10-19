@@ -1,0 +1,7 @@
+{
+  "data_sha256": "876bd6503e362367ffd41ff36567d007074b80906062126544751374d8d0a96b",
+  "script_sha256": "0bd3bf18c5e95667884b3c2ed5ed418f89a2018870752554f1a252d2ec64cdd9",
+  "translations_sha256": "111c9a74bfa7dbe91bbd42667d3be18264f0927f3d43eb9f24d312c08b84141a",
+  "model": "JevEmbed 0.6B Q8_0, desktop CPU4, original frozen category_only candidate design",
+  "scope": "Development-only instruction language comparison; Chinese text and candidates unchanged; no tuning or training"
+}

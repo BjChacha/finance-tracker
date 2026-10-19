@@ -1,8 +1,16 @@
 import { useRouter, type Href } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { useFloatingTabBarInset } from "@/components/navigation/floating-tab-bar";
+import { LLMUsageCard } from "@/features/llm-usage/usage-card";
 import { useTransactionSummary } from "@/features/stats";
+import {
+	deriveUpdateStatus,
+	dismissUpdate,
+	isUpdateDismissed,
+	useLatestRelease,
+} from "@/features/update";
 import { zh } from "@/i18n/zh";
 import { dayjs } from "@/lib/date";
 import { formatCentsWithSymbol } from "@/lib/money";
@@ -65,6 +73,53 @@ function ProfileSummaryCard() {
 	);
 }
 
+/** 新版本提醒卡片：启动检查发现新版且未被忽略时显示在页顶，点击进更新页。 */
+function UpdateCard() {
+	const { colors } = useTheme();
+	const router = useRouter();
+	const status = deriveUpdateStatus(useLatestRelease());
+	// 本地 visible 态：点「忽略」当次渲染立即隐藏，模块级标记跨页面生效
+	const [hidden, setHidden] = useState(false);
+
+	if (status.state !== "available") return null;
+	const { release } = status;
+	if (isUpdateDismissed(release.version) || hidden) return null;
+
+	return (
+		<View style={[styles.updateCard, { backgroundColor: colors.card }]}>
+			<Pressable
+				accessibilityRole="button"
+				accessibilityLabel={zh.update.foundTitle(release.version)}
+				style={styles.updateMain}
+				onPress={() => router.push("/update")}
+			>
+				<Icon name="sparkles" size={20} color={colors.primary} />
+				<View style={{ flex: 1 }}>
+					<Text style={{ color: colors.text, fontSize: 14, fontWeight: "600" }}>
+						{zh.update.foundTitle(release.version)}
+					</Text>
+					<Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
+						{zh.update.cardDesc}
+					</Text>
+				</View>
+				<Icon name="chevron-right" size={18} color={colors.textSecondary} />
+			</Pressable>
+			<Pressable
+				accessibilityRole="button"
+				accessibilityLabel={zh.common.close}
+				hitSlop={8}
+				onPress={() => {
+					dismissUpdate(release.version);
+				setHidden(true);
+				}}
+				style={styles.updateClose}
+			>
+				<Icon name="x" size={16} color={colors.textSecondary} />
+			</Pressable>
+		</View>
+	);
+}
+
 export default function ProfileScreen() {
 	const { colors } = useTheme();
 	const router = useRouter();
@@ -100,6 +155,12 @@ export default function ProfileScreen() {
 				{ icon: "download", label: zh.profile.import, href: "/import" },
 			],
 		},
+		{
+			title: zh.settings.groups.about,
+			items: [
+				{ icon: "rotate-ccw", label: zh.profile.update, href: "/update" },
+			],
+		},
 	];
 
 	return (
@@ -108,10 +169,12 @@ export default function ProfileScreen() {
 			contentContainerStyle={{
 				padding: 16,
 				gap: 20,
-				paddingBottom: tabBarInset,
+				paddingBottom: tabBarInset + 80,
 			}}
 		>
 			<ProfileSummaryCard />
+			<UpdateCard />
+			<LLMUsageCard />
 			{groups.map((g) => (
 				<View key={g.title}>
 					<Text style={[styles.groupTitle, { color: colors.textSecondary }]}>
@@ -178,6 +241,21 @@ const styles = StyleSheet.create({
 		paddingVertical: 15,
 	},
 	summaryCard: { flexDirection: "row", borderRadius: 12, paddingVertical: 14 },
+	updateCard: {
+		flexDirection: "row",
+		alignItems: "center",
+		borderRadius: 12,
+		marginBottom: 0,
+	},
+	updateMain: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 12,
+		paddingHorizontal: 16,
+		paddingVertical: 14,
+	},
+	updateClose: { paddingVertical: 14, paddingRight: 12 },
 	summaryCell: { flex: 1, alignItems: "center", gap: 4, paddingHorizontal: 6 },
 	summaryLabel: { fontSize: 11 },
 	summaryValue: {

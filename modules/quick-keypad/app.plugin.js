@@ -7,9 +7,11 @@ const {
   withAndroidStyles,
   withDangerousMod,
   withMainActivity,
+  withGradleProperties,
 } = require("expo/config-plugins");
 
 const QUICK_ADD_HANDOFF_EXTRA = "expo.modules.quickkeypad.HANDOFF_ID";
+const TRANSLUCENT_LAUNCH_EXTRA = "expo.modules.quickkeypad.TRANSLUCENT_LAUNCH";
 const TRANSPARENT_LAUNCH_STYLE = {
   name: "AppTheme.TransparentLaunch",
   parent: "AppTheme",
@@ -121,8 +123,9 @@ function withQuickAddMainActivity(config) {
       .replace(/^[ \t]+setTheme\(R\.style\.AppTheme\);?\r?\n/m, "");
     const themeSelection = [
       `    val quickAddHandoffId = intent?.getStringExtra("${QUICK_ADD_HANDOFF_EXTRA}")`,
+      `    val translucentLaunch = intent?.getBooleanExtra("${TRANSLUCENT_LAUNCH_EXTRA}", false) == true`,
       "    setTheme(",
-      "      if (quickAddHandoffId.isNullOrBlank()) {",
+      "      if (quickAddHandoffId.isNullOrBlank() && !translucentLaunch) {",
       "        R.style.AppTheme_TransparentLaunch",
       "      } else {",
       "        R.style.AppTheme_QuickAdd",
@@ -143,6 +146,12 @@ function withQuickAddMainActivity(config) {
 }
 
 function withQuickKeypad(config) {
+  config = withGradleProperties(config, (mod) => {
+    const properties = mod.modResults.filter((item) => item.key !== "expo.useLegacyPackaging");
+    properties.push({ type: "property", key: "expo.useLegacyPackaging", value: "true" });
+    mod.modResults = properties;
+    return mod;
+  });
   config = withQuickAddStyles(config);
   config = withAndroid12TransparentLaunchStyle(config);
   config = withTransparentLaunchManifest(config);

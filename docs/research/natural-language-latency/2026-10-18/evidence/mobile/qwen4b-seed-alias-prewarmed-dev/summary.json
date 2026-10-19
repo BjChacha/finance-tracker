@@ -1,0 +1,60 @@
+{
+  "total": 100,
+  "schema_valid": 100,
+  "business_consistent": 100,
+  "preview_ready": 38,
+  "semantics": {
+    "amount_cents": {
+      "correct": 99,
+      "raw_field_correct_diagnostic": 100,
+      "total": 100,
+      "accuracy": 0.99,
+      "target": 0.99,
+      "passed": true
+    },
+    "type": {
+      "correct": 99,
+      "raw_field_correct_diagnostic": 100,
+      "total": 100,
+      "accuracy": 0.99,
+      "target": 0.95,
+      "passed": true
+    },
+    "category": {
+      "correct": 78,
+      "raw_field_correct_diagnostic": 79,
+      "total": 100,
+      "accuracy": 0.78,
+      "target": 0.9,
+      "passed": false
+    }
+  },
+  "needs_manual_input": 62,
+  "auxiliary": {
+    "account": {
+      "raw_correct": 100,
+      "total": 100
+    },
+    "to_account": {
+      "raw_correct": 100,
+      "total": 100
+    },
+    "day": {
+      "raw_correct": 100,
+      "total": 100
+    }
+  },
+  "guards": {
+    "total": 0,
+    "correct_abstentions": 0,
+    "false_single": 0,
+    "clear_single_accepted": 99,
+    "clear_single_total": 100
+  },
+  "category_scope": "Level-1 ancestor accuracy only; child labels are not annotated",
+  "native_request_latency_ms": {
+    "p50": 2765.569149996736,
+    "p95": 2894.7849249918363,
+    "count": 100
+  }
+}

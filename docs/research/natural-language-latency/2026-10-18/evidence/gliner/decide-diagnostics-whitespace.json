@@ -1,0 +1,739 @@
+[
+  {
+    "text": "今天早餐吃包子花了6元",
+    "expected": "expense",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "expense",
+        "confidence": 0.4714411497116089
+      }
+    },
+    "elapsed_ms": 113.94719999225345
+  },
+  {
+    "text": "今天早餐吃包子花了6元",
+    "expected": "expense",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "支出",
+        "confidence": 0.4629334509372711
+      }
+    },
+    "elapsed_ms": 75.05959999980405
+  },
+  {
+    "text": "今天早餐吃包子花了6元",
+    "expected": "expense",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.727073073387146
+      }
+    },
+    "elapsed_ms": 119.83370000962168
+  },
+  {
+    "text": "今天早餐吃包子花了6元",
+    "expected": "expense",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.5447893142700195
+      }
+    },
+    "elapsed_ms": 134.6027999970829
+  },
+  {
+    "text": "微信收到工资8000元",
+    "expected": "income",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "income",
+        "confidence": 0.832340657711029
+      }
+    },
+    "elapsed_ms": 66.29810000595171
+  },
+  {
+    "text": "微信收到工资8000元",
+    "expected": "income",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "收入",
+        "confidence": 0.7899945974349976
+      }
+    },
+    "elapsed_ms": 69.0723000006983
+  },
+  {
+    "text": "微信收到工资8000元",
+    "expected": "income",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.5302292108535767
+      }
+    },
+    "elapsed_ms": 117.9794000054244
+  },
+  {
+    "text": "微信收到工资8000元",
+    "expected": "income",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.4156970977783203
+      }
+    },
+    "elapsed_ms": 133.2589000085136
+  },
+  {
+    "text": "从微信转到自己的银行卡200元",
+    "expected": "transfer",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "transfer",
+        "confidence": 0.6726471781730652
+      }
+    },
+    "elapsed_ms": 68.58570000622422
+  },
+  {
+    "text": "从微信转到自己的银行卡200元",
+    "expected": "transfer",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.9682808518409729
+      }
+    },
+    "elapsed_ms": 71.01429998874664
+  },
+  {
+    "text": "从微信转到自己的银行卡200元",
+    "expected": "transfer",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.44871214032173157
+      }
+    },
+    "elapsed_ms": 119.49679999088403
+  },
+  {
+    "text": "从微信转到自己的银行卡200元",
+    "expected": "transfer",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.43418559432029724
+      }
+    },
+    "elapsed_ms": 134.6655999950599
+  },
+  {
+    "text": "给朋友转账30元请他喝咖啡",
+    "expected": "expense",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "income",
+        "confidence": 0.4836398959159851
+      }
+    },
+    "elapsed_ms": 70.02450000436511
+  },
+  {
+    "text": "给朋友转账30元请他喝咖啡",
+    "expected": "expense",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.5558245182037354
+      }
+    },
+    "elapsed_ms": 72.29130000632722
+  },
+  {
+    "text": "给朋友转账30元请他喝咖啡",
+    "expected": "expense",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.6220666170120239
+      }
+    },
+    "elapsed_ms": 118.15829999977723
+  },
+  {
+    "text": "给朋友转账30元请他喝咖啡",
+    "expected": "expense",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.4940904974937439
+      }
+    },
+    "elapsed_ms": 133.88920000579674
+  },
+  {
+    "text": "商家退回微信30元",
+    "expected": "income",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "transfer",
+        "confidence": 0.515033483505249
+      }
+    },
+    "elapsed_ms": 67.99920000776183
+  },
+  {
+    "text": "商家退回微信30元",
+    "expected": "income",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.4143006205558777
+      }
+    },
+    "elapsed_ms": 70.25730000168551
+  },
+  {
+    "text": "商家退回微信30元",
+    "expected": "income",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.7259823679924011
+      }
+    },
+    "elapsed_ms": 114.32280000008177
+  },
+  {
+    "text": "商家退回微信30元",
+    "expected": "income",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.5482349991798401
+      }
+    },
+    "elapsed_ms": 129.9299000093015
+  },
+  {
+    "text": "用银行卡还自己的信用卡账单500元",
+    "expected": "transfer",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "income",
+        "confidence": 0.38470566272735596
+      }
+    },
+    "elapsed_ms": 67.28639999346342
+  },
+  {
+    "text": "用银行卡还自己的信用卡账单500元",
+    "expected": "transfer",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.8173396587371826
+      }
+    },
+    "elapsed_ms": 72.89450000098441
+  },
+  {
+    "text": "用银行卡还自己的信用卡账单500元",
+    "expected": "transfer",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.5727313756942749
+      }
+    },
+    "elapsed_ms": 118.7326000072062
+  },
+  {
+    "text": "用银行卡还自己的信用卡账单500元",
+    "expected": "transfer",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.4041718542575836
+      }
+    },
+    "elapsed_ms": 136.26919999660458
+  },
+  {
+    "text": "I paid 6 yuan for breakfast today.",
+    "expected": "expense",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "income",
+        "confidence": 0.6291429996490479
+      }
+    },
+    "elapsed_ms": 71.21000000915956
+  },
+  {
+    "text": "I paid 6 yuan for breakfast today.",
+    "expected": "expense",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "收入",
+        "confidence": 0.6139432191848755
+      }
+    },
+    "elapsed_ms": 72.05170000088401
+  },
+  {
+    "text": "I paid 6 yuan for breakfast today.",
+    "expected": "expense",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.72169429063797
+      }
+    },
+    "elapsed_ms": 117.07139998907223
+  },
+  {
+    "text": "I paid 6 yuan for breakfast today.",
+    "expected": "expense",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.5604182481765747
+      }
+    },
+    "elapsed_ms": 134.326700004749
+  },
+  {
+    "text": "I received my monthly salary of 8000 yuan.",
+    "expected": "income",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "income",
+        "confidence": 0.9707650542259216
+      }
+    },
+    "elapsed_ms": 73.50479999149684
+  },
+  {
+    "text": "I received my monthly salary of 8000 yuan.",
+    "expected": "income",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "收入",
+        "confidence": 0.855913519859314
+      }
+    },
+    "elapsed_ms": 75.02620000741445
+  },
+  {
+    "text": "I received my monthly salary of 8000 yuan.",
+    "expected": "income",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.608508288860321
+      }
+    },
+    "elapsed_ms": 121.07209999521729
+  },
+  {
+    "text": "I received my monthly salary of 8000 yuan.",
+    "expected": "income",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.43501731753349304
+      }
+    },
+    "elapsed_ms": 140.69679999374785
+  },
+  {
+    "text": "I moved 200 yuan from my WeChat balance to my own bank account.",
+    "expected": "transfer",
+    "variant": "english_short",
+    "tasks": {
+      "transaction_type": [
+        "expense",
+        "income",
+        "transfer"
+      ]
+    },
+    "raw": {
+      "transaction_type": {
+        "label": "transfer",
+        "confidence": 0.8654693365097046
+      }
+    },
+    "elapsed_ms": 76.69889999669977
+  },
+  {
+    "text": "I moved 200 yuan from my WeChat balance to my own bank account.",
+    "expected": "transfer",
+    "variant": "chinese_short",
+    "tasks": {
+      "交易收支方向": [
+        "支出",
+        "收入",
+        "本人账户互转"
+      ]
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.9509919881820679
+      }
+    },
+    "elapsed_ms": 78.02849999279715
+  },
+  {
+    "text": "I moved 200 yuan from my WeChat balance to my own bank account.",
+    "expected": "transfer",
+    "variant": "chinese_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "支出": "付款消费、给别人钱、送出红包、手续费",
+        "收入": "收到工资、报酬、红包、退款或出售物品款项",
+        "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+        "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "无法判断收支方向",
+        "confidence": 0.4816132187843323
+      }
+    },
+    "elapsed_ms": 132.25819999934174
+  },
+  {
+    "text": "I moved 200 yuan from my WeChat balance to my own bank account.",
+    "expected": "transfer",
+    "variant": "chinese_prompt_descriptions",
+    "tasks": {
+      "交易收支方向": {
+        "labels": {
+          "支出": "付款消费、给别人钱、送出红包、手续费",
+          "收入": "收到工资、报酬、红包、退款或出售物品款项",
+          "本人账户互转": "自己的账户之间转移资金，包含存钱、取现、信用卡还款",
+          "无法判断收支方向": "无法判断是付款、收款还是本人账户间转移"
+        },
+        "prompt": "本人付给商家或朋友属于支出；本人收到钱属于收入；只有自己的两个账户间移动资金才是转账。"
+      }
+    },
+    "raw": {
+      "交易收支方向": {
+        "label": "本人账户互转",
+        "confidence": 0.4367695748806
+      }
+    },
+    "elapsed_ms": 137.18999999400694
+  },
+  {
+    "official_sentiment_sanity": {
+      "sentiment": {
+        "label": "positive",
+        "confidence": 0.9386073350906372
+      }
+    }
+  }
+]

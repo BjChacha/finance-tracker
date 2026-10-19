@@ -1,0 +1,54 @@
+{
+  "total": 100,
+  "schema_valid": 100,
+  "business_consistent": 100,
+  "preview_ready": 16,
+  "semantics": {
+    "amount_cents": {
+      "correct": 51,
+      "raw_field_correct_diagnostic": 79,
+      "total": 80,
+      "accuracy": 0.6375,
+      "target": 0.99,
+      "passed": false
+    },
+    "type": {
+      "correct": 31,
+      "raw_field_correct_diagnostic": 35,
+      "total": 80,
+      "accuracy": 0.3875,
+      "target": 0.95,
+      "passed": false
+    },
+    "category": {
+      "correct": 21,
+      "raw_field_correct_diagnostic": 23,
+      "total": 80,
+      "accuracy": 0.2625,
+      "target": 0.9,
+      "passed": false
+    }
+  },
+  "needs_manual_input": 84,
+  "auxiliary": {
+    "account": {
+      "raw_correct": 73,
+      "total": 80
+    },
+    "to_account": {
+      "raw_correct": 74,
+      "total": 80
+    },
+    "day": {
+      "raw_correct": 66,
+      "total": 80
+    }
+  },
+  "guards": {
+    "total": 20,
+    "correct_abstentions": 15,
+    "false_single": 5,
+    "clear_single_accepted": 51,
+    "clear_single_total": 80
+  }
+}

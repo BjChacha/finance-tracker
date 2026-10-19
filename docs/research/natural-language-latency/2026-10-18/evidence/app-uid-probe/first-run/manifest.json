@@ -1,0 +1,8 @@
+{
+  "serial": "HA29H4B6",
+  "package": "com.chacha.nlprobe",
+  "apk_sha256": "c65cde33706983130f4472a5b7280582b07cbc376917d82ae97060cc5c207b3f",
+  "runner_sha256": "47d9ca03482bf76f61b8743570cc086a86836734c8d20f903752c3b4a2558318",
+  "scope": "Debug test APK; synthetic input; no application database access",
+  "error": "Command '['C:\\\\Users\\\\bjcha\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe', '-s', 'HA29H4B6', 'install', 'F:\\\\Projects\\\\App\\\\finance-tracker\\\\artifacts\\\\natural-language-latency\\\\app-uid-probe\\\\build\\\\probe.apk']' returned non-zero exit status 1."
+}

@@ -1,0 +1,46 @@
+{
+  "freeze_verified": true,
+  "raw_fields_single_count": 160,
+  "raw_fields_correct": {
+    "type": 49,
+    "category": 5,
+    "account": 141,
+    "to_account": 24,
+    "day": 73,
+    "amount_cents": 150
+  },
+  "models": [
+    {
+      "name": "LFM2.5-350M-F16.gguf",
+      "bytes": 711485152,
+      "sha256": "18e2f6b61045bed8c3e8575c01fa7898b2df5ae884964322dcf49e5d12f6eb79"
+    },
+    {
+      "name": "LFM2.5-350M-Q2_K-pure.gguf",
+      "bytes": 118941408,
+      "sha256": "43527ac3fcec705c97762cd17ebb287d410a0b964a4813e9813718726a7ee09f"
+    },
+    {
+      "name": "LFM2.5-350M-Q2_K.gguf",
+      "bytes": 160597728,
+      "sha256": "aaf6191da3f4c02ca631cfb62b1b5f864bcebb1cfe342d3e690f8d0ee9759ef9"
+    },
+    {
+      "name": "LFM2.5-350M-Q2_K_S-emb4.gguf",
+      "bytes": 136882176,
+      "sha256": "c0bd87b709edd6c774cda6193818d6c7871e8775a1d554d6f5217ad0dc2806a5"
+    },
+    {
+      "name": "LFM2.5-350M-Q2_K_S.gguf",
+      "bytes": 154183680,
+      "sha256": "c309f94f8f5f0d75ae0528ff5196142d5a190d5c2b108c222debfe8b9c9ba558"
+    },
+    {
+      "name": "LFM2.5-350M-Q4_K_M.gguf",
+      "bytes": 229312224,
+      "sha256": "7e6f72643caafc9a68256686638c4d7916f2cec76d1df478d4c3ddcd95a6aed4"
+    }
+  ],
+  "imatrix_sha256": "6fbe50f9e10013051647c92c5a58ec494c046ac176a1798ad2b2cfdc5faccd45",
+  "calibration_sha256": "a2046e1a6c532c8962f63a01a6a79e8eb6cf532a6636e1e35e7896e5346d1873"
+}

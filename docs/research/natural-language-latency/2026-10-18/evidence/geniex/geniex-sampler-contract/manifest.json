@@ -1,0 +1,12 @@
+{
+  "serial": "HA29H4B6",
+  "scope": "Native sampler contract only; synthetic logits, no model inference",
+  "exit_code": 0,
+  "elapsed_ms": 724.2934999958379,
+  "binary_sha256": "b2f389c62eb21218b68f4d958d62e6c13d510f135a3ee5dc669eb1b36e143d19",
+  "proc_commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+  "source_hashes": {
+    "sampler_probe.cpp": "a149f3fbed77cad33573b6d56484ee49ec62448ff3fe3ff2b31afdc3868470e2",
+    "build_sampler_probe.sh": "cc68645ddf7b2a993398ca3b9689aad4bc6ef4aec3b939fb892996f4de1c05e9"
+  }
+}

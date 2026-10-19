@@ -1,0 +1,68 @@
+{
+  "model": "LFM2.5-350M-Q2_K_S-emb4.gguf",
+  "model_bytes": 136882176,
+  "model_sha256": "c0bd87b709edd6c774cda6193818d6c7871e8775a1d554d6f5217ad0dc2806a5",
+  "data_sha256": "4080af5315473dfdc9a62cd2552d9f7f4e8efe36b94e25d1c4ee974ece31f4bb",
+  "configuration": {
+    "model": "artifacts/natural-language-instruct/models/LFM2.5-350M-Q2_K_S-emb4.gguf",
+    "data": "F:\\Projects\\App\\finance-tracker\\scripts\\natural-language\\data\\dev.tsv",
+    "output": "q2s-final-dev",
+    "limit": null,
+    "unconstrained": false,
+    "no_examples": true,
+    "cache": false,
+    "prompt": "scripts/natural-language/instruct/prompt-final.txt"
+  },
+  "summary": {
+    "total": 100,
+    "schema_valid": 100,
+    "business_consistent": 77,
+    "preview_ready": 3,
+    "semantics": {
+      "amount_cents": {
+        "correct": 44,
+        "raw_field_correct_diagnostic": 68,
+        "total": 80,
+        "accuracy": 0.55,
+        "target": 0.99,
+        "passed": false
+      },
+      "type": {
+        "correct": 3,
+        "raw_field_correct_diagnostic": 11,
+        "total": 80,
+        "accuracy": 0.0375,
+        "target": 0.95,
+        "passed": false
+      },
+      "category": {
+        "correct": 1,
+        "raw_field_correct_diagnostic": 4,
+        "total": 80,
+        "accuracy": 0.0125,
+        "target": 0.9,
+        "passed": false
+      }
+    },
+    "needs_manual_input": 97,
+    "guards": {
+      "total": 20,
+      "correct_abstentions": 0,
+      "false_single": 20,
+      "clear_single_accepted": 75,
+      "clear_single_total": 80
+    },
+    "observed_desktop_latency_ms": {
+      "p50": 922.8308500023559,
+      "p95": 1501.4755499982125,
+      "count": 100
+    }
+  },
+  "desktop_memory": {
+    "peak_rss_bytes": 419549184,
+    "peak_private_bytes": 305262592,
+    "sample_period_ms": 20,
+    "not_android_pss": true
+  },
+  "desktop_load_ms_single_observation": 519.2640000022948
+}

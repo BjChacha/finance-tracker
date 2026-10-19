@@ -1,0 +1,755 @@
+{
+  "files": {
+    "artifacts/natural-language-mobile-instruct/cleanup-verification.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/cleanup-verification.json",
+      "sha256": "b21573603e355cb32b19605a703cdfb4207b0d54d797b64199251c774ac7557f",
+      "bytes": 275
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-guards/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-guards/diagnostics.json",
+      "sha256": "bf9a5f6886c5ef316d6768ba14a8fbf8c3a081d626d8c4a7bfbb8166e798a1fe",
+      "bytes": 1027
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-guards/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-guards/failures.tsv",
+      "sha256": "21806b43f125026873fa5e0d570e5d5c84b66df6230604b23fbca8fd8400d39b",
+      "bytes": 18034
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-guards/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-guards/manifest.json",
+      "sha256": "485571807d85d2b8aeb6b75cc05fc72ef471367ad5abcfbb39ca305a6506021b",
+      "bytes": 921
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-guards/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-guards/predictions.jsonl",
+      "sha256": "784fc85defb781719d98c223992fd554cf1eddfe779daee3a9c15f3bd4848fa3",
+      "bytes": 68224
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-guards/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-guards/summary.json",
+      "sha256": "e5a16bd49f4ed4297b05b2cfe78ddcbf96d426253f10c88b03e394eb0c825e8c",
+      "bytes": 1196
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-regression/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-regression/diagnostics.json",
+      "sha256": "5791f895d89c1669b38316d312a54c46ef4fb0044e18691184c4f8ca311486ea",
+      "bytes": 5207
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-regression/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-regression/failures.tsv",
+      "sha256": "8d5d9f7f50e7d8dd930ae7183a7e60b1b2870fa0593988c073a570f7194a3d4c",
+      "bytes": 15865
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-regression/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-regression/manifest.json",
+      "sha256": "0b4b1c697570389d149fc3c9f8d99e25d733ab4e996c3660f3e853da42e2941c",
+      "bytes": 921
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-regression/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-regression/predictions.jsonl",
+      "sha256": "5329961904c6768de6dffadfa659a241084b9d73d26e80fd24178c82a334f028",
+      "bytes": 327627
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-branch-regression/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-branch-regression/summary.json",
+      "sha256": "d4e58fb8ed5c8922bc64895c584cbce08c52a8bbc4cd5eea76e34eda07b8e5b1",
+      "bytes": 1230
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-diagnostic-probes/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-diagnostic-probes/manifest.json",
+      "sha256": "a9e1e52a417fdcb7952fddf982b0cbd8899238b003411de38d4b160966403c55",
+      "bytes": 417
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-diagnostic-probes/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-diagnostic-probes/predictions.jsonl",
+      "sha256": "abbb27022a5de20dd90709420da2410eb0beb655b9bc1dca1e8e6f5e6d31c58d",
+      "bytes": 25404
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-diagnostic-probes/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-diagnostic-probes/summary.json",
+      "sha256": "cf44386a443d173caf19073d61b755902ec16241f6fdfcb27c5ce05e3ac595e4",
+      "bytes": 232
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-guards/desktop-memory.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-guards/desktop-memory.json",
+      "sha256": "58ec4e9ceacbb8bbd3889e91e02e7edf9745319bb3771aec8f5b6190b1d50c9a",
+      "bytes": 63
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-guards/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-guards/diagnostics.json",
+      "sha256": "bf9a5f6886c5ef316d6768ba14a8fbf8c3a081d626d8c4a7bfbb8166e798a1fe",
+      "bytes": 1027
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-guards/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-guards/failures.tsv",
+      "sha256": "21806b43f125026873fa5e0d570e5d5c84b66df6230604b23fbca8fd8400d39b",
+      "bytes": 18034
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-guards/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-guards/manifest.json",
+      "sha256": "9414907ac5045b1fab8a4eb9e0d59276100f18a2d111649b76c5ae812cfe7a90",
+      "bytes": 2429
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-guards/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-guards/predictions.jsonl",
+      "sha256": "e3b73374c201f1c2617ebb8dc912b394ffe41ca09b8257b44969f144e891fd1f",
+      "bytes": 68223
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-guards/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-guards/summary.json",
+      "sha256": "190fb1a57772941b40a3057c145cde961608ac10e815b53f02ebfb0bda4d4654",
+      "bytes": 1197
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-regression/desktop-memory.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-regression/desktop-memory.json",
+      "sha256": "9c5d0ee9209031403d33e161d39e429d8e508332496573587ed5325e5dc5e39c",
+      "bytes": 63
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-regression/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-regression/diagnostics.json",
+      "sha256": "b8db4d6846c1eb7bc20d31b392dc3db2d67044864040746050c8af7a3d06b7c3",
+      "bytes": 5206
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-regression/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-regression/failures.tsv",
+      "sha256": "e1c8f34fd0815280e623e7fe90f8e8febf0155560e3fefca041139d5d669aaeb",
+      "bytes": 37816
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-regression/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-regression/manifest.json",
+      "sha256": "cad0ac372b0914a14f2cb617c579c94dc14735d638f4c68bb486724105d847d7",
+      "bytes": 2429
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-regression/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-regression/predictions.jsonl",
+      "sha256": "91a0e0711f219fa2b275f8d3f65e458f6c273ad58c505e9620f1cc82dac65f9a",
+      "bytes": 328375
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-regression/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-regression/summary.json",
+      "sha256": "2779c6ea089091f1bea327c3033f62854364c394361884e444baf5293cd77fa1",
+      "bytes": 1236
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-safe-guards/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-safe-guards/diagnostics.json",
+      "sha256": "5cd1f31e20189678d6005c0978e7d9e22a37e0b8c3ff73c8eedd6abe66d14723",
+      "bytes": 1027
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-safe-guards/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-safe-guards/failures.tsv",
+      "sha256": "3e152c9fefd9146463e122f5d16507d5e595e0ee3c194777ca886a5ab8257491",
+      "bytes": 13971
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-safe-guards/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-safe-guards/manifest.json",
+      "sha256": "467ff17aa451a7710991c291e219bf247e5591be86d6a4109c212b5b332836ce",
+      "bytes": 1008
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-safe-guards/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-safe-guards/predictions.jsonl",
+      "sha256": "338cdd83aa56ab953f63f0d6947aef133091c976f05d4c6918a2d198f8ae78a0",
+      "bytes": 68288
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-safe-guards/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-safe-guards/summary.json",
+      "sha256": "ca638585a40d156495c1ba13102a871f49eac3245c4f868d3d163976ae5894e8",
+      "bytes": 1196
+    },
+    "artifacts/natural-language-mobile-instruct/desktop-source-original.py": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/desktop-source-original.py",
+      "sha256": "eac3670f065c6d8aa77f3ef6742270efe0019c2c8376d8d2b4c540e1df03eb93",
+      "bytes": 4822
+    },
+    "artifacts/natural-language-mobile-instruct/device-freeze.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/device-freeze.json",
+      "sha256": "7e738d2880144c68ea86d692c56e1d7ca46ecad61521f85773ec01cc58fc89df",
+      "bytes": 872
+    },
+    "artifacts/natural-language-mobile-instruct/final-comparison.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/final-comparison.json",
+      "sha256": "e5afa243a7e81cdd2a4ef2d0e973e5ca26254875936d67d666c7d8470da478a2",
+      "bytes": 58918
+    },
+    "artifacts/natural-language-mobile-instruct/freeze.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/freeze.json",
+      "sha256": "b4810a3b09255066878d183e98739b0379f8d3da84aa427c27f9be1fd7941e1a",
+      "bytes": 2073
+    },
+    "artifacts/natural-language-mobile-instruct/frozen-source-verification.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/frozen-source-verification.json",
+      "sha256": "7b5d17ede5d34f6fb6d61c60dc0c8606b6fe2a863392f84c73ee961f21756c34",
+      "bytes": 352
+    },
+    "artifacts/natural-language-mobile-instruct/model-manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/model-manifest.json",
+      "sha256": "be9d104da3043c480ae6f3aba6dafce025b11a71969934107dba2027492801eb",
+      "bytes": 1042
+    },
+    "artifacts/natural-language-mobile-instruct/quantization-metadata.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/quantization-metadata.json",
+      "sha256": "19576108e4f2070273843148bec71308c06a61727e3d850b61fe76b25dbda41d",
+      "bytes": 18859
+    },
+    "artifacts/natural-language-mobile-instruct/quantization-README.md": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/quantization-README.md",
+      "sha256": "28546f5fc4f22ee1b3f17b908957f17fcfa66174032136265bdb27f404bc1e6c",
+      "bytes": 78906
+    },
+    "artifacts/natural-language-mobile-instruct/safe-freeze.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/safe-freeze.json",
+      "sha256": "819c3926d023a38bbb0f350f54ea0c84c16290ad6815298eba09f47e6bf85f58",
+      "bytes": 1758
+    },
+    "artifacts/natural-language-mobile-instruct/safe-request-verification.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/safe-request-verification.json",
+      "sha256": "d584e816211aed4d8fd4a557b16e249b6f3a26691e1375a8622e94c3cf22356c",
+      "bytes": 191
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/diagnostics.json",
+      "sha256": "5cd1f31e20189678d6005c0978e7d9e22a37e0b8c3ff73c8eedd6abe66d14723",
+      "bytes": 1027
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/failures.tsv",
+      "sha256": "3e152c9fefd9146463e122f5d16507d5e595e0ee3c194777ca886a5ab8257491",
+      "bytes": 13971
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/manifest.json",
+      "sha256": "155bed748670daed60eed9895765bca647481181b7a1652322f2b30b7741ea96",
+      "bytes": 1004
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/predictions.jsonl",
+      "sha256": "eddc363cd4f6b7c3fd0cb01c9c4a84f4e48916075fc12c3b070dcde3985ddd20",
+      "bytes": 68283
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/pss-samples.json",
+      "sha256": "7313ee03f20915594f1a0dad508792c5ffff206be93ee50bdb86a50de03baa8e",
+      "bytes": 65005
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/server.log",
+      "sha256": "399103dfb91930778696ffeed35a4377068906e3aba98e88e1eb28cf709a5a77",
+      "bytes": 43227
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-guards/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-guards/summary.json",
+      "sha256": "68ce0a431e01f7b96a4d12addb0e417cfd2d82164dd2a9c5ae90b8b5f1e20151",
+      "bytes": 1186
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/diagnostics.json",
+      "sha256": "3d9f60350b68399f5d342a507899f68b8fb6108c64aba0cec0aad2b99ae0090c",
+      "bytes": 5207
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/failures.tsv",
+      "sha256": "7e80ba5cc13a56c6668e608e7eefd26c3cbbbc97339a01cdb6a3e79fe9954b4b",
+      "bytes": 14651
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/manifest.json",
+      "sha256": "5b36bc4194637e37bee88e4ada5af77fe890dbf98c5f42ad7872924bf3a09f86",
+      "bytes": 1004
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/predictions.jsonl",
+      "sha256": "ff3607785f24e4a84631e04a52f7556ad4dee3f9fc2f24d597e1cae664ef29bd",
+      "bytes": 327881
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/pss-samples.json",
+      "sha256": "9f6fe7c9093039e07da434b543318d16b869d01fac37f2df54f2a48174cac1a9",
+      "bytes": 250039
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/server.log",
+      "sha256": "f279237b6e174ae166751be65b639c69119507f63a6866d7c86493dd995627fd",
+      "bytes": 192630
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-branch-regression/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-branch-regression/summary.json",
+      "sha256": "1ef014be030109257def228f45e1c72b03ebb7341862d3787d863445d3ca97bc",
+      "bytes": 1219
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/manifest.json",
+      "sha256": "6566aae84932afe231cbd698a3e106dd983b389f0760cdec0ce5004ff9460cdc",
+      "bytes": 782
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/predictions.jsonl",
+      "sha256": "9285306af3d0cbe8b6eefec51af3a27d7154ee5b3bdb6212f76977ed0b6408cb",
+      "bytes": 8300
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/pss-samples.json",
+      "sha256": "30be4fe984b4a7848811daee7187e83fb81854e5e71d8e845cb54b090ca97866",
+      "bytes": 15169
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/server.log",
+      "sha256": "38057c6ea9b73fe57e7916300a6b6441a80a1fd1072b82175fd9da65402cb380",
+      "bytes": 8358
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-diagnostic-probes/summary.json",
+      "sha256": "48ad1d00dc724b419bad2b22ddef20c06296cbc4fbe1c306040ba1326e6998f2",
+      "bytes": 69
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/diagnostics.json",
+      "sha256": "9d212294315e3841cbaf9e577b736f1b9ef88a255006092faf80bd4ecdb24a2c",
+      "bytes": 1026
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/failures.tsv",
+      "sha256": "44443e97c2574f88f22efeabbf88f127e7b0a0122eed2a42fda8e59d5a5c6553",
+      "bytes": 11276
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/guards.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/guards.json",
+      "sha256": "5575a83cc2ad86fc0f961321fd9261ca4f9c738fd7ce9772c8a3ac8ee44995af",
+      "bytes": 77
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/manifest.json",
+      "sha256": "ec3fa2d11a3954d51fd6ccc74bd2d5ecbd941007315359948fae6fddea4985a7",
+      "bytes": 5385
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/predictions.jsonl",
+      "sha256": "026d84f345572455ac2bc88f8487d2b718db6d6bd4661cad4248c757b743f007",
+      "bytes": 142437
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/pss-samples.json",
+      "sha256": "be958247e277da633ca2b16315a9ed8d6b1d5cd9f735c23a0acbb5ea4d4f27de",
+      "bytes": 8446
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/server.log",
+      "sha256": "aa0a72b830219881f723ab7faaf1c4f584fbd89303a8199fea17f381ed9113b7",
+      "bytes": 91539
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-guards/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-guards/summary.json",
+      "sha256": "772b610e633cfcb1f717f43744d2e5a3025606cc81ad01413a99829be81bd3c2",
+      "bytes": 1186
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/measurements.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/measurements.jsonl",
+      "sha256": "b022378ff7b3e4c43d2516fdc749c736ebbd5bd5b11f139eae38fe3cbfe4397d",
+      "bytes": 75060
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/perfetto.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/perfetto.log",
+      "sha256": "5ab82536e0ba2171f566f0e02f23324b84e0aeb6bdc36996ec70db10685aa0e5",
+      "bytes": 436
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/pss-samples.json",
+      "sha256": "667a6205399f7b395b23999e6e9a2058f6e6e4527f71efad1361f42a9ac2f48f",
+      "bytes": 14909
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/summary.json",
+      "sha256": "0ba8b65647d0b2a7752e3e49af3f26162ac205f9238d78c1011e6078035670b1",
+      "bytes": 2324
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/trace-analysis.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/trace-analysis.json",
+      "sha256": "837a85a3eda8958ef8411ada0590fcbd7483aed593069b1c3a99f082f9ab2d8a",
+      "bytes": 1308
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/warm-primer.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance/warm-primer.json",
+      "sha256": "c5b8bb7341ed4a03b8f8ce3b61977e52ecf65a98ba5e24a5fe56b3fea9abf11b",
+      "bytes": 4134
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance-metadata.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-performance-metadata.json",
+      "sha256": "d6f77d34f4eca422a0c854e88ce4bdcae696e5fc65d8e5a510494b58fdd75fce",
+      "bytes": 1258
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/diagnostics.json",
+      "sha256": "69994099a120526afdd812179404a7c6bfb9b3dc28db99785c9b512c5afe76b8",
+      "bytes": 5207
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/distribution.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/distribution.json",
+      "sha256": "501f30e3f95ea61518e1ecda1297ed83c47692d291d3e7e91d098b38b8751311",
+      "bytes": 4563
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/failures.tsv",
+      "sha256": "b7bb20c2676c2b128b53a93b66b6d5643283a39ce7defdb40680a46b4ebc7f4c",
+      "bytes": 121606
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/manifest.json",
+      "sha256": "77c5c1924618c0462355e2a36790db8e8bc3dbeacb17edd3e5ef62d16a3fd0f1",
+      "bytes": 5383
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/predictions.jsonl",
+      "sha256": "7a48b2a3ae31668c7c89fbb44bab5b38c59329d6c1e87c7d298f91f4ff7cfa73",
+      "bytes": 711380
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/pss-samples.json",
+      "sha256": "4f438f460f58cb7cd05fb3eb4e2cb9e6bb88508f6add320507795086dd735f77",
+      "bytes": 38364
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/server.log",
+      "sha256": "3aba899565e3dd9d9609ef31e982aee665a1bee9f8d7b634e1946ce2e00b68ef",
+      "bytes": 415440
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-jev-regression/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-jev-regression/summary.json",
+      "sha256": "b1fd96554b091454de7c07d66ceeffeb6bc8aa3be836221a382eea4415c2cc51",
+      "bytes": 1226
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/diagnostics.json",
+      "sha256": "bf9a5f6886c5ef316d6768ba14a8fbf8c3a081d626d8c4a7bfbb8166e798a1fe",
+      "bytes": 1027
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/failures.tsv",
+      "sha256": "21806b43f125026873fa5e0d570e5d5c84b66df6230604b23fbca8fd8400d39b",
+      "bytes": 18034
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/guards.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/guards.json",
+      "sha256": "5575a83cc2ad86fc0f961321fd9261ca4f9c738fd7ce9772c8a3ac8ee44995af",
+      "bytes": 77
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/manifest.json",
+      "sha256": "ea0a9c57ef5efdfea466823d3e105ddae324ae24f333994f925148e22f1e7408",
+      "bytes": 5450
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/predictions.jsonl",
+      "sha256": "9677e47fd45cd65ddae86af367c0edf7cf93942bb81bd160186204ef54b64b0f",
+      "bytes": 68158
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/pss-samples.json",
+      "sha256": "8fc1e5a861bc8e1dbcb81a19fc088d9866567097a9a98577dc862cda8423b0b5",
+      "bytes": 71755
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/server.log",
+      "sha256": "ab8cbb2d65644ae6dbb17d3f00b316395b8ca98a13d74ef9af9bc52c9da85a50",
+      "bytes": 43372
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-guards/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-guards/summary.json",
+      "sha256": "f05893c0644cd2c5a97765ce6aef9ffd99c24cb205a9b11847dc92b8f7f1b159",
+      "bytes": 1185
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/measurements.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/measurements.jsonl",
+      "sha256": "91a47e8db13ae41d11ae075358128f9d0a5d934f72f88d4af68796105db9b6fd",
+      "bytes": 31432
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/perfetto.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/perfetto.log",
+      "sha256": "3a4f1c9234c1ef7a7ba541e6e71f090e6af9919339b2fa5793adfa26b938d1bc",
+      "bytes": 436
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/pss-samples.json",
+      "sha256": "5d345f2a7a1c7403956469026fd14f542b2cd313f62d7bfb8def1d86701a2fc6",
+      "bytes": 131515
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/summary.json",
+      "sha256": "7b5729a715d069026eb777a98848b37023ca306b129130e42097664e67cd716a",
+      "bytes": 2322
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/trace-analysis.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/trace-analysis.json",
+      "sha256": "20fa7709c1cc21001bfec318a0ee2df2601d9b5c09eaf842ef896d2031a145f9",
+      "bytes": 1183
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/warm-primer.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance/warm-primer.json",
+      "sha256": "def4a50b7c71e5d84378b0e87eee8cf46ea0f2a8aae2e6d9a78a311319699e13",
+      "bytes": 1448
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance-metadata.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-performance-metadata.json",
+      "sha256": "b2cb3b1f09cfc2358716893bb0bd0b289ab85eaa6a801862dddc4ef1bcaa851d",
+      "bytes": 1323
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/diagnostics.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/diagnostics.json",
+      "sha256": "80b5dbff3e26b2696d0cc66ca649fec0a61b54192af249df5118f17c4f0edf1d",
+      "bytes": 5206
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/distribution.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/distribution.json",
+      "sha256": "771e360b0f4e3e5d290290f35edd10cab520a0e3acfe3f394697b92017b75899",
+      "bytes": 4489
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/failures.tsv": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/failures.tsv",
+      "sha256": "40d4bc3f3008ab5f3ba7282770e174a0064f3f52f73c14980ec70c7865ff7e64",
+      "bytes": 42659
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/manifest.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/manifest.json",
+      "sha256": "4889884e6191d4ebfac02255174f57a2aa802f483fab086665a6a2b5b1acbe97",
+      "bytes": 5450
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/memory-errors.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/memory-errors.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "bytes": 4
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/predictions.jsonl": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/predictions.jsonl",
+      "sha256": "70a30c930fc801944786eae82821b44ff08d56b875516a4838e5882c0737db9e",
+      "bytes": 328650
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/pss-samples.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/pss-samples.json",
+      "sha256": "98ffe2aec1e1aeb9a60ade11d32dd41692894d37b67f83a1b1551a6eb9595fca",
+      "bytes": 222460
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/server.log": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/server.log",
+      "sha256": "edc3f3d7d51f9644c79100fba175aade69d5192610b90a18cff2f6bbd04a4130",
+      "bytes": 192142
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-regression/summary.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/tablet-qwen-regression/summary.json",
+      "sha256": "0ca85da78323751e92e7ac3d7b90eb01734db997002d6391899bc1e174de2855",
+      "bytes": 1225
+    },
+    "artifacts/natural-language-mobile-instruct/upstream-chat_template.jinja": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/upstream-chat_template.jinja",
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+      "bytes": 7756
+    },
+    "artifacts/natural-language-mobile-instruct/upstream-LICENSE": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/upstream-LICENSE",
+      "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "bytes": 11544
+    },
+    "artifacts/natural-language-mobile-instruct/upstream-metadata.json": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/upstream-metadata.json",
+      "sha256": "752272a00f19f4dbe3f38715f87e7ef8f9c7814d065577f4e4489995f8189308",
+      "bytes": 23918
+    },
+    "artifacts/natural-language-mobile-instruct/upstream-README.md": {
+      "archive": "evidence/artifacts/natural-language-mobile-instruct/upstream-README.md",
+      "sha256": "1406be1b6b8fd8a6545870da516912804756593628a1d0fb0a7965211e82a7bb",
+      "bytes": 77661
+    },
+    "scripts/natural-language/data/context.json": {
+      "archive": "evidence/scripts/natural-language/data/context.json",
+      "sha256": "ac51b24ce777c0c83a6d6815f98a7bdfe041e317ca6d0add18367cd9ba64c16e",
+      "bytes": 3885
+    },
+    "scripts/natural-language/distribution_v1/data/dev-guards.tsv": {
+      "archive": "evidence/scripts/natural-language/distribution_v1/data/dev-guards.tsv",
+      "sha256": "30f34af9187643c579392fd3ab791029e7b411b395afccc030147aa015cde7f7",
+      "bytes": 3406
+    },
+    "scripts/natural-language/distribution_v1/data/dev.tsv": {
+      "archive": "evidence/scripts/natural-language/distribution_v1/data/dev.tsv",
+      "sha256": "876bd6503e362367ffd41ff36567d007074b80906062126544751374d8d0a96b",
+      "bytes": 19538
+    },
+    "scripts/natural-language/distribution_v1/data/regression-guards.tsv": {
+      "archive": "evidence/scripts/natural-language/distribution_v1/data/regression-guards.tsv",
+      "sha256": "9e0a9870a6985e186e65509c6fd4f329edfaee47b5a2eec19690d805b031b552",
+      "bytes": 8978
+    },
+    "scripts/natural-language/distribution_v1/data/regression.tsv": {
+      "archive": "evidence/scripts/natural-language/distribution_v1/data/regression.tsv",
+      "sha256": "cdbe748778aa100f5eba47ab153ed87495300228c8fa272249447d39dd783e1e",
+      "bytes": 40786
+    },
+    "scripts/natural-language/instruct/harness.py": {
+      "archive": "evidence/scripts/natural-language/instruct/harness.py",
+      "sha256": "0c786e416b55ee19f65c06458ca68a026a0e1d8faeefec395c84747275e72e7a",
+      "bytes": 11274
+    },
+    "scripts/natural-language/instruct/sources.json": {
+      "archive": "evidence/scripts/natural-language/instruct/sources.json",
+      "sha256": "41fa1742d7e86e4ce6b13617cd6dc3914b35a5816e5b682e12bc6fad21531b7c",
+      "bytes": 963
+    },
+    "scripts/natural-language/mobile_instruct/archive_evidence.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/archive_evidence.py",
+      "sha256": "7bedd268efdd52093a08291e816f505ba257d798767e82a79c6ee069b7ed7898",
+      "bytes": 3331
+    },
+    "scripts/natural-language/mobile_instruct/benchmark.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/benchmark.py",
+      "sha256": "6b3cd44e16a639d753cdbee01a0b72f007751c1014d08807d18ae40cc2828bb7",
+      "bytes": 6060
+    },
+    "scripts/natural-language/mobile_instruct/branch_constraints.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/branch_constraints.py",
+      "sha256": "cd38fe94ff00909ffcd1b38672e9782f503ec62f63fd5b48db2ecbbe284b19a9",
+      "bytes": 828
+    },
+    "scripts/natural-language/mobile_instruct/branch_evaluate.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/branch_evaluate.py",
+      "sha256": "81cbd1b3cba89471764bc29bc87a6547d2b4cec297abe9b2a4ba0691034528d2",
+      "bytes": 3196
+    },
+    "scripts/natural-language/mobile_instruct/desktop_compare.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/desktop_compare.py",
+      "sha256": "c151966bf7a40a0ccd9efde53b44444ee7aca7e83b18b8132392902222c4ac6e",
+      "bytes": 4822
+    },
+    "scripts/natural-language/mobile_instruct/device_benchmark.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/device_benchmark.py",
+      "sha256": "dd6d9dd1d604380389b7b8b6ee48c2beea5c947cf5dca459c8c73cc7e7e35230",
+      "bytes": 2267
+    },
+    "scripts/natural-language/mobile_instruct/device_compare.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/device_compare.py",
+      "sha256": "e4c68e1d2785d85841e2f4b1e6e1d45007d84ea680ed9365838117ffe4cbe172",
+      "bytes": 4262
+    },
+    "scripts/natural-language/mobile_instruct/device_probes.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/device_probes.py",
+      "sha256": "030910dd475bd6dd8bb7ffd4da3220db4ba26277cc83e65d76aef13fc67a363e",
+      "bytes": 2703
+    },
+    "scripts/natural-language/mobile_instruct/device_runtime.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/device_runtime.py",
+      "sha256": "d23d71bdfb8c8677048537849a3c738804936c711701f65e1cfdb6650c1f11bc",
+      "bytes": 3695
+    },
+    "scripts/natural-language/mobile_instruct/diagnostic_probes.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/diagnostic_probes.py",
+      "sha256": "f8b8909ddfc30dacce2b58d20fe7147505153fcac46e98382baa7b15055f0800",
+      "bytes": 2718
+    },
+    "scripts/natural-language/mobile_instruct/evaluate.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/evaluate.py",
+      "sha256": "2cb0a7548c07b0d5b65eefc09006b96d5fb3ba823376fa635be7cc7cc075522c",
+      "bytes": 3864
+    },
+    "scripts/natural-language/mobile_instruct/fetch_model.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/fetch_model.py",
+      "sha256": "25044973a3e9049e42b54590337dc8e8c6417aec11e0d47639e0a5f02580d745",
+      "bytes": 2998
+    },
+    "scripts/natural-language/mobile_instruct/probes.json": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/probes.json",
+      "sha256": "13b17594d839a9b24702842ad03798d2bbd21b363a17ac845bd6f218cf787b2a",
+      "bytes": 840
+    },
+    "scripts/natural-language/mobile_instruct/prompt.txt": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/prompt.txt",
+      "sha256": "e97b500490aa2fd9b5b377decf1308eb809a7a0847032a8b324974324d72dffd",
+      "bytes": 2069
+    },
+    "scripts/natural-language/mobile_instruct/README.md": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/README.md",
+      "sha256": "cbf537857d416b9859ffb923569976d4522c192f377e670c7f86be8af6e00d9e",
+      "bytes": 4885
+    },
+    "scripts/natural-language/mobile_instruct/report_metrics.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/report_metrics.py",
+      "sha256": "1a005b2f51b43bf02878a74606008f483cfd42e8dd444a11136b6ac717506db1",
+      "bytes": 3781
+    },
+    "scripts/natural-language/mobile_instruct/run_device.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/run_device.py",
+      "sha256": "93539b5f906bc99196b16cd127a9a4c538a08e1fc0befa12583e2224cf3d6aa1",
+      "bytes": 2337
+    },
+    "scripts/natural-language/mobile_instruct/run_frozen.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/run_frozen.py",
+      "sha256": "095742357d0f386e248c1eebc572d6eb91b4f8d4fab3d2c8714a6f362ff3fa80",
+      "bytes": 2051
+    },
+    "scripts/natural-language/mobile_instruct/runtime.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/runtime.py",
+      "sha256": "d921fecef83d1092b426765eb2c07523d396eace2aa7a354bb8be67ec2518ce1",
+      "bytes": 6000
+    },
+    "scripts/natural-language/mobile_instruct/safe_constraints.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/safe_constraints.py",
+      "sha256": "0d0ea61008e6811e0bf13556987fa4efabc630e2a35002cb40997bcf771ed187",
+      "bytes": 828
+    },
+    "scripts/natural-language/mobile_instruct/safe_evaluate.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/safe_evaluate.py",
+      "sha256": "9ae0b1d2040df1f84747fc875e5ee667fb5269ad4f15ffd0a6edc33413e048ce",
+      "bytes": 3132
+    },
+    "scripts/natural-language/mobile_instruct/test_contract.py": {
+      "archive": "evidence/scripts/natural-language/mobile_instruct/test_contract.py",
+      "sha256": "300dd365d6a1632933f06430564331e127a35f4a4eb62f7b134b8d845e6d7438",
+      "bytes": 3400
+    }
+  },
+  "excluded": "GGUF weights, runtime binaries, raw Perfetto traces",
+  "external_traces": {
+    "artifacts/natural-language-mobile-instruct/tablet-jev-performance/warm-trace.pb": {
+      "sha256": "31f389a7d31af39551f9190f4b6a484a5ca9cbf4b14daeaa7d8fd555226d4c06",
+      "bytes": 2704197
+    },
+    "artifacts/natural-language-mobile-instruct/tablet-qwen-performance/warm-trace.pb": {
+      "sha256": "6d487852934fbcd5b5553d06d2365bdd10b552583d7af988fa00f08a87cc34ab",
+      "bytes": 3516233
+    }
+  }
+}

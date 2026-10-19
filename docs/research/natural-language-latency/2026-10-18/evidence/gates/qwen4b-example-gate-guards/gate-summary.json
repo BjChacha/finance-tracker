@@ -1,0 +1,20 @@
+{
+  "total": 20,
+  "schema_valid": 20,
+  "status_correct": 13,
+  "false_single": [
+    "dev-083",
+    "dev-084",
+    "dev-085",
+    "dev-097",
+    "dev-098",
+    "dev-099",
+    "dev-100"
+  ],
+  "false_clarify": [],
+  "native_gate_latency_ms": {
+    "p50": 521.5554000023985,
+    "p95": 600.0677150033885,
+    "max": 1236.5775000071153
+  }
+}

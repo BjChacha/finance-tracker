@@ -1,0 +1,6 @@
+{
+  "freeze_sha256": "aac920e5fa079c4886f94dfa8eb51482220a8523728931a325d505c934e7e133",
+  "source_entries": 65,
+  "source_hashes_match": true,
+  "scope": "Semantic configuration remains frozen; results are an observed regression"
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "Same custom build, alternating process-cold runs, file caches retained; no application UI",
+  "results": [
+    {
+      "threads": 1,
+      "cold_count": 5,
+      "warm_count": 10,
+      "load_p50_ms": 4792.510800005402,
+      "load_p95_ms": 5173.817580001196,
+      "first_result_p50_ms": 8792.794199995114,
+      "first_result_p95_ms": 9212.729100009892,
+      "warm_p95_ms": 2550.9094350047235,
+      "cold_over_3s": 5,
+      "warm_over_3s": 0
+    },
+    {
+      "threads": 8,
+      "cold_count": 5,
+      "warm_count": 10,
+      "load_p50_ms": 5359.313900000416,
+      "load_p95_ms": 5368.297660007374,
+      "first_result_p50_ms": 9229.517600004328,
+      "first_result_p95_ms": 9322.551580003346,
+      "warm_p95_ms": 2562.342545003048,
+      "cold_over_3s": 5,
+      "warm_over_3s": 0
+    }
+  ],
+  "decision": "Do not adopt: eight-worker loading did not improve end-to-end cold latency"
+}

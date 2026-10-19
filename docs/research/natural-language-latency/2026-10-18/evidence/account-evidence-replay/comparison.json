@@ -1,0 +1,54 @@
+[
+  {
+    "run": "qwen4b-lean-dev",
+    "total": 100,
+    "complete_before": 38,
+    "complete_after": 38,
+    "new_confirmation": 0,
+    "flagged_records": 0,
+    "guard_complete_before": 0,
+    "guard_complete_after": 0,
+    "correct_accounts_flagged": 0
+  },
+  {
+    "run": "qwen4b-example-dev",
+    "total": 100,
+    "complete_before": 38,
+    "complete_after": 36,
+    "new_confirmation": 2,
+    "flagged_records": 2,
+    "guard_complete_before": 0,
+    "guard_complete_after": 0,
+    "correct_accounts_flagged": 0
+  },
+  {
+    "run": "qwen4b-lean-dev-guards",
+    "total": 20,
+    "complete_before": 2,
+    "complete_after": 1,
+    "new_confirmation": 1,
+    "flagged_records": 2,
+    "guard_complete_before": 2,
+    "guard_complete_after": 1
+  },
+  {
+    "run": "qwen4b-example-guards",
+    "total": 20,
+    "complete_before": 1,
+    "complete_after": 0,
+    "new_confirmation": 1,
+    "flagged_records": 2,
+    "guard_complete_before": 1,
+    "guard_complete_after": 0
+  },
+  {
+    "run": "qwen4b-example-named-probes",
+    "total": 6,
+    "complete_before": 4,
+    "complete_after": 4,
+    "new_confirmation": 0,
+    "flagged_records": 0,
+    "guard_complete_before": 3,
+    "guard_complete_after": 3
+  }
+]

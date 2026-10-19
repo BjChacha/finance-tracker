@@ -1,0 +1,1 @@
+输出时省略没有任何非null候选的account字段；to_account只在type为transfer且存在非null账户候选时输出。被省略的字段由代码补null，不代表已经识别账户。其他字段不能省略。

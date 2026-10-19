@@ -1,0 +1,93 @@
+{
+  "scope": "Four observed cases per configuration; separate readiness waits; not UI timing",
+  "runs": [
+    {
+      "run": "qwen4b-context-cache768",
+      "load_ms": 7754.928100010147,
+      "peak_pss_bytes": 1300555776,
+      "field_requests_equal": 4,
+      "gate_requests_equal": 4,
+      "decisions_equal": 4,
+      "requests": [
+        {
+          "id": "alipay_to_bank-2",
+          "elapsed_ms": 2734.8755999992136,
+          "gate_cache": 550,
+          "field_cache": 1673
+        },
+        {
+          "id": "custom_craft-1",
+          "elapsed_ms": 3214.3378000037046,
+          "gate_cache": 550,
+          "field_cache": 1180
+        },
+        {
+          "id": "custom_craft-2",
+          "elapsed_ms": 2529.789399995934,
+          "gate_cache": 550,
+          "field_cache": 1688
+        },
+        {
+          "id": "deposit_interest-3",
+          "elapsed_ms": 3189.821200008737,
+          "gate_cache": 550,
+          "field_cache": 1180
+        }
+      ],
+      "context_waits": [
+        {
+          "before_id": "alipay_to_bank-2",
+          "ms": 3512.0605999982217
+        }
+      ]
+    },
+    {
+      "run": "qwen4b-context-cache768-prewarm",
+      "load_ms": 7416.204299996025,
+      "peak_pss_bytes": 1330353152,
+      "field_requests_equal": 4,
+      "gate_requests_equal": 4,
+      "decisions_equal": 4,
+      "requests": [
+        {
+          "id": "alipay_to_bank-2",
+          "elapsed_ms": 2794.754799993825,
+          "gate_cache": 550,
+          "field_cache": 1673
+        },
+        {
+          "id": "custom_craft-1",
+          "elapsed_ms": 2645.4892000037944,
+          "gate_cache": 550,
+          "field_cache": 1688
+        },
+        {
+          "id": "custom_craft-2",
+          "elapsed_ms": 2537.8861999924993,
+          "gate_cache": 550,
+          "field_cache": 1688
+        },
+        {
+          "id": "deposit_interest-3",
+          "elapsed_ms": 2539.269400003832,
+          "gate_cache": 550,
+          "field_cache": 1673
+        }
+      ],
+      "context_waits": [
+        {
+          "before_id": "alipay_to_bank-2",
+          "ms": 3553.3768000022974
+        },
+        {
+          "before_id": "custom_craft-1",
+          "ms": 1902.304399991408
+        },
+        {
+          "before_id": "deposit_interest-3",
+          "ms": 1877.548000004026
+        }
+      ]
+    }
+  ]
+}

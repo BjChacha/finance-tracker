@@ -1,0 +1,181 @@
+{
+  "scope": "Observed development failures; no independently annotated child labels",
+  "failures": [
+    {
+      "id": "dev-009",
+      "text": "巧克力第二件半价，合计24元",
+      "expected_level1": "food",
+      "actual_level1": "shopping",
+      "actual_path": "购物",
+      "status": "single"
+    },
+    {
+      "id": "dev-034",
+      "text": "维生素两瓶合计89元",
+      "expected_level1": "health",
+      "actual_level1": "other_expense",
+      "actual_path": "其他支出",
+      "status": "single"
+    },
+    {
+      "id": "dev-038",
+      "text": "昨天购入英语词典，实付45.50元",
+      "expected_level1": "education",
+      "actual_level1": "shopping",
+      "actual_path": "购物/服饰",
+      "status": "single"
+    },
+    {
+      "id": "dev-050",
+      "text": "给朋友转账66元当生日礼金",
+      "expected_level1": "social",
+      "actual_level1": "social",
+      "actual_path": "人情/红包",
+      "status": "clarify"
+    },
+    {
+      "id": "dev-070",
+      "text": "周末摆摊赚了150元收入已到账",
+      "expected_level1": "parttime",
+      "actual_level1": "other_income",
+      "actual_path": "其他收入",
+      "status": "single"
+    },
+    {
+      "id": "dev-073",
+      "text": "昨天微信余额提现到银行卡1000块",
+      "expected_level1": "transfer_account",
+      "actual_level1": "deposit",
+      "actual_path": "存钱",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-003",
+      "text": "买了一袋大米，现金付68元",
+      "expected_level1": "food",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-004",
+      "text": "前天买做饭的蔬菜，支付宝结账12.90元",
+      "expected_level1": "food",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-005",
+      "text": "买五斤土豆花了九块六",
+      "expected_level1": "food",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-011",
+      "text": "骑共享单车花了1块5",
+      "expected_level1": "transport",
+      "actual_level1": "food",
+      "actual_path": "餐饮/零食饮料",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-016",
+      "text": "英语考试报名费交了450元",
+      "expected_level1": "education",
+      "actual_level1": "other_expense",
+      "actual_path": "其他支出",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-019",
+      "text": "前天交了普通话测试报名费五十块",
+      "expected_level1": "education",
+      "actual_level1": "food",
+      "actual_path": "餐饮",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-021",
+      "text": "家里门锁坏了，请师傅修锁付了120元现金",
+      "expected_level1": "housing",
+      "actual_level1": "health",
+      "actual_path": "医疗",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-022",
+      "text": "昨天换家里的锁芯，微信付一百八十元",
+      "expected_level1": "housing",
+      "actual_level1": "health",
+      "actual_path": "医疗",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-024",
+      "text": "前天请人来修卧室的门锁花六十块",
+      "expected_level1": "housing",
+      "actual_level1": "health",
+      "actual_path": "医疗",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-025",
+      "text": "家里防盗门换锁，工料合计260元已经付给师傅",
+      "expected_level1": "housing",
+      "actual_level1": "health",
+      "actual_path": "医疗",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-030",
+      "text": "话剧两张票打折后总共付了320元",
+      "expected_level1": "entertainment",
+      "actual_level1": "shopping",
+      "actual_path": "购物",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-031",
+      "text": "洗衣店干洗外套付了35元",
+      "expected_level1": "other_expense",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-032",
+      "text": "昨天洗衣店清洗羽绒服，微信付六十块",
+      "expected_level1": "other_expense",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-033",
+      "text": "干洗西装一套，现金支付80元",
+      "expected_level1": "other_expense",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-034",
+      "text": "前天付洗衣店床单清洗费28.50元，支付宝出的",
+      "expected_level1": "other_expense",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    },
+    {
+      "id": "mix-dev-035",
+      "text": "今天自助洗衣机扫码洗一次衣服花了八元",
+      "expected_level1": "other_expense",
+      "actual_level1": "shopping",
+      "actual_path": "购物/日用品",
+      "status": "single"
+    }
+  ]
+}
