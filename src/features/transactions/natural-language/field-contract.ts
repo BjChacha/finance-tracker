@@ -49,6 +49,18 @@ export function createFieldContract(
   );
   const categoryIds = mapping.context.categories.map((row) => row.id);
 
+  /**
+   * 模型直出的金额（分）。wire 契约只允许字符串，所以这里是形如 "1437" 的整数字符串。
+   * 超出 9 位或 ≤ 0 一律视为没给：这些形状不可能是诚实的金额，留着只会污染账本。
+   */
+  function modelCents(raw: string | null | undefined): number | null {
+    if (raw == null) return null;
+    const trimmed = raw.trim();
+    if (!/^[0-9]{1,9}$/.test(trimmed)) return null;
+    const cents = Number(trimmed);
+    return cents > 0 ? cents : null;
+  }
+
   function oneOf(value: string | null, allowed: readonly string[]) {
     if (value === null) return null;
     return allowed.includes(value) ? value : null;
@@ -83,6 +95,8 @@ export function createFieldContract(
     return {
       type: (value.type as NaturalLanguageTransactionType | null) ?? null,
       amount: value.amount,
+      /** 金额以模型读到的数值为准；候选 ID 只做交叉核对与证据。 */
+      amountCents: modelCents(raw.amountCents),
       category:
         value.category === null
           ? null

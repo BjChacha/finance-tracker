@@ -95,6 +95,7 @@ function preview() {
     status: "single",
     type: "expense",
     amount: null,
+    amountCents: null,
     category: "lunch",
     account: "cash",
     to_account: null,

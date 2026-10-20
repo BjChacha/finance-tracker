@@ -115,6 +115,7 @@ describe("Natural language business review", () => {
     const decision = {
       type: "expense" as const,
       amount: "m0",
+      amountCents: null,
       category: null,
       account: null,
       to_account: null,
@@ -146,6 +147,7 @@ describe("Natural language business review", () => {
     const decision = {
       type: "expense" as const,
       amount: "m0",
+      amountCents: null,
       category: null,
       account: null,
       to_account: null,
@@ -159,5 +161,60 @@ describe("Natural language business review", () => {
         decision,
       ).note,
     ).toBe("\u5bff\u53f8\u90ce");
+  });
+});
+
+describe("Model-authored amount precedence", () => {
+  const base = {
+    type: "expense" as const,
+    category: null,
+    account: null,
+    to_account: null,
+    status: "single" as const,
+    note: null,
+  };
+  const context: NaturalLanguageContext = {
+    now: "2026-10-18T12:00:00+08:00",
+    accounts: [],
+    categories: [],
+  };
+
+  // 模型按语义算出句子里不存在的新金额（AA/分摊/优惠），不能被本地候选覆盖
+  it("keeps a derived amount that matches no parsed candidate", () => {
+    const result = validateNaturalLanguageDecision(
+      "午餐一共吃了300，最后A了270",
+      context,
+      { ...base, amount: null, amountCents: 3000 },
+    );
+    expect(result.amountCents).toBe(3000);
+    expect(result.issues).not.toContain("amount_required");
+  });
+
+  it("prefers the model amount over the candidate it pointed at", () => {
+    const result = validateNaturalLanguageDecision("午饭吃了14块3", context, {
+      ...base,
+      amount: "m0",
+      amountCents: 1437,
+    });
+    expect(result.amountCents).toBe(1437);
+  });
+
+  it("falls back to the parsed candidate when the model gives no amount", () => {
+    const result = validateNaturalLanguageDecision("午饭吃了14块3毛7", context, {
+      ...base,
+      amount: "m0",
+      amountCents: null,
+    });
+    expect(result.amountCents).toBe(1437);
+  });
+
+  it("still reports a missing amount when neither side has one", () => {
+    const result = validateNaturalLanguageDecision("午饭吃了一顿", context, {
+      ...base,
+      amount: null,
+      amountCents: null,
+    });
+    expect(result.amountCents).toBeNull();
+    expect(result.issues).toContain("amount_required");
   });
 });

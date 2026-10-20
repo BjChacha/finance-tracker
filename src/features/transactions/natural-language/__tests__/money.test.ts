@@ -41,6 +41,11 @@ describe("Colloquial spans with inner spaces and bare jiao/fen digits", () => {
     ["买包纸巾花了 6 角 7", "6 角 7", 67],
     [" 十五块 7", "十五块 7", 1570],
     ["打車 ２３ 块 ４", "２３ 块 ４", 2340],
+    // 块/元 后面的「角 + 裸数字」也必须整体吃掉，否则会被切成 14.30 + 7
+    ["午饭吃了14块3毛7", "14块3毛7", 1437],
+    ["午饭吃了14块3角7", "14块3角7", 1437],
+    ["烟钱14块3毛七分", "14块3毛七分", 1437],
+    ["午饭 14 块 3 毛 7", "14 块 3 毛 7", 1437],
   ])("keeps %j as one candidate", (text, span, cents) => {
     const candidates = naturalLanguageAmountCandidates(text);
     const hit = candidates.find((candidate) => candidate.text === span);

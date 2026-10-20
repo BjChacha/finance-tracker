@@ -5,10 +5,10 @@
     "scripts\\natural-language\\distribution_v1\\data\\dev.tsv": "876bd6503e362367ffd41ff36567d007074b80906062126544751374d8d0a96b",
     "scripts\\natural-language\\distribution_v1\\data\\regression-guards.tsv": "9e0a9870a6985e186e65509c6fd4f329edfaee47b5a2eec19690d805b031b552",
     "scripts\\natural-language\\distribution_v1\\data\\regression.tsv": "cdbe748778aa100f5eba47ab153ed87495300228c8fa272249447d39dd783e1e",
-    "scripts\\natural-language\\money.py": "655c215d652be2a0627baaa9d73c723fa835d0259293c9befe4cde8d77f39c9c",
-    "scripts\\natural-language\\instruct\\harness.py": "3905ad160affa0fa3f5fa6a0a5f3eeb58be4d5949a11f8980c3c12095da93308",
+    "scripts\\natural-language\\money.py": "69477069fbd8b99ba520bff6b813bcc50871e2fee3bb46b082b547b4550b7756",
+    "scripts\\natural-language\\instruct\\harness.py": "84b8f0abfab70c5c2bf03afee0bb00a9403a15fc0cbf4f0d625430f713c5f4ee",
     "scripts\\natural-language\\mobile_latency\\unique_amount.py": "79799bafd21ca854a69e72fd8b2b5bab656e1e1f1685b9a12470136caff47b63",
-    "scripts\\natural-language\\data\\money-tests.json": "9751a2e64699705ddc3503b3b8f4abe139f33933f07f9a740118fc7dc9b65837"
+    "scripts\\natural-language\\data\\money-tests.json": "8fea34abf42723742bd9ac26588092d5b75349f2938499aeb4d8a075a5020040"
   },
   "spans": [
     {
@@ -218,6 +218,26 @@
     {
       "text": "5 块 钱",
       "cents": 500
+    },
+    {
+      "text": "14块3毛7",
+      "cents": 1437
+    },
+    {
+      "text": "14块3角7",
+      "cents": 1437
+    },
+    {
+      "text": "14块3毛七分",
+      "cents": 1437
+    },
+    {
+      "text": "14 块 3 毛 7",
+      "cents": 1437
+    },
+    {
+      "text": "14块3毛",
+      "cents": 1430
     },
     {
       "text": "90071992547409.91",

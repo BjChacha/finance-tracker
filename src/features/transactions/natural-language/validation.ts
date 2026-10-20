@@ -17,13 +17,30 @@ export function validateNaturalLanguageDecision(
   const issues: string[] = [];
   const violations: string[] = [];
   const amounts = naturalLanguageAmountCandidates(text);
-  const amount =
+  const amountEvidence =
     amounts.find((candidate) => candidate.id === decision.amount) ?? null;
+  // 金额以模型读到的数值为准（产品决策）；本地解析只作为证据与对账观测，不覆盖它。
+  const modelCents = decision.amountCents ?? null;
+  const amountCents = modelCents ?? amountEvidence?.cents ?? null;
+  if (
+    modelCents !== null &&
+    // 只有「模型自己指了候选、却和自己的数值矛盾」才是真矛盾；
+    // 它按语义算出新金额（AA、优惠、平摊）时对不上候选是预期行为。
+    decision.amount !== null &&
+    amountEvidence !== null &&
+    amountEvidence.cents !== modelCents
+  ) {
+    console.warn("[natural-language] Model picked a candidate that contradicts its own amount", {
+      model: modelCents,
+      candidate: amountEvidence.cents,
+      span: amountEvidence.text,
+    });
+  }
   const accounts = context.accounts.filter((row) => row.active !== false);
   const category = context.categories.find(
     (row) => !row.archived && row.id === decision.category,
   );
-  if (!amount) issues.push("amount_required");
+  if (amountCents === null) issues.push("amount_required");
   if (decision.type === null) issues.push("type_required");
   if (!category) issues.push("category_required");
   else if (category.type !== decision.type)
@@ -91,8 +108,8 @@ export function validateNaturalLanguageDecision(
       : issues.length
         ? "needs_input"
         : "preview") as "invalid" | "needs_input" | "preview",
-    amountCents: amount?.cents ?? null,
-    amountEvidence: amount,
+    amountCents,
+    amountEvidence,
     type: decision.type,
     categoryId:
       category && category.type === decision.type ? category.id : null,

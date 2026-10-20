@@ -19,12 +19,41 @@ describe("Field contract decoder", () => {
     ).toEqual({
       type: "expense",
       amount: "m0",
+      amountCents: null,
       category: null,
       account: null,
       to_account: null,
       status: "single",
       note: null,
     });
+  });
+
+  // 模型直接读出的金额（分）优先于候选 ID：候选切漏时也不能卡死识别
+  it("takes the model-authored cents as the amount", () => {
+    const contract = createFieldContract(
+      "\u5348\u996d\u5403\u4e8614\u57573\u6bdb7",
+      context,
+    );
+    const decision = contract.decode(
+      '{"type":"expense","amount":"m0","amountCents":"1437","category":null,"account":null,"to_account":null,"status":"single"}',
+    );
+    expect(decision.amountCents).toBe(1437);
+  });
+
+  it.each([
+    ["null", null],
+    ["\"0\"", null],
+    ["\"14.37\"", null],
+    ["\"-1437\"", null],
+    ["\"abc\"", null],
+    ["\"1234567890\"", null],
+    ["\"1437\"", 1437],
+  ])("accepts only whole cent strings: %s", (wireValue, expected) => {
+    const contract = createFieldContract("30", context);
+    const decision = contract.decode(
+      `{"type":"expense","amountCents":${wireValue},"status":"single"}`,
+    );
+    expect(decision.amountCents).toBe(expected);
   });
 
   it("derives the unique amount only after semantic single confirmation", () => {
@@ -48,6 +77,7 @@ describe("Field contract decoder", () => {
     ).toEqual({
       type: null,
       amount: null,
+      amountCents: null,
       category: null,
       account: null,
       to_account: null,
@@ -106,6 +136,14 @@ describe("Field contract decoder", () => {
     expect(parseModelFields('{"value":"a,b:c\\\"d","__proto__":null}')).toEqual(
       { value: 'a,b:c"d', ["__proto__"]: null },
     );
+  });
+  // 模型经常把数值字段写成未加引号的数字；整条响应不应因此判为无法解析
+  it("normalises bare numbers to their literal text", () => {
+    expect(
+      parseModelFields('{"amountCents":1437,"note":null}'),
+    ).toEqual({ amountCents: "1437", note: null });
+    // 只有金额字段放宽；其他字段写成数字仍属畸形响应
+    expect(() => parseModelFields('{"ratio":14.37}')).toThrow();
   });
 });
 

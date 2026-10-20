@@ -17,7 +17,7 @@ NUM = r"[0-9\uff10-\uff19\u96f6\u3007\u4e00\u4e8c\u4e24\u4e09\u56db\u4e94\u516d\
 DECIMAL = rf"{NUM}(?:[.\uff0e\u70b9]{NUM})?"
 NUMBER = rf"(?:[0-9]{{1,3}}(?:,[0-9]{{3}})+(?:\.[0-9]+)?|{DECIMAL})"
 AMOUNT_PATTERN = re.compile(
-    rf"[-\u8d1f]?{NUMBER}(?:\s*[\u5143\u5757](?:\s*{NUMBER}\s*[\u89d2\u6bdb](?:\s*{NUMBER}\s*\u5206)?|\s*{NUMBER}\s*\u5206|\s*{NUMBER})?|\s*[\u89d2\u6bdb](?:\s*{NUMBER}\s*\u5206|\s*{NUMBER})?|\s*\u5206)?(?:\s*[\u94b1\u6574])?"
+    rf"[-\u8d1f]?{NUMBER}(?:\s*[\u5143\u5757](?:\s*{NUMBER}\s*[\u89d2\u6bdb](?:\s*{NUMBER}(?:\s*\u5206)?)?|\s*{NUMBER}\s*\u5206|\s*{NUMBER})?|\s*[\u89d2\u6bdb](?:\s*{NUMBER}\s*\u5206|\s*{NUMBER})?|\s*\u5206)?(?:\s*[\u94b1\u6574])?"
 )
 
 
@@ -216,7 +216,12 @@ def no_duplicates(pairs):
 
 
 def parse_structure(content, schema):
-    value = json.loads(content, object_pairs_hook=no_duplicates)
+    try:
+        value = json.loads(content, object_pairs_hook=no_duplicates)
+    except ValueError as error:
+        # Malformed JSON and duplicate keys are invalid predictions, not crashes: raise the
+        # ValueError the runner already classifies (JSONDecodeError is a ValueError too).
+        raise ValueError(f"Response is not valid JSON: {error}") from error
     if not isinstance(value, dict) or set(value) != set(FIELDS):
         raise ValueError("Unexpected JSON structure")
     for key in FIELDS:

@@ -134,8 +134,10 @@ const NUM =
 const DECIMAL = `${NUM}(?:[.\uff0e\u70b9]${NUM})?`;
 const NUMBER = `(?:[0-9]{1,3}(?:,[0-9]{3})+(?:\\.[0-9]+)?|${DECIMAL})`;
 // Amounts tolerate inner whitespace (colloquial "17 块 5"); the span keeps the
-// original spacing so it still matches the user's sentence verbatim.
-const PATTERN = `[-\u8d1f]?${NUMBER}(?:\\s*[\u5143\u5757](?:\\s*${NUMBER}\\s*[\u89d2\u6bdb](?:\\s*${NUMBER}\\s*\u5206)?|\\s*${NUMBER}\\s*\u5206|\\s*${NUMBER})?|\\s*[\u89d2\u6bdb](?:\\s*${NUMBER}\\s*\u5206|\\s*${NUMBER})?|\\s*\u5206)?(?:\\s*[\u94b1\u6574])?`;
+// original spacing so it still matches the user's sentence verbatim. The jiao/mao group
+// also accepts a bare trailing digit as fen ("14块3毛7" = 14.37): without it the span stops
+// at "14块3毛" and the model can only ever pick 14.30.
+const PATTERN = `[-\u8d1f]?${NUMBER}(?:\\s*[\u5143\u5757](?:\\s*${NUMBER}\\s*[\u89d2\u6bdb](?:\\s*${NUMBER}(?:\\s*\u5206)?)?|\\s*${NUMBER}\\s*\u5206|\\s*${NUMBER})?|\\s*[\u89d2\u6bdb](?:\\s*${NUMBER}\\s*\u5206|\\s*${NUMBER})?|\\s*\u5206)?(?:\\s*[\u94b1\u6574])?`;
 
 /** Candidates are evidence, never an authorization to create a transaction. */
 export function naturalLanguageAmountCandidates(

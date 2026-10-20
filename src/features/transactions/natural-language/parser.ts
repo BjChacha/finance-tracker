@@ -36,6 +36,7 @@ export function snapshotNaturalLanguageContext(
 const EMPTY_DECISION: FieldDecision = {
   type: null,
   amount: null,
+  amountCents: null,
   category: null,
   account: null,
   to_account: null,

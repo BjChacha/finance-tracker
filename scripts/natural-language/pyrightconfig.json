@@ -1,0 +1,6 @@
+{
+  "//": "Reference/experiment harness for the natural-language work. Modules are imported with a sys.path.insert on the package root (scripts/natural-language), so extraPaths must include it or every import reads as unresolved.",
+  "extraPaths": ["."],
+  "include": ["**/*.py"],
+  "exclude": ["**/distribution_v1/**", "**/geniex/**"]
+}
