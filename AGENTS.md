@@ -4,6 +4,8 @@ Read the exact versioned docs at <https://docs.expo.dev/versions/v57.0.0/> befor
 
 # 构建 (release)
 
+本地构建是日常改动的默认验证通道,不 bump 版本、不碰 git/GitHub。改动后的默认验证为 `npm run typecheck` + `npm test`;需要真机验证时构建 APK 并 `adb install -r -d` 覆盖安装(versionCode 不变,`-d` 允许;同一 debug keystore 签名即可覆盖)。
+
 一句话记账走线上 DeepSeek API,key 通过构建时环境变量内联进 JS bundle(`EXPO_PUBLIC_DEEPSEEK_API_KEY`,读取点在 `src/features/transactions/natural-language/deepseek.ts`)。`.env*` 不入库,构建前必须显式导出:
 
 ```bash
@@ -16,6 +18,8 @@ adb install -r -d build/release/finance-tracker-0.0.1.apk
 缺 key 不会崩溃:识别会提示"识别服务未配置",仍可手动记账;若只需验证其他功能,可用 `ALLOW_MISSING_DEEPSEEK_KEY=1` 跳过。key 内联在 bundle 中可被反编译提取,分发前应改为服务端代理。
 
 # 发布 (GitHub Release + 应用内自更新)
+
+**发版是用户手动触发的显式动作**:AI 改动完成后不得自动执行 `npm run release`,也不要主动改 app.json/package.json 的版本号——版本与 versionCode 只随发布变更。仅当用户明确说"发版/release/发布新版本"时才走本流程。
 
 发布一条命令完成版本 bump → 构建 → git commit/tag/push → 建 GitHub Release → 上传 APK:
 
