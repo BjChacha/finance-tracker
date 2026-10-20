@@ -24,6 +24,25 @@ function assertAndroid(): void {
 }
 
 /**
+ * 已下载到缓存的安装包 URI（file://），没有可用安装包时返回 null。
+ *
+ * 用途：安装被系统拦下后返回应用不必重新下载几十 MB——缓存命中就直接进「安装更新」。
+ * 必须校验字节数与 release 声明一致：下载中断会留下半截文件，拿它去装只会得到
+ * 「解析包时出现问题」，比重新下载更浪费用户时间。
+ */
+export function findCachedApk(release: {
+	version: string;
+	apkSize: number;
+}): string | null {
+	assertAndroid();
+	const file = new File(Paths.cache, `finance-tracker-${release.version}.apk`);
+	if (!file.exists) return null;
+	// apkSize 为 0 说明 GitHub 响应没给 size，此时只要求非空
+	const usable = release.apkSize > 0 ? file.size === release.apkSize : file.size > 0;
+	return usable ? file.uri : null;
+}
+
+/**
  * 下载新版本 APK 到缓存目录。
  *
  * @param release 目标 release（提供下载地址与版本号，版本号用于命名缓存文件）

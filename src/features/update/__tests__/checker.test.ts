@@ -104,6 +104,49 @@ describe('fetchLatestRelease', () => {
 		});
 		await expect(fetchLatestRelease()).resolves.toMatchObject({ version: '0.0.2' });
 	});
+
+	// GitHub 把无 UA 请求当行政规则拦截（403），真机因此检查更新失败过
+	it('sends a User-Agent so GitHub does not reject the request', async () => {
+		const fetchMock = jest.fn().mockResolvedValue({
+			ok: true,
+			json: async () => releasePayload(),
+		});
+		(globalThis as { fetch?: unknown }).fetch = fetchMock;
+		await fetchLatestRelease();
+		const init = fetchMock.mock.calls[0][1] as { headers: Record<string, string> };
+		expect(init.headers['User-Agent']).toBeTruthy();
+	});
+
+	// 代理环境里 api.github.com 回 403（数据中心出口被拦），发布页仍然可用
+	it('falls back to the release page when the API is blocked', async () => {
+		const fetchMock = jest
+			.fn()
+			.mockResolvedValueOnce({ ok: false, status: 403 })
+			.mockResolvedValueOnce({
+				ok: true,
+				url: 'https://github.com/BjChacha/finance-tracker/releases/tag/v0.0.5',
+			});
+		(globalThis as { fetch?: unknown }).fetch = fetchMock;
+		const release = await fetchLatestRelease();
+		expect(release).toMatchObject({
+			tag: 'v0.0.5',
+			version: '0.0.5',
+			notes: '',
+			apkSize: 0,
+		});
+		expect(release.apkUrl).toBe(
+			'https://github.com/BjChacha/finance-tracker/releases/download/v0.0.5/finance-tracker-0.0.5.apk',
+		);
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+	});
+
+	it('reports the fallback failure when neither path works', async () => {
+		(globalThis as { fetch?: unknown }).fetch = jest
+			.fn()
+			.mockResolvedValueOnce({ ok: false, status: 403 })
+			.mockResolvedValueOnce({ ok: false, status: 500 });
+		await expect(fetchLatestRelease()).rejects.toThrow('release page responded 500');
+	});
 });
 
 describe('deriveUpdateStatus', () => {

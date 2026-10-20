@@ -11,6 +11,10 @@ import { z } from "zod";
 export const GITHUB_REPO = "BjChacha/finance-tracker";
 
 const LATEST_RELEASE_API = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+/** 兜底探测入口：直连 github.com 的发布页，不带 API 的滥用限制 */
+const LATEST_RELEASE_PAGE = `https://github.com/${GITHUB_REPO}/releases/latest`;
+/** GitHub 对缺 UA 的请求回 403（Request forbidden by administrative rules） */
+const REQUEST_UA = "finance-tracker";
 
 /** 最新 Release 的关键信息（从 GitHub API 响应中挑出更新所需的字段） */
 export type ReleaseInfo = {
@@ -91,13 +95,62 @@ export function parseLatestRelease(json: unknown): ReleaseInfo {
 	};
 }
 
-/** 拉取最新 release；网络错误/HTTP 非 2xx/解析失败均抛错，由调用方决定静默或提示 */
-export async function fetchLatestRelease(): Promise<ReleaseInfo> {
+/** 资产名与 scripts/release-lib.mjs 的 apkAssetName 一致，兜底路径靠这个拼下载地址 */
+function apkDownloadUrl(version: string): string {
+	const slug = Constants.expoConfig?.slug ?? "finance-tracker";
+	return `https://github.com/${GITHUB_REPO}/releases/download/v${version}/${slug}-${version}.apk`;
+}
+
+/** 走 REST API：有 changelog 与体积，是首选路径 */
+async function fetchLatestReleaseFromApi(): Promise<ReleaseInfo> {
 	const res = await fetch(LATEST_RELEASE_API, {
-		headers: { Accept: "application/vnd.github+json" },
+		headers: {
+			Accept: "application/vnd.github+json",
+			// GitHub REST 对缺少 User-Agent 的请求直接回 403，RN 的 fetch 不保证带 UA
+			"User-Agent": REQUEST_UA,
+		},
 	});
 	if (!res.ok) throw new Error(`GitHub API responded ${res.status}`);
 	return parseLatestRelease(await res.json());
+}
+
+/**
+ * 兜底：读发布页的最终地址（/releases/latest 会 302 到 /releases/tag/vX.Y.Z）。
+ *
+ * 为什么需要：api.github.com 会用 403 拦数据中心出口 IP。手机开着「按应用分流」
+ * 的代理时，本应用全部请求从代理节点出去，API 稳定被拦；而 github.com 发布页与
+ * 资源 CDN 在同一出口是通的（APK 本就走它下载）。拿不到 changelog 与体积：
+ * notes 留空、apkSize 0（进度退化为不确定态，缓存校验退为仅要求非空）。
+ */
+async function fetchLatestReleaseFromPage(): Promise<ReleaseInfo> {
+	const res = await fetch(LATEST_RELEASE_PAGE, {
+		headers: { "User-Agent": REQUEST_UA },
+	});
+	if (!res.ok) throw new Error(`GitHub release page responded ${res.status}`);
+	const tag = (/\/releases\/tag\/([^/?#]+)/.exec(res.url)?.[1] ?? "");
+	if (!parseVersion(tag)) {
+		throw new Error("Could not resolve the latest release version");
+	}
+	return {
+		tag,
+		version: tag.replace(/^v/, ""),
+		name: null,
+		notes: "",
+		apkUrl: apkDownloadUrl(tag.replace(/^v/, "")),
+		apkSize: 0,
+		publishedAt: "",
+	};
+}
+
+/** 拉取最新 release；先 API，被拦时回退到发布页，两条都失败才报错 */
+export async function fetchLatestRelease(): Promise<ReleaseInfo> {
+	try {
+		return await fetchLatestReleaseFromApi();
+	} catch (error) {
+		// 不是静默：回退本身有声，且回退失败的话错误会继续往上抛
+		console.warn("[update] GitHub API check failed, falling back to release page", error);
+		return fetchLatestReleaseFromPage();
+	}
 }
 
 /** 当前应用版本（app.json 的 expo.version，构建时内联进 bundle） */

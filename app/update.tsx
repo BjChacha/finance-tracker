@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
 	ActivityIndicator,
+	AppState,
 	Platform,
 	Pressable,
 	ScrollView,
@@ -13,6 +14,8 @@ import { SecondarySheetScreen } from "@/components/navigation/secondary-sheet-sc
 import {
 	deriveUpdateStatus,
 	downloadApk,
+	findCachedApk,
+	getCurrentVersion,
 	installApk,
 	openInstallPermissionSettings,
 	useLatestRelease,
@@ -84,12 +87,33 @@ export default function UpdateScreen() {
 	const status = deriveUpdateStatus(query);
 	const [download, setDownload] = useState<DownloadState>({ phase: "idle" });
 	const [installBlocked, setInstallBlocked] = useState(false);
+	const [installAborted, setInstallAborted] = useState(false);
 
 	// 进入页面即强制检查一次（绕过 6h 缓存，手动入口的语义就是"现在查"）
 	useEffect(() => {
 		void query.refetch();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	const release = status.state === "available" ? status.release : null;
+	const releaseVersion = release?.version ?? null;
+	const releaseApkSize = release?.apkSize ?? 0;
+
+	// 缓存命中就不再让用户重下几十 MB：安装被系统拦下后返回页面可直接再次安装
+	useEffect(() => {
+		if (!releaseVersion) return;
+		const cached = findCachedApk({ version: releaseVersion, apkSize: releaseApkSize });
+		if (cached) setDownload({ phase: "ready", fileUri: cached });
+	}, [releaseVersion, releaseApkSize]);
+
+	// 安装会把人带到系统安装器：回到前台且版本没变，说明中途被拦或用户退出
+	useEffect(() => {
+		const subscription = AppState.addEventListener("change", (next) => {
+			if (next !== "active" || !releaseVersion) return;
+			setInstallAborted(getCurrentVersion() === releaseVersion);
+		});
+		return () => subscription.remove();
+	}, [releaseVersion]);
 
 	async function onDownload(release: ReleaseInfo) {
 		setInstallBlocked(false);
@@ -107,6 +131,7 @@ export default function UpdateScreen() {
 	async function onInstall() {
 		if (download.phase !== "ready") return;
 		setInstallBlocked(false);
+		setInstallAborted(false);
 		try {
 			await installApk(download.fileUri);
 		} catch {
@@ -158,6 +183,15 @@ export default function UpdateScreen() {
 			return (
 				<View style={styles.actionArea}>
 					<PrimaryButton label={zh.update.install} onPress={() => void onInstall()} />
+					{installAborted ? (
+						<Text style={{ color: colors.expense, fontSize: 13, marginTop: 10, lineHeight: 19 }}>
+							{zh.update.installNotFinished}
+						</Text>
+					) : (
+						<Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 10 }}>
+							{zh.update.cachedApkHint}
+						</Text>
+					)}
 					{installBlocked ? (
 						<View style={styles.installBlocked}>
 							<Text style={{ color: colors.expense, fontSize: 13, flex: 1, lineHeight: 19 }}>
@@ -220,6 +254,13 @@ export default function UpdateScreen() {
 						<Text style={{ color: colors.textSecondary, fontSize: 14 }}>
 							{zh.update.checkFailed}
 						</Text>
+						{query.error instanceof Error ? (
+							<Text
+								style={{ color: colors.textSecondary, fontSize: 11, textAlign: "center" }}
+							>
+								{query.error.message}
+							</Text>
+						) : null}
 						<PrimaryButton
 							label={zh.update.checkNow}
 							onPress={() => void query.refetch()}
@@ -263,8 +304,21 @@ export default function UpdateScreen() {
 								}
 							/>
 						</View>
-						{renderChangelog(status.release)}
+					{renderChangelog(status.release)}
 						{renderActions(status.release)}
+						<View style={[styles.card, styles.guideCard, { backgroundColor: colors.card }]}>
+							<Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+								{zh.update.installGuideTitle}
+							</Text>
+							{zh.update.installGuideSteps.map((step, index) => (
+								<Text
+									key={index}
+									style={{ color: colors.text, fontSize: 13, lineHeight: 20 }}
+								>
+									{index + 1}. {step}
+								</Text>
+							))}
+						</View>
 					</View>
 				);
 		}
@@ -291,6 +345,7 @@ const styles = StyleSheet.create({
 	},
 	infoDivider: { height: StyleSheet.hairlineWidth, marginVertical: 6 },
 	sectionTitle: { fontSize: 13, fontWeight: "600", marginBottom: 8 },
+	guideCard: { marginTop: 12, marginBottom: 0 },
 	actionArea: { marginTop: 8 },
 	primaryButton: {
 		alignItems: "center",
