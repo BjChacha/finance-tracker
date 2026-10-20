@@ -9,6 +9,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { CREDENTIALS_FILE, resolveDeepseekKey } from "./credentials.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const android = path.join(root, "android");
@@ -22,12 +23,13 @@ const generatedBundle = path.join(
 );
 const bundleFile = path.join(generatedBundle, "release", "index.android.bundle");
 
-const key = process.env.EXPO_PUBLIC_DEEPSEEK_API_KEY ?? "";
+const key = resolveDeepseekKey();
 const allowMissing = process.env.ALLOW_MISSING_DEEPSEEK_KEY === "1";
 
 if (!key.trim() && !allowMissing) {
   console.error(
-    "EXPO_PUBLIC_DEEPSEEK_API_KEY is not set. Export it before building, or set\n" +
+    "EXPO_PUBLIC_DEEPSEEK_API_KEY is not set. Export it, or save it in " +
+      `${CREDENTIALS_FILE} as {"deepseekApiKey": "..."}. Set\n` +
       "ALLOW_MISSING_DEEPSEEK_KEY=1 to build an APK whose 一句话记账 reports a missing key.",
   );
   process.exit(1);
@@ -35,6 +37,10 @@ if (!key.trim() && !allowMissing) {
 
 // Force Metro to run: Gradle cannot see the environment variable in its up-to-date check.
 rmSync(generatedBundle, { recursive: true, force: true });
+
+// The inlining happens inside the Metro process Gradle spawns, so a key read from the
+// credentials file must be put back into the environment or the bundle ships without it.
+process.env.EXPO_PUBLIC_DEEPSEEK_API_KEY = key;
 
 const gradle = process.platform === "win32" ? "gradlew.bat" : "./gradlew";
 execFileSync(gradle, ["assembleRelease"], {

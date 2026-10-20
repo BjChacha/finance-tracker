@@ -2,5 +2,9 @@
   "lsp": {
     "disabledServers": ["kotlin"]
   },
-  "ignore": ["android/**", "modules/*/android/**"]
+  "ignore": [
+    "android/**",
+    "modules/*/android/**",
+    "scripts/natural-language/**"
+  ]
 }

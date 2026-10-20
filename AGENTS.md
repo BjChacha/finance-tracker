@@ -28,11 +28,32 @@ EXPO_PUBLIC_DEEPSEEK_API_KEY=<key> GH_TOKEN=<token> npm run release
 # 可选: -- --version 0.1.0 --notes "..." --prerelease --skip-bump --dry-run
 ```
 
+两个凭据都可存到 `~/.finance-tracker/credentials.json`(`{"ghToken":"...","deepseekApiKey":"..."}`),`scripts/credentials.mjs` 会读它——之后直接 `npm run release` 即可,环境变量仍然优先。该文件故意放在仓库外:仓库路径下有 `*.env.*` 拦截规则,也避免明文凭据进入 git。
+
 - `GH_TOKEN` 需 repo 权限(github.com/settings/tokens);要求 git 工作区干净,发布 commit 只含版本号变更(app.json/package.json,versionCode 随发布 +1)。
 - 幂等重跑:Release/同名 asset 已存在时自动复用/替换;构建失败时不会碰 git。
 - `--prerelease` 发测试版:prerelease 不会被 `/releases/latest` 返回,应用内更新检查会忽略它,适合发版前全链路验证。
 
-应用内自更新(`src/features/update/`):启动后台静默查 GitHub `releases/latest`(6h 缓存,失败不打扰),有新版时「个人」页顶部弹卡片;「个人 → 检查更新」页展示 changelog、下载 APK(带进度)并调系统安装器覆盖安装。Android 8+ 首次点"安装"需授予「安装未知应用」权限(HyperOS 有二次确认),安装失败时页面提供「去授权」按钮。覆盖安装要求 debug keystore 不变。
+应用内自更新(`src/features/update/`):启动后台静默查 GitHub `releases/latest`(6h 缓存,失败不打扰),有新版时「个人」页顶部弹卡片;「个人 → 检查更新」页展示 changelog、下载 APK(带进度)并调系统安装器覆盖安装。覆盖安装要求 debug keystore 不变。
+
+## 侧载拦截(真机安装失败的真正原因)
+
+本机 HyperOS 会在系统安装器里连拦两道,`installApk` 的 Intent 本身不会报错,所以应用内看不到任何失败提示——表现就是「更新失败了」:
+
+1. 「未查询到此应用的 ICP 备案信息」页:**「退出」是蓝色主按钮**、「继续安装」是次要按钮,顺手一点就取消。
+2. 「安全提醒:未经小米安全审核」页:必须先勾选「已了解此应用未经安全检测」,「继续更新」才从灰变可点。
+
+应用已尽量降低摩擦(见 `app/update.tsx`):页面常驻这三步引导;安装包缓存在 `cache/finance-tracker-<version>.apk`,返回页面时 `findCachedApk` 命中就直接进「安装更新」(命中需字节数与 release 一致,避免拿半截包去装),不必重下 58MB;回前台时若版本仍未变则提示「这次没有装上」;安装失败原因会直接显示在页面上。
+
+## api.github.com 403(检查更新失败的真因)
+
+本机开着按应用分流的代理(157 条 `ip rule ... uidrange N lookup 1032` 把 app 流量导入 `tun0`),本应用就在分流名单里。结果是 **app 的所有请求从代理节点出口出去**,而 api.github.com 对数据中心 IP 回 `403 Request forbidden by administrative rules`;`adb shell` 的 curl(uid 2000)不走隧道所以是 200——**不要用 shell 能通就否定用户报障**。
+
+排查手法:`ip rule show | grep <appuid>` 看是否被导入 `tun0`,`ip route get <ip>` 看出口,`adb shell curl` 与 app 行为不一致就查分流。
+
+`checker.ts` 因此保留双路径:先 REST API(有 changelog 与体积);被拦时回退到 `github.com/<repo>/releases/latest` 的 302 最终地址取 tag,并按发布脚本的 `apkAssetName` 约定拼下载地址(此时无 changelog、`apkSize` 为 0)。两条都失败才报错。
+
+用 adb 验证更新链路时不经过这些拦截,`adb install -r -d` 直接成功——所以真机问题不要用 adb 是否装得上去否定用户报障。
 
 # 消费报告 (自动生成)
 

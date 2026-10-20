@@ -23,6 +23,7 @@ import {
   parseArgs,
   planBump,
 } from "./release-lib.mjs";
+import { CREDENTIALS_FILE, resolveGithubToken } from "./credentials.mjs";
 
 const GITHUB_REPO = "BjChacha/finance-tracker";
 const API = "https://api.github.com";
@@ -96,9 +97,12 @@ function readJson(relPath) {
 
 // ---- 1. Pre-flight -----------------------------------------------------------
 
-const token = process.env.GH_TOKEN ?? process.env.GH_ENTERPRISE_TOKEN;
+const token = resolveGithubToken();
 if (!token && !args.dryRun) {
-  console.error("GH_TOKEN is not set. Create one at github.com/settings/tokens (repo scope).");
+  console.error(
+    "GH_TOKEN is not set. Export it, or save it in " +
+      `${CREDENTIALS_FILE} as {"ghToken": "..."} (github.com/settings/tokens, repo scope).`,
+  );
   process.exit(1);
 }
 
