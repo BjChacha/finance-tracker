@@ -17,7 +17,7 @@ NUM = r"[0-9\uff10-\uff19\u96f6\u3007\u4e00\u4e8c\u4e24\u4e09\u56db\u4e94\u516d\
 DECIMAL = rf"{NUM}(?:[.\uff0e\u70b9]{NUM})?"
 NUMBER = rf"(?:[0-9]{{1,3}}(?:,[0-9]{{3}})+(?:\.[0-9]+)?|{DECIMAL})"
 AMOUNT_PATTERN = re.compile(
-    rf"[-\u8d1f]?{NUMBER}(?:[\u5143\u5757](?:{NUMBER}[\u89d2\u6bdb](?:{NUMBER}\u5206)?|{NUMBER}\u5206|{NUMBER})?|[\u89d2\u6bdb](?:{NUMBER}\u5206)?|\u5206)?[\u94b1\u6574]?"
+    rf"[-\u8d1f]?{NUMBER}(?:\s*[\u5143\u5757](?:\s*{NUMBER}\s*[\u89d2\u6bdb](?:\s*{NUMBER}\s*\u5206)?|\s*{NUMBER}\s*\u5206|\s*{NUMBER})?|\s*[\u89d2\u6bdb](?:\s*{NUMBER}\s*\u5206|\s*{NUMBER})?|\s*\u5206)?(?:\s*[\u94b1\u6574])?"
 )
 
 

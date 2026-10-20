@@ -93,12 +93,15 @@ export function parseNaturalLanguageMoney(span: string): number | null {
       if (short !== null && short >= 0n && short <= 9n) {
         cents += short * 10n;
       } else {
-        const parts = /^(?:(.+?)[\u89d2\u6bdb])?(?:(.+?)\u5206)?$/.exec(
-          fraction,
-        );
-        if (!parts || !(parts[1] || parts[2])) return null;
+        const parts =
+          /^(?:(.+?)[\u89d2\u6bdb])?(?:(.+?)\u5206|([0-9\u96f6\u3007\u4e00\u4e8c\u4e24\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d]))?$/.exec(
+            fraction,
+          );
+        if (!parts || !(parts[1] || parts[2] || parts[3])) return null;
         const tenths = parts[1] ? integer(parts[1]) : 0n;
-        const hundredths = parts[2] ? integer(parts[2]) : 0n;
+        // A bare digit after jiao/mao is fen in colloquial speech: 6 jiao 7 = 0.67.
+        const hundredthsText = parts[2] ?? parts[3];
+        const hundredths = hundredthsText !== undefined ? integer(hundredthsText) : 0n;
         if (
           tenths === null ||
           hundredths === null ||
@@ -130,7 +133,9 @@ const NUM =
   "[0-9\uff10-\uff19\u96f6\u3007\u4e00\u4e8c\u4e24\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d\u5341\u767e\u5343\u4e07]+";
 const DECIMAL = `${NUM}(?:[.\uff0e\u70b9]${NUM})?`;
 const NUMBER = `(?:[0-9]{1,3}(?:,[0-9]{3})+(?:\\.[0-9]+)?|${DECIMAL})`;
-const PATTERN = `[-\u8d1f]?${NUMBER}(?:[\u5143\u5757](?:${NUMBER}[\u89d2\u6bdb](?:${NUMBER}\u5206)?|${NUMBER}\u5206|${NUMBER})?|[\u89d2\u6bdb](?:${NUMBER}\u5206)?|\u5206)?[\u94b1\u6574]?`;
+// Amounts tolerate inner whitespace (colloquial "17 块 5"); the span keeps the
+// original spacing so it still matches the user's sentence verbatim.
+const PATTERN = `[-\u8d1f]?${NUMBER}(?:\\s*[\u5143\u5757](?:\\s*${NUMBER}\\s*[\u89d2\u6bdb](?:\\s*${NUMBER}\\s*\u5206)?|\\s*${NUMBER}\\s*\u5206|\\s*${NUMBER})?|\\s*[\u89d2\u6bdb](?:\\s*${NUMBER}\\s*\u5206|\\s*${NUMBER})?|\\s*\u5206)?(?:\\s*[\u94b1\u6574])?`;
 
 /** Candidates are evidence, never an authorization to create a transaction. */
 export function naturalLanguageAmountCandidates(

@@ -4,7 +4,7 @@ import re
 import unicodedata
 
 DIGITS = dict(
-    zip("\u96f6\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d", range(10))
+    zip("\u96f6\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d", range(10), strict=True)
 )
 DIGITS.update({"\u3007": 0, "\u4e24": 2})
 SMALL_UNITS = {"\u5341": 10, "\u767e": 100, "\u5343": 1000}
@@ -94,12 +94,15 @@ def parse_money(span):
                 cents += short * 10
             else:
                 match = re.fullmatch(
-                    r"(?:(.+?)[\u89d2\u6bdb])?(?:(.+?)\u5206)?", fraction
+                    r"(?:(.+?)[\u89d2\u6bdb])?(?:(.+?)\u5206|([0-9\u96f6\u3007\u4e00\u4e8c\u4e24\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d]))?",
+                    fraction,
                 )
                 if match is None or not any(match.groups()):
                     return None
                 tenths = integer(match.group(1)) if match.group(1) else 0
-                hundredths = integer(match.group(2)) if match.group(2) else 0
+                # A bare digit after jiao/mao is fen in colloquial speech.
+                hundredths_text = match.group(2) or match.group(3)
+                hundredths = integer(hundredths_text) if hundredths_text else 0
                 if (
                     tenths is None
                     or hundredths is None

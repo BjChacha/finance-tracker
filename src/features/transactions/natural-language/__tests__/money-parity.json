@@ -5,10 +5,10 @@
     "scripts\\natural-language\\distribution_v1\\data\\dev.tsv": "876bd6503e362367ffd41ff36567d007074b80906062126544751374d8d0a96b",
     "scripts\\natural-language\\distribution_v1\\data\\regression-guards.tsv": "9e0a9870a6985e186e65509c6fd4f329edfaee47b5a2eec19690d805b031b552",
     "scripts\\natural-language\\distribution_v1\\data\\regression.tsv": "cdbe748778aa100f5eba47ab153ed87495300228c8fa272249447d39dd783e1e",
-    "scripts\\natural-language\\money.py": "c0b583b026767134bf747ef79bca9bdad3f521819b9d08f027621ef2e269305a",
-    "scripts\\natural-language\\instruct\\harness.py": "0c786e416b55ee19f65c06458ca68a026a0e1d8faeefec395c84747275e72e7a",
+    "scripts\\natural-language\\money.py": "655c215d652be2a0627baaa9d73c723fa835d0259293c9befe4cde8d77f39c9c",
+    "scripts\\natural-language\\instruct\\harness.py": "3905ad160affa0fa3f5fa6a0a5f3eeb58be4d5949a11f8980c3c12095da93308",
     "scripts\\natural-language\\mobile_latency\\unique_amount.py": "79799bafd21ca854a69e72fd8b2b5bab656e1e1f1685b9a12470136caff47b63",
-    "scripts\\natural-language\\data\\money-tests.json": "1fdd4b2c6222f34b3bc0661bd44cb9ff32b561ff4f9251107158edc504e272e3"
+    "scripts\\natural-language\\data\\money-tests.json": "9751a2e64699705ddc3503b3b8f4abe139f33933f07f9a740118fc7dc9b65837"
   },
   "spans": [
     {
@@ -174,6 +174,50 @@
     {
       "text": "30元或50元",
       "cents": null
+    },
+    {
+      "text": "17 块 5",
+      "cents": 1750
+    },
+    {
+      "text": "6 角 7",
+      "cents": 67
+    },
+    {
+      "text": "十五块 7",
+      "cents": 1570
+    },
+    {
+      "text": "六角七",
+      "cents": 67
+    },
+    {
+      "text": "6角7",
+      "cents": 67
+    },
+    {
+      "text": "３ 元 ５",
+      "cents": 350
+    },
+    {
+      "text": "１７　块　５",
+      "cents": 1750
+    },
+    {
+      "text": "6角17",
+      "cents": null
+    },
+    {
+      "text": "17块15",
+      "cents": null
+    },
+    {
+      "text": "12 34块",
+      "cents": 123400
+    },
+    {
+      "text": "5 块 钱",
+      "cents": 500
     },
     {
       "text": "90071992547409.91",
