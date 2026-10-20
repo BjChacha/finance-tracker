@@ -5,7 +5,7 @@ import { ParseError } from "@/features/llm/chat";
  * Bump whenever the stored analysis shape changes. Rows with an older version are treated as
  * missing so the scheduler regenerates them instead of rendering a half-supported payload.
  */
-export const REPORT_ANALYSIS_VERSION = 2;
+export const REPORT_ANALYSIS_VERSION = 3;
 
 /**
  * The consumer-value vocabulary the model may pick from. Rendering maps these ids to icons and
@@ -30,7 +30,7 @@ const itemSchema = z.object({
 });
 
 /**
- * Contract for the model's analysis, version 2.
+ * Contract for the model's analysis, version 3.
  *
  * The report is framed around how spending feels and what it says about the reader's values,
  * while every claim must be traceable to the snapshot numbers. Unknown keys are stripped by
@@ -44,11 +44,13 @@ export const reportAnalysisSchema = z.object({
 		score: z.number().int().min(1).max(5),
 		narrative: z.string().trim().min(1).max(160),
 	}),
-	values: z
+	insights: z
 		.array(
 			z.object({
-				id: z.enum(REPORT_VALUE_IDS),
-				label: z.string().trim().min(1).max(16),
+				/** Must match a category name from the snapshot so rendering can reuse its icon/color. */
+				category: z.string().trim().min(1).max(16),
+				valueId: z.enum(REPORT_VALUE_IDS),
+				emotion: z.string().trim().min(1).max(12),
 				narrative: z.string().trim().min(1).max(120),
 			}),
 		)
@@ -64,15 +66,6 @@ export const reportAnalysisSchema = z.object({
 		)
 		.min(2)
 		.max(5),
-	categoryStories: z
-		.array(
-			z.object({
-				category: z.string().trim().min(1).max(16),
-				emotion: z.string().trim().min(1).max(24),
-				note: z.string().trim().min(1).max(120),
-			}),
-		)
-		.max(5),
 	suggestions: z.array(itemSchema).min(1).max(4),
 	/** Estimated monthly savings if every suggestion were followed. */
 	savingPotentialYuan: z.number().min(0).max(1_000_000),
@@ -80,7 +73,7 @@ export const reportAnalysisSchema = z.object({
 
 export type ReportAnalysis = z.infer<typeof reportAnalysisSchema>;
 export type ReportAnalysisItem = ReportAnalysis["suggestions"][number];
-export type ReportValue = ReportAnalysis["values"][number];
+export type ReportInsight = ReportAnalysis["insights"][number];
 
 const MAX_CONTENT_CHARACTERS = 32_768;
 

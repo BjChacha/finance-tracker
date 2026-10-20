@@ -8,20 +8,23 @@ const valid = {
 		score: 4,
 		narrative: " 娱乐支出占三成，周末花得比工作日多 ",
 	},
-	values: [
+	insights: [
 		{
-			id: "self_care",
-			label: "对自己好一点",
-			narrative: " 餐饮与咖啡支撑了每一个工作日 ",
+			category: "餐饮",
+			valueId: "self_care",
+			emotion: "日常慰藉",
+			narrative: " 工作日午餐是稳定支出，支撑了每一个工作日 ",
 		},
-		{ id: "social", label: "陪人吃饭", narrative: " 聚餐占了娱乐的一半 " },
+		{
+			category: "娱乐",
+			valueId: "social",
+			emotion: "周末充电",
+			narrative: " 聚餐占了娱乐的一半 ",
+		},
 	],
 	dataPoints: [
 		{ label: "外卖频次", value: "18 次", note: "几乎每个工作日一次" },
 		{ label: "周末占比", value: "62%", note: "周末花得比工作日多" },
-	],
-	categoryStories: [
-		{ category: "餐饮", emotion: "日常慰藉", note: "工作日午餐是稳定支出" },
 	],
 	suggestions: [
 		{
@@ -40,7 +43,7 @@ const valid = {
 	savingPotentialYuan: 420,
 };
 
-it("trims and returns a v2 contract-valid analysis", () => {
+it("trims and returns a v3 contract-valid analysis", () => {
 	const analysis = decodeReportAnalysis(JSON.stringify(valid));
 	expect(analysis.headline).toBe("这个月的钱，花在了让周五更好过");
 	expect(analysis.mood).toEqual({
@@ -48,10 +51,11 @@ it("trims and returns a v2 contract-valid analysis", () => {
 		score: 4,
 		narrative: "娱乐支出占三成，周末花得比工作日多",
 	});
-	expect(analysis.values[0]).toEqual({
-		id: "self_care",
-		label: "对自己好一点",
-		narrative: "餐饮与咖啡支撑了每一个工作日",
+	expect(analysis.insights[0]).toEqual({
+		category: "餐饮",
+		valueId: "self_care",
+		emotion: "日常慰藉",
+		narrative: "工作日午餐是稳定支出，支撑了每一个工作日",
 	});
 });
 
@@ -62,13 +66,12 @@ it("strips unknown keys instead of persisting them", () => {
 	expect(analysis).not.toHaveProperty("extra");
 	expect(analysis).not.toHaveProperty("styleTags");
 	expect(Object.keys(analysis).sort()).toEqual([
-		"categoryStories",
 		"dataPoints",
 		"headline",
+		"insights",
 		"mood",
 		"savingPotentialYuan",
 		"suggestions",
-		"values",
 	]);
 });
 
@@ -84,7 +87,7 @@ it.each([
 		"an unknown value id",
 		JSON.stringify({
 			...valid,
-			values: [{ ...valid.values[0], id: "luxury" }],
+			insights: [{ ...valid.insights[0], valueId: "luxury" }],
 		}),
 	],
 	[

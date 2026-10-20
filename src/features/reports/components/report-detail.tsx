@@ -7,7 +7,7 @@ import { dayjs, formatPeriodTitle } from "@/lib/date";
 import { resolveIconKey } from "@/lib/iconResolvers";
 import { formatCentsWithSymbol } from "@/lib/money";
 import { useTheme, withAlpha } from "@/theme";
-import type { ReportAnalysis, ReportValue } from "../analysis-contract";
+import type { ReportAnalysis } from "../analysis-contract";
 import { EmptyPeriodError } from "../generate";
 import { useGenerateReport, useStoredReport } from "../hooks";
 import { reportValueMeta, reportsText as copy } from "../labels";
@@ -118,61 +118,27 @@ function DataPointGrid({ points }: { points: ReportAnalysis["dataPoints"] }) {
 	);
 }
 
-function ValueCard({ value }: { value: ReportValue }) {
-	const { colors } = useTheme();
-	const meta = reportValueMeta[value.id];
-	const toneColor = colors[meta.tone];
-	return (
-		<View
-			style={[
-				styles.valueCard,
-				{ backgroundColor: colors.card, borderColor: withAlpha(toneColor, 0.35) },
-			]}
-		>
-			<View style={styles.valueHead}>
-				<View
-					style={[
-						styles.valueIcon,
-						{ backgroundColor: withAlpha(toneColor, 0.14) },
-					]}
-				>
-					<Icon
-						name={resolveIconKey(meta.icon, "category")}
-						size={16}
-						color={toneColor}
-					/>
-				</View>
-				<Text style={{ color: colors.text, fontSize: 14, fontWeight: "600", flex: 1 }}>
-					{value.label}
-				</Text>
-				<Text style={{ color: toneColor, fontSize: 11 }}>{meta.label}</Text>
-			</View>
-			<Text style={{ color: colors.textSecondary, fontSize: 12, lineHeight: 19 }}>
-				{value.narrative}
-			</Text>
-		</View>
-	);
-}
-
-/** Category stories are matched back to the snapshot so they keep the user's own colors/icons. */
-function CategoryStories({
-	stories,
+/** One insight = one category: the value it reflects plus the emotion it brings,
+ * matched back to the snapshot so it keeps the user's own colors/icons. */
+function InsightList({
+	insights,
 	categories,
 }: {
-	stories: ReportAnalysis["categoryStories"];
+	insights: ReportAnalysis["insights"];
 	categories: ReportSnapshot["categories"];
 }) {
 	const { colors } = useTheme();
-	if (stories.length === 0) return null;
 	return (
 		<View style={{ gap: 10 }}>
-			{stories.map((story, index) => {
-				const category = categories.find((row) => row.name === story.category);
+			{insights.map((insight, index) => {
+				const category = categories.find((row) => row.name === insight.category);
 				const color = category?.color ?? colors.primary;
 				const icon = resolveIconKey(category?.icon ?? "package", "category");
+				const meta = reportValueMeta[insight.valueId];
+				const toneColor = colors[meta.tone];
 				return (
 					<View
-						key={`${story.category}-${index}`}
+						key={`${insight.category}-${index}`}
 						style={[styles.storyRow, { backgroundColor: colors.card }]}
 					>
 						<View style={[styles.storyIcon, { backgroundColor: withAlpha(color, 0.14) }]}>
@@ -181,20 +147,32 @@ function CategoryStories({
 						<View style={{ flex: 1, gap: 2 }}>
 							<View style={dashboardStyles.between}>
 								<Text style={{ color: colors.text, fontSize: 13, fontWeight: "600" }}>
-									{story.category}
+									{insight.category}
 								</Text>
 								<Text style={{ color, fontSize: 11, fontWeight: "600" }}>
-									{story.emotion}
+									{insight.emotion}
 								</Text>
 							</View>
 							<Text style={{ color: colors.textSecondary, fontSize: 12, lineHeight: 18 }}>
-								{story.note}
+								{insight.narrative}
 							</Text>
-							{category && (
-								<Text style={{ color: colors.textSecondary, fontSize: 11 }}>
-									{formatCentsWithSymbol(category.totalCents)} · {category.pct}%
-								</Text>
-							)}
+							<View style={dashboardStyles.between}>
+								{category ? (
+									<Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+										{formatCentsWithSymbol(category.totalCents)} · {category.pct}%
+									</Text>
+								) : (
+									<Text />
+								)}
+								<View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+									<Icon
+										name={resolveIconKey(meta.icon, "category")}
+										size={11}
+										color={toneColor}
+									/>
+									<Text style={{ color: toneColor, fontSize: 11 }}>{meta.label}</Text>
+								</View>
+							</View>
 						</View>
 					</View>
 				);
@@ -276,22 +254,9 @@ export function ReportDetail({
 				<DataPointGrid points={analysis.dataPoints} />
 			</Card>
 
-			<Card title={copy.valuesTitle}>
-				<View style={{ gap: 10 }}>
-					{analysis.values.map((value) => (
-						<ValueCard key={value.id} value={value} />
-					))}
-				</View>
+			<Card title={copy.insightsTitle}>
+				<InsightList insights={analysis.insights} categories={snapshot.categories} />
 			</Card>
-
-			{analysis.categoryStories.length > 0 && (
-				<Card title={copy.categoryTitle}>
-					<CategoryStories
-						stories={analysis.categoryStories}
-						categories={snapshot.categories}
-					/>
-				</Card>
-			)}
 
 			<Card title={copy.suggestionsTitle}>
 				<SuggestionList suggestions={analysis.suggestions} />
@@ -443,9 +408,6 @@ const styles = StyleSheet.create({
 		padding: 12,
 		gap: 3,
 	},
-	valueCard: { borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, padding: 12, gap: 6 },
-	valueHead: { flexDirection: "row", alignItems: "center", gap: 8 },
-	valueIcon: { width: 28, height: 28, borderRadius: 9, alignItems: "center", justifyContent: "center" },
 	storyRow: { flexDirection: "row", gap: 10, borderRadius: 14, padding: 12, alignItems: "flex-start" },
 	storyIcon: { width: 30, height: 30, borderRadius: 10, alignItems: "center", justifyContent: "center" },
 	suggestion: { flexDirection: "row", gap: 10, borderRadius: 14, padding: 12, alignItems: "flex-start" },

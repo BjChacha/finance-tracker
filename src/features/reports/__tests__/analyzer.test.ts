@@ -43,15 +43,12 @@ const analysis = {
     score: 4,
     narrative: "餐饮占九成，但周末没有失控",
   },
-  values: [
-    { id: "self_care", label: "吃得开心", narrative: "餐饮占支出九成" },
+  insights: [
+    { category: "餐饮", valueId: "self_care", emotion: "日常慰藉", narrative: "餐饮占支出九成" },
   ],
   dataPoints: [
     { label: "餐饮占比", value: "90%", note: "几乎全部支出" },
     { label: "笔数", value: "12 笔", note: "平均每笔 29 元" },
-  ],
-  categoryStories: [
-    { category: "餐饮", emotion: "日常慰藉", note: "工作日的稳定支出" },
   ],
   suggestions: [
     {
