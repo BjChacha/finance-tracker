@@ -51,7 +51,6 @@ export function SpendingPace({
             secondaryLabel={copy.comparisonPeriod}
             secondaryDashed
             fillPrimary
-            curved={false}
             height={155}
           />
         </View>

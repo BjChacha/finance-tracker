@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { showDialog } from '@/components/dialog';
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon, type IconName } from "@/components/Icon";
@@ -55,7 +56,7 @@ export function IdentityEditor({ title, initial, icons, colors: options, placeho
       await onSave({ name: name.trim(), icon, color });
       onClose();
     } catch (error) {
-      Alert.alert(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
+      showDialog(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
     } finally {
       locked.current = false;
       setPending(false);

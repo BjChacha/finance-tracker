@@ -27,12 +27,13 @@ import { dashboardText as copy } from './labels';
 import { usePeriod } from './use-period';
 
 export function StatsScreen() {
-  const period = usePeriod(useLocalSearchParams());
+  const period = usePeriod(useLocalSearchParams(), { withAll: true });
   const router = useRouter();
   const { colors } = useTheme();
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [calendarMonth, setCalendarMonth] = useState('');
   const { range, comparison, granularity } = period;
+  const comparable = comparison !== null;
   const firstMonth = range.start.slice(0, 7);
   const lastMonth = range.end.slice(0, 7);
   const heatMonth =
@@ -40,7 +41,12 @@ export function StatsScreen() {
       ? calendarMonth
       : lastMonth;
   const categories = useCategoryBreakdown(range, type);
-  const previous = useCategoryBreakdown(comparison, type);
+  const previous = useCategoryBreakdown(
+    comparison ?? range,
+    type,
+    undefined,
+    comparable,
+  );
   const trend = useTrend(granularity, range);
   const monthly = useTrend('month', range);
   const heat = useCalendarHeatmap(heatMonth);
@@ -71,124 +77,134 @@ export function StatsScreen() {
       style={{ backgroundColor: colors.background }}
       contentContainerStyle={[dashboardStyles.content, { paddingBottom: 40 }]}
     >
-      <PeriodControl {...period} />
-      <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-        {range.start} — {range.end}
-      </Text>
-      <View style={dashboardStyles.row}>
-        {(['expense', 'income'] as const).map((value) => (
-          <Pressable
-            key={value}
-            accessibilityRole="button"
-            accessibilityState={{ selected: value === type }}
-            onPress={() => setType(value)}
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              padding: 12,
-              borderRadius: 10,
-              backgroundColor: type === value ? colors.primary : colors.card,
-            }}
-          >
-            <Text
-              style={{ color: type === value ? colors.onPrimary : colors.text }}
-            >
-              {copy[value]}
+      <PeriodControl
+        {...period}
+        allSelected={period.all}
+        onSelectAll={() => period.setAll(true)}
+      />
+      {period.all && <QueryNotice queries={[period.allStart]} />}
+      {!period.all || period.allStart.data ? (
+        <>
+          <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+            {range.start} — {range.end}
+          </Text>
+          <View style={dashboardStyles.row}>
+            {(['expense', 'income'] as const).map((value) => (
+              <Pressable
+                key={value}
+                accessibilityRole="button"
+                accessibilityState={{ selected: value === type }}
+                onPress={() => setType(value)}
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  padding: 12,
+                  borderRadius: 10,
+                  backgroundColor: type === value ? colors.primary : colors.card,
+                }}
+              >
+                <Text
+                  style={{ color: type === value ? colors.onPrimary : colors.text }}
+                >
+                  {copy[value]}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <Card title={copy.categoryAnalysis}>
+            <QueryNotice queries={[categories]} />
+            {categories.data && (
+              <DonutChart
+                data={donut}
+                centerLabel={copy[type]}
+                onDetails={openCategory}
+              />
+            )}
+          </Card>
+          <Card title={copy.categoryTotal}>
+            <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+              {comparison
+                ? `${copy.versus} ${comparison.start} — ${comparison.end}`
+                : copy.allHistory}
             </Text>
-          </Pressable>
-        ))}
-      </View>
-      <Card title={copy.categoryAnalysis}>
-        <QueryNotice queries={[categories]} />
-        {categories.data && (
-          <DonutChart
-            data={donut}
-            centerLabel={copy[type]}
-            onDetails={openCategory}
-          />
-        )}
-      </Card>
-      <Card title={copy.categoryTotal}>
-        <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
-          {copy.versus} {comparison.start} — {comparison.end}
-        </Text>
-        <QueryNotice queries={[categories, previous]} />
-        {categories.data && previous.data && (
-          <CategoryList
-            items={categories.data}
-            previous={previous.data}
-            onPress={(item) => openCategory(item.categoryId)}
-            initiallyExpanded
-          />
-        )}
-      </Card>
-      <Card title={copy.cashTrend}>
-        <QueryNotice queries={[trend]} />
-        {trend.data && (
-          <TrendLineChart
-            points={trend.data.map((point) => ({
-              label: point.label,
-              detailLabel: point.key,
-              primary: point.expense,
-              secondary: point.income,
-            }))}
-            primaryColor={colors.expense}
-            primaryLabel={copy.expense}
-            secondaryColor={colors.income}
-            secondaryLabel={copy.income}
-            curved={false}
-          />
-        )}
-      </Card>
-      <Card title={copy.monthlyComparison}>
-        <QueryNotice queries={[monthly]} />
-        {monthly.data && (
-          <CompareBarChart
-            data={monthly.data.map((point) => ({
-              label: point.label,
-              income: point.income,
-              expense: point.expense,
-            }))}
-            incomeLabel={copy.income}
-            expenseLabel={copy.expense}
-          />
-        )}
-      </Card>
-      <Card title={copy.calendar}>
-        <View style={dashboardStyles.between}>
-          {heatMonth > firstMonth ? (
-            <TextAction
-              label="‹"
-              onPress={() =>
-                setCalendarMonth(
-                  dayjs(`${heatMonth}-01`)
-                    .subtract(1, 'month')
-                    .format('YYYY-MM'),
-                )
-              }
-            />
-          ) : (
-            <View />
-          )}
-          <Text style={{ color: colors.text }}>{heatMonth}</Text>
-          {heatMonth < lastMonth ? (
-            <TextAction
-              label="›"
-              onPress={() =>
-                setCalendarMonth(
-                  dayjs(`${heatMonth}-01`).add(1, 'month').format('YYYY-MM'),
-                )
-              }
-            />
-          ) : (
-            <View />
-          )}
-        </View>
-        <QueryNotice queries={[heat]} />
-        {heat.data && !heat.isPlaceholderData && (
-          <CalendarHeat monthKey={heatMonth} cells={heat.data} />
-        )}
-      </Card>
+            <QueryNotice queries={[categories, previous]} />
+            {categories.data && (
+              <CategoryList
+                items={categories.data}
+                previous={previous.data}
+                onPress={(item) => openCategory(item.categoryId)}
+                initiallyExpanded
+              />
+            )}
+          </Card>
+          <Card title={copy.cashTrend}>
+            <QueryNotice queries={[trend]} />
+            {trend.data && (
+              <TrendLineChart
+                points={trend.data.map((point) => ({
+                  label: point.label,
+                  detailLabel: point.key,
+                  primary: point.expense,
+                  secondary: point.income,
+                }))}
+                primaryColor={colors.expense}
+                primaryLabel={copy.expense}
+                secondaryColor={colors.income}
+                secondaryLabel={copy.income}
+              />
+            )}
+          </Card>
+          <Card title={copy.monthlyComparison}>
+            <QueryNotice queries={[monthly]} />
+            {monthly.data && (
+              <CompareBarChart
+                data={monthly.data.map((point) => ({
+                  label: point.label,
+                  income: point.income,
+                  expense: point.expense,
+                }))}
+                incomeLabel={copy.income}
+                expenseLabel={copy.expense}
+              />
+            )}
+          </Card>
+          <Card title={copy.calendar}>
+            <View style={dashboardStyles.between}>
+              {heatMonth > firstMonth ? (
+                <TextAction
+                  label="‹"
+                  onPress={() =>
+                    setCalendarMonth(
+                      dayjs(`${heatMonth}-01`)
+                        .subtract(1, 'month')
+                        .format('YYYY-MM'),
+                    )
+                  }
+                />
+              ) : (
+                <View />
+              )}
+              <Text style={{ color: colors.text }}>{heatMonth}</Text>
+              {heatMonth < lastMonth ? (
+                <TextAction
+                  label="›"
+                  onPress={() =>
+                    setCalendarMonth(
+                      dayjs(`${heatMonth}-01`).add(1, 'month').format('YYYY-MM'),
+                    )
+                  }
+                />
+              ) : (
+                <View />
+              )}
+            </View>
+            <QueryNotice queries={[heat]} />
+            {heat.data && !heat.isPlaceholderData && (
+              <CalendarHeat monthKey={heatMonth} cells={heat.data} />
+            )}
+          </Card>
+        </>
+      ) : null}
     </ScrollView>
   );
 }

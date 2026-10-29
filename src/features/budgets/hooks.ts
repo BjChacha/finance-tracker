@@ -15,11 +15,12 @@ export function useBudgets(period: BudgetPeriod) {
 }
 
 /** key: ['budget-status', period, periodKey] */
-export function useBudgetStatus(period: BudgetPeriod, periodKey: string) {
+export function useBudgetStatus(period: BudgetPeriod, periodKey: string, enabled = true) {
   const today = useTodayKey();
   return useQuery({
     queryKey: ['budget-status', period, periodKey, today],
     queryFn: () => budgetStatus(period, periodKey, today),
+    enabled,
   });
 }
 

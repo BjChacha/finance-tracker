@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, within } from '@testing-library/react-native';
 import { CategoryList } from '../category-list';
 import { dashboardText as copy } from '../labels';
 
@@ -40,4 +40,32 @@ it('opens real categories from the treemap and expands the remainder without que
   expect(onPress).not.toHaveBeenCalled();
   fireEvent.press(screen.getByText('Category 5'));
   expect(onPress).toHaveBeenCalledWith(equalItems[5]);
+});
+
+it('labels narrow treemap tiles that used to stay blank', () => {
+  const slices = [
+    { ...items[0]!, categoryId: 'big', name: 'Rent', total: 750, pct: 75 },
+    { ...items[1]!, categoryId: 'small', name: 'Snacks', total: 250, pct: 25 },
+  ];
+  render(<CategoryList items={slices} onPress={jest.fn()} showComposition />);
+  fireEvent(screen.getByTestId('category-treemap'), 'layout', {
+    nativeEvent: { layout: { width: 200, height: 132 } },
+  });
+  // 50px 宽的小色块：旧阈值（w>=54）下完全没有文字
+  const treemap = within(screen.getByTestId('category-treemap'));
+  expect(treemap.getByText('Snacks')).toBeTruthy();
+  expect(treemap.getByText('Rent')).toBeTruthy();
+});
+
+it('lists every category from the treemap corner entry', () => {
+  const onPress = jest.fn();
+  render(<CategoryList items={items} onPress={onPress} showComposition />);
+  fireEvent(screen.getByTestId('category-treemap'), 'layout', {
+    nativeEvent: { layout: { width: 360, height: 132 } },
+  });
+  expect(screen.queryByText('Category 6')).toBeNull();
+  fireEvent.press(screen.getByLabelText(copy.allCategories));
+  fireEvent.press(screen.getByText('Category 6'));
+  expect(onPress).toHaveBeenCalledWith(items[6]);
+  expect(screen.queryByText(copy.sheetTotal)).toBeNull();
 });

@@ -2,14 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { previewCategoryOrganization, organizeCategories } from '@/features/categories/organization';
 import { organizationLabels as organization } from '@/features/categories/organization-labels';
 import { useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { IdentityEditor } from '@/components/form/identity-editor';
 import {
   SecondarySheetScreen,
@@ -50,22 +44,22 @@ export default function CategoriesScreen() {
 
   function onOrganize() {
     const plan = previewCategoryOrganization();
-    if (!plan.length) { Alert.alert(organization.title, organization.empty); return; }
-    Alert.alert(organization.title, organization.confirm + '\n\n' + plan.map((move) => `${move.name} → ${move.parentName}`).join('\n'), [
+    if (!plan.length) { showDialog(organization.title, organization.empty); return; }
+    showDialog(organization.title, organization.confirm + '\n\n' + plan.map((move) => `${move.name} → ${move.parentName}`).join('\n'), [
       { text: organization.cancel, style: 'cancel' },
       { text: organization.apply, onPress: () => {
         setOrganizing(true);
         void organizeCategories(plan).then(async () => {
           await queryClient.invalidateQueries();
-          Alert.alert(organization.title, organization.done);
-        }).catch((error: unknown) => Alert.alert(organization.error, error instanceof Error ? error.message : String(error)))
+          showDialog(organization.title, organization.done);
+        }).catch((error: unknown) => showDialog(organization.error, error instanceof Error ? error.message : String(error)))
           .finally(() => setOrganizing(false));
       } },
     ]);
   }
 
   function confirmArchive(cat: Category) {
-    Alert.alert(`${zh.categories.archive}「${cat.name}」`, zh.categories.archiveConfirm, [
+    showDialog(`${zh.categories.archive}「${cat.name}」`, zh.categories.archiveConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       { text: zh.categories.archive, style: 'destructive', onPress: () => archive.mutate(cat.id) },
     ]);

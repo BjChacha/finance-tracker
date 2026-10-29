@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { Icon } from '@/components/Icon';
 import type { CategorySlice } from '../repository';
 import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme } from '@/theme';
@@ -47,6 +48,8 @@ export function CategoryTreemap({
     });
   if (total <= 0) return null;
   const height = 132;
+  const cornerWidth = 48;
+  const cornerHeight = 32;
   return (
     <View>
       <View
@@ -56,8 +59,14 @@ export function CategoryTreemap({
       >
         {treemapLayout(tiles, width, height).map(
           ({ item, x, y, width: w, height: h }) => {
-            const readable = w >= 54 && h >= 40;
+            // 小色块也要能认出是什么：只按容纳一行小字的最低尺寸判断，
+            // 字号随宽度收缩，超宽内容省略号截断（以前整块空白＝看不出分类）。
+            const showName = w >= 34 && h >= 20;
+            const showPct = w >= 52 && h >= 56;
             const interactive = w >= 44 && h >= 44;
+            const padding = showName
+              ? Math.min(10, Math.max(3, Math.round(w / 10)))
+              : 0;
             const Container = interactive ? Pressable : View;
             const pct = Math.round((item.value / total) * 1000) / 10;
             return (
@@ -92,7 +101,7 @@ export function CategoryTreemap({
                   borderRadius: 7,
                   overflow: 'hidden',
                   justifyContent: 'center',
-                  padding: readable ? 10 : 0,
+                  padding,
                   backgroundColor: colors.card,
                 }}
               >
@@ -105,38 +114,60 @@ export function CategoryTreemap({
                     opacity: dark ? 0.28 : 0.18,
                   }}
                 />
-                {readable && (
-                  <>
-                    <Text
-                      numberOfLines={1}
-                      style={{
-                        fontSize: 12,
-                        color: colors.text,
-                        fontWeight: '600',
-                      }}
-                    >
-                      {item.name}
-                    </Text>
-                    {h >= 60 && (
-                      <Text
-                        numberOfLines={1}
-                        style={{
-                          fontSize: w > 100 ? 22 : 15,
-                          color: colors.text,
-                          fontWeight: '600',
-                          fontVariant: ['tabular-nums'],
-                          marginTop: 3,
-                        }}
-                      >
-                        {pct}%
-                      </Text>
-                    )}
-                  </>
+                {showName && (
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      fontSize: w >= 90 ? 12 : 10,
+                      color: colors.text,
+                      fontWeight: '600',
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                )}
+                {showPct && (
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      fontSize: w > 100 ? 22 : 15,
+                      color: colors.text,
+                      fontWeight: '600',
+                      fontVariant: ['tabular-nums'],
+                      marginTop: 3,
+                    }}
+                  >
+                    {pct}%
+                  </Text>
                 )}
               </Container>
             );
           },
         )}
+        {/* 右下角常驻入口：面积图放不下的小分类在这里能看全 */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={copy.allCategories}
+          hitSlop={{ top: 10, left: 10 }}
+          onPress={onShowAll}
+          style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+            width: cornerWidth,
+            height: cornerHeight,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.card,
+            borderTopLeftRadius: 8,
+            borderBottomRightRadius: 7,
+            borderWidth: 1.5,
+            borderColor: colors.background,
+          }}
+        >
+          <Icon name="more-horizontal" size={16} color={colors.textSecondary} />
+        </Pressable>
       </View>
       <Text style={{ color: colors.textSecondary, fontSize: 10, marginTop: 7 }}>
         {copy.areaMeaning}

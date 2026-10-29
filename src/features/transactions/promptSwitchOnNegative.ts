@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import type { TransactionType } from '@/db/schema';
 import { zh } from '@/i18n/zh';
 import { formatCents } from '@/lib/money';
@@ -17,7 +17,7 @@ export function promptSwitchOnNegative(opts: {
   const { cents, type, onSwitch, onAbsAmountText } = opts;
   if (cents >= 0 || type === 'transfer') return;
   const opposite: TransactionType = type === 'expense' ? 'income' : 'expense';
-  Alert.alert(
+  showDialog(
     zh.txList.negativeAmountTitle,
     zh.txList.negativeAmountMsg(opposite === 'income' ? zh.tx.income : zh.tx.expense),
     [

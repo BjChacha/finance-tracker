@@ -104,7 +104,6 @@ export function AssetCard({
               }))}
               primaryColor={colors.primary}
               primaryLabel={copy[metric]}
-              curved={false}
               height={180}
             />
             {data.accounts.length === 0 && (

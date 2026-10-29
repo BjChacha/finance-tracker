@@ -8,16 +8,16 @@ import {
 	type ForwardedRef,
 } from "react";
 import {
-	Alert,
-	Keyboard,
-	Platform,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Switch,
-	Text,
-	View,
+  Keyboard,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
 } from "react-native";
+import { showDialog } from '@/components/dialog';
 import Animated, {
 	Easing,
 	FadeIn,
@@ -305,7 +305,7 @@ function AccountEditorComponent(
 			plan.delta,
 			existing.currency,
 		)}`;
-		Alert.alert(
+		showDialog(
 			zh.accounts.adjustBalance,
 			`${formatCentsWithSymbol(existing.balance, existing.currency)} → ${formatCentsWithSymbol(
 				actualCents,
@@ -336,7 +336,7 @@ function AccountEditorComponent(
 			{
 				onSuccess: () => setAdjustOpen(false),
 				onError: (error) =>
-					Alert.alert(
+					showDialog(
 						zh.common.error,
 						error instanceof Error ? error.message : String(error),
 					),
@@ -347,12 +347,12 @@ function AccountEditorComponent(
 	async function save(): Promise<boolean> {
 		if (submissionLock.current || pending || adjustOpen) return false;
 		if (!name.trim()) {
-			Alert.alert(zh.accounts.nameRequired);
+			showDialog(zh.accounts.nameRequired);
 			return false;
 		}
 		const initialBalance = parseMoneyToCents(balanceText || "0");
 		if (initialBalance === null) {
-			Alert.alert(zh.accounts.invalidBalance);
+			showDialog(zh.accounts.invalidBalance);
 			return false;
 		}
 		const input: AccountInput = {
@@ -374,7 +374,7 @@ function AccountEditorComponent(
 			bypassDismissGateRef.current = true;
 			return true;
 		} catch (error) {
-			Alert.alert(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
+			showDialog(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
 			return false;
 		} finally {
 			submissionLock.current = false;

@@ -1,11 +1,12 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { createRef } from "react";
-import { Alert, Keyboard } from "react-native";
+import { Keyboard } from "react-native";
 import { zh } from "@/i18n/zh";
 import { formLabels } from "@/components/form/labels";
 import { pickAutoSelect } from "@/features/suggestions";
 import { useAccountBalances } from "@/features/accounts";
 import { useCategoryTree } from "@/features/categories";
+import { showDialog } from "@/components/dialog";
 
 import { TransactionForm, type TransactionFormHandle } from "../components/TransactionForm";
 
@@ -54,6 +55,11 @@ jest.mock("@/features/suggestions", () => ({
 	useCategorySuggestion: () => new Map(),
 }));
 
+jest.mock("@/components/dialog", () => ({
+	showDialog: jest.fn(),
+	showToast: jest.fn(),
+}));
+
 jest.mock("@/lib/quickKeypad", () => ({
 	isQuickKeypadAvailable: () => false,
 	openKeypad: jest.fn(),
@@ -88,7 +94,7 @@ describe("Transaction editor submission", () => {
     jest.mocked(pickAutoSelect).mockReturnValue({ categoryId: 'fallback-category', expandParentId: null });
     const submit = jest.fn();
     const ref = createRef<TransactionFormHandle>();
-    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    jest.mocked(showDialog).mockImplementation(() => {});
     render(<TransactionForm ref={ref} mode="create" prefillPolicy="explicit" initialValues={{ type: 'expense', amount: 1200 }} onSubmit={submit} />);
     await act(async () => { expect(await ref.current!.save()).toBe(false); });
     expect(submit).not.toHaveBeenCalled();
@@ -98,7 +104,7 @@ describe("Transaction editor submission", () => {
   it('blocks unresolved review requirements without losing manual edits', async () => {
     const submit = jest.fn().mockResolvedValue(undefined);
     const ref = createRef<TransactionFormHandle>();
-    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    jest.mocked(showDialog).mockImplementation(() => {});
     const { rerender } = render(<TransactionForm ref={ref} mode="create" prefillPolicy="explicit" saveBlockedReason="Confirm date" initialValues={initial} onSubmit={submit} />);
     fireEvent.changeText(screen.getByPlaceholderText(zh.tx.notePlaceholder), 'Reviewed note');
     await act(async () => { expect(await ref.current!.save()).toBe(false); });
@@ -109,7 +115,7 @@ describe("Transaction editor submission", () => {
   });
 
   it('protects unsaved changes in a new explicit preview', async () => {
-    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const alert = jest.mocked(showDialog).mockClear().mockImplementation(() => {});
     const ref = createRef<TransactionFormHandle>();
     render(<TransactionForm ref={ref} mode="create" prefillPolicy="explicit" initialValues={initial} onSubmit={jest.fn()} />);
     fireEvent.changeText(screen.getByPlaceholderText(zh.tx.notePlaceholder), 'Unsaved preview');
@@ -172,7 +178,7 @@ describe("Transaction editor submission", () => {
   });
 
   it("keeps edits and reports a failed save without closing", async () => {
-    const alert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    const alert = jest.mocked(showDialog).mockClear().mockImplementation(() => {});
     const submit = jest.fn().mockRejectedValue(new Error("Storage unavailable"));
     const saved = jest.fn();
     render(<TransactionForm mode="edit" initialValues={initial} onSubmit={submit} onSaved={saved} />);
@@ -185,7 +191,7 @@ describe("Transaction editor submission", () => {
   });
 
   it("protects dirty edits and lets the user keep editing", async () => {
-    const alert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    const alert = jest.mocked(showDialog).mockClear().mockImplementation(() => {});
     const ref = createRef<TransactionFormHandle>();
     render(<TransactionForm ref={ref} mode="edit" initialValues={initial} onSubmit={jest.fn()} />);
     expect(await ref.current!.prepareDismiss()).toBe(true);
@@ -197,7 +203,7 @@ describe("Transaction editor submission", () => {
   });
 
   it("resets dirty state when the resident editor changes sessions", async () => {
-    const alert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    const alert = jest.mocked(showDialog).mockClear().mockImplementation(() => {});
     const ref = createRef<TransactionFormHandle>();
     const submit = jest.fn();
     const { rerender } = render(<TransactionForm ref={ref} sessionKey="one" mode="edit" initialValues={initial} onSubmit={submit} />);

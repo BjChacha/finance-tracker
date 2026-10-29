@@ -1,7 +1,7 @@
 export const dashboardText = {
   otherCategories: '\u5176\u4ed6\u5206\u7c7b',
   areaMeaning:
-    '\u9762\u79ef\u4ee3\u8868\u652f\u51fa\u5360\u6bd4 \u00b7 \u70b9\u51fb\u8272\u5757\u67e5\u770b\u6d41\u6c34',
+    '\u9762\u79ef\u4ee3\u8868\u652f\u51fa\u5360\u6bd4 \u00b7 \u70b9\u51fb\u8272\u5757\u67e5\u770b\u6d41\u6c34 \u00b7 \u53f3\u4e0b\u89d2\u770b\u5168\u90e8',
   versusPrevious: '\u8f83\u4e0a\u671f',
   increased: '\u589e\u52a0',
   decreased: '\u51cf\u5c11',
@@ -33,6 +33,7 @@ export const dashboardText = {
   month: '\u6708',
   quarter: '\u5b63',
   year: '\u5e74',
+  all: '\u5168\u90e8',
   allHistory: '\u5168\u90e8\u5386\u53f2',
   periodExpense: '\u672c\u671f\u652f\u51fa',
   income: '\u6536\u5165',
@@ -43,6 +44,9 @@ export const dashboardText = {
   noChange: '\u6301\u5e73',
   where: '\u94b1\u82b1\u5728\u54ea',
   showAll: '\u5c55\u5f00\u5168\u90e8\u5206\u7c7b',
+  allCategories: '\u67e5\u770b\u5168\u90e8\u5206\u7c7b',
+  closeSheet: '\u5173\u95ed\u5206\u7c7b\u9762\u677f',
+  sheetTotal: '\u5408\u8ba1',
   showLess: '\u6536\u8d77',
   details: '\u67e5\u770b\u660e\u7ec6',
   categoryAnalysis: '\u5206\u7c7b\u5206\u6790',

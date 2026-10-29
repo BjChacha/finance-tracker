@@ -5,6 +5,7 @@ import { Icon, type IconName } from "@/components/Icon";
 import { useFloatingTabBarInset } from "@/components/navigation/floating-tab-bar";
 import { LLMUsageCard } from "@/features/llm-usage/usage-card";
 import { useTransactionSummary } from "@/features/stats";
+import { useAllTimeSummary } from "@/features/transactions";
 import {
 	deriveUpdateStatus,
 	dismissUpdate,
@@ -24,51 +25,76 @@ function groupDigits(n: number): string {
 	return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-/** Top-of-page overview: first booking date, total entries, tracked amount. */
+/** 顶部记录概览：起始日 / 笔数 + 全部时间收入 / 支出 / 结余（原流水页签的合计看板迁到此） */
 function ProfileSummaryCard() {
 	const { colors } = useTheme();
 	const summary = useTransactionSummary();
+	const totals = useAllTimeSummary();
 	const data = summary.data;
-	const stats = [
+	const money = totals.data;
+	const moneyCells = [
 		{
-			label: zh.profile.summarySince,
-			value: data?.firstDate ? dayjs(data.firstDate).format("YYYY.MM.DD") : "—",
+			label: zh.profile.summaryIncome,
+			value: money ? formatCentsWithSymbol(money.income) : "—",
+			color: colors.income,
 		},
 		{
-			label: zh.profile.summaryCount,
-			value: data ? groupDigits(data.count) : "—",
+			label: zh.profile.summaryExpense,
+			value: money ? formatCentsWithSymbol(money.expense) : "—",
+			color: colors.expense,
 		},
 		{
-			label: zh.profile.summaryTracked,
-			value: data ? formatCentsWithSymbol(data.trackedCents) : "—",
+			label: zh.profile.summaryBalance,
+			value: money
+				? formatCentsWithSymbol(money.income - money.expense)
+				: "—",
+			color: colors.text,
 		},
 	];
 	return (
 		<View style={[styles.summaryCard, { backgroundColor: colors.card }]}>
-			{stats.map((stat, index) => (
-				<View
-					key={stat.label}
-					style={[
-						styles.summaryCell,
-						index > 0 && {
-							borderLeftWidth: StyleSheet.hairlineWidth,
-							borderLeftColor: colors.border,
-						},
-					]}
-				>
-					<Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>
-						{stat.label}
-					</Text>
-					<Text
-						style={[styles.summaryValue, { color: colors.text }]}
-						numberOfLines={1}
-						adjustsFontSizeToFit
-						minimumFontScale={0.6}
+			<View style={styles.summaryMetaRow}>
+				<Text style={[styles.summaryMeta, { color: colors.textSecondary }]}>
+					{zh.profile.summarySince}{" "}
+					{data?.firstDate
+						? dayjs(data.firstDate).format("YYYY.MM.DD")
+						: "—"}
+				</Text>
+				<Text style={[styles.summaryMeta, { color: colors.textSecondary }]}>
+					{zh.profile.summaryCount} {data ? groupDigits(data.count) : "—"}
+				</Text>
+			</View>
+			<View style={styles.summaryRow}>
+				{moneyCells.map((cell, index) => (
+					<View
+						key={cell.label}
+						style={[
+							styles.summaryCell,
+							index > 0 && {
+								borderLeftWidth: StyleSheet.hairlineWidth,
+								borderLeftColor: colors.border,
+							},
+						]}
 					>
-						{stat.value}
-					</Text>
-				</View>
-			))}
+						<Text
+							style={[styles.summaryLabel, { color: colors.textSecondary }]}
+						>
+							{cell.label}
+						</Text>
+						<Text
+							style={[
+								styles.summaryValue,
+								{ color: cell.color, fontSize: 15 },
+							]}
+							numberOfLines={1}
+							adjustsFontSizeToFit
+							minimumFontScale={0.6}
+						>
+							{cell.value}
+						</Text>
+					</View>
+				))}
+			</View>
 		</View>
 	);
 }
@@ -240,7 +266,19 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		paddingVertical: 15,
 	},
-	summaryCard: { flexDirection: "row", borderRadius: 12, paddingVertical: 14 },
+	summaryCard: {
+		borderRadius: 12,
+		paddingVertical: 14,
+		paddingHorizontal: 8,
+		gap: 10,
+	},
+	summaryMetaRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		paddingHorizontal: 8,
+	},
+	summaryMeta: { fontSize: 11, fontVariant: ["tabular-nums"] },
+	summaryRow: { flexDirection: "row" },
 	updateCard: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -259,7 +297,6 @@ const styles = StyleSheet.create({
 	summaryCell: { flex: 1, alignItems: "center", gap: 4, paddingHorizontal: 6 },
 	summaryLabel: { fontSize: 11 },
 	summaryValue: {
-		fontSize: 14,
 		fontWeight: "600",
 		fontVariant: ["tabular-nums"],
 	},

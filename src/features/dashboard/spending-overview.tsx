@@ -6,46 +6,60 @@ import { useCategoryBreakdown } from '@/features/stats/hooks';
 import type { CategorySlice } from '@/features/stats/repository';
 import { spendingDriver } from '@/features/stats/spending-comparison';
 import { useTransactionTotals } from '@/features/transactions/hooks';
-import { amountChange } from '@/lib/analytics-range';
+import { amountChange, type DateRange, type PeriodSelection } from '@/lib/analytics-range';
 import { dayjs } from '@/lib/date';
 import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme } from '@/theme';
 import { Amount, dashboardStyles, QueryNotice } from './components';
 import { dashboardText as copy } from './labels';
-import type { usePeriod } from './use-period';
 
 export function SpendingOverview({
-  period,
+  range,
+  comparison,
+  selection,
   onTransactions,
   onCategory,
 }: {
-  period: ReturnType<typeof usePeriod>;
+  range: DateRange;
+  /** 「全部时间」口径下没有上一个可比周期，此时对比类内容整块隐藏 */
+  comparison: DateRange | null;
+  selection: PeriodSelection;
   onTransactions: (type: 'expense' | 'income') => void;
   onCategory: (category: CategorySlice) => void;
 }) {
   const { colors } = useTheme();
   const router = useRouter();
-  const { range, comparison, selection } = period;
+  const comparable = comparison !== null;
   const totals = useTransactionTotals({ range });
-  const previous = useTransactionTotals({ range: comparison });
+  const previous = useTransactionTotals(
+    { range: comparison ?? range },
+    comparable,
+  );
   const categories = useCategoryBreakdown(range, 'expense');
-  const previousCategories = useCategoryBreakdown(comparison, 'expense');
-  const budget = useBudgetStatus(selection.period, selection.key);
+  const previousCategories = useCategoryBreakdown(
+    comparison ?? range,
+    'expense',
+    undefined,
+    comparable,
+  );
+  const budget = useBudgetStatus(selection.period, selection.key, comparable);
   const driver =
-    categories.data && previousCategories.data
+    comparable && categories.data && previousCategories.data
       ? spendingDriver(categories.data, previousCategories.data)
       : null;
   const change =
-    totals.data && previous.data
+    comparable && totals.data && previous.data
       ? amountChange(totals.data.expense, previous.data.expense)
       : null;
   const totalBudget = budget.data?.total;
   const remaining = totalBudget ? totalBudget.amount - totalBudget.spent : null;
-  const comparisonStart = dayjs(comparison.start).format(
-    comparison.start.slice(0, 4) === range.start.slice(0, 4)
-      ? 'MM.DD'
-      : 'YYYY.MM.DD',
-  );
+  const comparisonStart = comparison
+    ? dayjs(comparison.start).format(
+        comparison.start.slice(0, 4) === range.start.slice(0, 4)
+          ? 'MM.DD'
+          : 'YYYY.MM.DD',
+      )
+    : null;
   return (
     <View style={{ gap: 12 }}>
       <View style={dashboardStyles.between}>
@@ -62,13 +76,13 @@ export function SpendingOverview({
         >
           {dayjs(range.start).format('MM.DD')}—
           {dayjs(range.end).format('MM.DD')}
-          {' · '}
-          {copy.versus} {comparisonStart}—
-          {dayjs(comparison.end).format('MM.DD')}
+          {comparison && comparisonStart
+            ? ` · ${copy.versus} ${comparisonStart}—${dayjs(comparison.end).format('MM.DD')}`
+            : ` · ${copy.allHistory}`}
         </Text>
       </View>
       <QueryNotice queries={[totals, previous]} />
-      {totals.data && change && (
+      {totals.data && (change || !comparable) && (
         <>
           <Pressable
             accessibilityRole="button"
@@ -86,17 +100,20 @@ export function SpendingOverview({
             >
               {formatCentsWithSymbol(totals.data.expense)}
             </Text>
-            <Text
-              style={{
-                color: change.delta > 0 ? colors.expense : colors.textSecondary,
-                fontSize: 12,
-                marginTop: 3,
-              }}
-            >
-              {change.delta === 0
-                ? copy.sameSpending
-                : `${change.percent === null ? copy.newExpense : copy.versusPrevious} ${change.delta > 0 ? '+' : ''}${formatCentsWithSymbol(change.delta)}${change.percent === null ? '' : ` (${change.percent > 0 ? '+' : ''}${change.percent}%)`}`}
-            </Text>
+            {change && (
+              <Text
+                style={{
+                  color:
+                    change.delta > 0 ? colors.expense : colors.textSecondary,
+                  fontSize: 12,
+                  marginTop: 3,
+                }}
+              >
+                {change.delta === 0
+                  ? copy.sameSpending
+                  : `${change.percent === null ? copy.newExpense : copy.versusPrevious} ${change.delta > 0 ? '+' : ''}${formatCentsWithSymbol(change.delta)}${change.percent === null ? '' : ` (${change.percent > 0 ? '+' : ''}${change.percent}%)`}`}
+              </Text>
+            )}
           </Pressable>
           <View style={{ flexDirection: 'row', gap: 24 }}>
             <Pressable
@@ -117,7 +134,7 @@ export function SpendingOverview({
         </>
       )}
       <QueryNotice queries={[budget]} />
-      {budget.data && (
+      {budget.data && comparable && (
         <Pressable
           accessibilityRole="button"
           onPress={() =>

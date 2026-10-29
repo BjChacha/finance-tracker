@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Modal,
   Pressable,
   ScrollView,
@@ -11,6 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { Icon } from '@/components/Icon';
 import { SingleLineTextInput } from '@/components/single-line-text-input';
@@ -114,14 +114,14 @@ export default function ImportScreen() {
       setEncoding('auto');
       const found = await session.detect();
       if (found.length === 0) {
-        Alert.alert(zh.common.error, t.noAdapter);
+        showDialog(zh.common.error, t.noAdapter);
         return;
       }
       setCandidates(found);
       setAdapterId(found[0]!.adapter.id);
       setStep(1);
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -141,7 +141,7 @@ export default function ImportScreen() {
         await parseAndPlan();
       }
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -156,7 +156,7 @@ export default function ImportScreen() {
     try {
       setCsvPreview(await readCsvPreview(session.ctx));
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -164,11 +164,11 @@ export default function ImportScreen() {
 
   async function handleParseCsv() {
     if (!dateColumn || !amountColumn) {
-      Alert.alert(zh.common.error, t.needDateAmount);
+      showDialog(zh.common.error, t.needDateAmount);
       return;
     }
     if (directionMode === 'column' && !directionColumn) {
-      Alert.alert(zh.common.error, t.needDirectionColumn);
+      showDialog(zh.common.error, t.needDirectionColumn);
       return;
     }
     const splitLabels = (s: string) =>
@@ -194,7 +194,7 @@ export default function ImportScreen() {
       session.setAdapter('generic-csv', config);
       await parseAndPlan();
     } catch (e) {
-      Alert.alert(t.parseFailed, errorMessage(e));
+      showDialog(t.parseFailed, errorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -204,7 +204,7 @@ export default function ImportScreen() {
   async function parseAndPlan() {
     const result = await session.parse();
     if (result.transactions.length === 0) {
-      Alert.alert(t.parseFailed, t.emptyParse);
+      showDialog(t.parseFailed, t.emptyParse);
       return;
     }
     const plan = await session.buildMappingPlan();
@@ -226,7 +226,7 @@ export default function ImportScreen() {
       setIncludeDuplicates(false);
       setStep(4);
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -243,7 +243,7 @@ export default function ImportScreen() {
       setUndone(false);
       setStep(5);
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     } finally {
       setBusy(false);
     }
@@ -253,7 +253,7 @@ export default function ImportScreen() {
 
   function handleUndo() {
     if (!commitResult) return;
-    Alert.alert(t.undo, t.undoConfirm, [
+    showDialog(t.undo, t.undoConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       {
         text: zh.common.confirm,
@@ -264,9 +264,9 @@ export default function ImportScreen() {
             const removed = await undoBatch(commitResult.batchId);
             await invalidateAfterWrite();
             setUndone(true);
-            Alert.alert(t.undo, t.undoDone(removed));
+            showDialog(t.undo, t.undoDone(removed));
           } catch (e) {
-            Alert.alert(zh.common.error, errorMessage(e));
+            showDialog(zh.common.error, errorMessage(e));
           } finally {
             setBusy(false);
           }

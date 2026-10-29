@@ -1,7 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Keyboard,
   Pressable,
   ScrollView,
@@ -11,6 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { SingleLineTextInput } from '@/components/single-line-text-input';
 import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import type { RecurringFrequency, TransactionType } from '@/db/schema';
@@ -139,7 +139,7 @@ export default function RecurringEditScreen() {
   async function handleSave(dismiss: () => void) {
     if (pending) return;
     if (!name.trim()) {
-      Alert.alert(zh.recurring.nameRequired);
+      showDialog(zh.recurring.nameRequired);
       return;
     }
     const amount = parseMoneyToCents(amountText);
@@ -153,38 +153,38 @@ export default function RecurringEditScreen() {
       return;
     }
     if (amount === null || amount <= 0) {
-      Alert.alert(zh.txList.invalidAmount);
+      showDialog(zh.txList.invalidAmount);
       return;
     }
     if (!effectiveAccountId) {
-      Alert.alert(zh.txList.needAccount);
+      showDialog(zh.txList.needAccount);
       return;
     }
     if (type === 'transfer' && (!toAccountId || toAccountId === effectiveAccountId)) {
-      Alert.alert(zh.txList.sameAccount);
+      showDialog(zh.txList.sameAccount);
       return;
     }
     if (!categoryId) {
-      Alert.alert(zh.txList.needCategory);
+      showDialog(zh.txList.needCategory);
       return;
     }
     const interval = Number(intervalText);
     if (!Number.isInteger(interval) || interval < 1) {
-      Alert.alert(zh.recurring.invalidInterval);
+      showDialog(zh.recurring.invalidInterval);
       return;
     }
     const anchor = currentAnchor();
     if (anchor === null) {
-      Alert.alert(zh.recurring.invalidAnchorDay);
+      showDialog(zh.recurring.invalidAnchorDay);
       return;
     }
     if (!DATE_RE.test(startDate)) {
-      Alert.alert(zh.recurring.invalidStartDate);
+      showDialog(zh.recurring.invalidStartDate);
       return;
     }
     const endDate = endDateText.trim() === '' ? null : endDateText.trim();
     if (endDate !== null && (!DATE_RE.test(endDate) || endDate < startDate)) {
-      Alert.alert(zh.recurring.invalidEndDate);
+      showDialog(zh.recurring.invalidEndDate);
       return;
     }
     const input: RecurringInput = {
@@ -209,7 +209,7 @@ export default function RecurringEditScreen() {
 
   function handleDelete(dismiss: () => void) {
     if (!existing) return;
-    Alert.alert(zh.common.delete, zh.recurring.deleteConfirm, [
+    showDialog(zh.common.delete, zh.recurring.deleteConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       {
         text: zh.common.delete,

@@ -27,10 +27,16 @@ export function DashboardScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const inset = useFloatingTabBarInset();
-  const period = usePeriod();
-  const { range, comparison, granularity, selection } = period;
+  const period = usePeriod(undefined, { withAll: true });
+  const { range, comparison, granularity, selection, all } = period;
+  const comparable = comparison !== null;
   const categories = useCategoryBreakdown(range, 'expense');
-  const previousCategories = useCategoryBreakdown(comparison, 'expense');
+  const previousCategories = useCategoryBreakdown(
+    comparison ?? range,
+    'expense',
+    undefined,
+    comparable,
+  );
   const highlights = useLargestExpenses(range);
   const openTransactions = (type: 'expense' | 'income') =>
     router.push({
@@ -60,80 +66,98 @@ export function DashboardScreen() {
           { paddingTop: 8, paddingBottom: inset + 80 },
         ]}
       >
-        <PeriodControl {...period} compact />
-        <SpendingOverview
-          period={period}
-          onTransactions={openTransactions}
-          onCategory={openCategory}
+        <PeriodControl
+          {...period}
+          compact
+          allSelected={period.all}
+          onSelectAll={() => period.setAll(true)}
         />
-        <Section
-          title={reportsText.title}
-          action={
-            <TextAction
-              label={reportsText.historyTitle}
-              onPress={() => router.push('/reports')}
+        {period.all && <QueryNotice queries={[period.allStart]} />}
+        {!period.all || period.allStart.data ? (
+          <>
+            <SpendingOverview
+              range={range}
+              comparison={comparison}
+              selection={selection}
+              onTransactions={openTransactions}
+              onCategory={openCategory}
             />
-          }
-        >
-          <LatestReportCard />
-        </Section>
-        <AssetSummary
-          range={range}
-          granularity={granularity}
-          onPress={() =>
-            router.push({ pathname: '/assets', params: selection })
-          }
-        />
-        <Section
-          title={copy.where}
-          action={
-            <TextAction label={copy.categoryAnalysis} onPress={openAnalysis} />
-          }
-        >
-          <QueryNotice queries={[categories, previousCategories]} />
-          {categories.data && previousCategories.data && (
-            <CategoryList
-              items={categories.data}
-              previous={previousCategories.data}
-              onPress={openCategory}
-              showComposition
+            <Section
+              title={reportsText.title}
+              action={
+                <TextAction
+                  label={reportsText.historyTitle}
+                  onPress={() => router.push('/reports')}
+                />
+              }
+            >
+              <LatestReportCard />
+            </Section>
+            <AssetSummary
+              range={range}
+              granularity={granularity}
+              onPress={() =>
+                router.push({ pathname: '/assets', params: selection })
+              }
             />
-          )}
-        </Section>
-        <SpendingPace
-          range={range}
-          comparison={comparison}
-          granularity={granularity}
-          onDetails={openAnalysis}
-        />
-        <Section title={copy.largeExpenses}>
-          <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
-            {copy.topExpensesHint}
-          </Text>
-          <QueryNotice queries={[highlights]} />
-          <View
-            style={{
-              backgroundColor: colors.card,
-              borderRadius: 12,
-              paddingHorizontal: 12,
-              overflow: 'hidden',
-            }}
-          >
-            {highlights.data?.map((transaction) => (
-              <TransactionRow
-                key={transaction.id}
-                tx={transaction}
-                showBaseAmount
-                expenseContribution
+            <Section
+              title={copy.where}
+              action={
+                <TextAction
+                  label={copy.categoryAnalysis}
+                  onPress={openAnalysis}
+                />
+              }
+            >
+              <QueryNotice queries={[categories, previousCategories]} />
+              {categories.data && (
+                <CategoryList
+                  items={categories.data}
+                  previous={previousCategories.data}
+                  onPress={openCategory}
+                  showComposition
+                />
+              )}
+            </Section>
+            {/* 「全部时间」没有可比的上一个周期，消费节奏/上期对比整块不展示 */}
+            {comparable && (
+              <SpendingPace
+                range={range}
+                comparison={comparison}
+                granularity={granularity}
+                onDetails={openAnalysis}
               />
-            ))}
-          </View>
-          {highlights.data?.length === 0 && (
-            <Text style={{ color: colors.textSecondary }}>
-              {copy.emptyHighlights}
-            </Text>
-          )}
-        </Section>
+            )}
+            <Section title={copy.largeExpenses}>
+              <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+                {copy.topExpensesHint}
+              </Text>
+              <QueryNotice queries={[highlights]} />
+              <View
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 12,
+                  paddingHorizontal: 12,
+                  overflow: 'hidden',
+                }}
+              >
+                {highlights.data?.map((transaction) => (
+                  <TransactionRow
+                    key={transaction.id}
+                    tx={transaction}
+                    showBaseAmount
+                    expenseContribution
+                  />
+                ))}
+              </View>
+              {highlights.data?.length === 0 && (
+                <Text style={{ color: colors.textSecondary }}>
+                  {copy.emptyHighlights}
+                </Text>
+              )}
+            </Section>
+          </>
+        ) : null}
       </ScrollView>
     </View>
   );

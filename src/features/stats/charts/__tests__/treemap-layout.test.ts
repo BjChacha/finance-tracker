@@ -43,7 +43,9 @@ it('plots negative, cross-zero, flat and single-point asset histories', () => {
   expect(crossing.zeroY).toBe(19);
   expect(crossing.last).toEqual({ x: 85, y: 3 });
   expect(sparklineGeometry([-200, -100], 88, 38)?.zeroY).toBeNull();
-  expect(sparklineGeometry([0, 0], 88, 38)?.path).toBe('M3,19 L85,19');
+  expect(sparklineGeometry([0, 0], 88, 38)?.path).toBe(
+    'M3,19 C30.333333333333332,19 57.66666666666667,19 85,19',
+  );
   expect(sparklineGeometry([100], 88, 38)?.last).toEqual({ x: 44, y: 19 });
   expect(sparklineGeometry([], 88, 38)).toBeNull();
 });

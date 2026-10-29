@@ -6,6 +6,11 @@ import { formatCompactYuan, formatCentsWithSymbol } from '@/lib/money';
 import { ChartEmpty } from './ChartEmpty';
 import { dashboardChartLayout } from './chart-layout';
 import { lineAxis } from './line-axis';
+import {
+  sampleToPointIndex,
+  SMOOTH_SAMPLES_PER_SEGMENT,
+  smoothSamples,
+} from './smooth-line';
 import { dashboardText as copy } from '@/features/dashboard/labels';
 
 export type LinePoint = {
@@ -67,13 +72,30 @@ export function TrendLineChart({
     if (p.secondary != null) vals.push(p.secondary / 100);
   }
   if (fillPrimary) vals.push(0);
+  const hasSecondary = points.some((p) => p.secondary !== undefined);
+  // 平滑走自算的单调三次插值：重采样成密集折线后交给库只画折线。
+  // 库内 `curved`（Catmull-Rom 三次贝塞尔）会过冲，把贴近 0 的序列画到负值以下。
+  const seriesCount = curved ? SMOOTH_SAMPLES_PER_SEGMENT : 1;
+  const primaryDense = smoothSamples(
+    points.map((p) => p.primary / 100),
+    seriesCount,
+  );
+  const secondaryDense = hasSecondary
+    ? smoothSamples(
+        points.map((p) => (p.secondary ?? 0) / 100),
+        seriesCount,
+      )
+    : null;
+  // 少于 3 个点（或 curved=false）时不重采样，此时每个下标都是原始点
+  const factor = primaryDense.length === points.length ? 1 : seriesCount;
   // Keep a conservative 64px horizontal inset that fits both dashboard and asset cards.
   const yAxisLabelWidth = compact ? 0 : 48;
   const sideSpacing = 20;
   const containerWidth = measuredWidth ?? windowW - 64;
   const plotWidth = containerWidth - yAxisLabelWidth;
   // Every history bucket must fit, including the latest balance, on first render.
-  const spacing = (plotWidth - sideSpacing * 2) / Math.max(points.length, 1);
+  const spacing = (plotWidth - sideSpacing * 2) / Math.max(primaryDense.length, 1);
+  const pointSpacing = spacing * factor;
   const labelCount = Math.min(points.length, 6);
   const labelIndexes = new Set(
     Array.from({ length: labelCount }, (_, index) =>
@@ -83,10 +105,14 @@ export function TrendLineChart({
     ),
   );
   const xAxisLabelWidth = 38;
-  const data = points.map((point, index) => {
-    const showLabel = !compact && labelIndexes.has(index);
+  const data = primaryDense.map((value, index) => {
+    const pointIndex = index / factor;
+    const isRealPoint = Number.isInteger(pointIndex);
+    const point = points[pointIndex] ?? points[points.length - 1]!;
+    const showLabel =
+      !compact && isRealPoint && labelIndexes.has(pointIndex);
     return {
-      value: point.primary / 100,
+      value,
       source: point,
       label: '',
       labelComponent: showLabel
@@ -98,7 +124,7 @@ export function TrendLineChart({
                 axisStyle,
                 styles.xAxisLabel,
                 {
-                  marginLeft: (spacing - xAxisLabelWidth) / 2,
+                  marginLeft: (pointSpacing - xAxisLabelWidth) / 2,
                   width: xAxisLabelWidth,
                 },
               ]}
@@ -109,9 +135,11 @@ export function TrendLineChart({
         : undefined,
     };
   });
-  const hasSecondary = points.some((p) => p.secondary !== undefined);
-  const data2 = hasSecondary
-    ? points.map((p) => ({ value: (p.secondary ?? 0) / 100, source: p }))
+  const data2 = secondaryDense
+    ? secondaryDense.map((value, index) => ({
+        value,
+        source: points[sampleToPointIndex(index, points.length, factor)]!,
+      }))
     : undefined;
   const axis = lineAxis(vals);
   // The chart library adds the negative area below its configured positive height.
@@ -169,7 +197,7 @@ export function TrendLineChart({
         color2={secondaryColor}
         strokeDashArray2={secondaryDashed ? [5, 4] : undefined}
         thickness={2}
-        curved={!!curved}
+        curved={false}
         hideDataPoints
         spacing={spacing}
         initialSpacing={sideSpacing}
@@ -180,9 +208,12 @@ export function TrendLineChart({
         showStripOnFocus
         showDataPointOnFocus
         unFocusOnPressOut={false}
-        focusedDataPointIndex={compact ? undefined : selectedIndex}
+        focusedDataPointIndex={compact ? undefined : selectedIndex * factor}
         onFocus={(_item: unknown, index: number) =>
-          setSelection({ signature, index })
+          setSelection({
+            signature,
+            index: sampleToPointIndex(index, points.length, factor),
+          })
         }
         stripColor={theme.colors.textSecondary}
         stripOpacity={0.25}

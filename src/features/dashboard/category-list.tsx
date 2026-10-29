@@ -5,6 +5,7 @@ import type { CategorySlice } from '@/features/stats/repository';
 import { CategoryTreemap } from '@/features/stats/charts/CategoryTreemap';
 import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme } from '@/theme';
+import { CategorySheet } from './category-sheet';
 import { dashboardStyles, TextAction } from './components';
 import { dashboardText as copy } from './labels';
 
@@ -13,16 +14,20 @@ export function CategoryList({
   previous,
   onPress,
   initiallyExpanded = false,
+  expandable = true,
   showComposition = false,
 }: {
   items: CategorySlice[];
   previous?: CategorySlice[];
   onPress: (item: CategorySlice) => void;
   initiallyExpanded?: boolean;
+  /** 是否允许在列表内折叠/展开；全量面板里传 false（始终铺开） */
+  expandable?: boolean;
   showComposition?: boolean;
 }) {
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(initiallyExpanded);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const before = new Map(
     previous?.map((item) => [item.categoryId, item.total]),
   );
@@ -42,10 +47,10 @@ export function CategoryList({
         <CategoryTreemap
           items={items}
           onPress={onPress}
-          onShowAll={() => setExpanded(true)}
+          onShowAll={() => setSheetOpen(true)}
         />
       )}
-      {(expanded ? items : items.slice(0, 5)).map((item) => {
+      {(expanded || !expandable ? items : items.slice(0, 5)).map((item) => {
         const delta = item.total - (before.get(item.categoryId) ?? 0);
         return (
           <Pressable
@@ -133,12 +138,19 @@ export function CategoryList({
           </Pressable>
         );
       })}
-      {items.length > 5 && (
+      {expandable && items.length > 5 && (
         <TextAction
           label={expanded ? copy.showLess : copy.showAll}
           onPress={() => setExpanded(!expanded)}
         />
       )}
+      <CategorySheet
+        visible={sheetOpen}
+        items={items}
+        previous={previous}
+        onPress={onPress}
+        onClose={() => setSheetOpen(false)}
+      />
     </View>
   );
 }

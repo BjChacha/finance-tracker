@@ -83,3 +83,41 @@ it('shows each actual comparison date beside its original amount', () => {
   expect(screen.getByText('Current \u00a529.01')).toBeTruthy();
   expect(screen.getByText('Previous \u00a531.02')).toBeTruthy();
 });
+
+it('smooths through dense samples without dipping below the data range', () => {
+  const data = Array.from({ length: 9 }, (_, index) => ({
+    label: `L${index}`,
+    detailLabel: `2026-01-0${index + 1}`,
+    primary: index % 2 === 0 ? 0 : 5000,
+  }));
+  render(<Chart data={data} />);
+  const values: number[] = mockChartProps.data.map(
+    (item: { value: number }) => item.value,
+  );
+  // 每段 6 个采样点，末端补一个真实点
+  expect(values).toHaveLength((data.length - 1) * 6 + 1);
+  expect(Math.min(...values)).toBe(0);
+  expect(Math.max(...values)).toBe(50);
+  // 原始点仍在采样网格上，标签也只挂在原始点
+  expect(values[6]).toBe(50);
+  expect(values[12]).toBe(0);
+  expect(
+    mockChartProps.data.filter((item: { labelComponent?: unknown }) =>
+      Boolean(item.labelComponent),
+    ),
+  ).toHaveLength(6);
+});
+
+it('snaps a smoothed focus back to the owning bucket', () => {
+  const data = Array.from({ length: 9 }, (_, index) => ({
+    label: `L${index}`,
+    detailLabel: `2026-01-0${index + 1}`,
+    primary: (index + 1) * 100,
+  }));
+  render(<Chart data={data} />);
+  // 第 2 个原始点 = 采样点 12，点 13 采到的是同一条数据
+  act(() => mockChartProps.onFocus({ value: 0 }, 13));
+  expect(screen.getByText(/2026-01-03/)).toBeTruthy();
+  expect(screen.getByText('Expense \u00a53.00')).toBeTruthy();
+  expect(mockChartProps.focusedDataPointIndex).toBe(12);
+});

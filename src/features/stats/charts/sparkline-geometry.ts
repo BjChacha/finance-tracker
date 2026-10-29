@@ -1,3 +1,5 @@
+import { monotonePath, type Pt } from './smooth-line';
+
 export function sparklineGeometry(
   values: number[],
   width: number,
@@ -11,7 +13,7 @@ export function sparklineGeometry(
     span === 0
       ? height / 2
       : height - 3 - ((value - min) / span) * (height - 6);
-  const points = values.map((value, index) => ({
+  const points: Pt[] = values.map((value, index) => ({
     x:
       values.length === 1
         ? width / 2
@@ -19,9 +21,8 @@ export function sparklineGeometry(
     y: y(value),
   }));
   return {
-    path: points
-      .map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`)
-      .join(' '),
+    // 单调三次插值：迷你曲线同样不允许被平滑到相邻点之外（0 附近尤其明显）
+    path: monotonePath(points),
     last: points[points.length - 1]!,
     zeroY: min < 0 && max > 0 ? y(0) : null,
   };

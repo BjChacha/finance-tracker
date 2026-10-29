@@ -1,4 +1,5 @@
-import { Alert, Platform, Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/theme';
 import { dayjs } from '@/lib/date';
@@ -14,7 +15,7 @@ export function AutomaticBackupPanel({ working, onRestore }: { working: boolean;
   const files = useQuery({ queryKey: ['backup', 'files'], queryFn: listLocalSnapshots });
   const action = useMutation({
     mutationFn: (work: () => Promise<unknown>) => work(),
-    onError: (error) => Alert.alert(labels.error, error.message),
+    onError: (error) => showDialog(labels.error, error.message),
     onSettled: () => client.invalidateQueries({ queryKey: ['backup'] }),
   });
   const busy = working || action.isPending || config.isPending;

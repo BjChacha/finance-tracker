@@ -204,7 +204,9 @@ export function LedgerScreen({
             ) : (
               <>
                 <QueryNotice queries={[totals, pages]} />
-                {ready && (
+                {/* 合计看板只服务于筛选后的明细页；流水页签的口径是全量，
+                    已迁到「我的」页（避免同一份数字在两处维护）。 */}
+                {!tab && ready && (
                   <Card title={`${summary.count} ${copy.count}`}>
                     <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
                       {filters.range

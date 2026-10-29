@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { AppState, Pressable, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAppLaunchGate } from "@/components/navigation/app-launch-gate";
+import { DialogHost } from "@/components/dialog";
 import { ResidentEditorSheetProvider } from "@/components/navigation/resident-editor-sheet-host";
 import { migrationError } from "@/db/migrate";
 import { migrateMealCategoriesOnce, seedIfEmpty } from "@/db/seed";
@@ -214,6 +215,8 @@ function AppShell() {
 					<Stack.Screen name="recurring/index" options={sheetOptions} />
 					<Stack.Screen name="recurring/edit" options={sheetOptions} />
 				</Stack>
+				{/* 主题化弹窗/轻提示：必须排在 Stack 之后才能盖住路由页面与底部页签 */}
+				<DialogHost />
 			</ResidentEditorSheetProvider>
 		</View>
 	);

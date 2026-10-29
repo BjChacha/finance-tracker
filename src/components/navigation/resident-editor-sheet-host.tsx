@@ -8,7 +8,8 @@ import React, {
 	useState,
 } from "react";
 import { useRouter } from "expo-router";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { showDialog } from '@/components/dialog';
 import {
 	SecondarySheetSurface,
 	SheetHeaderIconButton,
@@ -317,7 +318,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 	const confirmTransactionDelete = useCallback(() => {
 		if (!transaction || target?.kind !== "transaction") return;
 		const deleteToken = target.token;
-		Alert.alert(zh.common.delete, zh.tx.deleteConfirm, [
+		showDialog(zh.common.delete, zh.tx.deleteConfirm, [
 			{ text: zh.common.cancel, style: "cancel" },
 			{
 				text: zh.common.delete,
@@ -327,7 +328,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 						await removeTransaction.mutateAsync(transaction.id);
 						if (target.token === deleteToken) startDismiss();
 					} catch (error) {
-						Alert.alert(
+						showDialog(
 							zh.common.error,
 							error instanceof Error ? error.message : String(error),
 						);
@@ -340,7 +341,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 	const confirmAccountDelete = useCallback(() => {
 		if (!account || target?.kind !== "account") return;
 		const deleteToken = target.token;
-		Alert.alert(
+		showDialog(
 			zh.accounts.deleteTitle(account.name),
 			zh.accounts.deleteConfirm,
 			[
@@ -353,7 +354,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 							await removeAccount.mutateAsync(account.id);
 							if (target.token === deleteToken) startDismiss();
 						} catch (error) {
-							Alert.alert(
+							showDialog(
 								zh.common.error,
 								error instanceof Error ? error.message : String(error),
 							);

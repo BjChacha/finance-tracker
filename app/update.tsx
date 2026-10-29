@@ -9,6 +9,14 @@ import {
 	Text,
 	View,
 } from "react-native";
+import Animated, {
+	Easing,
+	cancelAnimation,
+	useAnimatedStyle,
+	useSharedValue,
+	withRepeat,
+	withTiming,
+} from "react-native-reanimated";
 import { Icon } from "@/components/Icon";
 import { SecondarySheetScreen } from "@/components/navigation/secondary-sheet-screen";
 import {
@@ -23,7 +31,7 @@ import {
 } from "@/features/update";
 import { zh } from "@/i18n/zh";
 import { dayjs } from "@/lib/date";
-import { useTheme } from "@/theme";
+import { motion, useTheme } from "@/theme";
 
 /** 下载/安装的页面局部状态机（安装器拉起后应用退后台，返回时可重试安装） */
 type DownloadState =
@@ -41,6 +49,81 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 			<Text style={{ color: colors.text, fontSize: 14, fontWeight: "600" }}>
 				{value}
 			</Text>
+		</View>
+	);
+}
+
+/**
+ * 「正在检查」态。
+ *
+ * 手动检查时 React Query 的 `isPending` 已经是 false，如果只看它就会一直显示上一次
+ * 的结果（表面上看不出「点了没反应」）。因此检查中单独占一整块：旋转图标 + 文案，
+ * 与检查完的结果态互斥渲染。
+ */
+function CheckingBlock() {
+	const { colors } = useTheme();
+	const spin = useSharedValue(0);
+
+	useEffect(() => {
+		spin.value = 0;
+		spin.value = withRepeat(
+			withTiming(360, { duration: motion.base * 5, easing: Easing.linear }),
+			-1,
+			false,
+		);
+		return () => cancelAnimation(spin);
+	}, [spin]);
+
+	const spinStyle = useAnimatedStyle(() => ({
+		transform: [{ rotate: `${spin.value}deg` }],
+	}));
+
+	return (
+		<View style={styles.statusBlock}>
+			<View
+				style={[
+					styles.spinnerRing,
+					{ borderColor: colors.border, backgroundColor: colors.card },
+				]}
+			>
+				<Animated.View style={spinStyle}>
+					<Icon name="rotate-ccw" size={24} color={colors.primary} />
+				</Animated.View>
+			</View>
+			<Text style={{ color: colors.text, fontSize: 15, fontWeight: "600" }}>
+				{zh.update.checking}
+			</Text>
+			<Text
+				style={{
+					color: colors.textSecondary,
+					fontSize: 12,
+					textAlign: "center",
+				}}
+			>
+				{zh.update.checkingHint}
+			</Text>
+		</View>
+	);
+}
+
+/** 检查结果尾注：检查时间 + 重新检查（区分「刚查过」与「正在查」） */
+function CheckedAt({ at, onRecheck }: { at: number; onRecheck: () => void }) {
+	const { colors } = useTheme();
+	return (
+		<View style={styles.checkedAtRow}>
+			<Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+				{zh.update.checkedAt(dayjs(at).format("HH:mm"))}
+			</Text>
+			<Pressable
+				accessibilityRole="button"
+				accessibilityLabel={zh.update.recheck}
+				hitSlop={8}
+				onPress={onRecheck}
+			>
+				<Text style={{ color: colors.primary, fontSize: 12, fontWeight: "600" }}>
+					{zh.update.recheck}
+				</Text>
+			</Pressable>
 		</View>
 	);
 }
@@ -85,6 +168,8 @@ export default function UpdateScreen() {
 	const { colors } = useTheme();
 	const query = useLatestRelease();
 	const status = deriveUpdateStatus(query);
+	// 检查中包括「手动重新检查」（此时 isPending 为 false，但正在发请求）
+	const checking = query.isPending || query.isFetching;
 	const [download, setDownload] = useState<DownloadState>({ phase: "idle" });
 	const [installBlocked, setInstallBlocked] = useState(false);
 	const [installAborted, setInstallAborted] = useState(false);
@@ -237,16 +322,11 @@ export default function UpdateScreen() {
 				</View>
 			);
 		}
+		// 检查中优先于任何结果：手动重查时状态仍停在旧结果，不拦一下就看不出在查
+		if (checking) return <CheckingBlock />;
 		switch (status.state) {
 			case "checking":
-				return (
-					<View style={styles.statusBlock}>
-						<ActivityIndicator color={colors.primary} />
-						<Text style={{ color: colors.textSecondary, fontSize: 14 }}>
-							{zh.update.checking}
-						</Text>
-					</View>
-				);
+				return <CheckingBlock />;
 			case "error":
 				return (
 					<View style={styles.statusBlock}>
@@ -275,6 +355,12 @@ export default function UpdateScreen() {
 							{zh.update.upToDate}
 						</Text>
 						<InfoRow label={zh.update.currentVersion} value={`v${status.current}`} />
+						{query.dataUpdatedAt > 0 ? (
+							<CheckedAt
+								at={query.dataUpdatedAt}
+								onRecheck={() => void query.refetch()}
+							/>
+						) : null}
 					</View>
 				);
 			case "available":
@@ -319,6 +405,12 @@ export default function UpdateScreen() {
 								</Text>
 							))}
 						</View>
+						{query.dataUpdatedAt > 0 ? (
+							<CheckedAt
+								at={query.dataUpdatedAt}
+								onRecheck={() => void query.refetch()}
+							/>
+						) : null}
 					</View>
 				);
 		}
@@ -375,5 +467,20 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		gap: 12,
 		paddingVertical: 48,
+	},
+	spinnerRing: {
+		width: 56,
+		height: 56,
+		borderRadius: 28,
+		borderWidth: 2,
+		alignItems: "center",
+		justifyContent: "center",
+		marginBottom: 2,
+	},
+	checkedAtRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 16,
+		marginTop: 4,
 	},
 });

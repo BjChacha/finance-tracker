@@ -1,12 +1,6 @@
 import { useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { IdentityEditor } from '@/components/form/identity-editor';
 import { FormActionBar } from '@/components/form/form-action-bar';
 import {
@@ -33,7 +27,7 @@ export default function ProjectsScreen() {
   const archive = useArchiveProject();
 
   function confirmArchive(p: Project) {
-    Alert.alert(`${zh.projects.archive}「${p.name}」`, zh.projects.archiveConfirm, [
+    showDialog(`${zh.projects.archive}「${p.name}」`, zh.projects.archiveConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       { text: zh.projects.archive, style: 'destructive', onPress: () => archive.mutate(p.id) },
     ]);

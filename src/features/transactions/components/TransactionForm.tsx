@@ -10,20 +10,20 @@ import {
 	type ForwardedRef,
 } from "react";
 import {
-	Alert,
-	Dimensions,
-	Keyboard,
-	KeyboardAvoidingView,
-	Modal,
-	Platform,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	type LayoutChangeEvent,
-	type TextInput,
-	View,
+  Dimensions,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  type LayoutChangeEvent,
+  type TextInput,
+  View,
 } from "react-native";
+import { showDialog } from '@/components/dialog';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { usePreventRemove } from "expo-router/react-navigation";
 import Animated, {
@@ -839,13 +839,13 @@ function TransactionFormComponent(
 			invalidFee: zh.txList.invalidFee,
 			invalidDate: zh.txList.invalidDate,
 		}[error];
-		Alert.alert(message);
+		showDialog(message);
 	}
 
 	async function save(): Promise<boolean> {
 		if (submissionLock.current || submitting || typeTransition) return false;
 		if (reviewBlock) {
-			Alert.alert(reviewBlock);
+			showDialog(reviewBlock);
 			return false;
 		}
 		if (Date.now() - nativeKeypadClosedAtRef.current < 600) return false;
@@ -860,7 +860,7 @@ function TransactionFormComponent(
 			baselineRef.current = snapshot;
 			return true;
 		} catch (error) {
-			Alert.alert(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
+			showDialog(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
 			return false;
 		} finally {
 			submissionLock.current = false;

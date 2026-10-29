@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { BackHandler, Platform, ToastAndroid, View } from "react-native";
+import { BackHandler, Platform, View } from "react-native";
+import { showToast } from "@/components/dialog";
 import {
 	AddTransactionFlow,
 	parseAddTransactionLaunch,
@@ -44,11 +45,9 @@ export default function QuickAddTransactionScreen() {
 		() => !formRef.current?.closeOverlaysIfAny(),
 		[],
 	);
-	// Queue the system-owned toast before removing the task.
+	// 主题内轻提示，不跟着 Activity 一起销毁（浮层挂在应用根视图上）。
 	const handleCreated = useCallback(() => {
-		if (process.env.EXPO_OS === "android") {
-			ToastAndroid.show(zh.tx.addSuccess, ToastAndroid.SHORT);
-		}
+		showToast(zh.tx.addSuccess);
 		exitQuickAdd();
 	}, [exitQuickAdd]);
 	const completedInteractiveHandoffId = useRef<string | null>(null);

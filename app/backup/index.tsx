@@ -1,6 +1,7 @@
 import { AutomaticBackupPanel } from '@/features/backup/AutomaticBackupPanel';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { Icon, type IconName } from '@/components/Icon';
 import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import { useExportBackup, useExportCsv, useLastBackupAt, useRestoreBackup } from '@/features/backup';
@@ -26,19 +27,19 @@ export default function BackupScreen() {
   async function onExportBackup() {
     try {
       await exportBackup.mutateAsync();
-      Alert.alert(zh.backup.exportJson, zh.backup.exportDone);
+      showDialog(zh.backup.exportJson, zh.backup.exportDone);
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     }
   }
 
   async function onExportCsv() {
     try {
       const n = await exportCsv.mutateAsync();
-      if (n === 0) Alert.alert(zh.backup.exportCsv, zh.backup.csvEmpty);
-      else Alert.alert(zh.backup.exportCsv, zh.backup.csvDone(n));
+      if (n === 0) showDialog(zh.backup.exportCsv, zh.backup.csvEmpty);
+      else showDialog(zh.backup.exportCsv, zh.backup.csvDone(n));
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     }
   }
 
@@ -47,14 +48,14 @@ export default function BackupScreen() {
     try {
       const picked = fileUri ? { uri: fileUri } : await pickDocument(['.json']);
       if (!picked) return;
-      // 双重确认：两次 Alert，第二次才真正执行
-      Alert.alert(zh.backup.restoreConfirmTitle, zh.backup.restoreConfirm1, [
+      // 双重确认：两次弹窗，第二次才真正执行
+      showDialog(zh.backup.restoreConfirmTitle, zh.backup.restoreConfirm1, [
         { text: zh.common.cancel, style: 'cancel' },
         {
           text: zh.common.confirm,
           style: 'destructive',
           onPress: () =>
-            Alert.alert(zh.backup.restoreConfirmTitle2, zh.backup.restoreConfirm2, [
+            showDialog(zh.backup.restoreConfirmTitle2, zh.backup.restoreConfirm2, [
               { text: zh.common.cancel, style: 'cancel' },
               {
                 text: zh.backup.restoreNow,
@@ -62,11 +63,11 @@ export default function BackupScreen() {
                 onPress: () => {
                   restore.mutate(picked.uri, {
                     onSuccess: (result) =>
-                      Alert.alert(
+                      showDialog(
                         zh.backup.restoreDone,
                         zh.backup.restoreDoneDesc(result.counts.transactions),
                       ),
-                    onError: (e) => Alert.alert(zh.common.error, errorMessage(e)),
+                    onError: (e) => showDialog(zh.common.error, errorMessage(e)),
                   });
                 },
               },
@@ -74,7 +75,7 @@ export default function BackupScreen() {
         },
       ]);
     } catch (e) {
-      Alert.alert(zh.common.error, errorMessage(e));
+      showDialog(zh.common.error, errorMessage(e));
     } finally {
       setBusy(false);
     }

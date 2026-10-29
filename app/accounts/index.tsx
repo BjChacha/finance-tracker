@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import { IconBubble } from '@/components/IconBubble';
 import {
   SecondarySheetScreen,
@@ -36,7 +37,7 @@ export default function AccountsScreen() {
   }
 
   function confirmArchive(id: string, name: string) {
-    Alert.alert(`${zh.accounts.archive}「${name}」`, zh.accounts.archiveConfirm, [
+    showDialog(`${zh.accounts.archive}「${name}」`, zh.accounts.archiveConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       { text: zh.accounts.archive, style: 'destructive', onPress: () => archive.mutate(id) },
     ]);

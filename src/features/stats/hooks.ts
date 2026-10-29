@@ -27,6 +27,7 @@ export function useCategoryBreakdown(
 	range: StatsRange,
 	type: BreakdownType,
 	parentId?: string | null,
+	enabled = true,
 ) {
 	return useQuery({
 		queryKey: [
@@ -35,6 +36,7 @@ export function useCategoryBreakdown(
 			{ range, type, parentId: parentId ?? null },
 		],
 		queryFn: () => categoryBreakdown(range, type, parentId),
+		enabled,
 	});
 }
 
@@ -88,10 +90,10 @@ export function useAssetHistory(range: StatsRange, granularity: TrendGranularity
     queryFn: () => assetHistory(range, granularity), enabled });
 }
 
-export function useAssetHistoryStart() {
+export function useAssetHistoryStart(enabled = true) {
   const today = useTodayKey();
   return useQuery({ queryKey: ['stats', 'asset-history-start', today],
-    queryFn: () => assetHistoryStart(today) });
+    queryFn: () => assetHistoryStart(today), enabled });
 }
 
 export function useCalendarHeatmap(monthKey: string) {

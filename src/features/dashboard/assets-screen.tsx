@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useAssetHistoryStart } from '@/features/stats/hooks';
 import { useTheme } from '@/theme';
 import { AssetCard } from './asset-card';
 import { dashboardStyles, PeriodControl, QueryNotice } from './components';
@@ -10,13 +8,8 @@ import { usePeriod } from './use-period';
 
 export function AssetsScreen() {
   const params = useLocalSearchParams();
-  const period = usePeriod(params);
+  const period = usePeriod(params, { withAll: true });
   const { colors } = useTheme();
-  const [all, setAll] = useState(false);
-  const start = useAssetHistoryStart();
-  const range = all
-    ? { start: start.data ?? period.today, end: period.today }
-    : period.range;
   return (
     <ScrollView
       contentContainerStyle={[dashboardStyles.content, { paddingBottom: 40 }]}
@@ -24,30 +17,24 @@ export function AssetsScreen() {
     >
       <PeriodControl
         {...period}
-        allSelected={all}
-        onSelectAll={() => setAll(true)}
-        setPeriod={(next) => {
-          setAll(false);
-          period.setPeriod(next);
-        }}
-        shift={(delta) => {
-          setAll(false);
-          period.shift(delta);
-        }}
+        allSelected={period.all}
+        onSelectAll={() => period.setAll(true)}
       />
-      {all && (
+      {period.all && (
         <>
-          <QueryNotice queries={[start]} />
-          <Text style={{ color: colors.textSecondary }}>
-            {copy.allHistory} · {range.start} — {range.end}
-          </Text>
+          <QueryNotice queries={[period.allStart]} />
+          {period.allStart.data ? (
+            <Text style={{ color: colors.textSecondary }}>
+              {copy.allHistory} · {period.range.start} — {period.range.end}
+            </Text>
+          ) : null}
         </>
       )}
       <AssetCard
-        range={range}
-        granularity={all ? 'month' : period.granularity}
+        range={period.range}
+        granularity={period.granularity}
         detail
-        enabled={!all || !!start.data}
+        enabled={!period.all || !!period.allStart.data}
       />
     </ScrollView>
   );

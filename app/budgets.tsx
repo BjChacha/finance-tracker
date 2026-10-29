@@ -3,7 +3,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { parsePeriodParams } from '@/lib/analytics-range';
 import { useTodayKey } from '@/lib/use-today-key';
 import {
-  Alert,
   Modal,
   Pressable,
   ScrollView,
@@ -12,6 +11,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import { showDialog } from '@/components/dialog';
 import Animated, {
   Easing,
   withTiming,
@@ -129,19 +129,19 @@ export default function BudgetsScreen() {
   function handleSave() {
     if (!editor) return;
     if (editor.categoryId === undefined) {
-      Alert.alert(zh.budgets.needCategory);
+      showDialog(zh.budgets.needCategory);
       return;
     }
     const amount = parseMoneyToCents(editor.amountText);
     if (amount === null || amount <= 0) {
-      Alert.alert(zh.budgets.invalidAmount);
+      showDialog(zh.budgets.invalidAmount);
       return;
     }
     upsert.mutate(
       { period: editor.period, categoryId: editor.categoryId, amount, alertPct: editor.alertPct },
       {
         onSuccess: () => setEditor(null),
-        onError: (e) => Alert.alert(zh.common.error, e instanceof Error ? e.message : String(e)),
+        onError: (e) => showDialog(zh.common.error, e instanceof Error ? e.message : String(e)),
       },
     );
   }
@@ -149,7 +149,7 @@ export default function BudgetsScreen() {
   function handleDelete() {
     if (!editor?.budgetId) return;
     const id = editor.budgetId;
-    Alert.alert(zh.common.delete, zh.budgets.deleteConfirm, [
+    showDialog(zh.common.delete, zh.budgets.deleteConfirm, [
       { text: zh.common.cancel, style: 'cancel' },
       {
         text: zh.common.delete,
@@ -158,7 +158,7 @@ export default function BudgetsScreen() {
           remove.mutate(id, {
             onSuccess: () => setEditor(null),
             onError: (e) =>
-              Alert.alert(zh.common.error, e instanceof Error ? e.message : String(e)),
+              showDialog(zh.common.error, e instanceof Error ? e.message : String(e)),
           }),
       },
     ]);

@@ -54,9 +54,9 @@ export function useTransactionDailyTotals(filters: TxFilters, enabled = true) {
     queryFn: () => transactionDailyTotals(filters), enabled });
 }
 
-export function useTransactionTotals(filters: TxFilters) {
+export function useTransactionTotals(filters: TxFilters, enabled = true) {
   return useQuery({ queryKey: ['transactions-summary', 'scope', filters],
-    queryFn: () => transactionTotals(filters) });
+    queryFn: () => transactionTotals(filters), enabled });
 }
 
 export function useLargestExpenses(range: NonNullable<TxFilters['range']>) {

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import { showDialog } from '@/components/dialog';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Icon, type IconName } from "@/components/Icon";
 import { zh } from "@/i18n/zh";
@@ -33,7 +34,7 @@ export function ActionButton({ label, onPress, disabled = false, pending = false
     try {
       await onPress();
     } catch (error) {
-      Alert.alert(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
+      showDialog(zh.common.error, error instanceof Error ? error.message : formLabels.saveFailed);
     } finally {
       locked.current = false;
       setRunning(false);

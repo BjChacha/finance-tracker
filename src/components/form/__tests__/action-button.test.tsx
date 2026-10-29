@@ -1,7 +1,12 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { showDialog } from "@/components/dialog";
 import { ActionButton } from "../action-button";
 import { formLabels } from "../labels";
+
+jest.mock("@/components/dialog", () => ({
+  showDialog: jest.fn(),
+  showToast: jest.fn(),
+}));
 
 describe("ActionButton", () => {
   afterEach(() => jest.restoreAllMocks());
@@ -22,7 +27,7 @@ describe("ActionButton", () => {
   });
 
   it("reports failure and allows a retry", async () => {
-    const alert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    const alert = jest.mocked(showDialog).mockClear();
     const save = jest.fn().mockRejectedValueOnce(new Error("Storage unavailable")).mockResolvedValueOnce(undefined);
     render(<ActionButton label="Save" onPress={save} />);
     await act(async () => fireEvent.press(screen.getByRole("button", { name: "Save" })));

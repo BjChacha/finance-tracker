@@ -159,7 +159,7 @@ export function PeriodControl({
         style={{
           flexDirection: 'row',
           padding: compact ? 2 : 4,
-          width: compact ? 126 : undefined,
+          width: compact ? 172 : undefined,
           borderRadius: 12,
           backgroundColor: colors.card,
         }}
@@ -200,7 +200,7 @@ export function PeriodControl({
                   fontWeight: '600',
                 }}
               >
-                {copy[period]}
+                {period === 'allHistory' ? copy.all : copy[period]}
               </Text>
             </Pressable>
           );
@@ -285,7 +285,14 @@ export function Amount({
 export function QueryNotice({
   queries,
 }: {
-  queries: { isPending: boolean; isError: boolean; refetch: () => unknown }[];
+  queries: {
+    isPending: boolean;
+    isError: boolean;
+    refetch: () => unknown;
+    /** React Query 会为被 `enabled: false` 关掉的查询保留 pending 状态，
+     *  这里靠 fetchStatus 区分「在等数据」与「压根没发请求」 */
+    fetchStatus?: string;
+  }[];
 }) {
   const { colors } = useTheme();
   const failed = queries.filter((query) => query.isError);
@@ -301,7 +308,10 @@ export function QueryNotice({
         />
       </View>
     );
-  if (queries.some((query) => query.isPending))
+  const loading = queries.some(
+    (query) => query.isPending && query.fetchStatus !== 'idle',
+  );
+  if (loading)
     return (
       <View style={{ padding: 24, gap: 8 }}>
         <ActivityIndicator color={colors.primary} />
