@@ -96,6 +96,7 @@ function preview() {
     type: "expense",
     amount: null,
     amountCents: null,
+    currency: null,
     category: "lunch",
     account: "cash",
     to_account: null,

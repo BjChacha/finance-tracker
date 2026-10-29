@@ -20,6 +20,7 @@ describe("Field contract decoder", () => {
       type: "expense",
       amount: "m0",
       amountCents: null,
+      currency: null,
       category: null,
       account: null,
       to_account: null,
@@ -56,6 +57,22 @@ describe("Field contract decoder", () => {
     expect(decision.amountCents).toBe(expected);
   });
 
+  it.each([
+    ["\"USD\"", "USD"],
+    ["\"usd\"", "USD"],
+    ["\"HKD\"", "HKD"],
+    ["\"CNY\"", "CNY"],
+    ["null", null],
+    ["\"XYZ\"", null],
+    ["\"\"", null],
+  ])("accepts only whitelisted currency codes: %s", (wireValue, expected) => {
+    const contract = createFieldContract("2.99", context);
+    const decision = contract.decode(
+      `{"type":"expense","amountCents":"299","currency":${wireValue},"status":"single"}`,
+    );
+    expect(decision.currency).toBe(expected);
+  });
+
   it("derives the unique amount only after semantic single confirmation", () => {
     const contract = createFieldContract("30", context);
     expect(
@@ -78,6 +95,7 @@ describe("Field contract decoder", () => {
       type: null,
       amount: null,
       amountCents: null,
+      currency: null,
       category: null,
       account: null,
       to_account: null,

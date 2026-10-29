@@ -69,6 +69,7 @@ const preview = (overrides: Record<string, unknown> = {}) => ({
   status: "preview" as const,
   amountCents: 2800,
   amountEvidence: null,
+  currency: "CNY",
   type: "expense" as const,
   categoryId: "cat-food",
   accountId: "acc-cash",

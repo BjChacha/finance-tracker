@@ -1,6 +1,7 @@
 import prompts from "./prompts.json";
 import type { NaturalLanguageContext } from "./context";
 import { createFieldContract } from "./field-contract";
+import { CURRENCY_HINTS } from "./currency-evidence";
 
 /** Request body for the OpenAI-compatible chat completions endpoint. */
 export type NaturalLanguageRequest = {
@@ -44,6 +45,7 @@ export function buildTransactionRequest(
     prompts.transactionSystem,
     `候选账户：${JSON.stringify(accounts)}`,
     `候选分类：${JSON.stringify(categories)}`,
+    `支持币种（currency 字段只允许这些代码）：CNY(人民币/元/块)、${CURRENCY_HINTS.join("、")}`,
     "示例：",
     ...prompts.transactionExamples.map((example) => `- ${example}`),
   ].join("\n");

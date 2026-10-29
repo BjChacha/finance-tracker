@@ -2,6 +2,7 @@ import type { NaturalLanguageContext } from "./context";
 import type { createFieldContract } from "./field-contract";
 import { naturalLanguageAmountCandidates } from "./money";
 import { auditAccountEvidence } from "./account-evidence";
+import { naturalLanguageCurrencyEvidence } from "./currency-evidence";
 import { atTimeOfDay, dayFromEvidence, periodFromEvidence, requiresDateConfirmation } from "./dates";
 
 export type FieldDecision = ReturnType<
@@ -37,6 +38,17 @@ export function validateNaturalLanguageDecision(
     });
   }
   const accounts = context.accounts.filter((row) => row.active !== false);
+  // 币种合成：明确的原文证据优先于模型（与账户必须落在原文上的取向一致）；
+  // 无证据时用模型判断（覆盖无标记但语境明确的外币），都没有则本位币 CNY。
+  const currencyEvidence = naturalLanguageCurrencyEvidence(text);
+  const modelCurrency = decision.currency ?? null;
+  const currency = currencyEvidence ?? modelCurrency ?? "CNY";
+  if (modelCurrency && currencyEvidence && modelCurrency !== currencyEvidence) {
+    console.warn("[natural-language] Model currency contradicts the text evidence", {
+      model: modelCurrency,
+      evidence: currencyEvidence,
+    });
+  }
   const category = context.categories.find(
     (row) => !row.archived && row.id === decision.category,
   );
@@ -110,6 +122,7 @@ export function validateNaturalLanguageDecision(
         : "preview") as "invalid" | "needs_input" | "preview",
     amountCents,
     amountEvidence,
+    currency,
     type: decision.type,
     categoryId:
       category && category.type === decision.type ? category.id : null,

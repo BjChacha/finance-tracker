@@ -8,6 +8,7 @@ import {
   splitNaturalLanguageAmounts,
 } from "./money";
 import { parseModelFields } from "./strict-json";
+import { SUPPORTED_TRANSACTION_CURRENCIES } from "./currency-evidence";
 
 const TYPES: readonly (string | null)[] = ["expense", "income", "transfer", null];
 const MAX_NOTE_CHARACTERS = 24;
@@ -69,6 +70,9 @@ export function createFieldContract(
   function decode(response: string) {
     const raw = parseModelFields(response);
     const amountIds = candidates.map((row) => row.id);
+    // 币种白名单：模型只能从支持币种里选；乱填/小写形态先归一化再校验
+    const modelCurrency =
+      raw.currency == null ? null : String(raw.currency).trim().toUpperCase();
     // Only an omitted amount is derived; an explicit one must be a real candidate so the model
     // can never point the draft at a number the parser did not extract from the sentence.
     const derivedAmount =
@@ -91,6 +95,7 @@ export function createFieldContract(
         accounts.map((row) => row.id),
       ),
       status: raw.status === "single" ? ("single" as const) : ("clarify" as const),
+      currency: oneOf(modelCurrency, SUPPORTED_TRANSACTION_CURRENCIES),
     };
     return {
       type: (value.type as NaturalLanguageTransactionType | null) ?? null,
@@ -111,6 +116,7 @@ export function createFieldContract(
           : mapping.reverse.accounts.get(value.to_account)!,
       status: value.status,
       note: refineNote(raw.note ?? null),
+      currency: value.currency,
     };
   }
 

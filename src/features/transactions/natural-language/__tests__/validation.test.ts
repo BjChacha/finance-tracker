@@ -48,6 +48,31 @@ describe("Natural language business review", () => {
       { id: "b", name: "Bank" },
     ],
   };
+  it.each([
+    // 明确的原文证据优先于模型：句子里就有「刀」，模型没读到也不能记成人民币
+    ["Netflix订阅花了2.99刀", null, "USD"],
+    ["Netflix订阅花了2.99刀", "CNY", "USD"],
+    ["Netflix订阅花了2.99刀", "USD", "USD"],
+    // 无本地证据时用模型判断（覆盖无标记但语境明确的外币）
+    ["Netflix subscription 2.99", "USD", "USD"],
+    ["打车花了30块", null, "CNY"],
+    // 多种外币并存时证据失效，交给模型
+    ["3.99美元和2.99欧元", "EUR", "EUR"],
+  ])("resolves currency for %j", (text, modelCurrency, expected) => {
+    const result = validateNaturalLanguageDecision(text, context, {
+      type: "expense",
+      amount: null,
+      amountCents: 299,
+      currency: modelCurrency,
+      category: null,
+      account: null,
+      to_account: null,
+      status: "single",
+      note: null,
+    });
+    expect(result.currency).toBe(expected);
+  });
+
   it("requires review for reversed or unsupported transfer direction without correcting the model", () => {
     const text = "Wallet\u8f6c30\u5143\u5230Bank";
     const correct = { type: "transfer", account: "a", to_account: "b" };
@@ -116,6 +141,7 @@ describe("Natural language business review", () => {
       type: "expense" as const,
       amount: "m0",
       amountCents: null,
+      currency: null,
       category: null,
       account: null,
       to_account: null,
@@ -148,6 +174,7 @@ describe("Natural language business review", () => {
       type: "expense" as const,
       amount: "m0",
       amountCents: null,
+      currency: null,
       category: null,
       account: null,
       to_account: null,
@@ -170,6 +197,7 @@ describe("Model-authored amount precedence", () => {
     category: null,
     account: null,
     to_account: null,
+    currency: null,
     status: "single" as const,
     note: null,
   };

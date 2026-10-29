@@ -33,6 +33,6 @@ export function naturalLanguagePreviewValues(
     categoryId: flagged("category") ? null : preview.categoryId,
     ...(preview.dateMs !== null ? { dateMs: preview.dateMs } : {}),
     note: preview.note ? `${SMART_NOTE_PREFIX}${preview.note}` : "",
-    currency: "CNY",
+    currency: preview.currency,
   };
 }
