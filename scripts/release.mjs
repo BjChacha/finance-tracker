@@ -122,8 +122,12 @@ const notes = deriveNotes(
   plan.nextVersion,
   args.notes,
   (() => {
+    // 上一个发布 tag：从 HEAD^ 描述（HEAD 自身在 plan 阶段尚未打 tag）；
+    // 单 commit 调用避免 describe 对多个提交各输出一行导致区间解析失败。
     // 仓库还没有上一个 tag 时 git describe 失败，属预期：notes 退化为默认文案
-    const prevTag = tryGit("describe", "--tags", "--abbrev=0", "HEAD^", "HEAD");
+    const prevTag =
+      tryGit("describe", "--tags", "--abbrev=0", "HEAD^") ??
+      tryGit("describe", "--tags", "--abbrev=0", "HEAD");
     return prevTag ? tryGit("log", `${prevTag}..HEAD`, "--oneline", "--no-decorate") : "";
   })(),
 );
