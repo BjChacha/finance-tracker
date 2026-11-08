@@ -1,0 +1,58 @@
+{
+  "candidates": {
+    "a-liquid-coin": {
+      "id": "a-liquid-coin",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 322.3,
+        "background_min_alpha": 255,
+        "monochrome_radius": 300.6
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    },
+    "b-glass-ring": {
+      "id": "b-glass-ring",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 314.0,
+        "background_min_alpha": 255,
+        "monochrome_radius": 292.6
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    },
+    "c-glass-trend": {
+      "id": "c-glass-trend",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 286.0,
+        "background_min_alpha": 255,
+        "monochrome_radius": 279.2
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <mask id="coinCut">
+    <rect width="1024" height="1024" fill="black"/>
+    <circle cx="512" cy="512" r="150" fill="white"/>
+    <g fill="none" stroke="#000000" stroke-width="36" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M 450.50 430.00 L 512.00 491.50"/>
+  <path d="M 573.50 430.00 L 512.00 491.50"/>
+  <path d="M 512.00 491.50 L 512.00 594.00"/>
+  <path d="M 458.70 524.30 L 565.30 524.30"/>
+  <path d="M 458.70 557.10 L 565.30 557.10"/>
+  </g>
+  </mask>
+  <path d="M 512 252 A 260 260 0 1 1 256.6 560.7" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round"/>
+  <circle cx="512" cy="512" r="150" fill="#FFFFFF" mask="url(#coinCut)"/>
+</svg>

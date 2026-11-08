@@ -1,0 +1,58 @@
+{
+  "candidates": {
+    "r4-yen-ink": {
+      "id": "r4-yen-ink",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 308.5,
+        "background_min_alpha": 255,
+        "monochrome_radius": 308.5
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    },
+    "r5-yen-coin": {
+      "id": "r5-yen-coin",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 308.5,
+        "background_min_alpha": 255,
+        "monochrome_radius": 308.5
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    },
+    "r6-yen-amber": {
+      "id": "r6-yen-amber",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 308.5,
+        "background_min_alpha": 255,
+        "monochrome_radius": 308.5
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    }
+  }
+}

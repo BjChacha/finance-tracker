@@ -1,0 +1,59 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!--
+Candidate A · liquid-coin — adaptive background layer (1024×1024,
+opaque, full bleed). Warm cream field with a contained white top-left light
+and an amber #F59E0B -> #D97706 glow in the bottom-right corner, plus the
+soft shadow the glass coin casts on it (masked to the outside of the coin
+silhouette so the translucent glass stays clean).
+Composited underneath adaptive-foreground.svg.
+  -->
+  <defs>
+    <!-- ================= background ================= -->
+    <linearGradient id="bgBase" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFEFB"/>
+    <stop offset="0.28" stop-color="#FEF8EA"/>
+    <stop offset="0.55" stop-color="#FCEDCB"/>
+    <stop offset="0.8" stop-color="#F8DCA1"/>
+    <stop offset="1" stop-color="#F2C868"/>
+    </linearGradient>
+    <radialGradient id="bgAmber" gradientUnits="userSpaceOnUse" cx="950" cy="960" r="580">
+    <stop offset="0" stop-color="#D97706" stop-opacity="0.78"/>
+    <stop offset="0.32" stop-color="#E8890C" stop-opacity="0.54"/>
+    <stop offset="0.64" stop-color="#F59E0B" stop-opacity="0.22"/>
+    <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgWhite" gradientUnits="userSpaceOnUse" cx="40" cy="25" r="410">
+    <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.97"/>
+    <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.34"/>
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur34" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="blur18" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="blur10" x="-120%" y="-120%" width="340%" height="340%">
+    <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <!-- shadow may only paint outside the coin silhouette: the glass stays
+    translucent and the background layer reads clean on its own -->
+    <mask id="outsideCoin" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+    <rect x="0" y="0" width="1024" height="1024" fill="#FFFFFF"/>
+    <circle cx="512" cy="512" r="298" fill="#000000"/>
+    </mask>
+  </defs>
+
+<g id="background">
+    <rect x="0" y="0" width="1024" height="1024" fill="url(#bgBase)"/>
+    <rect x="0" y="0" width="1024" height="1024" fill="url(#bgAmber)"/>
+    <rect x="0" y="0" width="1024" height="1024" fill="url(#bgWhite)"/>
+
+    <!-- 1. coin shadow: tight contact shadow + warm ambient shadow -->
+    <g mask="url(#outsideCoin)">
+      <circle cx="534" cy="582" r="268" fill="#8A3E0B" opacity="0.22" filter="url(#blur34)"/>
+      <circle cx="520" cy="552" r="288" fill="#7C2D12" opacity="0.26" filter="url(#blur18)"/>
+      <circle cx="514" cy="532" r="296" fill="#4A1D06" opacity="0.34" filter="url(#blur10)"/>
+    </g>
+  </g>
+</svg>

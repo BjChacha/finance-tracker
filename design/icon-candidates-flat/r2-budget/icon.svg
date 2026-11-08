@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- 预算环 Budget Ring · one ring = one month's budget.
+       Amber arc = budget already spent (72%); light stone track = what's left.
+       Pure white background, flat solid colours only (no effects). -->
+  <rect width="1024" height="1024" fill="#FFFFFF"/>
+  <!-- remaining-budget track: a complete ring in calm stone grey -->
+  <circle cx="512" cy="512" r="260" fill="none" stroke="#D6D3D1" stroke-width="96"/>
+  <!-- spent-budget arc: 72% clockwise from 12 o'clock, round caps -->
+  <path d="M 512 252 A 260 260 0 1 1 256.6 560.7" fill="none" stroke="#F59E0B" stroke-width="96" stroke-linecap="round"/>
+</svg>

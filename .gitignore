@@ -61,3 +61,8 @@ import_example/
 /task_plan.md
 /progress.md
 /findings.md
+# icon candidate caches (regenerable previews)
+/design/icon-candidates*/_build/
+/design/icon-candidates*/_apply/
+/.acl-recovery/
+__pycache__/

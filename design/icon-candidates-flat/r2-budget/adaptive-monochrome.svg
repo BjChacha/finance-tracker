@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Adaptive monochrome: white spend-arc silhouette (Android 13 themed icons tint it).
+       The open 72% arc keeps the "budget partially used" reading after tinting. -->
+  <path d="M 512 252 A 260 260 0 1 1 256.6 560.7" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round"/>
+</svg>

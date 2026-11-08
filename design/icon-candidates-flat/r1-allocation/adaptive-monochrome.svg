@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 花哪了 · 极简环 · 候选 1 · 配置环 · monochrome 剪影 -->
+  <!-- 透明底、纯白 #FFFFFF 三段弧剪影（Android 13 主题图标会重新着色） -->
+  <!-- 保留 6° 缺口：单色下仍能读出「环被分成三段」，而不是一根断环或一个纯圆 -->
+  <g fill="none" stroke-width="96" stroke-linecap="butt">
+    <path d="M525.61 252.36 A260 260 0 0 1 525.61 771.64" stroke="#FFFFFF"/>
+    <path d="M498.39 771.64 A260 260 0 0 1 260.86 444.71" stroke="#FFFFFF"/>
+    <path d="M269.27 418.82 A260 260 0 0 1 498.39 252.36" stroke="#FFFFFF"/>
+  </g>
+</svg>

@@ -1,0 +1,48 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>花哪了 · glass-trend · adaptive background</title>
+
+  <defs>
+    <linearGradient id="bgBase" gradientUnits="userSpaceOnUse" x1="32" y1="0" x2="992" y2="1024">
+      <stop offset="0" stop-color="#FFF9F2"/>
+      <stop offset="0.35" stop-color="#FFF8F0"/>
+      <stop offset="0.72" stop-color="#FBDDAF"/>
+      <stop offset="1" stop-color="#F6D8A8"/>
+    </linearGradient>
+    <radialGradient id="bgGlowCenter" gradientUnits="userSpaceOnUse" cx="500" cy="462" r="624">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.50"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="blur10" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="blur30" x="-55%" y="-55%" width="210%" height="210%">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+    <filter id="blur56" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="56"/>
+    </filter>
+
+    <!-- the floating pane occludes its own drop shadow -->
+    <mask id="shadowCut" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#FFFFFF"/>
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="#000000"/>
+    </mask>
+  </defs>
+
+  <!-- ============ background (full bleed, opaque, clean corners) ============ -->
+  <g id="background">
+    <rect width="1024" height="1024" fill="url(#bgBase)"/>
+    <rect width="1024" height="1024" fill="url(#bgGlowCenter)"/>
+  </g>
+
+  <!-- ============ card drop shadow, aligned with the scaled foreground ============ -->
+  <g id="drop-shadow" transform="translate(90.7 87.9) scale(0.81)">
+    <g mask="url(#shadowCut)">
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="#B45309" opacity="0.12" filter="url(#blur56)"/>
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="#7C2D12" opacity="0.26" filter="url(#blur30)" transform="translate(0 34)"/>
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="#7C2D12" opacity="0.22" filter="url(#blur10)" transform="translate(0 14)"/>
+    </g>
+  </g>
+</svg>

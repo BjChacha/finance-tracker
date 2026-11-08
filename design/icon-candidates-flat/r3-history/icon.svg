@@ -1,0 +1,12 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 年轮环 History Rings · three concentric growth rings on pure white.
+       Outermost ring = most recent period; ring weight decreases toward older history.
+       Flat solid strokes only (no effects). -->
+  <rect width="1024" height="1024" fill="#FFFFFF"/>
+  <!-- inner ring = oldest history (thinnest, palest amber) -->
+  <circle cx="512" cy="512" r="88" fill="none" stroke="#FCD34D" stroke-width="34"/>
+  <!-- middle ring = mid history -->
+  <circle cx="512" cy="512" r="168" fill="none" stroke="#FBBF24" stroke-width="50"/>
+  <!-- outer ring = current period; 12° gap at 12 o'clock = the ring is still growing -->
+  <path d="M 540.85 237.51 A 276 276 0 1 1 483.15 237.51" fill="none" stroke="#F59E0B" stroke-width="80"/>
+</svg>

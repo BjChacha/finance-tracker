@@ -1,0 +1,267 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Candidate A · liquid-coin / 液态金币  (v7)
+    Flat vector liquid glass.
+    Structure: warm cream background + two faint glass petal arcs (echo of the
+    old seven-petal mark) + one thick honey-glass coin. The ¥ is punched through
+    the front glass sheet (mask), revealing the coin's deep amber back face, so
+    the symbol reads as a real cut-out instead of a sticker. One clear glass bead
+    rests on the coin edge.
+    SPEC §6 layer order: shadow -> glass body -> refraction -> inner highlight
+    -> gradient rim -> specular -> symbol.
+  -->
+  <defs>
+    <!-- ================= background ================= -->
+    <linearGradient id="bgBase" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFEFB"/>
+      <stop offset="0.28" stop-color="#FEF8EA"/>
+      <stop offset="0.55" stop-color="#FCEDCB"/>
+      <stop offset="0.8" stop-color="#F8DCA1"/>
+      <stop offset="1" stop-color="#F2C868"/>
+    </linearGradient>
+    <radialGradient id="bgAmber" gradientUnits="userSpaceOnUse" cx="950" cy="960" r="580">
+      <stop offset="0" stop-color="#D97706" stop-opacity="0.78"/>
+      <stop offset="0.32" stop-color="#E8890C" stop-opacity="0.54"/>
+      <stop offset="0.64" stop-color="#F59E0B" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgWhite" gradientUnits="userSpaceOnUse" cx="40" cy="25" r="410">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.97"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ================= honey glass coin ================= -->
+    <linearGradient id="coinTint" x1="0.18" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#F9BD45" stop-opacity="0.54"/>
+      <stop offset="0.5" stop-color="#F2AA30" stop-opacity="0.47"/>
+      <stop offset="1" stop-color="#DE8514" stop-opacity="0.39"/>
+    </linearGradient>
+    <linearGradient id="coinWhite" x1="0.14" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.27"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    </linearGradient>
+    <radialGradient id="coinGlow" gradientUnits="userSpaceOnUse" cx="466" cy="424" r="320">
+      <stop offset="0" stop-color="#FFE9AE" stop-opacity="0.46"/>
+      <stop offset="0.55" stop-color="#FFD977" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FFD060" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="coinRim" x1="0.12" y1="0.02" x2="0.94" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.98"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.70"/>
+      <stop offset="0.8" stop-color="#FFFFFF" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.46"/>
+    </linearGradient>
+    <!-- deep amber back face of the coin, seen through the cut-out -->
+    <linearGradient id="backingGrad" gradientUnits="userSpaceOnUse" x1="512" y1="340" x2="512" y2="670">
+      <stop offset="0" stop-color="#7C2D12"/>
+      <stop offset="0.4" stop-color="#A34A0B"/>
+      <stop offset="0.74" stop-color="#C46A0E"/>
+      <stop offset="1" stop-color="#DC8A16"/>
+    </linearGradient>
+    <linearGradient id="holeWall" gradientUnits="userSpaceOnUse" x1="512" y1="350" x2="512" y2="660">
+      <stop offset="0" stop-color="#4A1D06" stop-opacity="0.62"/>
+      <stop offset="0.5" stop-color="#4A1D06" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#4A1D06" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- ================= clear glass bead ================= -->
+    <radialGradient id="beadBody" gradientUnits="userSpaceOnUse" cx="674" cy="310" r="110">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="0.46" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="0.8" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="0.94" stop-color="#FFFFFF" stop-opacity="0.48"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.60"/>
+    </radialGradient>
+    <linearGradient id="beadRim" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.74"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.50"/>
+    </linearGradient>
+
+    <!-- ================= filters ================= -->
+    <filter id="blur40" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+    <filter id="blur34" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="blur18" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="blur14" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="blur10" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="blur8" x="-140%" y="-140%" width="380%" height="380%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="blur5" x="-140%" y="-140%" width="380%" height="380%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="blur4" x="-140%" y="-140%" width="380%" height="380%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="blur3" x="-140%" y="-140%" width="380%" height="380%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <filter id="blur2" x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <filter id="blur1" x="-160%" y="-160%" width="420%" height="420%">
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+
+    <!-- ================= masks / clips ================= -->
+    <!-- the front glass sheet is cut through by the ¥ glyph -->
+    <mask id="coinHole" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="0" y="0" width="1024" height="1024" fill="#FFFFFF"/>
+      <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 420 383 L 512 489 L 604 383" stroke-width="48"/>
+        <path d="M 512 465 L 512 635" stroke-width="48"/>
+        <path d="M 436 533 L 588 533" stroke-width="44"/>
+        <path d="M 436 587 L 588 587" stroke-width="44"/>
+      </g>
+    </mask>
+    <!-- shadow may only paint outside the coin silhouette: the glass stays
+         translucent and the background layer reads clean on its own -->
+    <mask id="outsideCoin" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="0" y="0" width="1024" height="1024" fill="#FFFFFF"/>
+      <circle cx="512" cy="512" r="298" fill="#000000"/>
+    </mask>
+    <clipPath id="coinClip">
+      <circle cx="512" cy="512" r="300"/>
+    </clipPath>
+    <clipPath id="beadClip">
+      <circle cx="702" cy="341" r="65"/>
+    </clipPath>
+  </defs>
+
+  <!-- ================================================================
+       BACKGROUND LAYER
+       ================================================================ -->
+  <g id="background">
+    <rect x="0" y="0" width="1024" height="1024" fill="url(#bgBase)"/>
+    <rect x="0" y="0" width="1024" height="1024" fill="url(#bgAmber)"/>
+    <rect x="0" y="0" width="1024" height="1024" fill="url(#bgWhite)"/>
+
+    <!-- 1. coin shadow: tight contact shadow + warm ambient shadow -->
+    <g mask="url(#outsideCoin)">
+      <circle cx="534" cy="582" r="268" fill="#8A3E0B" opacity="0.22" filter="url(#blur34)"/>
+      <circle cx="520" cy="552" r="288" fill="#7C2D12" opacity="0.26" filter="url(#blur18)"/>
+      <circle cx="514" cy="532" r="296" fill="#4A1D06" opacity="0.34" filter="url(#blur10)"/>
+    </g>
+  </g>
+
+  <!-- ================================================================
+       FOREGROUND LAYER · thick honey-glass coin + ¥ symbol
+       ================================================================ -->
+  <g id="foreground">
+    <!-- deep amber back face, revealed by the cut-out and glowing faintly
+         through the translucent glass around it -->
+    <g fill="none" stroke="url(#backingGrad)" stroke-linecap="round" stroke-linejoin="round"
+       opacity="0.96" filter="url(#blur5)">
+      <path d="M 420 383 L 512 489 L 604 383" stroke-width="68"/>
+      <path d="M 512 465 L 512 635" stroke-width="68"/>
+      <path d="M 436 533 L 588 533" stroke-width="64"/>
+      <path d="M 436 587 L 588 587" stroke-width="64"/>
+    </g>
+
+    <!-- front glass sheet, cut through by the ¥ glyph -->
+    <g mask="url(#coinHole)">
+      <circle cx="512" cy="512" r="300" fill="url(#coinTint)"/>
+      <circle cx="512" cy="512" r="300" fill="url(#coinWhite)"/>
+
+      <g clip-path="url(#coinClip)">
+        <!-- 2. refraction: warm background light held inside the glass -->
+        <circle cx="512" cy="512" r="300" fill="url(#coinGlow)"/>
+        <circle cx="672" cy="686" r="206" fill="#92400E" opacity="0.14" filter="url(#blur40)"/>
+        <!-- warm light pooling near the lower-right glass edge -->
+        <path d="M 771.0 658.0 A 272 272 0 0 1 578.0 772.0"
+              fill="none" stroke="#E8890C" stroke-opacity="0.30" stroke-width="24"
+              stroke-linecap="round" filter="url(#blur14)"/>
+
+        <!-- 4. inner highlight along the upper-left thickness -->
+        <path d="M 234.0 476.0 A 288 288 0 0 1 600.0 232.0"
+              fill="none" stroke="#FFFFFF" stroke-opacity="0.60" stroke-width="10"
+              stroke-linecap="round" filter="url(#blur3)"/>
+
+        <!-- 5. rim light along the lower-right thickness -->
+        <path d="M 790.0 594.0 A 293 293 0 0 1 566.0 793.0"
+              fill="none" stroke="#FFFFFF" stroke-opacity="0.60" stroke-width="5"
+              stroke-linecap="round" filter="url(#blur2)"/>
+
+        <!-- dark refraction line that defines the bottom glass edge -->
+        <path d="M 707.0 744.0 A 296 296 0 0 1 540.0 806.0"
+              fill="none" stroke="#7C2D12" stroke-opacity="0.24" stroke-width="7"
+              stroke-linecap="round" filter="url(#blur3)"/>
+
+        <!-- 6. bevel of the ¥ cut-out: dark upper wall + lit lower lip -->
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <g transform="translate(0,-2.5)" filter="url(#blur2)">
+            <path d="M 420 383 L 512 489 L 604 383" stroke="url(#holeWall)" stroke-width="55"/>
+            <path d="M 512 465 L 512 635" stroke="url(#holeWall)" stroke-width="55"/>
+            <path d="M 436 533 L 588 533" stroke="url(#holeWall)" stroke-width="51"/>
+            <path d="M 436 587 L 588 587" stroke="url(#holeWall)" stroke-width="51"/>
+          </g>
+          <g transform="translate(0,2)" filter="url(#blur1)">
+            <path d="M 420 383 L 512 489 L 604 383" stroke="#FFF9EA" stroke-opacity="0.70" stroke-width="51"/>
+            <path d="M 512 465 L 512 635" stroke="#FFF9EA" stroke-opacity="0.70" stroke-width="51"/>
+            <path d="M 436 533 L 588 533" stroke="#FFF9EA" stroke-opacity="0.70" stroke-width="47"/>
+            <path d="M 436 587 L 588 587" stroke="#FFF9EA" stroke-opacity="0.70" stroke-width="47"/>
+          </g>
+          <!-- crisp cut edge -->
+          <g>
+            <path d="M 420 383 L 512 489 L 604 383" stroke="#5C2408" stroke-opacity="0.42" stroke-width="50"/>
+            <path d="M 512 465 L 512 635" stroke="#5C2408" stroke-opacity="0.42" stroke-width="50"/>
+            <path d="M 436 533 L 588 533" stroke="#5C2408" stroke-opacity="0.42" stroke-width="46"/>
+            <path d="M 436 587 L 588 587" stroke="#5C2408" stroke-opacity="0.42" stroke-width="46"/>
+          </g>
+        </g>
+
+        <!-- 7. specular: a curved glass glare + tiny glint, upper-left -->
+        <path d="M 256.4 419.0 A 272 272 0 0 1 401.4 263.5"
+              fill="none" stroke="#FFFFFF" stroke-opacity="0.90" stroke-width="10"
+              stroke-linecap="round" filter="url(#blur1)"/>
+        <circle cx="246" cy="432" r="5" fill="#FFFFFF" fill-opacity="0.8" filter="url(#blur1)"/>
+      </g>
+    </g>
+
+    <!-- gradient rim stroke of the glass coin -->
+    <circle cx="512" cy="512" r="300" fill="none" stroke="url(#coinRim)" stroke-width="3"/>
+
+    <!-- ================================================================
+         clear glass bead, slightly overlapping the coin edge
+         ================================================================ -->
+    <g>
+      <!-- shadow cast on the coin surface -->
+      <g clip-path="url(#coinClip)">
+        <ellipse cx="704" cy="368" rx="48" ry="33" fill="#3D1805" opacity="0.34"
+                 filter="url(#blur10)"/>
+        <!-- contact line where the bead meets the glass -->
+        <path d="M 648 356 A 64 64 0 0 0 704 404" fill="none" stroke="#3D1805"
+              stroke-opacity="0.26" stroke-width="6" stroke-linecap="round" filter="url(#blur3)"/>
+        <!-- light focused through the bead (caustic) -->
+        <ellipse cx="710" cy="390" rx="20" ry="8" fill="#FFF3CC" opacity="0.45"
+                 filter="url(#blur5)"/>
+      </g>
+      <circle cx="702" cy="341" r="65" fill="url(#beadBody)"/>
+      <g clip-path="url(#beadClip)">
+        <!-- amber light of the coin refracted inside the bead -->
+        <ellipse cx="714" cy="380" rx="42" ry="30" fill="#E8911F" opacity="0.24"
+                 filter="url(#blur10)"/>
+        <!-- rim light on the lower edge -->
+        <path d="M 641 366 A 65 65 0 0 0 752 386" fill="none" stroke="#FFFFFF"
+              stroke-opacity="0.6" stroke-width="5" stroke-linecap="round" filter="url(#blur2)"/>
+      </g>
+      <circle cx="702" cy="341" r="65" fill="none" stroke="url(#beadRim)" stroke-width="2.6"/>
+      <!-- small specular highlight -->
+      <ellipse cx="674" cy="308" rx="12" ry="7" fill="#FFFFFF" fill-opacity="0.95"
+               transform="rotate(-36 674 308)" filter="url(#blur1)"/>
+      <circle cx="730" cy="374" r="3" fill="#FFFFFF" fill-opacity="0.7" filter="url(#blur1)"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,227 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>花哪了 · glass-trend</title>
+
+  <defs>
+    <!-- ================= background ================= -->
+    <linearGradient id="bgBase" gradientUnits="userSpaceOnUse" x1="32" y1="0" x2="992" y2="1024">
+      <stop offset="0" stop-color="#FFF9F2"/>
+      <stop offset="0.35" stop-color="#FFF8F0"/>
+      <stop offset="0.72" stop-color="#FBDDAF"/>
+      <stop offset="1" stop-color="#F6D8A8"/>
+    </linearGradient>
+    <radialGradient id="bgGlowCenter" gradientUnits="userSpaceOnUse" cx="500" cy="462" r="624">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.50"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ================= glass card ================= -->
+    <linearGradient id="glassBody" x1="0.05" y1="0" x2="0.62" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.72"/>
+      <stop offset="0.50" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#FFF6E6" stop-opacity="0.30"/>
+    </linearGradient>
+    <linearGradient id="glassTint" x1="0.1" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0"/>
+      <stop offset="0.55" stop-color="#F59E0B" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0.09"/>
+    </linearGradient>
+    <!-- edge: top-left white 0.9 -> bottom-right 0.2 (glass thickness) -->
+    <linearGradient id="glassRim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.90"/>
+      <stop offset="0.48" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.20"/>
+    </linearGradient>
+    <linearGradient id="rimInner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFEFC9" stop-opacity="0.34"/>
+    </linearGradient>
+    <radialGradient id="refractAmber" gradientUnits="userSpaceOnUse" cx="714" cy="708" r="368">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="refractWhite" gradientUnits="userSpaceOnUse" cx="324" cy="320" r="336">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ================= trend ================= -->
+    <linearGradient id="trendStroke" gradientUnits="userSpaceOnUse" x1="320" y1="0" x2="690" y2="0">
+      <stop offset="0" stop-color="#A04A12"/>
+      <stop offset="0.55" stop-color="#92400E"/>
+      <stop offset="1" stop-color="#78350F"/>
+    </linearGradient>
+    <linearGradient id="trendArea" gradientUnits="userSpaceOnUse" x1="0" y1="394" x2="0" y2="658">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.26"/>
+      <stop offset="0.55" stop-color="#F59E0B" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </linearGradient>
+    <!-- glass bead at the latest data point -->
+    <radialGradient id="beadBody" gradientUnits="userSpaceOnUse" cx="681" cy="393" r="34">
+      <stop offset="0" stop-color="#FBBF24" stop-opacity="0.97"/>
+      <stop offset="0.55" stop-color="#C2701A" stop-opacity="0.94"/>
+      <stop offset="1" stop-color="#92400E" stop-opacity="0.96"/>
+    </radialGradient>
+
+    <!-- ================= frosted glass badge ================= -->
+    <radialGradient id="badgeBody" gradientUnits="userSpaceOnUse" cx="710" cy="664" r="118">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.66"/>
+      <stop offset="0.55" stop-color="#FFFDF6" stop-opacity="0.46"/>
+      <stop offset="1" stop-color="#FCEBCF" stop-opacity="0.38"/>
+    </radialGradient>
+    <radialGradient id="badgeAmberCore" gradientUnits="userSpaceOnUse" cx="752" cy="712" r="70">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.38"/>
+      <stop offset="0.55" stop-color="#F59E0B" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="badgeInnerWhite" gradientUnits="userSpaceOnUse" cx="714" cy="664" r="62">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="badgeRim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="badgeRimInner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.26"/>
+    </linearGradient>
+    <radialGradient id="badgeHalo" gradientUnits="userSpaceOnUse" cx="736" cy="691" r="82">
+      <stop offset="0.62" stop-color="#F59E0B" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- ================= filters ================= -->
+    <filter id="blur3" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <filter id="blur5" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="blur10" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="blur12" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="blur24" x="-55%" y="-55%" width="210%" height="210%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+    <filter id="blur30" x="-55%" y="-55%" width="210%" height="210%">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+    <filter id="blur56" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="56"/>
+    </filter>
+    <filter id="lineShadow" x="-30%" y="-70%" width="160%" height="240%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="3" flood-color="#78350F" flood-opacity="0.26"/>
+    </filter>
+    <filter id="yenShadow" x="-60%" y="-60%" width="220%" height="220%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.6" flood-color="#78350F" flood-opacity="0.30"/>
+    </filter>
+    <filter id="beadShadow" x="-70%" y="-70%" width="240%" height="240%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#78350F" flood-opacity="0.28"/>
+    </filter>
+
+    <!-- ================= clip / mask ================= -->
+    <clipPath id="cardClip">
+      <rect x="222" y="267" width="560" height="470" rx="120"/>
+    </clipPath>
+    <clipPath id="badgeClip">
+      <circle cx="736" cy="691" r="65"/>
+    </clipPath>
+    <!-- the drop shadow is occluded by the pane itself: keep the glass bright -->
+    <mask id="shadowCut" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#FFFFFF"/>
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="#000000"/>
+    </mask>
+  </defs>
+
+  <!-- ============ background (full bleed, opaque, clean corners) ============ -->
+  <g id="background">
+    <rect width="1024" height="1024" fill="url(#bgBase)"/>
+    <rect width="1024" height="1024" fill="url(#bgGlowCenter)"/>
+  </g>
+
+  <!-- ============ drop shadow: floating glass card ============ -->
+  <g id="drop-shadow" mask="url(#shadowCut)">
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="#B45309" opacity="0.12" filter="url(#blur56)"/>
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="#7C2D12" opacity="0.26" filter="url(#blur30)" transform="translate(0 34)"/>
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="#7C2D12" opacity="0.22" filter="url(#blur10)" transform="translate(0 14)"/>
+  </g>
+
+  <!-- ============ glass card ============ -->
+  <g id="glass-card">
+    <!-- frosted body -->
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="url(#glassBody)"/>
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="url(#glassTint)"/>
+
+    <g clip-path="url(#cardClip)">
+      <!-- refraction: light caught inside the pane -->
+      <ellipse cx="714" cy="708" rx="356" ry="326" fill="url(#refractAmber)" filter="url(#blur24)"/>
+      <ellipse cx="324" cy="320" rx="318" ry="298" fill="url(#refractWhite)" filter="url(#blur24)"/>
+      <!-- inner edge shade: gives the pane thickness before the bright rim -->
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="none" stroke="#B45309" stroke-opacity="0.10"
+            stroke-width="20" filter="url(#blur12)"/>
+      <!-- bottom inner shade (light falls off inside the glass) -->
+      <ellipse cx="502" cy="752" rx="286" ry="30" fill="#7C2D12" opacity="0.08" filter="url(#blur12)"/>
+      <!-- blurred highlight along the inner top edge (glass thickness) -->
+      <ellipse cx="512" cy="300" rx="212" ry="24" fill="#FFFFFF" opacity="0.52" filter="url(#blur12)"/>
+      <!-- single specular streak, top-left -->
+      <ellipse cx="368" cy="332" rx="95" ry="15" fill="#FFFFFF" opacity="0.62" filter="url(#blur5)"
+               transform="rotate(-24 368 332)"/>
+      <!-- soft bottom inner sheen -->
+      <ellipse cx="562" cy="696" rx="168" ry="30" fill="#FFFFFF" opacity="0.14" filter="url(#blur12)"/>
+    </g>
+
+    <!-- rim: inner edge shine + sharp glass edge -->
+    <rect x="230" y="275" width="544" height="454" rx="112" fill="none" stroke="url(#rimInner)" stroke-width="2.6"/>
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="none" stroke="url(#glassRim)" stroke-width="2.2"/>
+  </g>
+
+  <!-- ============ trend line / area (card content) ============ -->
+  <g id="trend">
+    <path d="M320 602 L394 550 L468 572 L542 464 L616 498 L690 402 L690 658 L320 658 Z" fill="url(#trendArea)"/>
+    <path d="M320 602 L394 550 L468 572 L542 464 L616 498 L690 402" fill="none"
+          stroke="url(#trendStroke)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"
+          filter="url(#lineShadow)"/>
+    <!-- latest data point: small glass bead -->
+    <g id="data-bead">
+      <circle cx="690" cy="402" r="21" fill="url(#beadBody)" filter="url(#beadShadow)"/>
+      <circle cx="690" cy="402" r="21" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="1.6"/>
+      <ellipse cx="682" cy="394" rx="7.5" ry="5.5" fill="#FFF8EA" opacity="0.85" filter="url(#blur3)"/>
+    </g>
+  </g>
+
+  <!-- ============ frosted glass ball badge, bottom-right ============ -->
+  <g id="glass-badge">
+    <!-- halo + contact shadow onto the card -->
+    <circle cx="736" cy="691" r="82" fill="url(#badgeHalo)"/>
+    <circle cx="736" cy="691" r="65" fill="#7C2D12" opacity="0.20" filter="url(#blur10)" transform="translate(0 8)"/>
+    <!-- frosted glass body -->
+    <circle cx="736" cy="691" r="65" fill="url(#badgeBody)"/>
+    <g clip-path="url(#badgeClip)">
+      <!-- amber light held inside the glass -->
+      <circle cx="752" cy="712" r="70" fill="url(#badgeAmberCore)"/>
+      <!-- cool white inner light -->
+      <circle cx="714" cy="664" r="62" fill="url(#badgeInnerWhite)"/>
+      <!-- engraved yen in deep amber -->
+      <g stroke="#92400E" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.92" filter="url(#yenShadow)">
+        <path d="M716 668 L736 692"/>
+        <path d="M756 668 L736 692"/>
+        <path d="M736 692 L736 719"/>
+        <path d="M716 700 L756 700"/>
+        <path d="M716 713 L756 713"/>
+      </g>
+      <!-- specular + inner rim light -->
+      <ellipse cx="712" cy="658" rx="21" ry="9.5" fill="#FFFFFF" opacity="0.88" filter="url(#blur3)"
+               transform="rotate(-32 712 658)"/>
+      <circle cx="708" cy="673" r="4.5" fill="#FFFFFF" opacity="0.65" filter="url(#blur3)"/>
+    </g>
+    <circle cx="736" cy="691" r="65" fill="none" stroke="url(#badgeRim)" stroke-width="2.4"/>
+    <circle cx="736" cy="691" r="60" fill="none" stroke="url(#badgeRimInner)" stroke-width="2.2"/>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 年轮环 History Rings · adaptive foreground: transparent, rings only.
+       Content bbox radius 316px (outer ring edge) stays inside the 330px adaptive safe circle. -->
+  <circle cx="512" cy="512" r="88" fill="none" stroke="#FCD34D" stroke-width="34"/>
+  <circle cx="512" cy="512" r="168" fill="none" stroke="#FBBF24" stroke-width="50"/>
+  <path d="M 540.85 237.51 A 276 276 0 1 1 483.15 237.51" fill="none" stroke="#F59E0B" stroke-width="80"/>
+</svg>

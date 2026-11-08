@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Adaptive foreground: the same ring, transparent background.
+       Max content radius = 260 + 96/2 = 308 < 330 (adaptive safe circle). -->
+  <circle cx="512" cy="512" r="260" fill="none" stroke="#D6D3D1" stroke-width="96"/>
+  <path d="M 512 252 A 260 260 0 1 1 256.6 560.7" fill="none" stroke="#F59E0B" stroke-width="96" stroke-linecap="round"/>
+</svg>

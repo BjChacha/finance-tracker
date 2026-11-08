@@ -1,0 +1,208 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 花哪了 · 候选 B · 玻璃资产环 (glass-ring) · 纯矢量，无位图/外链/文字 -->
+  <defs>
+    <!-- ===== gradients: background ===== -->
+    <linearGradient id="bgBase" x1="0.12" y1="0" x2="0.82" y2="1">
+      <stop offset="0" stop-color="#2A211B"/>
+      <stop offset="0.44" stop-color="#231C17"/>
+      <stop offset="1" stop-color="#1C1917"/>
+    </linearGradient>
+    <radialGradient id="ambientFar" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.10"/>
+      <stop offset="0.55" stop-color="#B45309" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#B45309" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientWarm" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.23"/>
+      <stop offset="0.45" stop-color="#D97706" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#D97706" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambientCore" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FCD34D" stop-opacity="0.13"/>
+      <stop offset="0.55" stop-color="#F59E0B" stop-opacity="0.07"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.5" r="0.75">
+      <stop offset="0.45" stop-color="#0C0A09" stop-opacity="0"/>
+      <stop offset="0.78" stop-color="#0C0A09" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#0C0A09" stop-opacity="0.62"/>
+    </radialGradient>
+
+    <!-- ===== gradients: glass ring ===== -->
+    <linearGradient id="glassBody" x1="0.12" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.36"/>
+      <stop offset="0.32" stop-color="#FFF8EC" stop-opacity="0.27"/>
+      <stop offset="0.62" stop-color="#FFF3DC" stop-opacity="0.20"/>
+      <stop offset="0.85" stop-color="#FFFFFF" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.13"/>
+    </linearGradient>
+    <linearGradient id="surfaceVeil" x1="0.12" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.04"/>
+    </linearGradient>
+    <radialGradient id="refractWarm" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FDE68A" stop-opacity="0.42"/>
+      <stop offset="0.5" stop-color="#F59E0B" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="refractDeep" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3B2A18" stop-opacity="0.34"/>
+      <stop offset="0.6" stop-color="#2A211B" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#2A211B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gradAmber" x1="0.10" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#E9B24C" stop-opacity="0.82"/>
+      <stop offset="0.45" stop-color="#D68F22" stop-opacity="0.70"/>
+      <stop offset="1" stop-color="#9A5A1A" stop-opacity="0.46"/>
+    </linearGradient>
+    <linearGradient id="gradGreen" x1="0.10" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#4FA98A" stop-opacity="0.82"/>
+      <stop offset="0.45" stop-color="#2E8A6C" stop-opacity="0.68"/>
+      <stop offset="1" stop-color="#1F6350" stop-opacity="0.44"/>
+    </linearGradient>
+    <linearGradient id="gradRed" x1="0.10" y1="0.02" x2="0.86" y2="1">
+      <stop offset="0" stop-color="#C9776F" stop-opacity="0.82"/>
+      <stop offset="0.45" stop-color="#B04B44" stop-opacity="0.66"/>
+      <stop offset="1" stop-color="#8A3530" stop-opacity="0.44"/>
+    </linearGradient>
+    <linearGradient id="bandSheen" x1="0.06" y1="0.60" x2="0.62" y2="0.10">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gradTopHi" x1="0.08" y1="0.30" x2="0.80" y2="0.50">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.62"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="rimGrad" x1="0.42" y1="0.02" x2="0.58" y2="0.96">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.78"/>
+      <stop offset="0.28" stop-color="#FFF7E6" stop-opacity="0.46"/>
+      <stop offset="0.60" stop-color="#FFFFFF" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    </linearGradient>
+
+    <!-- ===== gradients: bead + yuan ===== -->
+    <radialGradient id="beadBody" cx="0.45" cy="0.42" r="0.60">
+      <stop offset="0" stop-color="#FFF7E6" stop-opacity="0.16"/>
+      <stop offset="0.45" stop-color="#FFFBEB" stop-opacity="0.12"/>
+      <stop offset="0.70" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="0.88" stop-color="#FFF7E6" stop-opacity="0.58"/>
+      <stop offset="1" stop-color="#FDE68A" stop-opacity="0.78"/>
+    </radialGradient>
+    <radialGradient id="beadInner" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity="0.34"/>
+      <stop offset="0.55" stop-color="#F59E0B" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beadRim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#FFF2D0" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="yuanGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFBEB" stop-opacity="0.95"/>
+      <stop offset="0.6" stop-color="#FDE68A" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0.62"/>
+    </linearGradient>
+
+    <!-- ===== filters (userSpaceOnUse so blur never clips) ===== -->
+    <filter id="fBlur1" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="0.8"/>
+    </filter>
+    <filter id="fBlur2" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <filter id="fBlur8" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="fBlur4" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="fBlur6" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <filter id="fBlur10" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="fBlur12" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="fBlur16" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <filter id="fBlur18" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="fBlur28" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+    <filter id="fBlur46" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feGaussianBlur stdDeviation="46"/>
+    </filter>
+
+    <!-- ===== masks ===== -->
+    <mask id="ringMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <circle cx="512" cy="512" r="265" fill="none" stroke="#FFFFFF" stroke-width="90" stroke-linecap="round" stroke-dasharray="1452.29 212.76" stroke-dashoffset="-291.38"/>
+    </mask>
+    <mask id="ringEdgeMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <circle cx="512" cy="512" r="265" fill="none" stroke="#FFFFFF" stroke-width="94" stroke-linecap="round" stroke-dasharray="1452.29 212.76" stroke-dashoffset="-291.38"/>
+      <circle cx="512" cy="512" r="265" fill="none" stroke="#000000" stroke-width="86" stroke-linecap="round" stroke-dasharray="1452.29 212.76" stroke-dashoffset="-291.38"/>
+    </mask>
+  </defs>
+
+  <g transform="translate(512 512) scale(0.94) translate(-512 -512)">
+  <!-- 02 · 玻璃弧的外发光（未裁切，用来在深底上透出一点光） -->
+  <circle cx="512" cy="512" r="265" fill="none" stroke="#CD5950" stroke-width="54" stroke-linecap="round" stroke-dasharray="296.01 1369.04" stroke-dashoffset="-291.38" opacity="0.18" filter="url(#fBlur18)"/>
+  <circle cx="512" cy="512" r="265" fill="none" stroke="#DE971E" stroke-width="54" stroke-linecap="round" stroke-dasharray="684.52 980.53" stroke-dashoffset="-624.39" opacity="0.18" filter="url(#fBlur18)"/>
+  <circle cx="512" cy="512" r="265" fill="none" stroke="#39A477" stroke-width="54" stroke-linecap="round" stroke-dasharray="397.76 1267.28" stroke-dashoffset="-1345.91" opacity="0.18" filter="url(#fBlur18)"/>
+  <!-- 04 · 玻璃环底色（左上透亮 → 右下更透） -->
+  <circle cx="512" cy="512" r="265" fill="none" stroke="url(#glassBody)" stroke-width="90" stroke-linecap="round" stroke-dasharray="1452.29 212.76" stroke-dashoffset="-291.38"/>
+  <!-- 05 · 环内嵌材质层（裁切到玻璃环轮廓，含圆头端帽） -->
+  <g mask="url(#ringMask)">
+    <!-- 5a · 折射色：左上暖光透进玻璃，右下略加深厚度 -->
+    <ellipse cx="392" cy="356" rx="340" ry="280" fill="url(#refractWarm)" filter="url(#fBlur18)"/>
+    <!-- 5b · 三段半透明发光弧（琥珀 / 收入绿 / 支出红）：玻璃内的细光带 + 柔光晕 -->
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#gradRed)" stroke-width="52" stroke-linecap="round" stroke-dasharray="296.01 1369.04" stroke-dashoffset="-291.38" opacity="0.40" filter="url(#fBlur12)"/>
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#gradRed)" stroke-width="40" stroke-linecap="round" stroke-dasharray="296.01 1369.04" stroke-dashoffset="-291.38" filter="url(#fBlur4)"/>
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#gradAmber)" stroke-width="52" stroke-linecap="round" stroke-dasharray="684.52 980.53" stroke-dashoffset="-624.39" opacity="0.40" filter="url(#fBlur12)"/>
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#gradAmber)" stroke-width="40" stroke-linecap="round" stroke-dasharray="684.52 980.53" stroke-dashoffset="-624.39" filter="url(#fBlur4)"/>
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#gradGreen)" stroke-width="52" stroke-linecap="round" stroke-dasharray="397.76 1267.28" stroke-dashoffset="-1345.91" opacity="0.40" filter="url(#fBlur12)"/>
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#gradGreen)" stroke-width="40" stroke-linecap="round" stroke-dasharray="397.76 1267.28" stroke-dashoffset="-1345.91" filter="url(#fBlur4)"/>
+    <!-- 5c · 暖色罩染 + 薄白雾：把彩色弧压到玻璃罩下层，收掉彩虹/塑料感 -->
+    <rect width="1024" height="1024" fill="#2A211B" opacity="0.05"/>
+    <circle cx="512" cy="512" r="265" fill="none" stroke="url(#surfaceVeil)" stroke-width="90" stroke-linecap="round" stroke-dasharray="1452.29 212.76" stroke-dashoffset="-291.38"/>
+    <!-- 5e · 上缘内高光 + 镜面高光 + 内缘焦散 -->
+    <circle cx="512" cy="512" r="298" fill="none" stroke="url(#gradTopHi)" stroke-width="22" stroke-linecap="round" stroke-dasharray="800.97 1071.42" stroke-dashoffset="-1019.41" filter="url(#fBlur8)"/>
+    <circle cx="512" cy="512" r="287" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-dasharray="160.29 1642.98" stroke-dashoffset="-1102.00" opacity="0.80" filter="url(#fBlur4)"/>
+    <circle cx="512" cy="512" r="268" fill="none" stroke="url(#bandSheen)" stroke-width="54" stroke-linecap="round" stroke-dasharray="271.29 1412.60" stroke-dashoffset="-958.88" filter="url(#fBlur8)"/>
+    <circle cx="512" cy="512" r="230" fill="none" stroke="#FFF7E6" stroke-width="7" stroke-linecap="round" stroke-dasharray="461.64 983.49" stroke-dashoffset="-72.26" opacity="0.22" filter="url(#fBlur4)"/>
+  </g>
+  <!-- 06 · 玻璃边缘：沿整圈轮廓（含圆头端帽）的渐变 rim light -->
+  <g filter="url(#fBlur6)" opacity="0.40" mask="url(#ringEdgeMask)">
+    <rect width="1024" height="1024" fill="url(#rimGrad)"/>
+  </g>
+  <g mask="url(#ringEdgeMask)">
+    <rect width="1024" height="1024" fill="url(#rimGrad)"/>
+  </g>
+  <!-- 06b · 左上 1/3 外缘细白反光弧 + 内缘反光；右下 rim 更弱 -->
+  <circle cx="512" cy="512" r="309.5" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-dasharray="810.27 1134.38" stroke-dashoffset="-783.26" opacity="0.72" filter="url(#fBlur2)"/>
+  <circle cx="512" cy="512" r="221" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-dasharray="540.00 848.58" stroke-dashoffset="-578.58" opacity="0.52" filter="url(#fBlur2)"/>
+  <circle cx="512" cy="512" r="309.5" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-dasharray="205.27 1739.38" stroke-dashoffset="-356.52" opacity="0.20" filter="url(#fBlur2)"/>
+  <!-- 07 · 玻璃圆珠（缺口处的数据点）：暖光晕 → 落影 → 透明球体 → rim → 高光/焦散 -->
+  <circle cx="711.9" cy="679.8" r="60" fill="#F59E0B" opacity="0.14" filter="url(#fBlur18)"/>
+  <ellipse cx="713.9" cy="697.8" rx="44" ry="37" fill="#0C0A09" opacity="0.32" filter="url(#fBlur12)"/>
+  <circle cx="711.9" cy="679.8" r="50" fill="url(#beadBody)"/>
+  <ellipse cx="715.9" cy="691.8" rx="36" ry="30" fill="url(#beadInner)" filter="url(#fBlur6)"/>
+  <circle cx="711.9" cy="679.8" r="48.7" fill="none" stroke="url(#beadRim)" stroke-width="2.6"/>
+  <circle cx="711.938" cy="679.768" r="46.8" fill="none" stroke="#FFF7E6" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="107.82 186.23" stroke-dashoffset="-17.97" opacity="0.72" filter="url(#fBlur2)"/>
+  <ellipse cx="695.9" cy="660.8" rx="15" ry="10" transform="rotate(-32 695.9 660.8)" fill="#FFFFFF" opacity="0.94" filter="url(#fBlur4)"/>
+  <ellipse cx="722.9" cy="709.8" rx="15" ry="7" fill="#FFF7E6" opacity="0.58" filter="url(#fBlur6)"/>
+  <ellipse cx="686.9" cy="694.8" rx="6" ry="10" transform="rotate(-22 686.9 694.8)" fill="#FFFFFF" opacity="0.26" filter="url(#fBlur6)"/>
+  <!-- 08 · 中心极小玻璃 ¥（纯 path，非文字；哑光磨砂白，无霓虹光） -->
+  <g transform="translate(512 512) scale(0.82) translate(-512 -512)">
+    <path d="M 448 434 L 512 508 L 576 434 M 512 508 L 512 586 M 461 530 L 563 530 M 468 558 L 556 558" fill="none" stroke="#FBEFD8" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity="0.84" filter="url(#fBlur1)"/>
+  </g>
+  </g>
+</svg>

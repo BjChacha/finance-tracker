@@ -1,0 +1,7 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 年轮环 History Rings · adaptive monochrome: transparent, white ring silhouette
+       (Android 13 themed icons recolor it). Same geometry as the foreground layer. -->
+  <circle cx="512" cy="512" r="88" fill="none" stroke="#FFFFFF" stroke-width="34"/>
+  <circle cx="512" cy="512" r="168" fill="none" stroke="#FFFFFF" stroke-width="50"/>
+  <path d="M 540.85 237.51 A 276 276 0 1 1 483.15 237.51" fill="none" stroke="#FFFFFF" stroke-width="80"/>
+</svg>

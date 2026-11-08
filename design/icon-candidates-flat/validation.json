@@ -1,0 +1,58 @@
+{
+  "candidates": {
+    "r1-allocation": {
+      "id": "r1-allocation",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 308.5,
+        "background_min_alpha": 255,
+        "monochrome_radius": 308.5
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    },
+    "r2-budget": {
+      "id": "r2-budget",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 308.5,
+        "background_min_alpha": 255,
+        "monochrome_radius": 308.5
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    },
+    "r3-history": {
+      "id": "r3-history",
+      "problems": [],
+      "warnings": [],
+      "metrics": {
+        "icon_min_alpha": 255,
+        "foreground_radius": 316.7,
+        "background_min_alpha": 255,
+        "monochrome_radius": 316.7
+      },
+      "files": {
+        "icon.svg": true,
+        "adaptive-foreground.svg": true,
+        "adaptive-background.svg": true,
+        "adaptive-monochrome.svg": true,
+        "notes.md": true
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>花哪了 · glass-trend · adaptive monochrome</title>
+
+  <defs>
+    <!-- card silhouette minus the trend line + the coin seat -->
+    <mask id="cardMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="222" y="267" width="560" height="470" rx="120" fill="#FFFFFF"/>
+      <path d="M320 602 L394 550 L468 572 L542 464 L616 498 L690 402" fill="none"
+            stroke="#000000" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="690" cy="402" r="21" fill="#000000"/>
+      <circle cx="736" cy="691" r="79" fill="#000000"/>
+    </mask>
+
+    <!-- coin silhouette minus the yen counter-shape -->
+    <mask id="badgeMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <circle cx="736" cy="691" r="65" fill="#FFFFFF"/>
+      <g stroke="#000000" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M716 668 L736 692"/>
+        <path d="M756 668 L736 692"/>
+        <path d="M736 692 L736 719"/>
+        <path d="M716 700 L756 700"/>
+        <path d="M716 713 L756 713"/>
+      </g>
+    </mask>
+  </defs>
+
+  <!-- pure white silhouette, scaled to the adaptive safe circle -->
+  <g id="adaptive-monochrome" transform="translate(90.7 87.9) scale(0.81)">
+    <rect x="222" y="267" width="560" height="470" rx="120" fill="#FFFFFF" mask="url(#cardMask)"/>
+    <circle cx="736" cy="691" r="65" fill="#FFFFFF" mask="url(#badgeMask)"/>
+  </g>
+</svg>
