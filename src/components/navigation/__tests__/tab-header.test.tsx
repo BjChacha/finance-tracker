@@ -25,6 +25,7 @@ function renderHeader(
 	const opacities = {
 		index: sharedValue(1),
 		ledger: sharedValue(1),
+		"personal-assets": sharedValue(0),
 		profile: sharedValue(0),
 	};
 	const utils = render(
@@ -78,6 +79,7 @@ describe("TabHeader", () => {
 		const opacities = {
 			index: sharedValue(1),
 			ledger: sharedValue(1),
+			"personal-assets": sharedValue(0),
 			profile: sharedValue(0),
 		};
 		rerender(

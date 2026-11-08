@@ -3,6 +3,7 @@ import { motion } from "@/theme/motion";
 export const TAB_DEFINITIONS = [
 	{ name: "index", href: "/" },
 	{ name: "ledger", href: "/ledger" },
+	{ name: "personal-assets", href: "/personal-assets" },
 	{ name: "profile", href: "/profile" },
 ] as const;
 

@@ -236,8 +236,107 @@ export const reports = sqliteTable(
   (t) => [uniqueIndex('uq_reports_period_key').on(t.period, t.periodKey)],
 );
 
+/**
+ * 个人资产（实物/虚拟物品的全生命周期台账）状态：
+ * - holding 持有中
+ * - sold 已出售（记录 soldCents 与 closedDateKey）
+ * - disposed 已处置（送人/丢弃/报废，仅记录 closedDateKey）
+ */
+export type AssetStatus = 'holding' | 'sold' | 'disposed';
+
+export const personalAssets = sqliteTable(
+  'personal_assets',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    /** 类别 key（src/features/personal-assets/meta.ts 预设，存 key） */
+    category: text('category').notNull(),
+    icon: text('icon').notNull(),
+    color: text('color').notNull(),
+    /** 数量（件），成本/估值为该数量的总额 */
+    quantity: integer('quantity').notNull().default(1),
+    /** 取得成本（本位币分，总额） */
+    costCents: integer('cost_cents').notNull(),
+    /** 当前估值（本位币分，总额）；随估值记录更新 */
+    currentValueCents: integer('current_value_cents').notNull(),
+    status: text('status').$type<AssetStatus>().notNull().default('holding'),
+    /** 取得日期 'YYYY-MM-DD' */
+    acquiredDateKey: text('acquired_date_key').notNull(),
+    /** 出售/处置日期 'YYYY-MM-DD'；持有中为 NULL */
+    closedDateKey: text('closed_date_key'),
+    /** 出售所得（本位币分），仅 sold */
+    soldCents: integer('sold_cents'),
+    /**
+     * 出售对应的收入交易 id：
+     * - 手动出售勾选自动记账时 = 自动生成的收入交易；
+     * - 关联出售时 = 用户选择的既有收入交易。
+     * 不建外键：交易可被独立删除，资产作为历史台账应保留。
+     */
+    soldTransactionId: text('sold_transaction_id'),
+    note: text('note').notNull().default(''),
+    /**
+     * 来源支出交易 id（从交易详情「生成资产」回填）。
+     * 不建外键：交易可被独立删除，资产作为历史台账应保留。
+     */
+    sourceTransactionId: text('source_transaction_id'),
+
+    /* ------------------------------ 分期购买 ------------------------------ */
+    /** 分期期数；0 = 非分期资产（以下字段仅在分期时有效） */
+    installmentPeriods: integer('installment_periods').notNull().default(0),
+    /** 首付（本位币分） */
+    installmentDownPaymentCents: integer('installment_down_payment_cents').notNull().default(0),
+    /** 实际总利息（本位币分；两种利息输入模式结算后的值） */
+    installmentInterestCents: integer('installment_interest_cents').notNull().default(0),
+    /** 年化利率 × 100（12.5% → 1250）；NULL = 按总利息金额输入 */
+    installmentAnnualRateScaled: integer('installment_annual_rate_scaled'),
+    /** 首期还款日 'YYYY-MM-DD' */
+    installmentFirstDueDateKey: text('installment_first_due_date_key'),
+    /** 还款账户 id */
+    installmentAccountId: text('installment_account_id'),
+    /** 期次支出分类 id */
+    installmentCategoryId: text('installment_category_id'),
+    /** 关联周期记账规则 id（期次交易的生成引擎） */
+    installmentRuleId: text('installment_rule_id'),
+    /** 1=自动入账 0=待确认 */
+    installmentAutoCreate: integer('installment_auto_create').notNull().default(1),
+    /** 提前结清日期；NULL = 还款中 */
+    installmentClosedDateKey: text('installment_closed_date_key'),
+    /** 首付交易 id（详情可跳转查看） */
+    installmentDownPaymentTransactionId: text('installment_down_payment_transaction_id'),
+
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (t) => [
+    index('idx_personal_assets_list').on(t.status, t.acquiredDateKey),
+    index('idx_personal_assets_source_tx').on(t.sourceTransactionId),
+    index('idx_personal_assets_installment_rule').on(t.installmentRuleId),
+  ],
+);
+
+/** 资产估值历史：创建时记成本基线，此后每次「更新估值」追加一条 */
+export const assetValuations = sqliteTable(
+  'asset_valuations',
+  {
+    id: text('id').primaryKey(),
+    assetId: text('asset_id')
+      .notNull()
+      .references(() => personalAssets.id, { onDelete: 'cascade' }),
+    /** 估值（本位币分，总额） */
+    valueCents: integer('value_cents').notNull(),
+    dateKey: text('date_key').notNull(),
+    note: text('note').notNull().default(''),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [index('idx_asset_valuations_asset').on(t.assetId, t.dateKey, t.createdAt)],
+);
+
 export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
+export type PersonalAsset = typeof personalAssets.$inferSelect;
+export type NewPersonalAsset = typeof personalAssets.$inferInsert;
+export type AssetValuation = typeof assetValuations.$inferSelect;
+export type NewAssetValuation = typeof assetValuations.$inferInsert;
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 export type Project = typeof projects.$inferSelect;

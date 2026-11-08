@@ -155,6 +155,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 	const accountRef = useRef<AccountEditorHandle>(null);
 	const openingFrameRef = useRef<number | null>(null);
 	const pendingDismissRef = useRef<ResidentEditorTarget | null>(null);
+	const afterDismissRef = useRef<(() => void) | null>(null);
 	const closingRef = useRef(false);
 	const dismissCheckingRef = useRef(false);
 	const [surfaceVisible, setSurfaceVisible] = useState(false);
@@ -231,6 +232,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 		// 这里一并复位 closingRef/pendingDismissRef，否则下次 present 会被旧标记卡住。
 		closingRef.current = false;
 		pendingDismissRef.current = null;
+		afterDismissRef.current = null;
 		if (!target) {
 			setInteractive(false);
 			setSurfacePreparing(false);
@@ -284,16 +286,20 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 		const dismissedTarget = pendingDismissRef.current;
 		if (!dismissedTarget) return;
 		pendingDismissRef.current = null;
+		const after = afterDismissRef.current;
+		afterDismissRef.current = null;
 		onTargetDismissed(dismissedTarget.token);
-		if (dismissedTarget.routeBackOnDismiss) router.back();
+		if (after) after();
+		else if (dismissedTarget.routeBackOnDismiss) router.back();
 	}, [onTargetDismissed, router]);
 
-	const startDismiss = useCallback<SheetDismiss>(() => {
+	const startDismiss = useCallback<SheetDismiss>((afterDismiss) => {
 		if (!target || closingRef.current) return;
 		closingRef.current = true;
 		setInteractive(false);
 		setSurfacePreparing(false);
 		pendingDismissRef.current = target;
+		afterDismissRef.current = afterDismiss ?? null;
 		setSurfaceVisible(false);
 	}, [target]);
 
@@ -337,6 +343,18 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 			},
 		]);
 	}, [removeTransaction, startDismiss, target, transaction]);
+
+	/** 支出详情 → 生成个人资产：收起编辑器后打开预填的资产表单 */
+	const generateAssetFromTransaction = useCallback(() => {
+		if (!transaction || target?.kind !== "transaction") return;
+		const transactionId = transaction.id;
+		startDismiss(() => {
+			router.push({
+				pathname: "/personal-assets/edit",
+				params: { fromTransactionId: transactionId },
+			});
+		});
+	}, [router, startDismiss, target, transaction]);
 
 	const confirmAccountDelete = useCallback(() => {
 		if (!account || target?.kind !== "account") return;
@@ -391,8 +409,18 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 	const title = target?.kind === "account" ? zh.accounts.edit : zh.common.edit;
 	const canDeleteTransaction = target?.kind === "transaction" && !!transaction;
 	const canDeleteAccount = target?.kind === "account" && !!account;
+	const canGenerateAsset =
+		target?.kind === "transaction" && transaction?.type === "expense";
 	const headerRight = (
 		<View style={styles.headerActions}>
+			{canGenerateAsset && (
+				<SheetHeaderIconButton
+					icon="package"
+					label={zh.personalAssets.generateFromTx}
+					color={colors.primary}
+					onPress={generateAssetFromTransaction}
+				/>
+			)}
 			{(canDeleteTransaction || canDeleteAccount) && (
 				<SheetHeaderIconButton
 					icon="trash-2"

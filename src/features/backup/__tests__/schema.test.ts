@@ -5,7 +5,7 @@ import { backupEnvelopeSchema, backupFileSchema } from '../schema';
 function validBackup() {
   return {
     format: 'finance-tracker-backup',
-    schemaVersion: 6,
+    schemaVersion: 9,
     appVersion: '1.0.0',
     exportedAt: '2026-07-08T10:00:00.000Z',
     data: {
@@ -80,6 +80,48 @@ function validBackup() {
       importBatches: [],
       importMappings: [],
       settings: [{ key: 'backup.lastBackupAt', value: '1751900000000' }],
+      personalAssets: [
+        {
+          id: 'pa-1',
+          name: 'iPhone 17 Pro',
+          category: 'electronics',
+          icon: 'smartphone',
+          color: '#3B82F6',
+          quantity: 1,
+          costCents: 899900,
+          currentValueCents: 750000,
+          status: 'holding',
+          acquiredDateKey: '2026-09-19',
+          closedDateKey: null,
+          soldCents: null,
+          soldTransactionId: null,
+          installmentPeriods: 0,
+          installmentDownPaymentCents: 0,
+          installmentInterestCents: 0,
+          installmentAnnualRateScaled: null,
+          installmentFirstDueDateKey: null,
+          installmentAccountId: null,
+          installmentCategoryId: null,
+          installmentRuleId: null,
+          installmentAutoCreate: 1,
+          installmentClosedDateKey: null,
+          installmentDownPaymentTransactionId: null,
+          note: '',
+          sourceTransactionId: null,
+          createdAt: 1751900000000,
+          updatedAt: 1751900000000,
+        },
+      ],
+      assetValuations: [
+        {
+          id: 'val-1',
+          assetId: 'pa-1',
+          valueCents: 899900,
+          dateKey: '2026-09-19',
+          note: '取得成本',
+          createdAt: 1751900000000,
+        },
+      ],
     },
   };
 }
@@ -172,6 +214,27 @@ describe('backupFileSchema', () => {
       (b: ReturnType<typeof validBackup>) => {
         const { period: _drop, ...rest } = b.data.budgets[0]!;
         b.data.budgets[0] = rest as never;
+        return b;
+      },
+    ],
+    [
+      '缺少 personalAssets 表',
+      (b: ReturnType<typeof validBackup>) => {
+        const { personalAssets: _drop, ...rest } = b.data;
+        return { ...b, data: rest };
+      },
+    ],
+    [
+      '资产 status 非法',
+      (b: ReturnType<typeof validBackup>) => {
+        b.data.personalAssets[0]!.status = 'lost' as never;
+        return b;
+      },
+    ],
+    [
+      '估值 assetId 为空串',
+      (b: ReturnType<typeof validBackup>) => {
+        b.data.assetValuations[0]!.assetId = '';
         return b;
       },
     ],

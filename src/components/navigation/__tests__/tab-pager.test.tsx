@@ -16,11 +16,14 @@ import {
 	type TabRouterContract,
 	type TabSceneSpec,
 } from "../tab-pager";
-import { logicalTabSlot, type TabRouteName } from "../tab-pager-machine";
+import {
+	logicalTabSlot,
+	TAB_DEFINITIONS,
+	type TabRouteName,
+} from "../tab-pager-machine";
 
-const SCENES: TabSceneSpec[] = (
-	["index", "ledger", "profile"] as const
-).map((name) => ({
+/** Harness scenes follow the production tab order so indices stay aligned. */
+const SCENES: TabSceneSpec[] = TAB_DEFINITIONS.map(({ name }) => ({
 	name,
 	render: () => <Text testID={`content-${name}`}>{name}</Text>,
 }));
@@ -126,15 +129,16 @@ describe("TabPager", () => {
 
 	it("mounts the next neighbour once the anchor moves", async () => {
 		const { current } = await setup();
-		expect(contentOf("profile")).toBeNull();
+		expect(contentOf("personal-assets")).toBeNull();
 
 		await act(async () => current().pressTab("ledger"));
 
-		expect(contentOf("profile")).toBeTruthy();
+		expect(contentOf("personal-assets")).toBeTruthy();
+		expect(contentOf("profile")).toBeNull();
 	});
 
 	it("keeps scenes mounted after they stop being reachable", async () => {
-		const { current } = await setup({ activeRouteName: "profile" });
+		const { current } = await setup({ activeRouteName: "ledger" });
 		expect(contentOf("ledger")).toBeTruthy();
 
 		await act(async () => current().pressTab("index"));
@@ -192,7 +196,8 @@ describe("TabPager", () => {
 		});
 		expect(current().opacityFor("index").value).toBe(1);
 		expect(current().opacityFor("ledger").value).toBe(1);
-		expect(current().opacityFor("profile").value).toBe(1);
+		expect(current().opacityFor("personal-assets").value).toBe(1);
+		expect(current().opacityFor("profile").value).toBe(0);
 	});
 
 	it("rebases an active transition onto its target without moving visible scenes", async () => {
@@ -237,7 +242,7 @@ describe("TabPager", () => {
 				jest.advanceTimersByTime(20);
 			});
 
-			for (const targetName of ["ledger", "profile"] as const) {
+			for (const targetName of ["ledger", "personal-assets"] as const) {
 				const handlers = handlersOf(current());
 				act(() => {
 					handlers.onStart?.();
@@ -256,7 +261,7 @@ describe("TabPager", () => {
 
 			expect(current().state).toMatchObject({
 				anchorName: "ledger",
-				targetName: "profile",
+				targetName: "personal-assets",
 			});
 			expect(jumps).toEqual([]);
 
@@ -267,9 +272,9 @@ describe("TabPager", () => {
 
 			expect(current().state).toMatchObject({
 				phase: "idle",
-				anchorName: "profile",
+				anchorName: "personal-assets",
 			});
-			expect(jumps).toEqual(["profile"]);
+			expect(jumps).toEqual(["personal-assets"]);
 		} finally {
 			jest.runOnlyPendingTimers();
 			jest.useRealTimers();
@@ -289,7 +294,7 @@ describe("TabPager", () => {
 		expect(current().state).toMatchObject({
 			phase: "dragging",
 			anchorName: "profile",
-			targetName: "ledger",
+			targetName: "personal-assets",
 		});
 	});
 
@@ -361,7 +366,7 @@ describe("TabPager", () => {
 				phase: "idle",
 				anchorName: "profile",
 			});
-			expect(current().anchorIndex.value).toBe(2);
+			expect(current().anchorIndex.value).toBe(3);
 			expect(current().translateX.value).toBe(0);
 			expect(jumps).toEqual(["profile"]);
 		} finally {
@@ -388,7 +393,7 @@ describe("TabPager", () => {
 
 	it("keeps visual and router state aligned through twenty alternating intents", async () => {
 		const { current, jumps } = await setup({ reduceMotion: true });
-		const expectedCycle = ["profile", "ledger", "index", "ledger"] as const;
+		const expectedCycle = ["profile", "personal-assets", "index", "ledger"] as const;
 		let expectedJumpCount = 0;
 		const confirmRouter = async (name: TabRouteName) => {
 			expectedJumpCount += 1;
@@ -407,8 +412,8 @@ describe("TabPager", () => {
 				handlers.onUpdate?.({ translationX: 200 });
 				handlers.onEnd?.({ translationX: 200, velocityX: 0 });
 			});
-			expect(current().state.anchorName).toBe("ledger");
-			await confirmRouter("ledger");
+			expect(current().state.anchorName).toBe("personal-assets");
+			await confirmRouter("personal-assets");
 
 			await act(async () => current().pressTab("index"));
 			expect(current().state.anchorName).toBe("index");
@@ -446,7 +451,8 @@ describe("TabPager", () => {
 		await waitFor(() => expect(current().opacityFor("ledger").value).toBe(1));
 		expect(current().opacityFor("index").value).toBe(1);
 		expect(current().opacityFor("ledger").value).toBe(1);
-		expect(current().opacityFor("profile").value).toBe(1);
+		expect(current().opacityFor("personal-assets").value).toBe(1);
+		expect(current().opacityFor("profile").value).toBe(0);
 	});
 
 	it("keeps mounted scene state after visual route changes", () => {

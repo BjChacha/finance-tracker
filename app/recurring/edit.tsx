@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { showDialog } from '@/components/dialog';
 import { SingleLineTextInput } from '@/components/single-line-text-input';
+import { DatePickerField } from '@/components/date-picker';
 import { SecondarySheetScreen } from '@/components/navigation/secondary-sheet-screen';
 import type { RecurringFrequency, TransactionType } from '@/db/schema';
 import { useAccountBalances } from '@/features/accounts';
@@ -461,20 +462,14 @@ export default function RecurringEditScreen() {
         {/* 日期 */}
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>{zh.recurring.startDate}</Text>
-          <SingleLineTextInput
-            style={styles.textInput}
-            value={startDate}
-            onChangeText={setStartDate}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={colors.textSecondary}
-          />
+          <DatePickerField value={startDate} onPick={setStartDate} />
           <Text style={styles.sectionLabel2}>{zh.recurring.endDate}</Text>
-          <SingleLineTextInput
-            style={styles.textInput}
+          <DatePickerField
             value={endDateText}
-            onChangeText={setEndDateText}
-            placeholder={zh.recurring.endDatePlaceholder}
-            placeholderTextColor={colors.textSecondary}
+            onPick={setEndDateText}
+            placeholder={zh.recurring.longTerm}
+            clearable
+            onClear={() => setEndDateText('')}
           />
         </View>
 

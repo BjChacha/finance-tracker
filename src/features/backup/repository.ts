@@ -23,6 +23,7 @@ import { readTextFromUri, shareFile, writeTextToCache } from '@/lib/fs';
 import { saveLocalSnapshot } from './storage';
 import { backupEnvelopeSchema, backupFileSchema, type BackupData, type BackupFile } from './schema';
 import { runUpgradeChain, type RawBackupPayload } from './upgraders';
+import { assetValuations, personalAssets } from '@/db/schema';
 
 /* ---------------------------------- settings ---------------------------------- */
 
@@ -35,7 +36,7 @@ export function getLastBackupAt(): Promise<number | null> {
 
 /* ---------------------------------- 导出备份 ---------------------------------- */
 
-/** 读取 9 张表全量数据，组装当前版本的备份对象 */
+/** 读取 11 张表全量数据，组装当前版本的备份对象 */
 export async function buildBackupFile(): Promise<BackupFile> {
   const snapshot = db.transaction((tx) => ({
     accountRows: tx.select().from(accounts).all(),
@@ -47,9 +48,12 @@ export async function buildBackupFile(): Promise<BackupFile> {
     importBatchRows: tx.select().from(importBatches).all(),
     importMappingRows: tx.select().from(importMappings).all(),
     settingRows: tx.select().from(settings).all(),
+    personalAssetRows: tx.select().from(personalAssets).all(),
+    assetValuationRows: tx.select().from(assetValuations).all(),
   }));
   const { accountRows, categoryRows, projectRows, transactionRows, budgetRows,
-    recurringRuleRows, importBatchRows, importMappingRows, settingRows } = snapshot;
+    recurringRuleRows, importBatchRows, importMappingRows, settingRows,
+    personalAssetRows, assetValuationRows } = snapshot;
   return {
     format: BACKUP_FORMAT,
     schemaVersion: BACKUP_SCHEMA_VERSION,
@@ -68,6 +72,8 @@ export async function buildBackupFile(): Promise<BackupFile> {
       importBatches: importBatchRows,
       importMappings: importMappingRows,
       settings: settingRows,
+      personalAssets: personalAssetRows,
+      assetValuations: assetValuationRows,
     },
   };
 }
@@ -151,8 +157,11 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
   );
 
   db.transaction(() => {
-    // 先删引用方，再删被引用方（transactions/budgets/recurring 引用 accounts/categories/projects）
+    // 先删引用方，再删被引用方（transactions/budgets/recurring 引用 accounts/categories/projects；
+    // asset_valuations 引用 personal_assets）
     db.delete(transactions).run();
+    db.delete(assetValuations).run();
+    db.delete(personalAssets).run();
     db.delete(projects).run();
     db.delete(recurringRules).run();
     db.delete(budgets).run();
@@ -172,6 +181,8 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
     insertInBatches(importBatches, data.importBatches);
     insertInBatches(importMappings, data.importMappings);
     insertInBatches(settings, data.settings);
+    insertInBatches(personalAssets, data.personalAssets);
+    insertInBatches(assetValuations, data.assetValuations);
   });
 
   return {
@@ -186,6 +197,8 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
       importBatches: data.importBatches.length,
       importMappings: data.importMappings.length,
       settings: data.settings.length,
+      personalAssets: data.personalAssets.length,
+      assetValuations: data.assetValuations.length,
     },
   };
 }

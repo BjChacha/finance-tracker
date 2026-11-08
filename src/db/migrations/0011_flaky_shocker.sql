@@ -1,0 +1,1 @@
+ALTER TABLE `personal_assets` ADD `sold_transaction_id` text;

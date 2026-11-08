@@ -29,6 +29,7 @@ export const dashboardText = {
   choosePoint: '\u70b9\u51fb\u66f2\u7ebf\u67e5\u770b\u91d1\u989d',
   dashboard: '\u770b\u677f',
   ledger: '\u6d41\u6c34',
+  personalAssets: '\u8d44\u4ea7',
   profile: '\u6211\u7684',
   month: '\u6708',
   quarter: '\u5b63',

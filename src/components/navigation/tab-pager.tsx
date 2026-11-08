@@ -293,18 +293,29 @@ export function useTabPagerController(options: {
 	const gestureTakeoverIndex = useSharedValue(initialAnchorIndex);
 	const visualIntentToken = useSharedValue(0);
 	const visualIntentCounterRef = useRef(0);
+	// 与 TAB_DEFINITIONS 一一对应的场景透明度槽（顺序：index / ledger / personal-assets / profile）。
+	// 新增或调整页签时，此列表的顺序必须同步，否则 opacityFor 会取到 undefined。
 	const indexOpacity = useSharedValue(
-		Math.abs(initialAnchorIndex) <= 1 ? 1 : 0,
+		Math.abs(0 - initialAnchorIndex) <= 1 ? 1 : 0,
 	);
 	const ledgerOpacity = useSharedValue(
 		Math.abs(1 - initialAnchorIndex) <= 1 ? 1 : 0,
 	);
-	const profileOpacity = useSharedValue(
+	const personalAssetsOpacity = useSharedValue(
 		Math.abs(2 - initialAnchorIndex) <= 1 ? 1 : 0,
 	);
+	const profileOpacity = useSharedValue(
+		Math.abs(3 - initialAnchorIndex) <= 1 ? 1 : 0,
+	);
 	const opacities = useMemo(
-		() => [indexOpacity, ledgerOpacity, profileOpacity] as const,
-		[indexOpacity, ledgerOpacity, profileOpacity],
+		() =>
+			[
+				indexOpacity,
+				ledgerOpacity,
+				personalAssetsOpacity,
+				profileOpacity,
+			] as const,
+		[indexOpacity, ledgerOpacity, personalAssetsOpacity, profileOpacity],
 	);
 
 	const pillTranslateX = useDerivedValue(

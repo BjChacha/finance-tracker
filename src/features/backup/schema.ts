@@ -126,6 +126,48 @@ const settingRowSchema = z.object({
   value: z.string(),
 });
 
+const personalAssetRowSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  category: z.string(),
+  icon: z.string(),
+  color: z.string(),
+  quantity: z.int().positive(),
+  costCents: z.int(),
+  currentValueCents: z.int(),
+  status: z.enum(['holding', 'sold', 'disposed']),
+  acquiredDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  closedDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  soldCents: z.int().nullable(),
+  /** 出售对应的收入交易 id（v8 起存在；无则为 null） */
+  soldTransactionId: z.string().nullable(),
+  /* 分期购买（v9 起存在；非分期资产 periods=0，其余为默认值/空） */
+  installmentPeriods: z.int(),
+  installmentDownPaymentCents: z.int(),
+  installmentInterestCents: z.int(),
+  installmentAnnualRateScaled: z.int().nullable(),
+  installmentFirstDueDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  installmentAccountId: z.string().nullable(),
+  installmentCategoryId: z.string().nullable(),
+  installmentRuleId: z.string().nullable(),
+  installmentAutoCreate: z.int(),
+  installmentClosedDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  installmentDownPaymentTransactionId: z.string().nullable(),
+  note: z.string(),
+  sourceTransactionId: z.string().nullable(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
+const assetValuationRowSchema = z.object({
+  id: z.string().min(1),
+  assetId: z.string().min(1),
+  valueCents: z.int(),
+  dateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  note: z.string(),
+  createdAt: z.number(),
+});
+
 /** 备份文件完整 schema（当前版本 = BACKUP_SCHEMA_VERSION 的数据形状） */
 export const backupFileSchema = z.object({
   format: z.literal(BACKUP_FORMAT),
@@ -142,6 +184,8 @@ export const backupFileSchema = z.object({
     importBatches: z.array(importBatchRowSchema),
     importMappings: z.array(importMappingRowSchema),
     settings: z.array(settingRowSchema),
+    personalAssets: z.array(personalAssetRowSchema),
+    assetValuations: z.array(assetValuationRowSchema),
   }),
 });
 

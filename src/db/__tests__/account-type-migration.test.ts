@@ -6,13 +6,30 @@ type MigrationBundle = {
 const migrationBundle = require('../migrations/migrations').default as MigrationBundle;
 
 describe('migrations', () => {
-  it('registers the analysis-version migration as the latest one', () => {
+  it('registers the installment migration as the latest one', () => {
     expect(migrationBundle.journal.entries.at(-1)).toMatchObject({
-      idx: 9,
-      tag: '0009_spooky_reaper',
+      idx: 12,
+      tag: '0012_minor_satana',
     });
-    expect(migrationBundle.migrations.m0009).toEqual(expect.any(String));
-    expect(migrationBundle.migrations.m0009.length).toBeGreaterThan(0);
+    expect(migrationBundle.migrations.m0012).toEqual(expect.any(String));
+    expect(migrationBundle.migrations.m0012.length).toBeGreaterThan(0);
+  });
+
+  it('0012 adds the installment columns', () => {
+    const sql = migrationBundle.migrations.m0012;
+    expect(sql).toContain('ALTER TABLE `personal_assets` ADD `installment_periods`');
+    expect(sql).toContain('ALTER TABLE `personal_assets` ADD `installment_rule_id`');
+    expect(sql).toContain('CREATE INDEX `idx_personal_assets_installment_rule`');
+  });
+
+  it('0010 creates the personal asset tables with lifecycle columns', () => {
+    const sql = migrationBundle.migrations.m0010;
+    expect(sql).toContain('CREATE TABLE `personal_assets`');
+    expect(sql).toContain('`cost_cents` integer NOT NULL');
+    expect(sql).toContain('`current_value_cents` integer NOT NULL');
+    expect(sql).toContain('`status` text DEFAULT \'holding\' NOT NULL');
+    expect(sql).toContain('CREATE TABLE `asset_valuations`');
+    expect(sql).toContain('FOREIGN KEY (`asset_id`) REFERENCES `personal_assets`(`id`)');
   });
 
   it('0009 adds the report analysis contract version', () => {

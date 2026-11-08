@@ -345,3 +345,117 @@ describe('complete upgrade chain v1 -> v6', () => {
     expect(out.data.budgets[0]!.period).toBe('month');
   });
 });
+
+describe('backupUpgraders[6]（v6 → v7 个人资产空表回填）', () => {
+  const upgrade = backupUpgraders[6]!;
+
+  it('补 personalAssets / assetValuations 空数组，其余数据原样保留', () => {
+    const out = upgrade({
+      ...payloadAt(6),
+      data: { accounts: [{ id: 'a' }], transactions: [{ id: 'tx' }] },
+    }) as RawBackupPayload & {
+      data: { accounts: unknown[]; transactions: unknown[]; personalAssets: unknown[]; assetValuations: unknown[] };
+    };
+    expect(out.schemaVersion).toBe(7);
+    expect(out.data.personalAssets).toEqual([]);
+    expect(out.data.assetValuations).toEqual([]);
+    expect(out.data.accounts).toEqual([{ id: 'a' }]);
+    expect(out.data.transactions).toEqual([{ id: 'tx' }]);
+  });
+
+  it('不覆盖已有资产数据（前向兼容：v7 备份误走升级链时保留内容）', () => {
+    const out = upgrade({
+      ...payloadAt(6),
+      data: { personalAssets: [{ id: 'pa-1' }], assetValuations: [] },
+    }) as RawBackupPayload & { data: { personalAssets: unknown[] } };
+    expect(out.data.personalAssets).toEqual([{ id: 'pa-1' }]);
+  });
+});
+
+describe('backupUpgraders[7]（v7 → v8 出售收入关联列回填）', () => {
+  const upgrade = backupUpgraders[7]!;
+
+  it('为个人资产行补 soldTransactionId: null，其余数据原样保留', () => {
+    const out = upgrade({
+      ...payloadAt(7),
+      data: {
+        personalAssets: [{ id: 'pa-1', name: '手机' }],
+        assetValuations: [{ id: 'val-1' }],
+      },
+    }) as RawBackupPayload & { data: { personalAssets: Record<string, unknown>[] } };
+    expect(out.schemaVersion).toBe(8);
+    expect(out.data.personalAssets).toEqual([{ soldTransactionId: null, id: 'pa-1', name: '手机' }]);
+  });
+
+  it('已有 soldTransactionId 的行不被覆盖（前向兼容）', () => {
+    const out = upgrade({
+      ...payloadAt(7),
+      data: { personalAssets: [{ id: 'pa-1', soldTransactionId: 'tx-9' }] },
+    }) as RawBackupPayload & { data: { personalAssets: Record<string, unknown>[] } };
+    expect(out.data.personalAssets).toEqual([{ soldTransactionId: 'tx-9', id: 'pa-1' }]);
+  });
+
+  it('缺失 personalAssets 表时补空数组', () => {
+    const out = upgrade({ ...payloadAt(7), data: {} }) as RawBackupPayload & {
+      data: { personalAssets: unknown[] };
+    };
+    expect(Array.isArray(out.data.personalAssets)).toBe(true);
+  });
+});
+
+describe('backupUpgraders[8]（v8 → v9 分期字段回填）', () => {
+  const upgrade = backupUpgraders[8]!;
+
+  it('为个人资产行补齐非分期默认值，其余数据原样保留', () => {
+    const out = upgrade({
+      ...payloadAt(8),
+      data: { personalAssets: [{ id: 'pa-1', name: '手机' }] },
+    }) as RawBackupPayload & { data: { personalAssets: Record<string, unknown>[] } };
+    expect(out.schemaVersion).toBe(9);
+    expect(out.data.personalAssets).toEqual([
+      {
+        installmentPeriods: 0,
+        installmentDownPaymentCents: 0,
+        installmentInterestCents: 0,
+        installmentAnnualRateScaled: null,
+        installmentFirstDueDateKey: null,
+        installmentAccountId: null,
+        installmentCategoryId: null,
+        installmentRuleId: null,
+        installmentAutoCreate: 1,
+        installmentClosedDateKey: null,
+        installmentDownPaymentTransactionId: null,
+        id: 'pa-1',
+        name: '手机',
+      },
+    ]);
+  });
+
+  it('已有分期字段的行不被覆盖（前向兼容）', () => {
+    const out = upgrade({
+      ...payloadAt(8),
+      data: { personalAssets: [{ id: 'pa-1', installmentPeriods: 12 }] },
+    }) as RawBackupPayload & { data: { personalAssets: Record<string, unknown>[] } };
+    expect(out.data.personalAssets[0]!.installmentPeriods).toBe(12);
+  });
+
+  it('缺失 personalAssets 表时补空数组', () => {
+    const out = upgrade({ ...payloadAt(8), data: {} }) as RawBackupPayload & {
+      data: { personalAssets: unknown[] };
+    };
+    expect(Array.isArray(out.data.personalAssets)).toBe(true);
+  });
+});
+
+describe('complete upgrade chain v1 -> v9', () => {
+  it('ends at the current schema version with asset tables present', () => {
+    const out = runUpgradeChain(
+      { ...payloadAt(1), data: { accounts: [], categories: [], transactions: [] } },
+      1,
+      9,
+    ) as RawBackupPayload & { data: Record<string, unknown> };
+    expect(out.schemaVersion).toBe(9);
+    expect(Array.isArray(out.data.personalAssets)).toBe(true);
+    expect(Array.isArray(out.data.assetValuations)).toBe(true);
+  });
+});

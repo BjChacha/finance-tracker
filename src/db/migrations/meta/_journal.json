@@ -71,6 +71,27 @@
       "when": 1792429254791,
       "tag": "0009_spooky_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1794075341458,
+      "tag": "0010_fast_nightshade",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1794135637199,
+      "tag": "0011_flaky_shocker",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1794139447582,
+      "tag": "0012_minor_satana",
+      "breakpoints": true
     }
   ]
 }

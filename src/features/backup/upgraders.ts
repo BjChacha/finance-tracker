@@ -39,7 +39,7 @@ export type RawBackupPayload = {
 
 export type BackupUpgrader = (payload: RawBackupPayload) => RawBackupPayload;
 
-/** 目前 schemaVersion=6 */
+/** 目前 schemaVersion=9 */
 export const backupUpgraders: Record<number, BackupUpgrader> = {
   // v1 → v2：引入多币种。transactions 增加 currency/exchange_rate/amount_base_cents/to_amount，
   // accounts 增加 rate_to_base。v1 备份全部为隐式 CNY（本位币），按此回填。
@@ -158,6 +158,62 @@ export const backupUpgraders: Record<number, BackupUpgrader> = {
         categories: [...categoryRows, ...missingTransferCategories],
         transactions: transactionRows.map(backfillTransferCategory),
         recurringRules: recurringRuleRows.map(backfillTransferCategory),
+      },
+    };
+  },
+  // v6 → v7：引入「个人资产」。新增 personal_assets / asset_valuations 表
+  //（旧备份为空，恢复后由用户重新录入，不影响既有账目数据）。
+  6: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    return {
+      ...payload,
+      schemaVersion: 7,
+      data: {
+        ...data,
+        personalAssets: Array.isArray(data.personalAssets) ? data.personalAssets : [],
+        assetValuations: Array.isArray(data.assetValuations) ? data.assetValuations : [],
+      },
+    };
+  },
+  // v7 → v8：个人资产增加出售收入关联列 sold_transaction_id，旧行统一补 null。
+  7: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const assetRows = Array.isArray(data.personalAssets) ? data.personalAssets : [];
+    return {
+      ...payload,
+      schemaVersion: 8,
+      data: {
+        ...data,
+        personalAssets: assetRows.map((row) => ({
+          soldTransactionId: null,
+          ...(row as Record<string, unknown>),
+        })),
+      },
+    };
+  },
+  // v8 → v9：个人资产支持分期购买，旧资产一律按「非分期」回填。
+  8: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const assetRows = Array.isArray(data.personalAssets) ? data.personalAssets : [];
+    return {
+      ...payload,
+      schemaVersion: 9,
+      data: {
+        ...data,
+        personalAssets: assetRows.map((row) => ({
+          installmentPeriods: 0,
+          installmentDownPaymentCents: 0,
+          installmentInterestCents: 0,
+          installmentAnnualRateScaled: null,
+          installmentFirstDueDateKey: null,
+          installmentAccountId: null,
+          installmentCategoryId: null,
+          installmentRuleId: null,
+          installmentAutoCreate: 1,
+          installmentClosedDateKey: null,
+          installmentDownPaymentTransactionId: null,
+          ...(row as Record<string, unknown>),
+        })),
       },
     };
   },

@@ -23,12 +23,14 @@ import { TAB_DEFINITIONS, type TabRouteName } from "./tab-pager-machine";
 export const TAB_TITLES: Record<TabRouteName, string> = {
 	index: copy.dashboard,
 	ledger: copy.ledger,
+	"personal-assets": copy.personalAssets,
 	profile: copy.profile,
 };
 
 export const TAB_ICONS: Record<TabRouteName, IconName> = {
 	index: "house",
 	ledger: "file-text",
+	"personal-assets": "gem",
 	profile: "user",
 };
 

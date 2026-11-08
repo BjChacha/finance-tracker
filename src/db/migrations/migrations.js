@@ -11,6 +11,9 @@ import m0006 from './0006_transfer_categories.sql';
 import m0007 from './0007_fast_redwing.sql';
 import m0008 from './0008_familiar_luminals.sql';
 import m0009 from './0009_spooky_reaper.sql';
+import m0010 from './0010_fast_nightshade.sql';
+import m0011 from './0011_flaky_shocker.sql';
+import m0012 from './0012_minor_satana.sql';
 
   export default {
     journal,
@@ -24,7 +27,10 @@ m0005,
 m0006,
 m0007,
 m0008,
-m0009
+m0009,
+m0010,
+m0011,
+m0012
     }
   }
   

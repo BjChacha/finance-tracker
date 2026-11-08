@@ -214,6 +214,9 @@ function AppShell() {
 					<Stack.Screen name="import/index" options={{ title: zh.imp.title }} />
 					<Stack.Screen name="recurring/index" options={sheetOptions} />
 					<Stack.Screen name="recurring/edit" options={sheetOptions} />
+					<Stack.Screen name="personal-assets/edit" options={sheetOptions} />
+					<Stack.Screen name="personal-assets/[id]" options={sheetOptions} />
+					<Stack.Screen name="personal-assets/candidates" options={sheetOptions} />
 				</Stack>
 				{/* 主题化弹窗/轻提示：必须排在 Stack 之后才能盖住路由页面与底部页签 */}
 				<DialogHost />

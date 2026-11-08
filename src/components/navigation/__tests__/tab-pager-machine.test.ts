@@ -171,13 +171,13 @@ describe("TabPagerMachine", () => {
 
 		expect(updated.state).toMatchObject({
 			anchorName: "ledger",
-			targetName: "profile",
+			targetName: "personal-assets",
 			displacement: 0.4,
 		});
 		expect(ended.state).toMatchObject({
 			phase: "animating",
 			anchorName: "ledger",
-			targetName: "profile",
+			targetName: "personal-assets",
 		});
 		expect(commandsOf(ended)).toContainEqual({
 			type: "ANIMATE_TO",
@@ -436,7 +436,7 @@ describe("mountedTabNames", () => {
 
 	it("mounts the anchor and its neighbours only", () => {
 		expect(mountedTabNames(stateOf("index"))).toEqual(["index", "ledger"]);
-		expect(mountedTabNames(stateOf("profile"))).toEqual(["ledger", "profile"]);
+		expect(mountedTabNames(stateOf("profile"))).toEqual(["personal-assets", "profile"]);
 	});
 
 	it("always covers what a gesture can reveal from the anchor", () => {
@@ -467,7 +467,7 @@ describe("mountedTabNames", () => {
 		expect(mountedTabNames(stateOf("index", { targetName: "ledger" }))).toEqual([
 			"index",
 			"ledger",
-			"profile",
+			"personal-assets",
 		]);
 	});
 

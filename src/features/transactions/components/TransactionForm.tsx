@@ -24,6 +24,7 @@ import {
   View,
 } from "react-native";
 import { showDialog } from '@/components/dialog';
+import { DatePickerDialog } from '@/components/date-picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { usePreventRemove } from "expo-router/react-navigation";
 import Animated, {
@@ -260,7 +261,6 @@ function TransactionFormComponent(
 			: dayjs().format("HH:mm"),
 	);
 	const [datePickerOpen, setDatePickerOpen] = useState(false);
-	const [tempDate, setTempDate] = useState<Date>(() => new Date());
 	const [timePickerOpen, setTimePickerOpen] = useState(false);
 	const [tempTime, setTempTime] = useState<Date>(() => new Date());
 	const [note, setNote] = useState(initialValues?.note ?? "");
@@ -366,7 +366,6 @@ function TransactionFormComponent(
 				? nextDate.format("HH:mm")
 				: dayjs().format("HH:mm"),
 		);
-		setTempDate(nextDate.toDate());
 		setTempTime(nextDate.toDate());
 		setNote(initialValues?.note ?? "");
 		setCurrency(initialValues?.currency ?? "CNY");
@@ -1425,8 +1424,7 @@ function TransactionFormComponent(
 									dateText={dateText}
 									timeText={timeText}
 									onPressDate={() => {
-										setTempDate(dayjs(dateText, "YYYY-MM-DD").toDate());
-										setDatePickerOpen(true);
+									setDatePickerOpen(true);
 									}}
 									onPressTime={() => {
 										setTempTime(dayjs(`${dateText} ${timeText}`).toDate());
@@ -1577,73 +1575,17 @@ function TransactionFormComponent(
 				</Animated.View>
 			)}
 
-			{/* 日期选择器：Android 系统对话框 / iOS 底部滚轮面板（display=spinner） */}
-			{datePickerOpen && Platform.OS === "android" && (
-				<DateTimePicker
-					value={tempDate}
-					mode="date"
-					display="spinner"
-					onValueChange={(_event, selected) => {
-						setDatePickerOpen(false);
-						setDateText(dayjs(selected).format("YYYY-MM-DD"));
-						setDateSelected(true);
-					}}
-					onDismiss={() => setDatePickerOpen(false)}
-				/>
-			)}
-			{datePickerOpen && Platform.OS === "ios" && (
-				<Modal
-					transparent
-					animationType="fade"
-					onRequestClose={() => setDatePickerOpen(false)}
-				>
-					<Pressable
-						style={styles.pickerMask}
-						onPress={() => setDatePickerOpen(false)}
-					>
-						{/* 遮罩 fade + 面板上滑分离（业界底部弹层规范） */}
-						<AnimatedPressable
-							entering={SlideInDown.duration(motion.enter)}
-							style={[
-								styles.pickerSheet,
-								{
-									backgroundColor: colors.card,
-									paddingBottom: insets.bottom + 8,
-								},
-							]}
-							onPress={() => {}}
-						>
-							<View style={styles.pickerHeader}>
-								<Pressable
-									onPress={() => {
-										setDateText(dayjs(tempDate).format("YYYY-MM-DD"));
-										setDateSelected(true);
-										setDatePickerOpen(false);
-									}}
-								>
-									<Text
-										style={{
-											color: colors.primary,
-											fontSize: 16,
-											fontWeight: "600",
-										}}
-									>
-										{zh.common.done}
-									</Text>
-								</Pressable>
-							</View>
-							<DateTimePicker
-								value={tempDate}
-								mode="date"
-								display="spinner"
-								onValueChange={(_event, selected) => {
-									setTempDate(selected);
-								}}
-							/>
-						</AnimatedPressable>
-					</Pressable>
-				</Modal>
-			)}
+			{/* 日期选择器：共享组件（Android 系统对话框 / iOS 底部滚轮面板） */}
+			<DatePickerDialog
+				open={datePickerOpen}
+				value={dateText}
+				onPick={(dateKey) => {
+					setDatePickerOpen(false);
+					setDateText(dateKey);
+					setDateSelected(true);
+				}}
+				onDismiss={() => setDatePickerOpen(false)}
+			/>
 
 			{/* 时间选择器：Android 系统对话框 / iOS 底部滚轮面板（display=spinner） */}
 			{timePickerOpen && Platform.OS === "android" && (

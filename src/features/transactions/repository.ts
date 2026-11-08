@@ -40,6 +40,8 @@ export type TxListItem = {
   projectColor: string | null;
   accountName: string | null;
   toAccountName: string | null;
+  /** 周期记账生成时的规则 id（资产候选识别用；历史 fixture 可省略） */
+  recurringRuleId?: string | null;
 };
 
 const toAccounts = alias(accounts, 'to_accounts');
@@ -70,6 +72,7 @@ const txSelect = {
   projectColor: projects.color,
   accountName: accounts.name,
   toAccountName: toAccounts.name,
+  recurringRuleId: transactions.recurringRuleId,
 };
 
 /** 按月（或全部时间）+ 可选筛选查询明细，date desc */
