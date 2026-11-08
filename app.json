@@ -2,7 +2,7 @@
   "expo": {
     "name": "花哪了",
     "slug": "finance-tracker",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "scheme": "finance-tracker",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,7 +22,7 @@
       "permissions": [
         "REQUEST_INSTALL_PACKAGES"
       ],
-      "versionCode": 8
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/favicon.png"
