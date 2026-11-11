@@ -4,6 +4,7 @@ import { Icon } from '@/components/Icon';
 import type { CategorySlice } from '@/features/stats/repository';
 import { CategoryTreemap } from '@/features/stats/charts/CategoryTreemap';
 import { formatCentsWithSymbol } from '@/lib/money';
+import { trendColor } from '@/lib/trend';
 import { useTheme } from '@/theme';
 import { CategorySheet } from './category-sheet';
 import { dashboardStyles, TextAction } from './components';
@@ -122,12 +123,7 @@ export function CategoryList({
                 <Text
                   style={{
                     fontSize: 11,
-                    color:
-                      delta > 0
-                        ? colors.expense
-                        : delta < 0
-                          ? colors.income
-                          : colors.textSecondary,
+                    color: trendColor(delta, false, colors),
                   }}
                 >
                   {copy.versus} {delta > 0 ? '+' : ''}

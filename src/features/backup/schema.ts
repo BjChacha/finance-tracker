@@ -67,6 +67,8 @@ const transactionRowSchema = z.object({
   recurringRuleId: z.string().nullable(),
   importBatchId: z.string().nullable(),
   fingerprint: z.string().nullable(),
+  /** 分类归属来源（v11 起存在；v10 及以前由升级链补 'manual'） */
+  categorySource: z.enum(['manual', 'rule', 'suggestion', 'nl', 'import']),
   createdAt: z.number(),
   updatedAt: z.number(),
 });
@@ -126,6 +128,23 @@ const settingRowSchema = z.object({
   value: z.string(),
 });
 
+/** 自动分类规则（v11 起备份；用户创建的数据） */
+const categorizationRuleRowSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  enabled: z.int(),
+  position: z.number(),
+  keyword: z.string(),
+  matchType: z.enum(['expense', 'income', 'transfer']).nullable(),
+  amountMin: z.int().nullable(),
+  amountMax: z.int().nullable(),
+  categoryId: z.string().min(1),
+  matchCount: z.int(),
+  lastMatchedAt: z.number().nullable(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 const personalAssetRowSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
@@ -134,7 +153,6 @@ const personalAssetRowSchema = z.object({
   color: z.string(),
   quantity: z.int().positive(),
   costCents: z.int(),
-  currentValueCents: z.int(),
   status: z.enum(['holding', 'sold', 'disposed']),
   acquiredDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   closedDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
@@ -159,15 +177,6 @@ const personalAssetRowSchema = z.object({
   updatedAt: z.number(),
 });
 
-const assetValuationRowSchema = z.object({
-  id: z.string().min(1),
-  assetId: z.string().min(1),
-  valueCents: z.int(),
-  dateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  note: z.string(),
-  createdAt: z.number(),
-});
-
 /** 备份文件完整 schema（当前版本 = BACKUP_SCHEMA_VERSION 的数据形状） */
 export const backupFileSchema = z.object({
   format: z.literal(BACKUP_FORMAT),
@@ -185,7 +194,7 @@ export const backupFileSchema = z.object({
     importMappings: z.array(importMappingRowSchema),
     settings: z.array(settingRowSchema),
     personalAssets: z.array(personalAssetRowSchema),
-    assetValuations: z.array(assetValuationRowSchema),
+    categorizationRules: z.array(categorizationRuleRowSchema),
   }),
 });
 

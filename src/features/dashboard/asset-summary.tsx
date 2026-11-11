@@ -6,6 +6,7 @@ import type { TrendGranularity } from '@/features/stats/transform';
 import { sparklineGeometry } from '@/features/stats/charts/sparkline-geometry';
 import type { DateRange } from '@/lib/analytics-range';
 import { formatCentsWithSymbol } from '@/lib/money';
+import { trendColor } from '@/lib/trend';
 import { useTheme } from '@/theme';
 import { dashboardStyles, QueryNotice } from './components';
 import { dashboardText as copy } from './labels';
@@ -66,7 +67,15 @@ export function AssetSummary({
             >
               {formatCentsWithSymbol(data.closing.netWorth)}
             </Text>
-            <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+            <Text
+              style={{
+                color:
+                  data.accounts.length && delta !== 0
+                    ? trendColor(delta, true, colors)
+                    : colors.textSecondary,
+                fontSize: 11,
+              }}
+            >
               {data.accounts.length
                 ? `${copy.periodChange} ${delta > 0 ? '+' : ''}${formatCentsWithSymbol(delta)}`
                 : copy.noAssetHistory}

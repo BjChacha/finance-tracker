@@ -59,8 +59,8 @@ export function useTransactionTotals(filters: TxFilters, enabled = true) {
     queryFn: () => transactionTotals(filters), enabled });
 }
 
-export function useLargestExpenses(range: NonNullable<TxFilters['range']>) {
-  return useQuery({ queryKey: ['transactions', 'largest', range], queryFn: () => largestExpenses(range) });
+export function useLargestExpenses(range: NonNullable<TxFilters['range']>, enabled = true) {
+  return useQuery({ queryKey: ['transactions', 'largest', range], queryFn: () => largestExpenses(range), enabled });
 }
 
 /** key: ['transaction', id] */

@@ -10,8 +10,10 @@ import {
   accounts,
   budgets,
   categories,
+  categorizationRules,
   importBatches,
   importMappings,
+  insights,
   projects,
   recurringRules,
   settings,
@@ -23,7 +25,7 @@ import { readTextFromUri, shareFile, writeTextToCache } from '@/lib/fs';
 import { saveLocalSnapshot } from './storage';
 import { backupEnvelopeSchema, backupFileSchema, type BackupData, type BackupFile } from './schema';
 import { runUpgradeChain, type RawBackupPayload } from './upgraders';
-import { assetValuations, personalAssets } from '@/db/schema';
+import { personalAssets } from '@/db/schema';
 
 /* ---------------------------------- settings ---------------------------------- */
 
@@ -36,7 +38,7 @@ export function getLastBackupAt(): Promise<number | null> {
 
 /* ---------------------------------- 导出备份 ---------------------------------- */
 
-/** 读取 11 张表全量数据，组装当前版本的备份对象 */
+/** 读取 12 张表全量数据，组装当前版本的备份对象（insights 为派生数据不备份） */
 export async function buildBackupFile(): Promise<BackupFile> {
   const snapshot = db.transaction((tx) => ({
     accountRows: tx.select().from(accounts).all(),
@@ -49,11 +51,11 @@ export async function buildBackupFile(): Promise<BackupFile> {
     importMappingRows: tx.select().from(importMappings).all(),
     settingRows: tx.select().from(settings).all(),
     personalAssetRows: tx.select().from(personalAssets).all(),
-    assetValuationRows: tx.select().from(assetValuations).all(),
+    categorizationRuleRows: tx.select().from(categorizationRules).all(),
   }));
   const { accountRows, categoryRows, projectRows, transactionRows, budgetRows,
     recurringRuleRows, importBatchRows, importMappingRows, settingRows,
-    personalAssetRows, assetValuationRows } = snapshot;
+    personalAssetRows, categorizationRuleRows } = snapshot;
   return {
     format: BACKUP_FORMAT,
     schemaVersion: BACKUP_SCHEMA_VERSION,
@@ -73,7 +75,7 @@ export async function buildBackupFile(): Promise<BackupFile> {
       importMappings: importMappingRows,
       settings: settingRows,
       personalAssets: personalAssetRows,
-      assetValuations: assetValuationRows,
+      categorizationRules: categorizationRuleRows,
     },
   };
 }
@@ -157,10 +159,11 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
   );
 
   db.transaction(() => {
-    // 先删引用方，再删被引用方（transactions/budgets/recurring 引用 accounts/categories/projects；
-    // asset_valuations 引用 personal_assets）
+    // 先删引用方，再删被引用方（transactions/budgets/recurring/rules 引用
+    // accounts/categories/projects）；insights 为派生数据，恢复后由 Runner 重建
+    db.delete(insights).run();
     db.delete(transactions).run();
-    db.delete(assetValuations).run();
+    db.delete(categorizationRules).run();
     db.delete(personalAssets).run();
     db.delete(projects).run();
     db.delete(recurringRules).run();
@@ -174,15 +177,20 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
     // 先插被引用方，再插引用方
     insertInBatches(accounts, data.accounts);
     insertInBatches(categories, data.categories);
+    insertInBatches(categorizationRules, data.categorizationRules);
     insertInBatches(projects, data.projects);
     insertInBatches(transactions, data.transactions);
     insertInBatches(budgets, data.budgets);
     insertInBatches(recurringRules, data.recurringRules);
     insertInBatches(importBatches, data.importBatches);
     insertInBatches(importMappings, data.importMappings);
-    insertInBatches(settings, data.settings);
+    // settings 全量恢复，但剔除派生数据的时间戳：insights 表本身不备份，
+    // 恢复后 insights.meta 若保留会因签名匹配而永不重建洞察，这里强制过期。
+    insertInBatches(
+      settings,
+      data.settings.filter((row) => row.key !== 'insights.meta'),
+    );
     insertInBatches(personalAssets, data.personalAssets);
-    insertInBatches(assetValuations, data.assetValuations);
   });
 
   return {
@@ -198,7 +206,7 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
       importMappings: data.importMappings.length,
       settings: data.settings.length,
       personalAssets: data.personalAssets.length,
-      assetValuations: data.assetValuations.length,
+      categorizationRules: data.categorizationRules.length,
     },
   };
 }

@@ -8,6 +8,7 @@ export {
 } from './adapters/generic-csv';
 export { createFileContext, detectEncoding, withEncoding, type SupportedEncoding } from './core/encoding';
 export { dedupe, type DedupeRow } from './core/dedupe';
+export { useImportBatches, useUndoImportBatch } from './history';
 export { fingerprintSource, markDuplicates, normalizeNote } from './core/fingerprint';
 export {
   ImportSession,

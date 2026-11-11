@@ -40,10 +40,11 @@ export function useCategoryBreakdown(
 	});
 }
 
-export function useTrend(granularity: TrendGranularity, range: StatsRange) {
+export function useTrend(granularity: TrendGranularity, range: StatsRange, enabled = true) {
 	return useQuery({
 		queryKey: ["stats", "trend", { granularity, range }],
 		queryFn: () => trend(granularity, range),
+		enabled,
 	});
 }
 

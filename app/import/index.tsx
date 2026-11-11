@@ -339,6 +339,15 @@ export default function ImportScreen() {
             <Text style={[styles.primaryBtnText, { color: colors.onPrimary }]}>{t.pickFile}</Text>
           )}
         </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          style={{ alignSelf: 'center', padding: 8, marginTop: 4 }}
+          onPress={() => router.push('/import/history')}
+        >
+          <Text style={{ color: colors.primary, fontSize: 13, fontWeight: '600' }}>
+            {t.historyEntry}
+          </Text>
+        </Pressable>
       </View>
     );
   }

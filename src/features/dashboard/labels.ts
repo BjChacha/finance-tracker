@@ -2,7 +2,9 @@ export const dashboardText = {
   otherCategories: '\u5176\u4ed6\u5206\u7c7b',
   areaMeaning:
     '\u9762\u79ef\u4ee3\u8868\u652f\u51fa\u5360\u6bd4 \u00b7 \u70b9\u51fb\u8272\u5757\u67e5\u770b\u6d41\u6c34 \u00b7 \u53f3\u4e0b\u89d2\u770b\u5168\u90e8',
-  versusPrevious: '\u8f83\u4e0a\u671f',
+  versusPrevious: '较上期',
+  versusPreviousSamePeriod: '较上期同期',
+  samePeriodSuffix: '（同期）',
   increased: '\u589e\u52a0',
   decreased: '\u51cf\u5c11',
   mainChange: '\u4e3b\u8981\u53d8\u5316',
@@ -116,6 +118,7 @@ export const dashboardText = {
   showTrend: '\u67e5\u770b\u8d70\u52bf',
   percent: '\u5360\u6bd4',
   dateRange: '\u7edf\u8ba1\u533a\u95f4',
-  noBudgetHistory: '\u6309\u5f53\u524d\u9884\u7b97\u989d\u5ea6\u6bd4\u8f83',
-  dayAverage: '\u65e5\u5747\u652f\u51fa',
+  noBudgetHistory: '按当前预算额度比较',
+  dayAverage: '日均支出',
+  customize: '自定义首页模块',
 } as const;

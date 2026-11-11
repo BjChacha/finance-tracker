@@ -14,6 +14,8 @@ import m0009 from './0009_spooky_reaper.sql';
 import m0010 from './0010_fast_nightshade.sql';
 import m0011 from './0011_flaky_shocker.sql';
 import m0012 from './0012_minor_satana.sql';
+import m0013 from './0013_misty_agent_zero.sql';
+import m0014 from './0014_organic_sleeper.sql';
 
   export default {
     journal,
@@ -30,7 +32,9 @@ m0008,
 m0009,
 m0010,
 m0011,
-m0012
+m0012,
+m0013,
+m0014
     }
   }
   

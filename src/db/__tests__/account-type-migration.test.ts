@@ -6,20 +6,26 @@ type MigrationBundle = {
 const migrationBundle = require('../migrations/migrations').default as MigrationBundle;
 
 describe('migrations', () => {
-  it('registers the installment migration as the latest one', () => {
+  it('registers the insights/rules migration as the latest one', () => {
     expect(migrationBundle.journal.entries.at(-1)).toMatchObject({
-      idx: 12,
-      tag: '0012_minor_satana',
+      idx: 14,
+      tag: '0014_organic_sleeper',
     });
-    expect(migrationBundle.migrations.m0012).toEqual(expect.any(String));
-    expect(migrationBundle.migrations.m0012.length).toBeGreaterThan(0);
+    expect(migrationBundle.migrations.m0014).toEqual(expect.any(String));
+    expect(migrationBundle.migrations.m0014.length).toBeGreaterThan(0);
   });
 
-  it('0012 adds the installment columns', () => {
-    const sql = migrationBundle.migrations.m0012;
-    expect(sql).toContain('ALTER TABLE `personal_assets` ADD `installment_periods`');
-    expect(sql).toContain('ALTER TABLE `personal_assets` ADD `installment_rule_id`');
-    expect(sql).toContain('CREATE INDEX `idx_personal_assets_installment_rule`');
+  it('0014 creates insights/rules tables and adds category_source', () => {
+    const sql = migrationBundle.migrations.m0014;
+    expect(sql).toContain('CREATE TABLE `categorization_rules`');
+    expect(sql).toContain('CREATE TABLE `insights`');
+    expect(sql).toContain('`category_source`');
+  });
+
+  it('0013 drops the valuation table and value column', () => {
+    const sql = migrationBundle.migrations.m0013;
+    expect(sql).toContain('DROP TABLE `asset_valuations`');
+    expect(sql).toContain('ALTER TABLE `personal_assets` DROP COLUMN `current_value_cents`');
   });
 
   it('0010 creates the personal asset tables with lifecycle columns', () => {

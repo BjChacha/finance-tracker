@@ -102,6 +102,15 @@ import {
 	type TypeTransitionState,
 } from "../transaction-type-transition";
 import type { TxInput } from "../repository";
+import {
+	keywordFromNote,
+	recordCategoryOutcome,
+	rulesText,
+	touchRuleMatch,
+	useRuleSuggestion,
+	useUpsertRule,
+} from "@/features/rules";
+import type { CategorySource } from "@/db/schema";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -298,6 +307,24 @@ function TransactionFormComponent(
 	const [categoryTouched, setCategoryTouched] = useState(
 		initialValues?.categoryId != null,
 	);
+	// 当前分类的来源（用于 categorySource 统计与规则提示条）：
+	// nl=一句话识别回填、rule=自动规则、suggestion=统计建议、manual=手选/兜底。
+	const isNaturalLanguagePrefill =
+		initialValues?.categoryId != null &&
+		typeof clientTag === "string" &&
+		clientTag.startsWith("natural-language:");
+	const [categoryOrigin, setCategoryOrigin] = useState<CategorySource | null>(
+		() =>
+			initialValues?.categoryId != null
+				? isNaturalLanguagePrefill
+					? "nl"
+					: "manual"
+				: null,
+	);
+	// 统计建议是否在本会话自动选中过分类（保存时上报采纳率；切类型/回填时重置）
+	const suggestionOfferedRef = useRef(false);
+	// 最近一次规则预填命中的规则 id（保存时累加命中数；note 改后规则换发也能对上）
+	const appliedRuleIdRef = useRef<string | null>(null);
 	const [accountTouched, setAccountTouched] = useState(
 		initialValues?.accountId != null || initialValues?.toAccountId != null,
 	);
@@ -378,6 +405,17 @@ function TransactionFormComponent(
 		setKeyboardVisible(false);
 		setConfirmedAmountCents(null);
 		setCategoryTouched(initialValues?.categoryId != null);
+		setCategoryOrigin(
+			initialValues?.categoryId != null
+				? initialValues?.categoryId != null &&
+				  typeof clientTag === "string" &&
+				  clientTag.startsWith("natural-language:")
+					? "nl"
+					: "manual"
+				: null,
+		);
+		suggestionOfferedRef.current = false;
+		appliedRuleIdRef.current = null;
 		setAccountTouched(
 			initialValues?.accountId != null || initialValues?.toAccountId != null,
 		);
@@ -470,6 +508,15 @@ function TransactionFormComponent(
 		amountCents: confirmedAmountCents,
 		enabled: categorySuggestEnabled,
 	});
+	// 自动规则（确定性）优先于统计建议：金额/备注变化即重算，仅未手选分类时预填。
+	// 金额未确认（null）时按「不限金额」匹配，让备注关键词规则先工作起来。
+	const rulePick = useRuleSuggestion({
+		type: categoryType,
+		amountCents: confirmedAmountCents,
+		note,
+		enabled: categorySuggestEnabled,
+	});
+	const createRule = useUpsertRule();
 	// 分类栏固定顺序（不随智能推荐/编辑态重排）；智能预选仅高亮，选中分类
 	// 不在前缀内时由 visibleTree 末位替换保证可见。
 	const selectedCategory = useMemo(() => {
@@ -533,17 +580,31 @@ function TransactionFormComponent(
 			const fallback =
 				categoryTree.find((c) => c.name.startsWith("其他")) ?? categoryTree[0];
 			setCategoryId(fallback.id);
+			setCategoryOrigin("manual");
 		}
 	}, [mode, prefillPolicy, categoryId, categoryTree]);
 
-	// 静默预选最高分分类(含展开子分类);无命中或手动选过时不动,保留上方「其他」兜底。
-	// 必须声明在兜底 effect 之后:类型切换清空 categoryId 时,两者同帧触发,预选需后执行以覆盖兜底。
+	// 自动规则预填：确定性命中直接选中并标记来源；手选过（categoryTouched）不覆盖。
+	// 声明在兜底 effect 之后、建议预选之前：同帧触发时 规则 > 建议 > 兜底「其他」。
 	useEffect(() => {
 		if (!categorySuggestEnabled || categoryTouched) return;
+		if (!rulePick) return;
+		setCategoryId(rulePick.categoryId);
+		setCategoryOrigin("rule");
+		appliedRuleIdRef.current = rulePick.id;
+	}, [categorySuggestEnabled, categoryTouched, rulePick]);
+
+	// 静默预选最高分分类(含展开子分类);无命中或手动选过时不动,保留上方「其他」兜底。
+	// 规则已命中时不参与（规则优先级更高）。
+	// 必须声明在兜底 effect 之后:类型切换清空 categoryId 时,两者同帧触发,预选需后执行以覆盖兜底。
+	useEffect(() => {
+		if (!categorySuggestEnabled || categoryTouched || rulePick) return;
 		const pick = pickAutoSelect(categoryTree, suggestScores);
 		if (!pick) return;
 		setCategoryId(pick.categoryId);
-	}, [categorySuggestEnabled, categoryTouched, categoryTree, suggestScores]);
+		setCategoryOrigin("suggestion");
+		suggestionOfferedRef.current = true;
+	}, [categorySuggestEnabled, categoryTouched, categoryTree, suggestScores, rulePick]);
 
 	useEffect(() => {
 		if (!suggestEnabled || accountTouched) return;
@@ -713,10 +774,14 @@ function TransactionFormComponent(
 		if (mode === "edit" && next === originalType && originalCategoryId) {
 			setCategoryId(originalCategoryId);
 			setCategoryTouched(true);
+			setCategoryOrigin("manual");
 		} else {
 			setCategoryId(null);
 			setCategoryTouched(false);
+			setCategoryOrigin(null);
 		}
+		suggestionOfferedRef.current = false;
+		appliedRuleIdRef.current = null;
 	}
 
 	function switchType(next: TransactionType) {
@@ -841,6 +906,42 @@ function TransactionFormComponent(
 		showDialog(message);
 	}
 
+	// 编辑态从当前交易一键生成自动规则（Quick Categorize）：关键词取备注，分类取当前选中。
+	function createRuleFromThis() {
+		const keyword = keywordFromNote(note);
+		if (!keyword || !categoryId) return;
+		const categoryName = selectedCategory?.name ?? "";
+		showDialog(
+			rulesText.createFromTx,
+			rulesText.createFromTxDesc(keyword, categoryName),
+			[
+				{ text: zh.common.cancel, style: "cancel" },
+				{
+					text: zh.common.confirm,
+					onPress: () => {
+						createRule.mutate(
+							{
+								name: `${keyword}→${categoryName}`,
+								keyword,
+								matchType: null,
+								amountMin: null,
+								amountMax: null,
+								categoryId,
+							},
+							{
+								onError: (error) =>
+									showDialog(
+										zh.common.error,
+										error instanceof Error ? error.message : String(error),
+									),
+							},
+						);
+					},
+				},
+			],
+		);
+	}
+
 	async function save(): Promise<boolean> {
 		if (submissionLock.current || submitting || typeTransition) return false;
 		if (reviewBlock) {
@@ -855,7 +956,28 @@ function TransactionFormComponent(
 		submissionLock.current = true;
 		Keyboard.dismiss();
 		try {
-			await onSubmit(inputResult.input);
+			// 分类来源：nl 需确认用户保留了识别结果（与 initialValues 一致），
+			// 其余按最近一次设置分类的 origin；手选/兜底均为 manual。
+			const nlInitialCategoryId = isNaturalLanguagePrefill
+				? (initialValues?.categoryId ?? null)
+				: null;
+			const source: CategorySource =
+				nlInitialCategoryId !== null &&
+				categoryOrigin === "nl" &&
+				categoryId === nlInitialCategoryId
+					? "nl"
+					: (categoryOrigin ?? "manual");
+			await onSubmit({ ...inputResult.input, categorySource: source });
+			// 命中统计与规则计数：保存成功后 fire-and-forget，不阻塞、失败不影响保存
+			void recordCategoryOutcome({
+				suggestionOffered: suggestionOfferedRef.current,
+				suggestionAccepted: source === "suggestion",
+				nlOffered: nlInitialCategoryId !== null,
+				nlAccepted: source === "nl",
+			});
+			if (source === "rule" && appliedRuleIdRef.current) {
+				void touchRuleMatch(appliedRuleIdRef.current);
+			}
 			baselineRef.current = snapshot;
 			return true;
 		} catch (error) {
@@ -902,6 +1024,7 @@ function TransactionFormComponent(
 				]}
 				onPress={() => {
 					setCategoryTouched(true);
+					setCategoryOrigin("manual");
 					// 该父分类下已选中子分类时，点击胶囊本体保持子分类，不回退到父分类。
 					// 想切回父分类请用「全部分类」弹窗。
 					if (!selectedChild) setCategoryId(node.id);
@@ -1253,6 +1376,17 @@ function TransactionFormComponent(
 								<View style={styles.categoryGrid}>
 									{visibleTree.map(renderCategoryCell)}
 								</View>
+								{!categoryTouched && categoryOrigin === "rule" && rulePick && (
+									<View style={styles.ruleHintRow}>
+										<Icon name="sparkles" size={13} color={colors.primary} />
+										<Text
+											style={[styles.ruleHintText, { color: colors.textSecondary }]}
+											numberOfLines={1}
+										>
+											{rulesText.ruleHint(rulePick.name)}
+										</Text>
+									</View>
+								)}
 								{editorStage >= categoryAllStage &&
 									categoryTree.length > mountedCategoryCount && (
 										<Pressable
@@ -1451,6 +1585,20 @@ function TransactionFormComponent(
 										revealFocusedInput();
 									}}
 								/>
+								{mode === "edit" && note.trim() !== "" && categoryId && (
+									<Pressable
+										accessibilityRole="button"
+										accessibilityLabel={rulesText.createFromTx}
+										style={styles.ruleCreateRow}
+										onPress={createRuleFromThis}
+									>
+										<Icon name="sparkles" size={14} color={colors.primary} />
+										<Text numberOfLines={1} style={[styles.ruleCreateText, { color: colors.primary }]}
+											>
+											{rulesText.createFromTx}
+										</Text>
+									</Pressable>
+								)}
 							</Animated.View>
 						)}
 
@@ -1670,6 +1818,7 @@ function TransactionFormComponent(
 				selectedId={categoryId}
 				onSelect={(id) => {
 					setCategoryTouched(true);
+					setCategoryOrigin("manual");
 					setCategoryId(id);
 				}}
 				onClose={() => setCategoryPickerOpen(false)}
@@ -1720,6 +1869,7 @@ function TransactionFormComponent(
 										]}
 										onPress={() => {
 											setCategoryTouched(true);
+											setCategoryOrigin("manual");
 											setCategoryId(child.id);
 											setSubmenu(null);
 										}}
@@ -1827,6 +1977,21 @@ function makeStyles({ colors }: AppTheme) {
 			marginBottom: 8,
 		},
 		categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+		ruleHintRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 5,
+			marginTop: 8,
+		},
+		ruleHintText: { fontSize: 11, flex: 1 },
+		ruleCreateRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 6,
+			marginTop: 10,
+			paddingVertical: 4,
+		},
+		ruleCreateText: { fontSize: 12, fontWeight: "600" },
 		categoryChip: {
 			minHeight: 44,
 			flexDirection: "row",

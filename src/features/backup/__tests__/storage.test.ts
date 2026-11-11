@@ -8,11 +8,12 @@ jest.mock('expo-file-system/legacy', () => ({
   StorageAccessFramework: { readDirectoryAsync: jest.fn() },
 }));
 
-const content = JSON.stringify({ format: 'finance-tracker-backup', schemaVersion: 9,
+const content = JSON.stringify({ format: 'finance-tracker-backup', schemaVersion: 11,
   appVersion: '1', exportedAt: '2026-10-14', data: {
     accounts: [], categories: [], projects: [], transactions: [], budgets: [], recurringRules: [],
     importBatches: [], importMappings: [], settings: [],
-    personalAssets: [], assetValuations: [],
+    personalAssets: [],
+    categorizationRules: [],
   } });
 
 beforeEach(() => { jest.clearAllMocks(); });

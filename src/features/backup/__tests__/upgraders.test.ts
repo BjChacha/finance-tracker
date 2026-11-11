@@ -447,15 +447,101 @@ describe('backupUpgraders[8]（v8 → v9 分期字段回填）', () => {
   });
 });
 
-describe('complete upgrade chain v1 -> v9', () => {
-  it('ends at the current schema version with asset tables present', () => {
-    const out = runUpgradeChain(
-      { ...payloadAt(1), data: { accounts: [], categories: [], transactions: [] } },
-      1,
-      9,
-    ) as RawBackupPayload & { data: Record<string, unknown> };
-    expect(out.schemaVersion).toBe(9);
+describe('backupUpgraders[9]（v9 → v10 移除估值）', () => {
+  const upgrade = backupUpgraders[9]!;
+
+  it('丢弃 assetValuations 数组并剥离资产行的 currentValueCents', () => {
+    const out = upgrade({
+      ...payloadAt(9),
+      data: {
+        personalAssets: [{ id: 'pa-1', name: '手机', currentValueCents: 900 }],
+        assetValuations: [{ id: 'val-1', assetId: 'pa-1', valueCents: 900 }],
+      },
+    }) as RawBackupPayload & {
+      data: { personalAssets: Record<string, unknown>[] } & Record<string, unknown>;
+    };
+    expect(out.schemaVersion).toBe(10);
+    expect(out.data.assetValuations).toBeUndefined();
+    expect(out.data.personalAssets).toEqual([{ id: 'pa-1', name: '手机' }]);
+  });
+
+  it('缺失两表时安全：personalAssets 补空数组，不报错', () => {
+    const out = upgrade({ ...payloadAt(9), data: {} }) as RawBackupPayload & {
+      data: { personalAssets: unknown[] };
+    };
     expect(Array.isArray(out.data.personalAssets)).toBe(true);
-    expect(Array.isArray(out.data.assetValuations)).toBe(true);
+  });
+});
+
+describe('complete upgrade chain v1 -> v10', () => {
+  it('ends at the current schema version with asset table present and valuations dropped', () => {
+    const out = runUpgradeChain(
+      {
+        ...payloadAt(1),
+        data: {
+          accounts: [],
+          categories: [],
+          transactions: [],
+          personalAssets: [{ id: 'pa-1', currentValueCents: 1 }],
+          assetValuations: [{ id: 'val-1' }],
+        },
+      },
+      1,
+      10,
+    ) as RawBackupPayload & { data: Record<string, unknown> };
+    expect(out.schemaVersion).toBe(10);
+    expect(Array.isArray(out.data.personalAssets)).toBe(true);
+    expect(out.data.assetValuations).toBeUndefined();
+    expect((out.data.personalAssets as Record<string, unknown>[])[0]!.currentValueCents).toBeUndefined();
+  });
+});
+
+describe('backupUpgraders[10]（v10 → v11 规则与分类来源）', () => {
+  const upgrade = (p: RawBackupPayload) => backupUpgraders[10]!(p);
+
+  it('transactions 补 categorySource=manual；新增空 categorizationRules；升到 v11', () => {
+    const out = upgrade({
+      ...payloadAt(10),
+      data: {
+        transactions: [{ id: 'tx-1', note: '午餐' }, { id: 'tx-2', note: '房租' }],
+      },
+    }) as RawBackupPayload & {
+      data: {
+        transactions: Array<Record<string, unknown>>;
+        categorizationRules: unknown[];
+      };
+    };
+    expect(out.schemaVersion).toBe(11);
+    expect(out.data.transactions.map((t) => t.categorySource)).toEqual(['manual', 'manual']);
+    expect(out.data.transactions[0]!.note).toBe('午餐');
+    expect(out.data.categorizationRules).toEqual([]);
+  });
+
+  it('缺 data / 空数组时不抛错', () => {
+    const out = upgrade({ ...payloadAt(10), data: {} }) as RawBackupPayload & {
+      data: { transactions: unknown[]; categorizationRules: unknown[] };
+    };
+    expect(out.data.transactions).toEqual([]);
+    expect(Array.isArray(out.data.categorizationRules)).toBe(true);
+  });
+});
+
+describe('complete upgrade chain v1 -> v11', () => {
+  it('ends at the current schema version with rules array and categorySource present', () => {
+    const out = runUpgradeChain(
+      {
+        ...payloadAt(1),
+        data: {
+          accounts: [],
+          categories: [],
+          transactions: [{ id: 'tx-1' }],
+        },
+      },
+      1,
+      11,
+    ) as RawBackupPayload & { data: Record<string, unknown> };
+    expect(out.schemaVersion).toBe(11);
+    expect(Array.isArray(out.data.categorizationRules)).toBe(true);
+    expect((out.data.transactions as Record<string, unknown>[])[0]!.categorySource).toBe('manual');
   });
 });

@@ -33,6 +33,19 @@ jest.mock("@/features/currency", () => ({
 	useRates: () => ({ data: { rates: {} }, isFetched: true }),
 }));
 
+jest.mock("@/features/rules", () => ({
+	keywordFromNote: (note: string) => note.trim().slice(0, 20),
+	recordCategoryOutcome: jest.fn(async () => undefined),
+	rulesText: {
+		createFromTx: "记住这个分类规则",
+		createFromTxDesc: (k: string, c: string) => `${k}->${c}`,
+		ruleHint: (name: string) => name,
+	},
+	touchRuleMatch: jest.fn(async () => undefined),
+	useRuleSuggestion: () => null,
+	useUpsertRule: () => ({ mutate: jest.fn(), isPending: false }),
+}));
+
 jest.mock("@/features/suggestions", () => ({
 	orderByScore: <T,>(items: readonly T[]) => items,
 	orderTree: <T,>(items: readonly T[]) => items,

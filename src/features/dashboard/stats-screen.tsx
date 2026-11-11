@@ -32,7 +32,7 @@ export function StatsScreen() {
   const { colors } = useTheme();
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [calendarMonth, setCalendarMonth] = useState('');
-  const { range, comparison, granularity } = period;
+  const { range, comparison, granularity, comparisonClamped } = period;
   const comparable = comparison !== null;
   const firstMonth = range.start.slice(0, 7);
   const lastMonth = range.end.slice(0, 7);
@@ -49,6 +49,12 @@ export function StatsScreen() {
   );
   const trend = useTrend(granularity, range);
   const monthly = useTrend('month', range);
+  // 最后一根月柱是否为进行中的当月（数据只走到今天）：降透明提示「未走完」
+  const lastMonthInProgress =
+    monthly.data != null &&
+    monthly.data.length > 0 &&
+    monthly.data[monthly.data.length - 1]!.key.slice(0, 7) ===
+      period.today.slice(0, 7);
   const heat = useCalendarHeatmap(heatMonth);
   const donut = useMemo(
     () =>
@@ -124,7 +130,7 @@ export function StatsScreen() {
           <Card title={copy.categoryTotal}>
             <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
               {comparison
-                ? `${copy.versus} ${comparison.start} — ${comparison.end}`
+                ? `${copy.versus} ${comparison.start} — ${comparison.end}${comparisonClamped ? copy.samePeriodSuffix : ''}`
                 : copy.allHistory}
             </Text>
             <QueryNotice queries={[categories, previous]} />
@@ -165,6 +171,7 @@ export function StatsScreen() {
                 }))}
                 incomeLabel={copy.income}
                 expenseLabel={copy.expense}
+                dimLast={lastMonthInProgress}
               />
             )}
           </Card>

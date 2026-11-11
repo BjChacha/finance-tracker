@@ -156,6 +156,7 @@ export default function ProfileScreen() {
 			title: zh.settings.groups.appearance,
 			items: [
 				{ icon: "palette", label: zh.appearance.title, href: "/appearance" },
+				{ icon: "settings", label: zh.profile.dashboardModules, href: "/dashboard-settings" },
 			],
 		},
 		{
@@ -172,6 +173,7 @@ export default function ProfileScreen() {
 			items: [
 				{ icon: "target", label: zh.budgets.title, href: "/budgets" },
 				{ icon: "repeat", label: zh.profile.recurring, href: "/recurring" },
+				{ icon: "sparkles", label: zh.profile.rules, href: "/rules" },
 			],
 		},
 		{

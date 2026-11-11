@@ -1,7 +1,7 @@
 import { and, desc, eq, lt, or, sql, type SQL, type SQLWrapper } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import { db } from '@/db/client';
-import { accounts, categories, projects, transactions, type TransactionType } from '@/db/schema';
+import { accounts, categories, projects, transactions, type CategorySource, type TransactionType } from '@/db/schema';
 import { zh } from '@/i18n/zh';
 import { monthRange } from '@/lib/date';
 import { toDateKey } from '@/lib/date';
@@ -335,6 +335,8 @@ export type TxInput = {
   toAmount?: number;
   /** 客户端幂等键（如快捷记账 handoffId）；同键重复提交返回既有记录 id */
   clientTag?: string | null;
+  /** 分类归属来源（统计用）；缺省 'manual' */
+  categorySource?: CategorySource;
 };
 
 type NormalizedTx = TxInput & {
@@ -397,6 +399,7 @@ export async function createTransaction(input: TxInput): Promise<string> {
       dateKey: n.dateKey,
       note: n.note ?? '',
       clientTag: n.clientTag ?? null,
+      categorySource: n.categorySource ?? 'manual',
       createdAt: now,
       updatedAt: now,
     })
@@ -439,6 +442,7 @@ export async function updateTransaction(id: string, input: TxInput): Promise<voi
       date: n.date,
       dateKey: n.dateKey,
       note: n.note ?? '',
+      categorySource: n.categorySource ?? 'manual',
       updatedAt: Date.now(),
     })
     .where(eq(transactions.id, id));

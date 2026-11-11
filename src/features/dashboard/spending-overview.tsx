@@ -9,6 +9,7 @@ import { useTransactionTotals } from '@/features/transactions/hooks';
 import { amountChange, type DateRange, type PeriodSelection } from '@/lib/analytics-range';
 import { dayjs } from '@/lib/date';
 import { formatCentsWithSymbol } from '@/lib/money';
+import { trendColor } from '@/lib/trend';
 import { useTheme } from '@/theme';
 import { Amount, dashboardStyles, QueryNotice } from './components';
 import { dashboardText as copy } from './labels';
@@ -16,6 +17,7 @@ import { dashboardText as copy } from './labels';
 export function SpendingOverview({
   range,
   comparison,
+  comparisonClamped = false,
   selection,
   onTransactions,
   onCategory,
@@ -23,6 +25,8 @@ export function SpendingOverview({
   range: DateRange;
   /** 「全部时间」口径下没有上一个可比周期，此时对比类内容整块隐藏 */
   comparison: DateRange | null;
+  /** 本期未走完时上期被钳到「同期」口径，环比标签随之切换 */
+  comparisonClamped?: boolean;
   selection: PeriodSelection;
   onTransactions: (type: 'expense' | 'income') => void;
   onCategory: (category: CategorySlice) => void;
@@ -77,7 +81,7 @@ export function SpendingOverview({
           {dayjs(range.start).format('MM.DD')}—
           {dayjs(range.end).format('MM.DD')}
           {comparison && comparisonStart
-            ? ` · ${copy.versus} ${comparisonStart}—${dayjs(comparison.end).format('MM.DD')}`
+            ? ` · ${copy.versus} ${comparisonStart}—${dayjs(comparison.end).format('MM.DD')}${comparisonClamped ? copy.samePeriodSuffix : ''}`
             : ` · ${copy.allHistory}`}
         </Text>
       </View>
@@ -103,15 +107,14 @@ export function SpendingOverview({
             {change && (
               <Text
                 style={{
-                  color:
-                    change.delta > 0 ? colors.expense : colors.textSecondary,
+                  color: trendColor(change.delta, false, colors),
                   fontSize: 12,
                   marginTop: 3,
                 }}
               >
                 {change.delta === 0
                   ? copy.sameSpending
-                  : `${change.percent === null ? copy.newExpense : copy.versusPrevious} ${change.delta > 0 ? '+' : ''}${formatCentsWithSymbol(change.delta)}${change.percent === null ? '' : ` (${change.percent > 0 ? '+' : ''}${change.percent}%)`}`}
+                  : `${change.percent === null ? copy.newExpense : comparisonClamped ? copy.versusPreviousSamePeriod : copy.versusPrevious} ${change.delta > 0 ? '+' : ''}${formatCentsWithSymbol(change.delta)}${change.percent === null ? '' : ` (${change.percent > 0 ? '+' : ''}${change.percent}%)`}`}
               </Text>
             )}
           </Pressable>

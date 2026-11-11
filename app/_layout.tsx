@@ -21,6 +21,7 @@ import { useQuickActionsBootstrap } from "@/features/quick-actions/useQuickActio
 import { invalidateTransactionData } from "@/features/transactions";
 import { AutomaticBackupRunner } from "@/features/backup/AutomaticBackupRunner";
 import { ReportsRunner } from "@/features/reports";
+import { InsightRunner } from "@/features/insights";
 import { zh } from "@/i18n/zh";
 import { ThemeProvider, useTheme } from "@/theme";
 
@@ -181,6 +182,7 @@ function AppShell() {
 				<RatesAutoRefresh />
 				<AutomaticBackupRunner />
 				<ReportsRunner />
+				<InsightRunner />
 				<QuickActionsGate />
 				<UpdateCheckRunner />
 				<StatusBar style={theme.dark ? "light" : "dark"} />

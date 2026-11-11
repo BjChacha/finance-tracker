@@ -39,7 +39,7 @@ export type RawBackupPayload = {
 
 export type BackupUpgrader = (payload: RawBackupPayload) => RawBackupPayload;
 
-/** 目前 schemaVersion=9 */
+/** 目前 schemaVersion=11（升级函数最高到 10 → 11） */
 export const backupUpgraders: Record<number, BackupUpgrader> = {
   // v1 → v2：引入多币种。transactions 增加 currency/exchange_rate/amount_base_cents/to_amount，
   // accounts 增加 rate_to_base。v1 备份全部为隐式 CNY（本位币），按此回填。
@@ -192,6 +192,7 @@ export const backupUpgraders: Record<number, BackupUpgrader> = {
     };
   },
   // v8 → v9：个人资产支持分期购买，旧资产一律按「非分期」回填。
+  // v8 → v9：个人资产支持分期购买，旧资产一律按「非分期」回填。
   8: (payload) => {
     const data = (payload as { data?: Record<string, unknown> }).data ?? {};
     const assetRows = Array.isArray(data.personalAssets) ? data.personalAssets : [];
@@ -214,6 +215,45 @@ export const backupUpgraders: Record<number, BackupUpgrader> = {
           installmentDownPaymentTransactionId: null,
           ...(row as Record<string, unknown>),
         })),
+      },
+    };
+  },
+  // v9 → v10：个人资产移除估值（asset_valuations 数组与 current_value_cents 字段下线）。
+  9: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const { assetValuations: _droppedValuations, personalAssets: assetRows, ...rest } =
+      data as { assetValuations?: unknown; personalAssets?: unknown };
+    void _droppedValuations;
+    const rows = Array.isArray(assetRows) ? assetRows : [];
+    return {
+      ...payload,
+      schemaVersion: 10,
+      data: {
+        ...rest,
+        personalAssets: rows.map((row) => {
+          const { currentValueCents: _droppedValue, ...assetRow } = row as Record<string, unknown>;
+          void _droppedValue;
+          return assetRow;
+        }),
+      },
+    };
+  },
+  // v10 → v11：引入自动分类规则与分类来源标记。
+  // transactions 增加 categorySource（旧数据统一 'manual'）；新增 categorization_rules
+  // 表（用户数据，旧备份为空数组）。insights 为派生数据不进备份，无需处理。
+  10: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const txs = Array.isArray(data.transactions) ? data.transactions : [];
+    return {
+      ...payload,
+      schemaVersion: 11,
+      data: {
+        ...data,
+        transactions: txs.map((t) => ({
+          ...(t as Record<string, unknown>),
+          categorySource: 'manual',
+        })),
+        categorizationRules: [],
       },
     };
   },

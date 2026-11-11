@@ -6,6 +6,8 @@ export type { AccountType } from './account-types';
 /** 交易类型 */
 export type TransactionType = 'expense' | 'income' | 'transfer';
 export type CategoryType = TransactionType;
+/** 分类归属来源：manual 手选 / rule 规则 / suggestion 统计建议 / nl 一句话识别 / import 导入 */
+export type CategorySource = 'manual' | 'rule' | 'suggestion' | 'nl' | 'import';
 /** 周期频率 */
 export type RecurringFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -94,6 +96,14 @@ export const transactions = sqliteTable(
     fingerprint: text('fingerprint'),
     /** 客户端幂等键（如快捷记账 handoffId）：同键重复提交返回既有记录，防双触发双写 */
     clientTag: text('client_tag'),
+    /**
+     * 分类归属来源：manual / rule / suggestion / nl / import。
+     * 仅用于命中率统计与展示，不参与业务逻辑。
+     */
+    categorySource: text('category_source')
+      .$type<CategorySource>()
+      .notNull()
+      .default('manual'),
     createdAt: integer('created_at').notNull(),
     updatedAt: integer('updated_at').notNull(),
   },
@@ -253,12 +263,10 @@ export const personalAssets = sqliteTable(
     category: text('category').notNull(),
     icon: text('icon').notNull(),
     color: text('color').notNull(),
-    /** 数量（件），成本/估值为该数量的总额 */
+    /** 数量（件），成本为该数量的总额 */
     quantity: integer('quantity').notNull().default(1),
-    /** 取得成本（本位币分，总额） */
+    /** 取得成本（本位币分，总额）；资产台账只记录成本，不做估值 */
     costCents: integer('cost_cents').notNull(),
-    /** 当前估值（本位币分，总额）；随估值记录更新 */
-    currentValueCents: integer('current_value_cents').notNull(),
     status: text('status').$type<AssetStatus>().notNull().default('holding'),
     /** 取得日期 'YYYY-MM-DD' */
     acquiredDateKey: text('acquired_date_key').notNull(),
@@ -314,29 +322,10 @@ export const personalAssets = sqliteTable(
   ],
 );
 
-/** 资产估值历史：创建时记成本基线，此后每次「更新估值」追加一条 */
-export const assetValuations = sqliteTable(
-  'asset_valuations',
-  {
-    id: text('id').primaryKey(),
-    assetId: text('asset_id')
-      .notNull()
-      .references(() => personalAssets.id, { onDelete: 'cascade' }),
-    /** 估值（本位币分，总额） */
-    valueCents: integer('value_cents').notNull(),
-    dateKey: text('date_key').notNull(),
-    note: text('note').notNull().default(''),
-    createdAt: integer('created_at').notNull(),
-  },
-  (t) => [index('idx_asset_valuations_asset').on(t.assetId, t.dateKey, t.createdAt)],
-);
-
 export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
 export type PersonalAsset = typeof personalAssets.$inferSelect;
 export type NewPersonalAsset = typeof personalAssets.$inferInsert;
-export type AssetValuation = typeof assetValuations.$inferSelect;
-export type NewAssetValuation = typeof assetValuations.$inferInsert;
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 export type Project = typeof projects.$inferSelect;
@@ -347,6 +336,77 @@ export type Budget = typeof budgets.$inferSelect;
 export type NewBudget = typeof budgets.$inferInsert;
 export type RecurringRule = typeof recurringRules.$inferSelect;
 export type NewRecurringRule = typeof recurringRules.$inferInsert;
+/** 洞察状态：active 展示中 / acknowledged 用户已「知道了」 */
+export type InsightStatus = 'active' | 'acknowledged';
+/** 洞察类型（本地规则生成，见 src/features/insights/generators.ts） */
+export type InsightType =
+  | 'budget_risk'
+  | 'spending_anomaly'
+  | 'subscription_audit'
+  | 'savings_rate_change'
+  | 'upcoming_recurring';
+
+/**
+ * 本地规则洞察（派生数据，不进备份）：由 InsightRunner 在启动/回前台时本地计算，
+ * 生成中文模板正文 + 具体数字，零 LLM 成本。dedupKey = `${type}:${periodKey}:${refId}`
+ * 每键一行；acknowledged 后仅当档位/数值桶发生实质变化才复活为新洞察。
+ */
+export const insights = sqliteTable(
+  'insights',
+  {
+    id: text('id').primaryKey(),
+    type: text('type').$type<InsightType>().notNull(),
+    dedupKey: text('dedup_key').notNull(),
+    /** 归属月 'YYYY-MM'（洞察按月粒度生成与去重） */
+    periodKey: text('period_key').notNull(),
+    title: text('title').notNull(),
+    /** 一行正文：模板 + 已格式化金额 */
+    body: text('body').notNull(),
+    /** 数值快照 JSON（tier/金额桶等），用于 acknowledged 行的复活判定 */
+    dataJson: text('data_json').notNull().default('{}'),
+    /** 点卡片跳转的路由（如 '/budgets'）；null 不跳 */
+    actionRoute: text('action_route'),
+    status: text('status').$type<InsightStatus>().notNull().default('active'),
+    generatedAt: integer('generated_at').notNull(),
+    acknowledgedAt: integer('acknowledged_at'),
+  },
+  (t) => [uniqueIndex('uq_insights_dedup').on(t.dedupKey)],
+);
+
+/**
+ * 自动分类规则：备注含关键词（忽略大小写）且可选条件（类型/金额区间）匹配时
+ * 设指定分类。确定性、离线、可解释，优先级高于统计建议（suggestions）。
+ * 按 position 顺序取首条命中；只在新建交易表单里自动预填（用户可见可改），
+ * 不静默改历史数据。
+ */
+export const categorizationRules = sqliteTable(
+  'categorization_rules',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    enabled: integer('enabled').notNull().default(1),
+    position: integer('position').notNull().default(0),
+    keyword: text('keyword').notNull(),
+    /** 仅匹配该交易类型；null=不限 */
+    matchType: text('match_type').$type<TransactionType>(),
+    /** 交易币种金额区间（分，含边界）；null=不限 */
+    amountMin: integer('amount_min'),
+    amountMax: integer('amount_max'),
+    categoryId: text('category_id')
+      .notNull()
+      .references(() => categories.id),
+    matchCount: integer('match_count').notNull().default(0),
+    lastMatchedAt: integer('last_matched_at'),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (t) => [index('idx_rules_order').on(t.enabled, t.position)],
+);
+
+export type Insight = typeof insights.$inferSelect;
+export type NewInsight = typeof insights.$inferInsert;
+export type CategorizationRule = typeof categorizationRules.$inferSelect;
+export type NewCategorizationRule = typeof categorizationRules.$inferInsert;
 export type ImportBatch = typeof importBatches.$inferSelect;
 export type ImportMapping = typeof importMappings.$inferSelect;
 export type LLMUsage = typeof llmUsage.$inferSelect;

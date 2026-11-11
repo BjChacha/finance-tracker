@@ -9,8 +9,8 @@ jest.mock('@/db/client', () => ({ db: { transaction: jest.fn(), select: jest.fn(
 
 let events: string[];
 let inside: boolean;
-const fixture = { format: 'finance-tracker-backup', schemaVersion: 9, appVersion: '1', exportedAt: '2026-10-14',
-  data: { accounts: [], categories: [], projects: [], transactions: [], budgets: [], recurringRules: [], importBatches: [], importMappings: [], settings: [{ key: 'example', value: '1' }], personalAssets: [], assetValuations: [] } };
+const fixture = { format: 'finance-tracker-backup', schemaVersion: 11, appVersion: '1', exportedAt: '2026-10-14',
+  data: { accounts: [], categories: [], projects: [], transactions: [], budgets: [], recurringRules: [], importBatches: [], importMappings: [], settings: [{ key: 'example', value: '1' }], personalAssets: [], categorizationRules: [] } };
 
 beforeEach(() => {
   jest.clearAllMocks(); events = []; inside = false;
@@ -33,7 +33,8 @@ beforeEach(() => {
 
 it('finishes all restore writes before the synchronous driver commits', async () => {
   await restoreBackup('file://source.json');
-  expect(events.slice(-14)).toEqual(['begin', ...Array(11).fill('delete'), 'insert', 'commit']);
+  // 12 张表删除（11 张备份表 + 派生表 insights）+ 1 行 settings 插入 + 事务边界
+  expect(events.slice(-15)).toEqual(['begin', ...Array(12).fill('delete'), 'insert', 'commit']);
 });
 
 it('rolls back the whole restore when an insert fails', async () => {

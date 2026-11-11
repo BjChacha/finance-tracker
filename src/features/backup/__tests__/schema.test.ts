@@ -5,7 +5,7 @@ import { backupEnvelopeSchema, backupFileSchema } from '../schema';
 function validBackup() {
   return {
     format: 'finance-tracker-backup',
-    schemaVersion: 9,
+    schemaVersion: 11,
     appVersion: '1.0.0',
     exportedAt: '2026-07-08T10:00:00.000Z',
     data: {
@@ -60,6 +60,7 @@ function validBackup() {
           recurringRuleId: null,
           importBatchId: null,
           fingerprint: null,
+          categorySource: 'manual',
           createdAt: 1751942400000,
           updatedAt: 1751942400000,
         },
@@ -80,6 +81,7 @@ function validBackup() {
       importBatches: [],
       importMappings: [],
       settings: [{ key: 'backup.lastBackupAt', value: '1751900000000' }],
+      categorizationRules: [],
       personalAssets: [
         {
           id: 'pa-1',
@@ -89,7 +91,6 @@ function validBackup() {
           color: '#3B82F6',
           quantity: 1,
           costCents: 899900,
-          currentValueCents: 750000,
           status: 'holding',
           acquiredDateKey: '2026-09-19',
           closedDateKey: null,
@@ -110,16 +111,6 @@ function validBackup() {
           sourceTransactionId: null,
           createdAt: 1751900000000,
           updatedAt: 1751900000000,
-        },
-      ],
-      assetValuations: [
-        {
-          id: 'val-1',
-          assetId: 'pa-1',
-          valueCents: 899900,
-          dateKey: '2026-09-19',
-          note: '取得成本',
-          createdAt: 1751900000000,
         },
       ],
     },
@@ -232,9 +223,9 @@ describe('backupFileSchema', () => {
       },
     ],
     [
-      '估值 assetId 为空串',
+      '资产 quantity 非正整数',
       (b: ReturnType<typeof validBackup>) => {
-        b.data.assetValuations[0]!.assetId = '';
+        b.data.personalAssets[0]!.quantity = 0;
         return b;
       },
     ],

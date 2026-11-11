@@ -33,9 +33,13 @@ export function resolvePeriod(selection: PeriodSelection, today: string) {
     fullEnd <= today || comparableEnd > previousFullEnd
       ? previousFullEnd
       : comparableEnd;
+  // 本期未走完时，上期被钳到「同期」（前 N 天）口径——环比比的是同等时间进度，
+  // 而不是拿半个月去比上个月整月。UI 据此显示「同期对比」字样。
+  const comparisonClamped = previousEnd < previousFullEnd;
   return {
     range: { start, end },
     comparison: { start: previousStart, end: previousEnd },
+    comparisonClamped,
     elapsedDays,
     granularity:
       selection.period === 'month'

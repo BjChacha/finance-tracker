@@ -533,13 +533,14 @@ export class ImportSession {
           note: tx.note ?? '',
           importBatchId: batchId,
           fingerprint,
+          categorySource: 'import' as const,
           createdAt: now,
           updatedAt: now,
         };
       });
 
       // 3. 分批插入（≤200 行/批且绑定变量 ≤900）
-      const cols = 19;
+      const cols = 20;
       const batchSize = Math.min(200, Math.floor(900 / cols));
       for (let i = 0; i < txRows.length; i += batchSize) {
         const chunk = txRows.slice(i, i + batchSize);
