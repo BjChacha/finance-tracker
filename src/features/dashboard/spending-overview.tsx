@@ -149,7 +149,14 @@ export function SpendingOverview({
           style={{ minHeight: 44, justifyContent: 'center', gap: 7 }}
         >
           <View style={dashboardStyles.between}>
-            <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                color: colors.textSecondary,
+                fontSize: 11,
+                flexShrink: 1,
+              }}
+            >
               {remaining === null
                 ? copy.budgetSetup
                 : remaining < 0
@@ -159,12 +166,15 @@ export function SpendingOverview({
                 ` ${formatCentsWithSymbol(Math.abs(remaining))}`}
             </Text>
             <Text
+              numberOfLines={1}
               style={{
                 color:
                   remaining !== null && remaining < 0
                     ? colors.expense
                     : colors.textSecondary,
                 fontSize: 11,
+                flexShrink: 1,
+                textAlign: 'right',
               }}
             >
               {totalBudget ? `${copy.usedBudget} ${totalBudget.pct}%` : '›'}

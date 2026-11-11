@@ -147,21 +147,28 @@ export function PeriodControl({
   if (onSelectAll) options.push('allHistory');
   return (
     <View
-      style={{
-        gap: compact ? 0 : 8,
-        flexDirection: compact ? 'row-reverse' : 'column',
-        flexWrap: compact ? 'wrap' : 'nowrap',
-        justifyContent: 'space-between',
-        alignItems: compact ? 'center' : 'stretch',
-      }}
+      style={
+        compact
+          ? {
+              // 自适应：◀ ▶ 块按内容宽度收缩，胶囊块占剩余宽度（有上下限），
+              // 320dp 及以上单行放下；极窄屏/超大字体仍作为兜底允许换行（不重叠）
+              flexDirection: 'row-reverse',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }
+          : { gap: 8, flexDirection: 'column' }
+      }
     >
       <View
         style={{
           flexDirection: 'row',
           padding: compact ? 2 : 4,
-          width: compact ? 172 : undefined,
           borderRadius: 12,
           backgroundColor: colors.card,
+          ...(compact
+            ? { flexGrow: 1, flexShrink: 1, minWidth: 132, maxWidth: 220 }
+            : null),
         }}
       >
         {options.map((period) => {
@@ -179,7 +186,7 @@ export function PeriodControl({
               }
               style={{
                 flex: 1,
-                minHeight: 40,
+                minHeight: compact ? 36 : 40,
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 9,
@@ -191,6 +198,7 @@ export function PeriodControl({
               }}
             >
               <Text
+                numberOfLines={1}
                 style={{
                   color: selected
                     ? compact
@@ -213,21 +221,26 @@ export function PeriodControl({
             alignItems: 'center',
             justifyContent: 'center',
             gap: compact ? 0 : 16,
+            flexShrink: 1,
           }}
         >
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={copy.previousPeriod}
             onPress={() => shift(-1)}
-            style={{ padding: 12 }}
+            style={{ padding: compact ? 10 : 12 }}
+            hitSlop={compact ? { left: 2, right: 2 } : undefined}
           >
             <Icon name="chevron-left" color={colors.primary} size={20} />
           </Pressable>
           <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
             style={{
               fontWeight: '600',
-              fontSize: compact ? 13 : 15,
+              fontSize: compact ? 12 : 15,
               color: colors.text,
+              flexShrink: 1,
             }}
           >
             {formatPeriodTitle(selection.period, selection.key)}
@@ -238,7 +251,8 @@ export function PeriodControl({
             disabled={!canNext}
             accessibilityState={{ disabled: !canNext }}
             onPress={() => shift(1)}
-            style={{ padding: 12 }}
+            style={{ padding: compact ? 10 : 12 }}
+            hitSlop={compact ? { left: 2, right: 2 } : undefined}
           >
             <Icon
               name="chevron-right"

@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import { useTheme } from '@/theme';
 import { formatCompactYuan } from '@/lib/money';
@@ -45,6 +45,8 @@ function withAlpha(hex: string, alpha: number): string {
  */
 export function CompareBarChart({ data, incomeLabel, expenseLabel, height, dimLast }: Props) {
   const theme = useTheme();
+  // 跟随窗口/分屏/旋转变化，避免模块级缓存尺寸失效
+  const { width: windowWidth } = useWindowDimensions();
   const hasData = data.some((d) => d.income !== 0 || d.expense !== 0);
   if (data.length === 0 || !hasData) return <ChartEmpty />;
 
@@ -69,8 +71,9 @@ export function CompareBarChart({ data, incomeLabel, expenseLabel, height, dimLa
       },
     ];
   });
-  const chartWidth = Dimensions.get('window').width - 130;
-  const barWidth = Math.max(8, Math.floor(chartWidth / data.length / 2) - 10);
+  // 宽度扣掉页面内边距、Y 轴标签与每组间距；最小 160 保证窄屏仍可读
+  const chartWidth = Math.max(160, windowWidth - 140);
+  const barWidth = Math.max(6, Math.floor(chartWidth / data.length / 2) - 10);
 
   return (
     <View>
