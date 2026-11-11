@@ -120,5 +120,4 @@ export const dashboardText = {
   dateRange: '\u7edf\u8ba1\u533a\u95f4',
   noBudgetHistory: '按当前预算额度比较',
   dayAverage: '日均支出',
-  customize: '自定义首页模块',
 } as const;

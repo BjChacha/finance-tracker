@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { Icon } from '@/components/Icon';
+import { ScrollView, Text, View } from 'react-native';
 import { useFloatingTabBarInset } from '@/components/navigation/floating-tab-bar';
 import { useCategoryBreakdown } from '@/features/stats/hooks';
 import type { CategorySlice } from '@/features/stats/repository';
@@ -193,30 +192,15 @@ export function DashboardScreen() {
           { paddingTop: 8, paddingBottom: inset + 80 },
         ]}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <PeriodControl
-              {...period}
-              compact
-              allSelected={period.all}
-              onSelectAll={() => period.setAll(true)}
-            />
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={copy.customize}
-            onPress={() => router.push('/dashboard-settings')}
-            style={{ padding: 8 }}
-          >
-            <Icon name="settings" size={18} color={colors.primary} />
-          </Pressable>
-        </View>
+        {/* 周期控制条独占整行：不与其他控件并排。compact 模式内部是可换行的
+            row-reverse 布局，在 400dp 及更窄逻辑宽度下若被右侧按钮挤压，胶囊与
+            ◀ 周期 ▶ 会被折成两行（实机曾复现）。自定义入口只在「我的 → 首页模块」。 */}
+        <PeriodControl
+          {...period}
+          compact
+          allSelected={period.all}
+          onSelectAll={() => period.setAll(true)}
+        />
         {period.all && <QueryNotice queries={[period.allStart]} />}
         {!period.all || period.allStart.data ? (
           <>
