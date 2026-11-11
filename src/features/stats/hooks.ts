@@ -22,6 +22,65 @@ import {
 } from "./repository";
 import type { TrendGranularity } from "./transform";
 
+/**
+ * 派生统计的缓存策略：
+ * - staleTime 60s：同一周期内反复切换/回到看板直接用缓存（这些是纯聚合，不是源数据）；
+ * - gcTime 30min：切走再回来不必重算。
+ * 任何交易/账户写入仍会经 invalidateTransactionData 立即失效（invalidate 优先于 staleTime），
+ * 正确性不受影响。
+ */
+export const STATS_STALE_TIME = 60_000;
+export const STATS_GC_TIME = 30 * 60_000;
+
+/* ------------------ 可复用的 queryOptions 构造器（预取共用） ------------------ */
+/* hooks 与预取必须走同一构造器，保证 queryKey 严格一致（key 漂移 = 缓存永不命中）。 */
+
+export function categoryBreakdownOptions(
+	range: StatsRange,
+	type: BreakdownType,
+	parentId?: string | null,
+) {
+	return {
+		queryKey: [
+			"stats",
+			"breakdown",
+			{ range, type, parentId: parentId ?? null },
+		],
+		queryFn: () => categoryBreakdown(range, type, parentId),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
+	};
+}
+
+export function trendOptions(granularity: TrendGranularity, range: StatsRange) {
+	return {
+		queryKey: ["stats", "trend", { granularity, range }],
+		queryFn: () => trend(granularity, range),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
+	};
+}
+
+export function assetHistoryOptions(range: StatsRange, granularity: TrendGranularity) {
+	return {
+		queryKey: ["stats", "asset-history", range, granularity],
+		queryFn: () => assetHistory(range, granularity),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
+	};
+}
+
+export function assetHistoryStartOptions(today: string) {
+	return {
+		queryKey: ["stats", "asset-history-start", today],
+		queryFn: () => assetHistoryStart(today),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
+	};
+}
+
+/* ---------------------------------- hooks ---------------------------------- */
+
 /** key: ['stats', 'breakdown', ...] */
 export function useCategoryBreakdown(
 	range: StatsRange,
@@ -29,29 +88,19 @@ export function useCategoryBreakdown(
 	parentId?: string | null,
 	enabled = true,
 ) {
-	return useQuery({
-		queryKey: [
-			"stats",
-			"breakdown",
-			{ range, type, parentId: parentId ?? null },
-		],
-		queryFn: () => categoryBreakdown(range, type, parentId),
-		enabled,
-	});
+	return useQuery({ ...categoryBreakdownOptions(range, type, parentId), enabled });
 }
 
 export function useTrend(granularity: TrendGranularity, range: StatsRange, enabled = true) {
-	return useQuery({
-		queryKey: ["stats", "trend", { granularity, range }],
-		queryFn: () => trend(granularity, range),
-		enabled,
-	});
+	return useQuery({ ...trendOptions(granularity, range), enabled });
 }
 
 export function useMonthlyCompare(n = 6) {
 	return useQuery({
 		queryKey: ["stats", "monthly-compare", n],
 		queryFn: () => monthlyCompare(n),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 }
 
@@ -60,6 +109,8 @@ export function useTransactionDateRange() {
 	return useQuery({
 		queryKey: ["stats", "date-range"],
 		queryFn: () => transactionDateRange(),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 }
 
@@ -68,6 +119,8 @@ export function useTransactionSummary() {
 	return useQuery({
 		queryKey: ["stats", "summary"],
 		queryFn: () => transactionSummary(),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 }
 
@@ -75,6 +128,8 @@ export function useAccountDistribution() {
 	return useQuery({
 		queryKey: ["stats", "account-distribution"],
 		queryFn: () => accountDistribution(),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 }
 
@@ -83,18 +138,18 @@ export function useNetWorthTrend(n = 6) {
 	return useQuery({
 		queryKey: ["stats", "net-worth", n, today],
 		queryFn: () => netWorthTrend(n),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 }
 
 export function useAssetHistory(range: StatsRange, granularity: TrendGranularity, enabled = true) {
-  return useQuery({ queryKey: ['stats', 'asset-history', range, granularity],
-    queryFn: () => assetHistory(range, granularity), enabled });
+	return useQuery({ ...assetHistoryOptions(range, granularity), enabled });
 }
 
 export function useAssetHistoryStart(enabled = true) {
-  const today = useTodayKey();
-  return useQuery({ queryKey: ['stats', 'asset-history-start', today],
-    queryFn: () => assetHistoryStart(today), enabled });
+	const today = useTodayKey();
+	return useQuery({ ...assetHistoryStartOptions(today), enabled });
 }
 
 export function useCalendarHeatmap(monthKey: string) {
@@ -105,6 +160,8 @@ export function useCalendarHeatmap(monthKey: string) {
 		queryFn: () => calendarHeatmap(monthKey),
 		// 切换月份时先保持上一月数据，避免日历闪空
 		placeholderData: keepPreviousData,
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 	// 预取相邻月份：点上一月/下一月时直接命中缓存，无需等待加载
 	useEffect(() => {
@@ -113,6 +170,7 @@ export function useCalendarHeatmap(monthKey: string) {
 			void qc.prefetchQuery({
 				queryKey: ["stats", "heatmap", key, today],
 				queryFn: () => calendarHeatmap(key),
+				staleTime: STATS_STALE_TIME,
 			});
 		}
 	}, [monthKey, qc, today]);
@@ -127,5 +185,7 @@ export function useCategoryRank(
 	return useQuery({
 		queryKey: ["stats", "rank", { range, type, limit }],
 		queryFn: () => categoryRank(range, type, limit),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
 	});
 }

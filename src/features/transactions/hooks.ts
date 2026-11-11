@@ -31,6 +31,32 @@ import {
 } from './repository';
 import { normalizeTransactionSearchQuery } from './search-query';
 
+/**
+ * 交易聚合（totals/largest）的缓存策略：纯聚合结果，60s 内重复挂载直接用缓存；
+ * 交易写入仍会经 invalidateTransactionData 立即失效。
+ */
+const TX_STALE_TIME = 60_000;
+const TX_GC_TIME = 30 * 60_000;
+
+/** 可复用 options（看板预取共用，保证 key 一致） */
+export function transactionTotalsOptions(filters: TxFilters) {
+  return {
+    queryKey: ['transactions-summary', 'scope', filters],
+    queryFn: () => transactionTotals(filters),
+    staleTime: TX_STALE_TIME,
+    gcTime: TX_GC_TIME,
+  };
+}
+
+export function largestExpensesOptions(range: NonNullable<TxFilters['range']>) {
+  return {
+    queryKey: ['transactions', 'largest', range],
+    queryFn: () => largestExpenses(range),
+    staleTime: TX_STALE_TIME,
+    gcTime: TX_GC_TIME,
+  };
+}
+
 /** key: ['transactions', filters] */
 export function useTransactions(filters: TxFilters) {
   return useQuery({
@@ -55,12 +81,11 @@ export function useTransactionDailyTotals(filters: TxFilters, enabled = true) {
 }
 
 export function useTransactionTotals(filters: TxFilters, enabled = true) {
-  return useQuery({ queryKey: ['transactions-summary', 'scope', filters],
-    queryFn: () => transactionTotals(filters), enabled });
+  return useQuery({ ...transactionTotalsOptions(filters), enabled });
 }
 
 export function useLargestExpenses(range: NonNullable<TxFilters['range']>, enabled = true) {
-  return useQuery({ queryKey: ['transactions', 'largest', range], queryFn: () => largestExpenses(range), enabled });
+  return useQuery({ ...largestExpensesOptions(range), enabled });
 }
 
 /** key: ['transaction', id] */

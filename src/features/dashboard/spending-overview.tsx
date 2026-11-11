@@ -64,6 +64,9 @@ export function SpendingOverview({
           : 'YYYY.MM.DD',
       )
     : null;
+  // 区间跨年时（「全部时间」）必须带年份，否则 2019→2026 的历史会显示成「10.09—11.11」
+  const crossYear = range.start.slice(0, 4) !== range.end.slice(0, 4);
+  const rangeFmt = crossYear ? 'YYYY.MM.DD' : 'MM.DD';
   return (
     <View style={{ gap: 12 }}>
       <View style={dashboardStyles.between}>
@@ -78,8 +81,8 @@ export function SpendingOverview({
             textAlign: 'right',
           }}
         >
-          {dayjs(range.start).format('MM.DD')}—
-          {dayjs(range.end).format('MM.DD')}
+          {dayjs(range.start).format(rangeFmt)}—
+          {dayjs(range.end).format(rangeFmt)}
           {comparison && comparisonStart
             ? ` · ${copy.versus} ${comparisonStart}—${dayjs(comparison.end).format('MM.DD')}${comparisonClamped ? copy.samePeriodSuffix : ''}`
             : ` · ${copy.allHistory}`}

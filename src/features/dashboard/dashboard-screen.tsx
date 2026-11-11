@@ -27,6 +27,7 @@ import {
   useDashboardLayout,
   type DashboardSectionKey,
 } from './sections';
+import { useDashboardPrefetch } from './prefetch';
 import { SpendingOverview } from './spending-overview';
 import { SpendingPace } from './spending-pace';
 import { usePeriod } from './use-period';
@@ -38,6 +39,8 @@ export function DashboardScreen() {
   const period = usePeriod(undefined, { withAll: true });
   const { range, comparison, granularity, selection, all, comparisonClamped } =
     period;
+  // 空闲预取季/年/全部三代范围：切大范围时命中缓存，无加载等待
+  useDashboardPrefetch();
   const comparable = comparison !== null;
   const layoutQuery = useDashboardLayout();
   const layout = layoutQuery.data ?? DEFAULT_LAYOUT;
