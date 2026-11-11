@@ -17,10 +17,9 @@ import {
   assetHealth,
   categoryBreakdown,
   computeAssetStats,
-  portfolioTrend,
+		costTrend,
   realizedGainTrend,
   topAssets,
-  useAllAssetValuations,
   usePersonalAssets,
 } from '..';
 
@@ -45,32 +44,19 @@ export function PersonalAssetsScreen() {
 
   const assetsQuery = usePersonalAssets();
   const assets = useMemo(() => assetsQuery.data ?? [], [assetsQuery.data]);
-  const valuationsQuery = useAllAssetValuations(assets.length > 0);
-  const valuations = useMemo(() => valuationsQuery.data ?? [], [valuationsQuery.data]);
 
   const stats = useMemo(() => computeAssetStats(assets), [assets]);
   const slices = useMemo(() => categoryBreakdown(assets), [assets]);
   const topItems = useMemo(() => topAssets(assets), [assets]);
+  /** 持有成本趋势（近12月）：单序列成本基线 */
   const trendPoints = useMemo<LinePoint[]>(
     () =>
-      portfolioTrend(assets, valuations).map((p) => ({
+      costTrend(assets).map((p) => ({
         label: p.label,
         detailLabel: detailMonthLabel(p.label),
-        primary: p.valueCents,
-        secondary: p.costCents,
+        primary: p.costCents,
       })),
-    [assets, valuations],
-  );
-  /** 平均价值曲线：单件平均估值 vs 单件平均成本 */
-  const avgTrendPoints = useMemo<LinePoint[]>(
-    () =>
-      portfolioTrend(assets, valuations).map((p) => ({
-        label: p.label,
-        detailLabel: detailMonthLabel(p.label),
-        primary: p.avgValueCents,
-        secondary: p.avgCostCents,
-      })),
-    [assets, valuations],
+    [assets],
   );
   /** 累计实现收益曲线 */
   const realizedTrendPoints = useMemo<LinePoint[]>(
@@ -94,25 +80,26 @@ export function PersonalAssetsScreen() {
     { key: 'disposed', label: copy.status.disposed, count: stats.counts.disposed, color: ASSET_STATUS_COLOR.disposed },
   ];
 
-  const kpiCells = [
-    { label: copy.holdingCost, value: stats.holdingCostCents, color: colors.text },
+  /** 概览三指标（金额分 / 件数）：现役件数、已实现收益、累计投入 */
+  const kpiCells: Array<{ label: string; text: string; color: string }> = [
     {
-      label: copy.unrealizedGain,
-      value: stats.unrealizedGainCents,
-      color: stats.unrealizedGainCents > 0
-        ? colors.income
-        : stats.unrealizedGainCents < 0
-          ? colors.expense
-          : colors.textSecondary,
+      label: copy.overviewHoldingCount,
+      text: `${stats.counts.holding} ${copy.quantityUnit}`,
+      color: colors.text,
     },
     {
       label: copy.realizedGain,
-      value: stats.realizedGainCents,
+      text: formatCents(stats.realizedGainCents, { sign: true }),
       color: stats.realizedGainCents > 0
         ? colors.income
         : stats.realizedGainCents < 0
           ? colors.expense
           : colors.textSecondary,
+    },
+    {
+      label: copy.overviewTotalCost,
+      text: formatCentsWithSymbol(stats.totalCostCents),
+      color: colors.text,
     },
   ];
 
@@ -130,17 +117,17 @@ export function PersonalAssetsScreen() {
           </>
         ) : (
           <>
-            {/* 总览卡：市值大数字 + 三指标；主操作「新增」并入卡片右上角 */}
+            {/* 总览卡：持有成本大数字 + 三指标；主操作「新增」并入卡片右上角 */}
             <View style={[styles.card, { backgroundColor: colors.card }]}>
               <View style={styles.heroHeader}>
-                <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{copy.marketValue}</Text>
+                <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{copy.holdingCost}</Text>
                 <HeroAddPill onPress={() => router.push('/personal-assets/edit')} />
               </View>
               <Text
-                testID="assets-kpi-market-value"
+                testID="assets-kpi-holding-cost"
                 style={{ color: colors.text, fontSize: 30, fontWeight: '700', fontVariant: ['tabular-nums'] }}
               >
-                {formatCentsWithSymbol(stats.holdingMarketValueCents)}
+                {formatCentsWithSymbol(stats.holdingCostCents)}
               </Text>
               <View style={[styles.kpiRow, { borderTopColor: colors.border }]}>
                 {kpiCells.map((cell, i) => (
@@ -157,7 +144,7 @@ export function PersonalAssetsScreen() {
                       adjustsFontSizeToFit
                       minimumFontScale={0.7}
                     >
-                      {formatCents(cell.value, { sign: true })}
+                      {cell.text}
                     </Text>
                   </View>
                 ))}
@@ -196,33 +183,16 @@ export function PersonalAssetsScreen() {
                 {/* 类别分布 */}
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
                   <Text style={cardTitleStyle(colors.text)}>{copy.categoryTitle}</Text>
-                  <DonutChart data={slices.map((s) => ({ ...s, pct: 0 }))} centerLabel={copy.marketValue} />
+                  <DonutChart data={slices.map((s) => ({ ...s, pct: 0 }))} centerLabel={copy.holdingCost} />
                 </View>
 
-                {/* 组合趋势 */}
+                {/* 持有成本趋势 */}
                 <View style={[styles.card, { backgroundColor: colors.card }]}>
                   <Text style={cardTitleStyle(colors.text)}>{copy.trendTitle}</Text>
                   <TrendLineChart
                     points={trendPoints}
                     primaryColor={colors.primary}
-                    primaryLabel={copy.trendValue}
-                    secondaryColor={colors.textSecondary}
-                    secondaryLabel={copy.trendCost}
-                    secondaryDashed
-                    height={168}
-                  />
-                </View>
-
-                {/* 平均价值曲线：单件平均估值 vs 平均成本 */}
-                <View style={[styles.card, { backgroundColor: colors.card }]}>
-                  <Text style={cardTitleStyle(colors.text)}>{copy.avgValueTitle}</Text>
-                  <TrendLineChart
-                    points={avgTrendPoints}
-                    primaryColor={colors.transfer}
-                    primaryLabel={copy.avgValueLabel}
-                    secondaryColor={colors.textSecondary}
-                    secondaryLabel={copy.avgCostLabel}
-                    secondaryDashed
+                    primaryLabel={copy.holdingCost}
                     height={168}
                   />
                 </View>

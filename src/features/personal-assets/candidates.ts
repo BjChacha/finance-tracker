@@ -350,7 +350,6 @@ export function transactionToAssetInput(tx: TxListItem): AssetInput {
     category: guessAssetCategory(tx),
     quantity: 1,
     costCents: tx.amountBaseCents,
-    currentValueCents: tx.amountBaseCents,
     acquiredDateKey: tx.dateKey,
     note: '',
     sourceTransactionId: tx.id,

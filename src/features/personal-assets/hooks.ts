@@ -1,10 +1,9 @@
-import { useCallback } from 'react';
+﻿import { useCallback } from 'react';
 import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AssetValuation, PersonalAsset } from '@/db/schema';
+import type { PersonalAsset } from '@/db/schema';
 import { invalidateTransactionData } from '@/features/transactions';
 import { listTransactions } from '@/features/transactions/repository';
 import {
-  addValuation,
   countInstallmentPeriods,
   createAsset,
   createAssetsBatch,
@@ -14,10 +13,8 @@ import {
   findAssetsBySourceTransaction,
   getAssetById,
   ignoreCandidateTransaction,
-  listAllValuations,
   loadCandidateBase,
   listAssets,
-  listValuations,
   reactivateAsset,
   sellAssetByTransaction,
   sellAssetManual,
@@ -54,24 +51,6 @@ export function assetQueryOptions(id: string) {
 /** key: ['personal-assets', 'detail', id] */
 export function useAsset(id: string) {
   return useQuery({ ...assetQueryOptions(id), enabled: id.length > 0 });
-}
-
-/** key: ['personal-assets', 'valuations', id] */
-export function useAssetValuations(id: string) {
-  return useQuery({
-    queryKey: [ASSETS_QUERY_KEY, 'valuations', id],
-    queryFn: () => listValuations(id),
-    enabled: id.length > 0,
-  });
-}
-
-/** key: ['personal-assets', 'all-valuations'] —— 看板趋势图用 */
-export function useAllAssetValuations(enabled = true) {
-  return useQuery({
-    queryKey: [ASSETS_QUERY_KEY, 'all-valuations'],
-    queryFn: () => listAllValuations(),
-    enabled,
-  });
 }
 
 /** key: ['personal-assets', 'source', transactionId] */
@@ -182,24 +161,6 @@ export function useUpdateAsset() {
   });
 }
 
-export function useAddValuation() {
-  const invalidate = useInvalidateAssets();
-  return useMutation({
-    mutationFn: ({
-      assetId,
-      valueCents,
-      dateKey,
-      note,
-    }: {
-      assetId: string;
-      valueCents: number;
-      dateKey: string;
-      note: string;
-    }) => addValuation(assetId, valueCents, dateKey, note),
-    onSuccess: invalidate,
-  });
-}
-
 /** 手动出售（可选自动生成收入交易）：新收入影响流水/余额/统计，需联动失效 */
 export function useSellAssetManual() {
   const qc = useQueryClient();
@@ -264,4 +225,4 @@ export function useDeleteAsset() {
   });
 }
 
-export type { AssetInput, AssetValuation, PersonalAsset };
+export type { AssetInput, PersonalAsset };

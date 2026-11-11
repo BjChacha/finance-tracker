@@ -1,12 +1,10 @@
-import { and, asc, count, desc, eq, sql } from 'drizzle-orm';
+﻿import { and, asc, count, desc, eq, sql } from 'drizzle-orm';
 import { db } from '@/db/client';
 import {
-  assetValuations,
   categories,
   personalAssets,
   recurringRules,
   transactions,
-  type AssetValuation,
   type PersonalAsset,
 } from '@/db/schema';
 import { getSetting, setSetting } from '@/db/settings';
@@ -37,11 +35,9 @@ import {
 import { isAssetCategoryKey, resolveAssetCategory } from './meta';
 
 /**
- * 个人资产仓储：CRUD + 全生命周期操作（估值 / 出售 / 处置 / 恢复）。
+ * 个人资产仓储：CRUD + 全生命周期操作（出售 / 处置 / 恢复 / 分期结清）。
  * 生命周期不变式：
- * - 创建即写入一条成本基线估值（dateKey=取得日期）；
- * - 「更新估值」仅对持有中资产开放，追加估值记录并同步 currentValueCents；
- * - 出售/处置记录 closedDateKey，出售额外记录 soldCents；
+ * - 资产只记录取得成本，不做估值；\r?\n * - 出售/处置记录 closedDateKey，出售额外记录 soldCents；
  * - 恢复持有清空 closedDateKey/soldCents，估值历史原样保留。
  */
 
@@ -51,8 +47,6 @@ export type AssetInput = {
   quantity: number;
   /** 取得成本（本位币分） */
   costCents: number;
-  /** 当前估值（本位币分） */
-  currentValueCents: number;
   /** 'YYYY-MM-DD' */
   acquiredDateKey: string;
   note: string;
@@ -75,9 +69,6 @@ export function validateAssetInput(input: AssetInput): string | null {
   if (!isAssetCategoryKey(input.category)) return '请选择资产类别';
   if (!Number.isSafeInteger(input.quantity) || input.quantity < 1) return '数量必须为不小于 1 的整数';
   if (!Number.isSafeInteger(input.costCents) || input.costCents < 0) return '取得成本格式不正确';
-  if (!Number.isSafeInteger(input.currentValueCents) || input.currentValueCents < 0) {
-    return '当前估值格式不正确';
-  }
   if (!isValidDateKey(input.acquiredDateKey)) {
     return '取得日期格式不正确（YYYY-MM-DD）';
   }
@@ -115,7 +106,6 @@ function toRowValues(input: AssetInput) {
     color: def.color,
     quantity: input.quantity,
     costCents: input.costCents,
-    currentValueCents: input.currentValueCents,
     acquiredDateKey: input.acquiredDateKey,
     note: input.note.trim(),
     sourceTransactionId: input.sourceTransactionId,
@@ -128,7 +118,7 @@ export async function createAsset(input: AssetInput): Promise<string> {
   const id = newId();
   const now = Date.now();
   await db.transaction(async () => {
-    await insertAssetWithValuation(id, input, now);
+    await insertAssetRow(id, input, now);
   });
   return id;
 }
@@ -171,7 +161,7 @@ export async function createInstallmentAsset(input: InstallmentAssetInput): Prom
   let ruleId: string;
 
   await db.transaction(async () => {
-    await insertAssetWithValuation(id, input.asset, now, {
+    await insertAssetRow(id, input.asset, now, {
       installmentPeriods: input.plan.periods,
       installmentDownPaymentCents: input.plan.downPaymentCents ?? 0,
       installmentInterestCents: plan.totalInterestCents,
@@ -264,14 +254,14 @@ export async function createAssetsBatch(inputs: AssetInput[]): Promise<string[]>
     for (const [index, input] of inputs.entries()) {
       const id = newId();
       ids.push(id);
-      await insertAssetWithValuation(id, input, now + index);
+      await insertAssetRow(id, input, now + index);
     }
   });
   return ids;
 }
 
-/** 写入一条资产及其成本基线估值（调用方负责事务与校验） */
-async function insertAssetWithValuation(
+/** 写入一条资产（调用方负责事务与校验） */
+async function insertAssetRow(
   id: string,
   input: AssetInput,
   now: number,
@@ -287,22 +277,6 @@ async function insertAssetWithValuation(
     createdAt: now,
     updatedAt: now,
   });
-  // 成本基线估值：趋势图在无后续估值时回落到它
-  const rows: Array<{ assetId: string; valueCents: number; dateKey: string; note: string; createdAt: number }> = [
-    { assetId: id, valueCents: input.costCents, dateKey: input.acquiredDateKey, note: '取得成本', createdAt: now },
-  ];
-  if (input.currentValueCents !== input.costCents) {
-    rows.push({
-      assetId: id,
-      valueCents: input.currentValueCents,
-      dateKey: todayKey(),
-      note: '创建时估值',
-      createdAt: now + 1,
-    });
-  }
-  for (const row of rows) {
-    await db.insert(assetValuations).values({ id: newId(), ...row });
-  }
 }
 
 export async function updateAsset(id: string, input: AssetInput): Promise<void> {
@@ -314,55 +288,6 @@ export async function updateAsset(id: string, input: AssetInput): Promise<void> 
     .where(eq(personalAssets.id, id));
 }
 
-/** 某资产的估值历史（旧 → 新） */
-export async function listValuations(assetId: string): Promise<AssetValuation[]> {
-  return db
-    .select()
-    .from(assetValuations)
-    .where(eq(assetValuations.assetId, assetId))
-    .orderBy(asc(assetValuations.dateKey), asc(assetValuations.createdAt));
-}
-
-/** 全部估值记录（看板趋势图用），资产内旧 → 新 */
-export async function listAllValuations(): Promise<AssetValuation[]> {
-  return db
-    .select()
-    .from(assetValuations)
-    .orderBy(asc(assetValuations.dateKey), asc(assetValuations.createdAt));
-}
-
-/** 追加一条估值并同步资产当前估值（仅持有中） */
-export async function addValuation(
-  assetId: string,
-  valueCents: number,
-  dateKey: string,
-  note: string,
-): Promise<void> {
-  const asset = await getAssetById(assetId);
-  if (!asset) throw new Error('资产不存在');
-  if (asset.status !== 'holding') throw new Error('仅持有中的资产可更新估值');
-  if (!Number.isSafeInteger(valueCents) || valueCents < 0) throw new Error('估值格式不正确');
-  if (!isValidDateKey(dateKey)) {
-    throw new Error('估值日期格式不正确（YYYY-MM-DD）');
-  }
-  const now = Date.now();
-  await db.transaction(async () => {
-    await db.insert(assetValuations).values({
-      id: newId(),
-      assetId,
-      valueCents,
-      dateKey,
-      note: note.trim(),
-      createdAt: now,
-    });
-    await db
-      .update(personalAssets)
-      .set({ currentValueCents: valueCents, updatedAt: now })
-      .where(eq(personalAssets.id, assetId));
-  });
-}
-
-/** 出售：记录所得与日期，status → sold */
 /* ------------------------------ 出售双模式 ------------------------------ */
 
 /** 解析预置收入分类「二手闲置」（种子幂等保证存在；缺失时报错提示） */
@@ -476,6 +401,7 @@ export function filterIncomeByKeyword<
   );
 }
 
+
 /** 处置（送人/丢弃/报废）：所得记 0，status → disposed */
 export async function disposeAsset(assetId: string, dateKey: string): Promise<void> {
   const asset = await getAssetById(assetId);
@@ -521,7 +447,6 @@ export async function deleteAsset(assetId: string): Promise<void> {
         .where(eq(transactions.recurringRuleId, ruleId));
       await db.delete(recurringRules).where(eq(recurringRules.id, ruleId));
     }
-    await db.delete(assetValuations).where(eq(assetValuations.assetId, assetId));
     await db.delete(personalAssets).where(eq(personalAssets.id, assetId));
   });
 }

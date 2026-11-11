@@ -1,4 +1,4 @@
-// Pure-function tests: stub the db client so importing repository does not
+﻿// Pure-function tests: stub the db client so importing repository does not
 // initialise expo-sqlite (unavailable under jest/node).
 jest.mock('@/db/client', () => ({ db: {} }));
 
@@ -50,7 +50,6 @@ function baseInput(partial: Partial<AssetInput> = {}): AssetInput {
     category: 'electronics',
     quantity: 1,
     costCents: 899900,
-    currentValueCents: 899900,
     acquiredDateKey: '2026-09-19',
     note: '',
     sourceTransactionId: null,
@@ -61,7 +60,7 @@ function baseInput(partial: Partial<AssetInput> = {}): AssetInput {
 describe('validateAssetInput', () => {
   it('合法输入通过（成本 0 的赠予资产也允许）', () => {
     expect(validateAssetInput(baseInput())).toBeNull();
-    expect(validateAssetInput(baseInput({ costCents: 0, currentValueCents: 0 }))).toBeNull();
+    expect(validateAssetInput(baseInput({ costCents: 0 })))?.toBeNull();
   });
 
   it('名称必填（纯空白视为空）', () => {
@@ -78,9 +77,8 @@ describe('validateAssetInput', () => {
     expect(validateAssetInput(baseInput({ quantity: -2 }))).toBe('数量必须为不小于 1 的整数');
   });
 
-  it('成本/估值为负数时拒绝', () => {
+  it('成本为负数时拒绝', () => {
     expect(validateAssetInput(baseInput({ costCents: -1 }))).toBe('取得成本格式不正确');
-    expect(validateAssetInput(baseInput({ currentValueCents: -100 }))).toBe('当前估值格式不正确');
   });
 
   it('取得日期必须是合法的 YYYY-MM-DD', () => {

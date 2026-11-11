@@ -231,7 +231,6 @@ describe('transactionToAssetInput', () => {
       category: 'electronics',
       quantity: 1,
       costCents: 899_900,
-      currentValueCents: 899_900,
       acquiredDateKey: '2026-10-20',
       sourceTransactionId: source.id,
     });

@@ -17,6 +17,8 @@ import { formatCents, formatCentsWithSymbol, parseMoneyToCents } from '@/lib/mon
 import { useTheme } from '@/theme';
 import {
   ASSET_CATEGORY_DEFINITIONS,
+  listAssetSubcategories,
+  resolveAssetCategory,
   buildInstallmentPlan,
   useAsset,
   useAssetsFromTransaction,
@@ -36,7 +38,6 @@ type FormState = {
   category: string;
   quantityText: string;
   costText: string;
-  valueText: string;
   acquiredDateText: string;
   note: string;
   sourceTransactionId: string | null;
@@ -76,7 +77,6 @@ function initialFormState(): FormState {
     category: 'other',
     quantityText: '1',
     costText: '',
-    valueText: '',
     acquiredDateText: todayKey(),
     note: '',
     sourceTransactionId: null,
@@ -89,7 +89,6 @@ function formStateFromAsset(asset: PersonalAsset): FormState {
     category: asset.category,
     quantityText: String(asset.quantity),
     costText: formatCents(asset.costCents, { grouping: false }),
-    valueText: formatCents(asset.currentValueCents, { grouping: false }),
     acquiredDateText: asset.acquiredDateKey,
     note: asset.note,
     sourceTransactionId: asset.sourceTransactionId,
@@ -220,11 +219,14 @@ export function AssetEditorScreen({
 
   const dirty = JSON.stringify(form) !== initialSnapshot || (!editing && installment.enabled);
 
+  // 二级分类：当前所选大类与其子类列表
+  const selectedParentDef = resolveAssetCategory(form.category);
+  const selectedParentKey = selectedParentDef.parentKey;
+  const subcategories = listAssetSubcategories(selectedParentKey);
+
   function buildInput(): AssetInput | string {
     const costCents = parseMoneyToCents(form.costText);
     if (costCents === null) return zh.txList.invalidAmount;
-    const valueCents = form.valueText.trim() === '' ? costCents : parseMoneyToCents(form.valueText);
-    if (valueCents === null) return zh.txList.invalidAmount;
     const quantity = parseQuantity(form.quantityText);
     if (quantity === null) return copy.quantity;
     const input: AssetInput = {
@@ -232,7 +234,6 @@ export function AssetEditorScreen({
       category: form.category,
       quantity,
       costCents,
-      currentValueCents: valueCents,
       acquiredDateKey: form.acquiredDateText.trim(),
       note: form.note,
       sourceTransactionId: form.sourceTransactionId,
@@ -395,7 +396,7 @@ export function AssetEditorScreen({
             <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{copy.category}</Text>
             <View style={styles.chipWrap}>
               {ASSET_CATEGORY_DEFINITIONS.map((def) => {
-                const selected = form.category === def.key;
+                const selected = resolveAssetCategory(form.category).parentKey === def.key;
                 return (
                   <Pressable
                     key={def.key}
@@ -420,6 +421,49 @@ export function AssetEditorScreen({
                 );
               })}
             </View>
+
+            {/* 二级分类（大类下可选；不选则记在大类上） */}
+            {subcategories.length > 0 && (
+              <View style={styles.chipWrap}>
+                {[
+                  { key: selectedParentKey, label: copy.categoryNoSub, icon: selectedParentDef.icon },
+                  ...subcategories.map((sub) => ({
+                    key: sub.key,
+                    label: sub.label,
+                    icon: sub.icon,
+                  })),
+                ].map((option) => {
+                  const selected = form.category === option.key;
+                  return (
+                    <Pressable
+                      key={option.key}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected }}
+                      accessibilityLabel={option.label}
+                      style={[
+                        styles.chip,
+                        styles.subChip,
+                        { borderColor: selected ? selectedParentDef.color : colors.border },
+                        selected && { backgroundColor: selectedParentDef.color },
+                      ]}
+                      onPress={() => setForm((f) => ({ ...f, category: option.key }))}
+                    >
+                      <Icon
+                        name={option.icon}
+                        size={14}
+                        color={selected ? colors.onPrimary : selectedParentDef.color}
+                      />
+                      <Text
+                        style={{ color: selected ? colors.onPrimary : colors.text, fontSize: 12 }}
+                        numberOfLines={1}
+                      >
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
 
             <View style={styles.twoCol}>
               <View style={{ flex: 1 }}>
@@ -449,36 +493,18 @@ export function AssetEditorScreen({
               </View>
             </View>
 
-            <View style={styles.twoCol}>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
-                  {copy.cost}
-                </Text>
-                <SingleLineTextInput
-                  testID="asset-cost-input"
-                  style={[styles.input, { color: colors.text, borderColor: colors.border }]}
-                  value={form.costText}
-                  onChangeText={(t) => setForm((f) => ({ ...f, costText: t }))}
-                  keyboardType="decimal-pad"
-                  placeholder="0.00"
-                  placeholderTextColor={colors.textSecondary}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
-                  {copy.value}
-                </Text>
-                <SingleLineTextInput
-                  testID="asset-value-input"
-                  style={[styles.input, { color: colors.text, borderColor: colors.border }]}
-                  value={form.valueText}
-                  onChangeText={(t) => setForm((f) => ({ ...f, valueText: t }))}
-                  keyboardType="decimal-pad"
-                  placeholder={form.costText || '0.00'}
-                  placeholderTextColor={colors.textSecondary}
-                />
-              </View>
-            </View>
+            <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
+              {copy.cost}
+            </Text>
+            <SingleLineTextInput
+              testID="asset-cost-input"
+              style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+              value={form.costText}
+              onChangeText={(t) => setForm((f) => ({ ...f, costText: t }))}
+              keyboardType="decimal-pad"
+              placeholder="0.00"
+              placeholderTextColor={colors.textSecondary}
+            />
 
             <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{copy.note}</Text>
             <SingleLineTextInput
@@ -795,6 +821,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   twoCol: { flexDirection: 'row', gap: 12 },
+  subChip: { paddingHorizontal: 10, paddingVertical: 5 },
   installmentCard: {
     marginTop: 16,
     borderRadius: 12,

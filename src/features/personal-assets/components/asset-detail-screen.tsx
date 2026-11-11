@@ -12,7 +12,6 @@ import {
   SheetHeaderIconButton,
 } from '@/components/navigation/secondary-sheet-screen';
 import { useResidentEditor } from '@/components/navigation/resident-editor-sheet-host';
-import { TrendLineChart, type LinePoint } from '@/features/stats/charts/TrendLineChart';
 import { zh } from '@/i18n/zh';
 import { todayKey } from '@/lib/date';
 import { formatCents, formatCentsWithSymbol, parseMoneyToCents } from '@/lib/money';
@@ -28,9 +27,7 @@ import {
   filterIncomeByKeyword,
   installmentProgress,
   resolveAssetCategory,
-  useAddValuation,
   useAsset,
-  useAssetValuations,
   useDeleteAsset,
   useDisposeAsset,
   useInstallmentPeriods,
@@ -42,12 +39,12 @@ import {
   useSettleInstallment,
 } from '..';
 
-type Panel = 'valuate' | 'sell' | 'dispose' | null;
+type Panel = 'sell' | 'dispose' | null;
 type SellMode = 'manual' | 'link';
 /** 关联列表时间窗（近1年为默认：出售通常发生在取得后一年内） */
 const INCOME_RANGE_DEFAULT = 365;
 
-/** 资产详情 + 全生命周期操作：更新估值 / 出售（双模式）/ 处置 / 恢复 / 删除 */
+/** 资产详情 + 全生命周期操作：出售（双模式）/ 处置 / 恢复 / 删除 */
 export function AssetDetailScreen({ assetId }: { assetId: string }) {
   const router = useRouter();
   const { colors } = useTheme();
@@ -56,13 +53,8 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
 
   const assetQuery = useAsset(assetId);
   const asset = assetQuery.data ?? null;
-  const valuationsQuery = useAssetValuations(assetId);
-  const valuations = valuationsQuery.data ?? [];
 
   const [panel, setPanel] = useState<Panel>(null);
-  const [valueText, setValueText] = useState('');
-  const [valuationDate, setValuationDate] = useState(todayKey());
-  const [valuationNote, setValuationNote] = useState('');
   const [soldText, setSoldText] = useState('');
   const [soldDate, setSoldDate] = useState(todayKey());
   const [disposeDate, setDisposeDate] = useState(todayKey());
@@ -71,8 +63,6 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
   const [incomeAccountId, setIncomeAccountId] = useState<string | null>(null);
   const [incomeRangeDays, setIncomeRangeDays] = useState(INCOME_RANGE_DEFAULT);
   const [incomeKeyword, setIncomeKeyword] = useState('');
-
-  const addValuation = useAddValuation();
   const sellManual = useSellAssetManual();
   const sellByTx = useSellAssetByTransaction();
   const dispose = useDisposeAsset();
@@ -141,15 +131,6 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
     ]);
   }
 
-  const trendPoints = useMemo<LinePoint[]>(
-    () =>
-      valuations.map((v) => ({
-        label: v.dateKey.slice(5).replace('-', '/'),
-        primary: v.valueCents,
-      })),
-    [valuations],
-  );
-
   if (!asset) {
     return (
       <SecondarySheetScreen title={copy.detail}>
@@ -162,34 +143,13 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
 
   const categoryDef = resolveAssetCategory(asset.category);
   const holding = asset.status === 'holding';
-  const unrealized = asset.currentValueCents - asset.costCents;
   const realized = (asset.status === 'sold' ? asset.soldCents ?? 0 : 0) - asset.costCents;
-  const gainPct =
-    asset.costCents > 0 ? Math.round((unrealized / asset.costCents) * 1000) / 10 : null;
 
   function resetPanel(next: Panel) {
     setPanel(next);
-    setValueText('');
-    setValuationNote('');
-    setValuationDate(todayKey());
     setSoldText('');
     setSoldDate(todayKey());
     setDisposeDate(todayKey());
-  }
-
-  async function handleAddValuation(): Promise<void> {
-    const valueCents = parseMoneyToCents(valueText);
-    if (valueCents === null) {
-      showDialog(zh.common.error, zh.txList.invalidAmount);
-      return;
-    }
-    await addValuation.mutateAsync({
-      assetId,
-      valueCents,
-      dateKey: valuationDate.trim(),
-      note: valuationNote,
-    });
-    resetPanel(null);
   }
 
   async function handleSell(): Promise<void> {
@@ -275,14 +235,7 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
     { label: copy.acquiredDate, value: asset.acquiredDateKey },
     { label: copy.cost, value: formatCentsWithSymbol(asset.costCents) },
   ];
-  if (holding) {
-    infoRows.push({ label: copy.value, value: formatCentsWithSymbol(asset.currentValueCents) });
-    infoRows.push({
-      label: copy.unrealizedGain,
-      value: `${formatCents(unrealized, { sign: true })}${gainPct !== null ? `（${gainPct > 0 ? '+' : ''}${gainPct}%）` : ''}`,
-      color: unrealized > 0 ? colors.income : unrealized < 0 ? colors.expense : colors.textSecondary,
-    });
-  } else if (asset.status === 'sold') {
+  if (!holding && asset.status === 'sold') {
     infoRows.push({ label: copy.soldAt, value: asset.closedDateKey ?? '—' });
     infoRows.push({ label: copy.soldFor, value: formatCentsWithSymbol(asset.soldCents ?? 0) });
     infoRows.push({
@@ -290,7 +243,7 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
       value: formatCents(realized, { sign: true }),
       color: realized > 0 ? colors.income : realized < 0 ? colors.expense : colors.textSecondary,
     });
-  } else {
+  } else if (!holding) {
     infoRows.push({ label: copy.disposedAt, value: asset.closedDateKey ?? '—' });
     infoRows.push({
       label: copy.closedGain,
@@ -535,13 +488,7 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
           {holding ? (
             <>
               <View style={styles.actionRow}>
-                <LifecycleAction
-                  icon="banknote"
-                  label={copy.valuate}
-                  color={colors.primary}
-                  active={panel === 'valuate'}
-                  onPress={() => resetPanel(panel === 'valuate' ? null : 'valuate')}
-                />
+
                 <LifecycleAction
                   icon="hand-coins"
                   label={copy.sell}
@@ -565,38 +512,6 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
                   }
                 />
               </View>
-
-              {panel === 'valuate' && (
-                <View style={styles.panel} testID="asset-valuate-panel">
-                  <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
-                    {copy.value}
-                  </Text>
-                  <SingleLineTextInput
-                    style={[styles.input, { color: colors.text, borderColor: colors.border }]}
-                    value={valueText}
-                    onChangeText={setValueText}
-                    keyboardType="decimal-pad"
-                    placeholder={formatCents(asset.currentValueCents, { grouping: false })}
-                    placeholderTextColor={colors.textSecondary}
-                  />
-                  <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
-                    {copy.valuationDate}
-                  </Text>
-                  <DatePickerField value={valuationDate} onPick={setValuationDate} />
-                  <SingleLineTextInput
-                    style={[styles.input, { color: colors.text, borderColor: colors.border }]}
-                    value={valuationNote}
-                    onChangeText={setValuationNote}
-                    placeholder={copy.valuationNotePlaceholder}
-                    placeholderTextColor={colors.textSecondary}
-                  />
-                  <ActionButton
-                    label={zh.common.confirm}
-                    pending={addValuation.isPending}
-                    onPress={handleAddValuation}
-                  />
-                </View>
-              )}
 
               {panel === 'sell' && (
                 <View style={styles.panel} testID="asset-sell-panel">
@@ -849,45 +764,6 @@ export function AssetDetailScreen({ assetId }: { assetId: string }) {
           )}
         </View>
 
-        {/* 估值历史 */}
-        <View style={[styles.card, { backgroundColor: colors.card }]}>
-          <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600', marginBottom: 10 }}>
-            {copy.valuationHistory}
-          </Text>
-          {trendPoints.length >= 2 && (
-            <View style={{ marginBottom: 8 }}>
-              <TrendLineChart
-                points={trendPoints}
-                primaryColor={colors.primary}
-                primaryLabel={copy.value}
-                compact
-                height={88}
-                curved={false}
-              />
-            </View>
-          )}
-          <View>
-            {valuations
-              .slice()
-              .reverse()
-              .map((v) => (
-                <View
-                  key={v.id}
-                  style={[styles.valuationRow, { borderBottomColor: colors.border }]}
-                >
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text, fontSize: 13, fontWeight: '500' }}>
-                      {formatCentsWithSymbol(v.valueCents)}
-                    </Text>
-                    <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
-                      {v.dateKey}
-                      {v.note ? ` · ${v.note}` : ''}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-          </View>
-        </View>
       </ScrollView>
     </SecondarySheetScreen>
   );
@@ -942,11 +818,6 @@ export function AssetListItem({
   const { colors } = useTheme();
   const copy = zh.personalAssets;
   const categoryDef = resolveAssetCategory(asset.category);
-  const holding = asset.status === 'holding';
-  const gain = holding
-    ? asset.currentValueCents - asset.costCents
-    : (asset.status === 'sold' ? asset.soldCents ?? 0 : 0) - asset.costCents;
-  const gainPct = asset.costCents > 0 ? Math.round((gain / asset.costCents) * 1000) / 10 : null;
   return (
     <Pressable
       accessibilityRole="button"
@@ -963,11 +834,19 @@ export function AssetListItem({
           <Text style={{ color: colors.text, fontSize: 15, fontWeight: '500', flexShrink: 1 }} numberOfLines={1}>
             {asset.name}
           </Text>
-          {asset.sourceTransactionId && (
-            <View style={[styles.srcBadge, { borderColor: colors.border }]}>
-              <Text style={{ color: colors.textSecondary, fontSize: 10 }}>{copy.generatedBadge}</Text>
-            </View>
-          )}
+          <View
+            style={[
+              styles.srcBadge,
+              {
+                borderColor: ASSET_STATUS_COLOR[asset.status],
+                backgroundColor: `${ASSET_STATUS_COLOR[asset.status]}18`,
+              },
+            ]}
+          >
+            <Text style={{ color: ASSET_STATUS_COLOR[asset.status], fontSize: 10 }}>
+              {copy.status[asset.status]}
+            </Text>
+          </View>
           {asset.installmentPeriods > 0 && (
             <View
               style={[
@@ -992,20 +871,9 @@ export function AssetListItem({
           {categoryDef.label} · {asset.acquiredDateKey} · {asset.quantity} {copy.quantityUnit}
         </Text>
       </View>
-      <View style={{ alignItems: 'flex-end', gap: 2 }}>
+      <View style={{ alignItems: 'flex-end' }}>
         <Text style={{ color: colors.text, fontSize: 14, fontWeight: '600', fontVariant: ['tabular-nums'] }}>
-          {formatCentsWithSymbol(holding ? asset.currentValueCents : (asset.status === 'sold' ? asset.soldCents ?? 0 : 0))}
-        </Text>
-        <Text
-          style={{
-            color: holding ? colors.textSecondary : ASSET_STATUS_COLOR[asset.status],
-            fontSize: 11,
-          }}
-          numberOfLines={1}
-        >
-          {holding
-            ? `${gain >= 0 ? '+' : ''}${formatCents(gain)}${gainPct !== null ? ` · ${gainPct > 0 ? '+' : ''}${gainPct}%` : ''}`
-            : copy.status[asset.status]}
+          {formatCentsWithSymbol(asset.costCents)}
         </Text>
       </View>
     </Pressable>
@@ -1109,7 +977,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
   },
-  valuationRow: { paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth },
   headerActions: { flexDirection: 'row', alignItems: 'center' },
   itemCard: {
     flexDirection: 'row',
