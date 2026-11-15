@@ -526,7 +526,7 @@ describe('backupUpgraders[10]（v10 → v11 规则与分类来源）', () => {
   });
 });
 
-describe('complete upgrade chain v1 -> v11', () => {
+describe('complete upgrade chain v1 -> v12', () => {
   it('ends at the current schema version with rules array and categorySource present', () => {
     const out = runUpgradeChain(
       {
@@ -538,10 +538,44 @@ describe('complete upgrade chain v1 -> v11', () => {
         },
       },
       1,
-      11,
+      12,
     ) as RawBackupPayload & { data: Record<string, unknown> };
-    expect(out.schemaVersion).toBe(11);
+    expect(out.schemaVersion).toBe(12);
     expect(Array.isArray(out.data.categorizationRules)).toBe(true);
     expect((out.data.transactions as Record<string, unknown>[])[0]!.categorySource).toBe('manual');
+    expect((out.data.transactions as Record<string, unknown>[])[0]!.tags).toEqual([]);
+  });
+});
+
+describe('backupUpgraders[11]（v11 → v12 交易标签）', () => {
+  const upgrade = (p: RawBackupPayload) => backupUpgraders[11]!(p);
+
+  it('transactions 补空 tags 数组；备注文本保持原样；升到 v12', () => {
+    const out = upgrade({
+      ...payloadAt(11),
+      data: {
+        transactions: [
+          { id: 'tx-1', note: '【智能识别】午饭' },
+          { id: 'tx-2', note: '房租' },
+        ],
+      },
+    }) as RawBackupPayload & { data: { transactions: Array<Record<string, unknown>> } };
+    expect(out.schemaVersion).toBe(12);
+    expect(out.data.transactions.map((t) => t.tags)).toEqual([[], []]);
+    // 备注里的旧标记不在这里改写：是否转换由应用启动时询问用户
+    expect(out.data.transactions[0]!.note).toBe('【智能识别】午饭');
+  });
+
+  it('已有 tags 的行保留原值；缺 data 时不抛错', () => {
+    const out = upgrade({
+      ...payloadAt(11),
+      data: { transactions: [{ id: 'tx-1', tags: ['智能'] }] },
+    }) as RawBackupPayload & { data: { transactions: Array<Record<string, unknown>> } };
+    expect(out.data.transactions[0]!.tags).toEqual(['智能']);
+
+    const empty = upgrade({ ...payloadAt(11), data: {} }) as RawBackupPayload & {
+      data: { transactions: unknown[] };
+    };
+    expect(empty.data.transactions).toEqual([]);
   });
 });

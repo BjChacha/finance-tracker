@@ -12,6 +12,7 @@ const tx = (id: string, dateKey: string): TxListItem => ({
 	date: Date.parse(`${dateKey}T12:00:00+08:00`),
 	dateKey,
 	note: '',
+	tags: [],
 	currency: 'CNY',
 	exchangeRate: 1_000_000,
 	amountBaseCents: 1000,

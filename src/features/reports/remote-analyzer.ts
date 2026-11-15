@@ -33,7 +33,7 @@ export async function analyzeReportRemotely(
   const captured: { usage: TokenUsage | null } = { usage: null };
   const transport = createDeepSeekTransport(REPORT_SETTINGS, fetch, (model, usage) => {
     captured.usage = usage;
-    void recordLLMUsage(model, usage, at).catch((error) => {
+    void recordLLMUsage("report", model, usage, at).catch((error) => {
       console.warn("[llm-usage] Failed to record usage", error);
     });
   });

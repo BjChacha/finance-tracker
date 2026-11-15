@@ -1,10 +1,8 @@
 import type { TxFormInitialValues } from "../components/TransactionForm";
+import { SMART_TAG } from "../tags";
 import type { validateNaturalLanguageDecision } from "./validation";
 
 type Preview = ReturnType<typeof validateNaturalLanguageDecision>;
-
-/** Marks a note as machine-refined so it is never mistaken for something the user typed. */
-const SMART_NOTE_PREFIX = "\u3010\u667a\u80fd\u8bc6\u522b\u3011";
 
 /** Keep recognized fields, but clear fields that require an explicit user selection. */
 export function naturalLanguagePreviewValues(
@@ -32,7 +30,10 @@ export function naturalLanguagePreviewValues(
         : null,
     categoryId: flagged("category") ? null : preview.categoryId,
     ...(preview.dateMs !== null ? { dateMs: preview.dateMs } : {}),
-    note: preview.note ? `${SMART_NOTE_PREFIX}${preview.note}` : "",
+    note: preview.note,
+    // 机器识别的出处记在交易标签上，不再往备注里塞「【智能识别】」文本：
+    // 备注保持为用户的原始语义，标签则是可查询的数据属性。
+    tags: [SMART_TAG],
     currency: preview.currency,
   };
 }

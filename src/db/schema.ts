@@ -90,6 +90,11 @@ export const transactions = sqliteTable(
     /** 'YYYY-MM-DD'，写入时按本地时区固化，图表分组稳定 */
     dateKey: text('date_key').notNull(),
     note: text('note').notNull().default(''),
+    /**
+     * 交易标签（JSON 数组文本）。约定每个标签为不超过两个字的短词，
+     * 例如「智能」表示该笔交易由一句话智能识别生成（不再写进备注）。
+     */
+    tags: text('tags', { mode: 'json' }).$type<string[]>().notNull().default([]),
     recurringRuleId: text('recurring_rule_id'),
     importBatchId: text('import_batch_id'),
     /** SHA-256(dateKey|amount|type|note)，导入去重 */
@@ -196,6 +201,9 @@ export const settings = sqliteTable('settings', {
   value: text('value').notNull(),
 });
 
+/** 远程调用用途：nl=一句话识别，report=消费报告生成。花费按用途分开统计，不混算。 */
+export type LLMUsageSource = 'nl' | 'report';
+
 /** One remote inference call. Cost is snapshotted so later price changes never rewrite history. */
 export const llmUsage = sqliteTable(
   'llm_usage',
@@ -203,6 +211,8 @@ export const llmUsage = sqliteTable(
     id: text('id').primaryKey(),
     /** Unix ms of the response */
     createdAt: integer('created_at').notNull(),
+    /** 调用用途；此前（迁移 0016）的行无此区分，统一按 nl 回填，报告调用占比极小 */
+    source: text('source').$type<LLMUsageSource>().notNull().default('nl'),
     model: text('model').notNull(),
     promptTokens: integer('prompt_tokens').notNull().default(0),
     /** Input tokens billed at the cache-hit rate */

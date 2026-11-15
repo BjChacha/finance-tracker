@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `tags` text DEFAULT '[]' NOT NULL;

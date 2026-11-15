@@ -5,7 +5,7 @@ import { backupEnvelopeSchema, backupFileSchema } from '../schema';
 function validBackup() {
   return {
     format: 'finance-tracker-backup',
-    schemaVersion: 11,
+    schemaVersion: 12,
     appVersion: '1.0.0',
     exportedAt: '2026-07-08T10:00:00.000Z',
     data: {
@@ -57,6 +57,7 @@ function validBackup() {
           date: 1751942400000,
           dateKey: '2026-07-08',
           note: '午餐',
+          tags: ['智能'],
           recurringRuleId: null,
           importBatchId: null,
           fingerprint: null,
@@ -226,6 +227,20 @@ describe('backupFileSchema', () => {
       '资产 quantity 非正整数',
       (b: ReturnType<typeof validBackup>) => {
         b.data.personalAssets[0]!.quantity = 0;
+        return b;
+      },
+    ],
+    [
+      '交易 tags 非数组',
+      (b: ReturnType<typeof validBackup>) => {
+        b.data.transactions[0]!.tags = '智能' as never;
+        return b;
+      },
+    ],
+    [
+      '交易 tags 元素非字符串',
+      (b: ReturnType<typeof validBackup>) => {
+        b.data.transactions[0]!.tags = [1] as never;
         return b;
       },
     ],

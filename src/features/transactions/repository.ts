@@ -9,6 +9,7 @@ import { newId } from '@/lib/id';
 import { RATE_SCALE, toBaseCents } from '@/lib/money';
 import { parseTransactionSearchQuery, type TransactionSearchToken } from './search-query';
 import { expenseAmount, incomeAmount, transactionConditions, type TxFilters } from './filters';
+import { sanitizeTags } from './tags';
 export type { TxFilters } from './filters';
 
 export type TxListItem = {
@@ -22,6 +23,8 @@ export type TxListItem = {
   date: number;
   dateKey: string;
   note: string;
+  /** 交易标签（≤2 字短词，如「智能」）；见 ./tags.ts */
+  tags: string[];
   /** 交易币种 ISO code */
   currency: string;
   /** 相对本位币汇率 ×1e6 */
@@ -62,6 +65,7 @@ const txSelect = {
   date: transactions.date,
   dateKey: transactions.dateKey,
   note: transactions.note,
+  tags: transactions.tags,
   categoryName: categories.name,
   categoryIcon: categories.icon,
   categoryColor: categories.color,
@@ -327,6 +331,8 @@ export type TxInput = {
   /** Unix 毫秒 */
   date: number;
   note?: string;
+  /** 交易标签（≤2 字短词）；缺省不写（更新时保留库中既有标签） */
+  tags?: string[];
   /** 交易币种 ISO code，默认 CNY（应与账户币种一致） */
   currency?: string;
   /** 相对本位币汇率 ×1e6，默认 RATE_SCALE（1.0，即本位币） */
@@ -346,6 +352,7 @@ type NormalizedTx = TxInput & {
   amountBaseCents: number;
   toAmount?: number;
   dateKey: string;
+  tags: string[];
 };
 
 /** 校验并归一化输入；不合法抛错。同时计算本位币金额 amountBaseCents。 */
@@ -363,6 +370,7 @@ function normalize(input: TxInput): NormalizedTx {
       : RATE_SCALE;
   const amountBaseCents = toBaseCents(input.amount, exchangeRate);
   if (!input.categoryId) throw new Error('请选择分类');
+  const tags = sanitizeTags(input.tags);
 
   if (input.type === 'transfer') {
     if (!input.toAccountId) throw new Error('转账必须指定转入账户');
@@ -371,9 +379,9 @@ function normalize(input: TxInput): NormalizedTx {
       Number.isSafeInteger(input.toAmount) && (input.toAmount as number) > 0
         ? (input.toAmount as number)
         : input.amount;
-    return { ...input, projectId: input.projectId ?? null, fee, currency, exchangeRate, amountBaseCents, toAmount, dateKey: toDateKey(input.date) };
+    return { ...input, projectId: input.projectId ?? null, fee, currency, exchangeRate, amountBaseCents, toAmount, tags, dateKey: toDateKey(input.date) };
   }
-  return { ...input, toAccountId: null, toAmount: undefined, projectId: input.projectId ?? null, fee: 0, currency, exchangeRate, amountBaseCents, dateKey: toDateKey(input.date) };
+  return { ...input, toAccountId: null, toAmount: undefined, projectId: input.projectId ?? null, fee: 0, currency, exchangeRate, amountBaseCents, tags, dateKey: toDateKey(input.date) };
 }
 
 export async function createTransaction(input: TxInput): Promise<string> {
@@ -398,6 +406,7 @@ export async function createTransaction(input: TxInput): Promise<string> {
       date: n.date,
       dateKey: n.dateKey,
       note: n.note ?? '',
+      tags: n.tags,
       clientTag: n.clientTag ?? null,
       categorySource: n.categorySource ?? 'manual',
       createdAt: now,
@@ -442,6 +451,8 @@ export async function updateTransaction(id: string, input: TxInput): Promise<voi
       date: n.date,
       dateKey: n.dateKey,
       note: n.note ?? '',
+      // 未显式给出 tags 时保留库中既有标签，避免非编辑调用方静默清掉标签
+      ...(input.tags === undefined ? {} : { tags: n.tags }),
       categorySource: n.categorySource ?? 'manual',
       updatedAt: Date.now(),
     })

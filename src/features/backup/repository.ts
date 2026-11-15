@@ -20,6 +20,7 @@ import {
   transactions,
 } from '@/db/schema';
 import { getSetting, setSetting } from '@/db/settings';
+import { sanitizeTags } from '@/features/transactions/tags';
 import { dayjs } from '@/lib/date';
 import { readTextFromUri, shareFile, writeTextToCache } from '@/lib/fs';
 import { saveLocalSnapshot } from './storage';
@@ -179,7 +180,11 @@ export async function restoreBackup(fileUri: string): Promise<RestoreResult> {
     insertInBatches(categories, data.categories);
     insertInBatches(categorizationRules, data.categorizationRules);
     insertInBatches(projects, data.projects);
-    insertInBatches(transactions, data.transactions);
+    // 标签是展示用短词：恢复时归一化（去空白/超长截断/去重），不因脏标签整份恢复失败
+    insertInBatches(
+      transactions,
+      data.transactions.map((row) => ({ ...row, tags: sanitizeTags(row.tags) })),
+    );
     insertInBatches(budgets, data.budgets);
     insertInBatches(recurringRules, data.recurringRules);
     insertInBatches(importBatches, data.importBatches);
@@ -227,6 +232,7 @@ export async function exportCsv(): Promise<number> {
       amount: transactions.amount,
       fee: transactions.fee,
       note: transactions.note,
+      tags: transactions.tags,
       categoryName: categories.name,
       categoryParentName: parentCategories.name,
       accountName: accounts.name,

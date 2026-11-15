@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { useFloatingTabBarInset } from "@/components/navigation/floating-tab-bar";
-import { LLMUsageCard } from "@/features/llm-usage/usage-card";
+import { SmartRecognitionCard } from "@/features/llm-usage/smart-recognition-card";
 import { useTransactionSummary } from "@/features/stats";
 import { useAllTimeSummary } from "@/features/transactions";
 import {
@@ -202,7 +202,7 @@ export default function ProfileScreen() {
 		>
 			<ProfileSummaryCard />
 			<UpdateCard />
-			<LLMUsageCard />
+			<SmartRecognitionCard />
 			{groups.map((g) => (
 				<View key={g.title}>
 					<Text style={[styles.groupTitle, { color: colors.textSecondary }]}>

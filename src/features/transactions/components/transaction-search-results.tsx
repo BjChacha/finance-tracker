@@ -10,6 +10,7 @@ import { formatCents } from '@/lib/money';
 import { useTheme, type AppTheme } from '@/theme';
 import { useTransactionSearch } from '../hooks';
 import type { TxListItem } from '../repository';
+import { TagChips } from './TagChips';
 
 type SearchHeaderItem = { kind: 'header'; dateKey: string };
 type SearchRowItem = { kind: 'row'; transaction: TxListItem };
@@ -112,9 +113,12 @@ export function TransactionSearchResults({
             />
           )}
           <View style={styles.rowContent}>
-            <Text style={styles.rowTitle} numberOfLines={1}>
-              {title}
-            </Text>
+            <View style={styles.rowTitleLine}>
+              <Text style={styles.rowTitle} numberOfLines={1}>
+                {title}
+              </Text>
+              <TagChips tags={transaction.tags} />
+            </View>
             <Text style={styles.rowSubtitle} numberOfLines={1}>
               {subtitleParts.join(' · ')}
             </Text>
@@ -233,7 +237,8 @@ function makeStyles({ colors }: AppTheme) {
     },
     transferIcon: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
     rowContent: { flex: 1, minWidth: 0 },
-    rowTitle: { color: colors.text, fontSize: 15, fontWeight: '500' },
+    rowTitleLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    rowTitle: { color: colors.text, fontSize: 15, fontWeight: '500', flexShrink: 1 },
     rowSubtitle: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
     rowTrailing: { alignItems: 'flex-end' },
     rowTime: { color: colors.textSecondary, fontSize: 12 },

@@ -55,3 +55,19 @@ export {
   type AddTransactionRouteParams,
 } from './addTransactionLaunch';
 export { computeAmountPreview, type AmountPreview } from './amountPreview';
+export { TagChips } from './components/TagChips';
+export {
+  LEGACY_SMART_NOTE_PREFIX,
+  MAX_TAG_CHARS,
+  SMART_TAG,
+  isValidTag,
+  sanitizeTags,
+} from './tags';
+export type { SmartTagMigrationDecision } from './smart-tag-migration';
+export {
+  countLegacySmartNoteTransactions,
+  getSmartTagMigrationDecision,
+  migrateLegacySmartNotes,
+  setSmartTagMigrationDecision,
+} from './smart-tag-migration';
+export { SmartTagMigrationRunner } from './SmartTagMigrationRunner';

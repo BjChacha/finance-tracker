@@ -1,21 +1,24 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
-import { llmUsageSummary } from "./repository";
+import { smartRecognitionSummary } from "./repository";
 
-const QUERY_KEY = ["llm-usage", "summary"] as const;
+const QUERY_KEY = ["smart-recognition", "summary"] as const;
 
-/** Billing is written from a background call, so the profile tab refreshes whenever it is shown. */
-export function useLLMUsageSummary() {
+/**
+ * Recognition spend is written from a background call and the generated-transaction share changes
+ * with every bookkeeping save, so the profile tab refetches whenever it is shown.
+ */
+export function useSmartRecognitionSummary() {
   const queryClient = useQueryClient();
   useFocusEffect(
     useCallback(() => {
-      void queryClient.invalidateQueries({ queryKey: ["llm-usage"] });
+      void queryClient.invalidateQueries({ queryKey: ["smart-recognition"] });
     }, [queryClient]),
   );
   return useQuery({
     queryKey: QUERY_KEY,
-    queryFn: () => llmUsageSummary(),
+    queryFn: () => smartRecognitionSummary(),
     staleTime: 0,
   });
 }

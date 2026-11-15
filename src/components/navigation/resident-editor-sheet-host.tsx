@@ -401,6 +401,7 @@ function ResidentEditorSheetHost({ target, onTargetDismissed }: HostProps) {
 				projectId: transaction.projectId,
 				dateMs: transaction.date,
 				note: transaction.note,
+				tags: transaction.tags,
 				currency: transaction.currency,
 				exchangeRate: transaction.exchangeRate,
 			}

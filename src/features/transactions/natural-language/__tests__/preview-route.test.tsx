@@ -4,6 +4,7 @@ import NaturalLanguageTransactionScreen from "../../../../../app/natural-languag
 import { ParseError } from "../deepseek";
 import { loadNaturalLanguageContext } from "../load-context";
 import { parseTransactionText } from "../remote-parser";
+import { SMART_TAG } from "../../tags";
 
 const mockForm = jest.fn();
 const mockSheet = jest.fn();
@@ -120,7 +121,8 @@ it("parses the typed sentence once and prefills the shared form", async () => {
     toAccountId: null,
     categoryId: "cat-food",
     dateMs: Date.parse("2026-10-18T00:00:00+08:00"),
-    note: "【智能识别】午饭",
+    note: "午饭",
+    tags: [SMART_TAG],
     currency: "CNY",
   });
   // Reuses the shared form's account prediction instead of inventing its own default.
@@ -159,6 +161,8 @@ it("refuses to invent a note when the model returns none", async () => {
   type("午饭 28");
   await submit();
   expect(mockForm.mock.calls.at(-1)?.[0].initialValues.note).toBe("");
+  // 出处分在标签上，与备注有没有内容无关
+  expect(mockForm.mock.calls.at(-1)?.[0].initialValues.tags).toEqual([SMART_TAG]);
 });
 
 it("mints a fresh idempotency key per parse instead of a constant client tag", async () => {

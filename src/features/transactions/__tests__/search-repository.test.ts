@@ -26,6 +26,7 @@ function makeRow(overrides: Partial<SearchRow> = {}): SearchRow {
     date: 1_700_000_000_000,
     dateKey: '2026-07-31',
     note: 'Dinner',
+    tags: [],
     currency: 'CNY',
     exchangeRate: 1_000_000,
     amountBaseCents: 200_500,

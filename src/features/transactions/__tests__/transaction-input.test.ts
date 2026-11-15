@@ -31,6 +31,7 @@ describe('buildTransactionInput', () => {
         projectId: null,
         date: dayjs('2026-07-31 09:45').valueOf(),
         note: 'lunch',
+        tags: [],
         currency: 'USD',
         exchangeRate: 6_760_600,
         clientTag: null,
@@ -43,6 +44,12 @@ describe('buildTransactionInput', () => {
     const result = buildTransactionInput({ ...validDraft, clientTag: 'handoff-42' });
 
     expect(result.input?.clientTag).toBe('handoff-42');
+  });
+
+  it('carries transaction tags through to the payload', () => {
+    const result = buildTransactionInput({ ...validDraft, tags: ['智能'] });
+
+    expect(result.input?.tags).toEqual(['智能']);
   });
 
   it.each([

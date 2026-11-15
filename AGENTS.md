@@ -66,6 +66,22 @@ EXPO_PUBLIC_DEEPSEEK_API_KEY=<key> GH_TOKEN=<token> npm run release
 - 查看一律读存档,不调用模型;「重新生成」是显式计费动作。
 - 契约与提示词:`src/features/reports/analysis-contract.ts`、`labels.ts` 的 `systemPrompt`;渲染在 `components/report-detail.tsx`。
 
+# 交易标签与「智能识别」标记迁移
+
+一句话识别生成的交易不再把「【智能识别】」写进备注，而是带 `tags` 标签（`transactions.tags`，JSON 数组文本，见 `src/db/schema.ts`）。约定：单个标签不超过两个字，只做标记用；展示统一走 `src/features/transactions/components/TagChips.tsx`（明细行、搜索结果、详情/编辑表单三处共用）。
+
+- 写入走 `TxInput.tags`，经 `sanitizeTags()`（`src/features/transactions/tags.ts`）去空白/超长截断/去重；一句话识别的标签常量是 `SMART_TAG`（`preview-values.ts` 里注入）。
+- 备份 schema 升到 v12（`transactions.tags`），v11→v12 只补 `tags: []`，不改写备注；CSV 导出多一列「标签」。
+- 存量数据不静默改写：启动后 `SmartTagMigrationRunner` 检测备注里的旧前缀，弹窗问一次是否转成标签（`smart-tag-migration.ts`，决定存在 settings key `transactions.smartTagMigration.v1`，只问一次）。改回备注文本的实现是倒退。
+
+## 智能识别统计卡（个人页）
+
+`SmartRecognitionCard`（`src/features/llm-usage/smart-recognition-card.tsx`）取代原「一句话记账花费」卡：智能生成笔数、占总交易比例、本月/累计花费。数据来自 `smartRecognitionSummary()`（`llm-usage/repository.ts`），识别生成笔数按 `transactions.tags` 里的「智能」标签统计。
+
+- 界面文案不得出现模型服务商名（原副标题「DeepSeek 在线识别」已删除）；卡片名就是「智能识别」。
+- 花费必须区分用途：`llm_usage.source`（`nl` 一句话识别 / `report` 消费报告生成，迁移 0016）。卡片只算 `nl`，报告花费在报告页单独展示；新增调用方必须显式传 source。`llm_usage` 不进备份，改它不用动 `BACKUP_SCHEMA_VERSION`。
+- 占比不足 10% 保留一位小数（`formatSharePercent`），别把 1/300 显示成 0%。
+
 # 工具链注记
 
 `.pi-lens.json` 禁用了 kotlin LSP 并忽略 Android 原生目录:该 LSP 在本机没有 Android/Expo classpath,会对所有 `.kt` 报假的 `Unresolved reference: android/kotlin/androidx`(未改动的文件同样报几百条)。Android/Kotlin 的正确性以 `cd android && ./gradlew :quick-keypad:compileReleaseKotlin`(模块级)或完整 `npm run build:apk` 为准。

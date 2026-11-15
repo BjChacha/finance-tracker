@@ -64,6 +64,8 @@ const transactionRowSchema = z.object({
   date: z.number(),
   dateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   note: z.string(),
+  /** 交易标签（≤2 字短词，如「智能」）；v12 起存在，v11 及以前由升级链补 [] */
+  tags: z.array(z.string()),
   recurringRuleId: z.string().nullable(),
   importBatchId: z.string().nullable(),
   fingerprint: z.string().nullable(),

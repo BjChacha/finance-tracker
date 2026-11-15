@@ -1,4 +1,5 @@
 import { createApplicationContext } from "../application-context";
+import { SMART_TAG } from "../../tags";
 import { naturalLanguagePreviewValues } from "../preview-values";
 import { validateNaturalLanguageDecision } from "../validation";
 
@@ -116,7 +117,9 @@ it("clears only ambiguous fields and never replaces them with defaults", () => {
     amount: 3000,
     toAccountId: null,
     categoryId: "lunch",
-    note: "\u3010\u667a\u80fd\u8bc6\u522b\u3011lunch",
+    note: "lunch",
+    // 出处理解为交易标签，不再写进备注
+    tags: [SMART_TAG],
     currency: "CNY",
   });
   expect(result).not.toHaveProperty("accountId");

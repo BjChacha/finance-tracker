@@ -6,13 +6,27 @@ type MigrationBundle = {
 const migrationBundle = require('../migrations/migrations').default as MigrationBundle;
 
 describe('migrations', () => {
-  it('registers the insights/rules migration as the latest one', () => {
+  it('registers the llm usage source migration as the latest one', () => {
     expect(migrationBundle.journal.entries.at(-1)).toMatchObject({
-      idx: 14,
-      tag: '0014_organic_sleeper',
+      idx: 16,
+      tag: '0016_watery_rogue',
     });
-    expect(migrationBundle.migrations.m0014).toEqual(expect.any(String));
-    expect(migrationBundle.migrations.m0014.length).toBeGreaterThan(0);
+    expect(migrationBundle.migrations.m0016).toEqual(expect.any(String));
+    expect(migrationBundle.migrations.m0016.length).toBeGreaterThan(0);
+  });
+
+  it('0016 adds the call source to llm usage, defaulting old rows to recognition', () => {
+    const sql = migrationBundle.migrations.m0016;
+    expect(sql).toContain('ALTER TABLE `llm_usage` ADD `source`');
+    expect(sql).toContain("DEFAULT 'nl' NOT NULL");
+  });
+
+  it('0015 adds the tags column with an empty-array default', () => {
+    const sql = migrationBundle.migrations.m0015;
+    expect(sql).toContain('ALTER TABLE `transactions` ADD `tags`');
+    expect(sql).toContain("DEFAULT '[]' NOT NULL");
+    // 旧备注里的「【智能识别】」文本不在迁移里改写：是否转换由启动时询问用户
+    expect(sql).not.toContain('UPDATE `transactions`');
   });
 
   it('0014 creates insights/rules tables and adds category_source', () => {

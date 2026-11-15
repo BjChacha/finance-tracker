@@ -39,7 +39,7 @@ export type RawBackupPayload = {
 
 export type BackupUpgrader = (payload: RawBackupPayload) => RawBackupPayload;
 
-/** 目前 schemaVersion=11（升级函数最高到 10 → 11） */
+/** 目前 schemaVersion=12（升级函数最高到 11 → 12） */
 export const backupUpgraders: Record<number, BackupUpgrader> = {
   // v1 → v2：引入多币种。transactions 增加 currency/exchange_rate/amount_base_cents/to_amount，
   // accounts 增加 rate_to_base。v1 备份全部为隐式 CNY（本位币），按此回填。
@@ -254,6 +254,25 @@ export const backupUpgraders: Record<number, BackupUpgrader> = {
           categorySource: 'manual',
         })),
         categorizationRules: [],
+      },
+    };
+  },
+  // v11 → v12：交易标签从备注文本改为实体属性 tags（≤2 字短词）。
+  // 这里只补结构默认值 []；备注里的旧「【智能识别】」文本由应用启动时的
+  // 迁移询问（features/transactions/smart-tag-migration.ts）按用户意愿转换。
+  11: (payload) => {
+    const data = (payload as { data?: Record<string, unknown> }).data ?? {};
+    const txs = Array.isArray(data.transactions) ? data.transactions : [];
+    return {
+      ...payload,
+      schemaVersion: 12,
+      data: {
+        ...data,
+        transactions: txs.map((t) => {
+          const row = t as Record<string, unknown>;
+          const tags = Array.isArray(row.tags) ? row.tags : [];
+          return { ...row, tags };
+        }),
       },
     };
   },

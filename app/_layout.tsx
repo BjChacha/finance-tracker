@@ -18,7 +18,7 @@ import { migrateCategoryConsolidationOnce } from "@/features/categories";
 import { runCatchUpIfNeeded } from "@/features/recurring";
 import { useLatestRelease } from "@/features/update";
 import { useQuickActionsBootstrap } from "@/features/quick-actions/useQuickActions";
-import { invalidateTransactionData } from "@/features/transactions";
+import { invalidateTransactionData, SmartTagMigrationRunner } from "@/features/transactions";
 import { AutomaticBackupRunner } from "@/features/backup/AutomaticBackupRunner";
 import { ReportsRunner } from "@/features/reports";
 import { InsightRunner } from "@/features/insights";
@@ -179,6 +179,7 @@ function AppShell() {
 			<ResidentEditorSheetProvider>
 				<Seeder />
 				<RecurringCatchUpRunner />
+				<SmartTagMigrationRunner />
 				<RatesAutoRefresh />
 				<AutomaticBackupRunner />
 				<ReportsRunner />

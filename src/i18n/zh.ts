@@ -48,6 +48,15 @@ export const zh = {
 		categorySearch: "搜索分类",
 		categoryCreate: (name: string) => `创建「${name}」`,
 		categorySearchEmpty: "无匹配分类",
+		smartTagMigration: {
+			title: "智能标记升级",
+			message: (count: number, tag: string) =>
+				`检测到 ${count} 笔交易把智能识别标记写在了备注里（「【智能识别】」）。是否把它转换为交易标签「${tag}」？备注会去掉该前缀，其余内容保持不变。`,
+			convert: "立即转换",
+			later: "暂不转换",
+			done: (count: number, tag: string) =>
+				`已把 ${count} 笔交易转换为标签「${tag}」`,
+		},
 	},
 	txList: {
 		allTransactions: "全部交易",
@@ -364,13 +373,16 @@ export const zh = {
 		summaryIncome: "总收入",
 		summaryExpense: "总支出",
 		summaryBalance: "结余",
-		llmUsageTitle: "一句话记账花费",
-		llmUsageMonth: "本月花费",
-		llmUsageTotal: "累计花费",
-		llmUsageCalls: "调用次数",
-		llmUsageTokens: "累计 tokens",
-		llmUsageSubtitle: "DeepSeek 在线识别",
-		llmUsageEmpty: "还没有识别记录",
+		smartTitle: "智能识别",
+		smartGenerated: "智能生成",
+		/** 「智能生成」的数值单位（界面拼成「128 笔」） */
+		smartCountUnit: "笔",
+		smartShare: "占总交易",
+		smartMonthCost: "本月花费",
+		smartTotalCost: "累计花费",
+		smartCalls: "调用次数",
+		smartTokens: "累计 tokens",
+		smartEmpty: "还没有识别记录",
 		update: "检查更新",
 	},
 	settings: {

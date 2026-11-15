@@ -1,0 +1,1 @@
+ALTER TABLE `llm_usage` ADD `source` text DEFAULT 'nl' NOT NULL;

@@ -13,6 +13,8 @@ export type CsvTransactionRow = {
   amount: number;
   fee: number;
   note: string;
+  /** 交易标签（≤2 字短词，如「智能」） */
+  tags: string[];
   categoryName: string | null;
   categoryParentName: string | null;
   accountName: string | null;
@@ -32,5 +34,7 @@ export function toCsvRecord(row: CsvTransactionRow) {
     转入账户: row.toAccountName ?? '',
     '手续费(元)': row.fee > 0 ? formatCents(row.fee, { grouping: false }) : '',
     备注: row.note,
+    // 标签不再混在备注里，导出时单列一栏才能保住这层信息
+    标签: row.tags.join('、'),
   };
 }

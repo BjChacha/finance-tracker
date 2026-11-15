@@ -23,6 +23,8 @@ export type TransactionDraft = {
   dateText: string;
   timeText: string;
   note: string;
+  /** 交易标签（≤2 字短词，如「智能」）；缺省为空 */
+  tags?: string[];
   currency: string;
   exchangeRate: number;
   /** 客户端幂等键（如快捷记账 handoffId），随创建提交 */
@@ -77,6 +79,7 @@ export function buildTransactionInput(draft: TransactionDraft): TransactionInput
       projectId: draft.projectId,
       date: combineDateAndTime(draft.dateText, draft.timeText),
       note: draft.note.trim(),
+      tags: draft.tags ?? [],
       currency: draft.currency,
       exchangeRate: draft.exchangeRate,
       clientTag: draft.clientTag ?? null,

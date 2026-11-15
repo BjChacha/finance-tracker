@@ -39,6 +39,7 @@ function tx(partial: Partial<TxListItem> = {}): TxListItem {
     date: Date.parse('2026-11-01T12:00:00+08:00'),
     dateKey: '2026-11-01',
     note: '',
+    tags: [],
     currency: 'CNY',
     exchangeRate: 1_000_000,
     amountBaseCents: 1000,

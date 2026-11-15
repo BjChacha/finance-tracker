@@ -68,7 +68,6 @@ export function useGenerateReport() {
         report.snapshot,
       );
       void queryClient.invalidateQueries({ queryKey: listKey });
-      void queryClient.invalidateQueries({ queryKey: ["llm-usage"] });
     },
   });
 }

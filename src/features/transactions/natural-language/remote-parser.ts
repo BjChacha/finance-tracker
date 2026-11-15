@@ -4,7 +4,7 @@ import { createNaturalLanguageParser } from "./parser";
 
 /** Fire-and-forget: a failed billing insert must never fail the recognition itself. */
 function reportUsage(model: string, usage: TokenUsage) {
-  void recordLLMUsage(model, usage).catch((error) => {
+  void recordLLMUsage("nl", model, usage).catch((error) => {
     console.warn("[llm-usage] Failed to record usage", error);
   });
 }

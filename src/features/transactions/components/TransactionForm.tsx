@@ -81,6 +81,7 @@ import { computeAmountPreview } from "../amountPreview";
 import { buildVisibleCategoryTree } from "../visible-categories";
 import { CategoryPickerModal } from "./CategoryPickerModal";
 import { CurrencyPickerModal } from "./CurrencyPickerModal";
+import { TagChips } from "./TagChips";
 import { AmountKeypadPanel } from "./AmountKeypadPanel";
 import { DateTimeSemanticCards } from "./date-time-semantic-cards";
 import {
@@ -127,6 +128,8 @@ export type TxFormInitialValues = {
 	/** 编辑时携带的完整 Unix 毫秒时间戳，用以保留时间分量 */
 	dateMs?: number;
 	note: string;
+	/** 交易标签（≤2 字短词，如「智能」）；表单只读展示并原样提交 */
+	tags?: string[];
 	/** 交易币种 ISO code，默认 CNY */
 	currency?: string;
 	/** Original rate snapshot. Preserve it while the transaction currency is unchanged. */
@@ -273,6 +276,8 @@ function TransactionFormComponent(
 	const [timePickerOpen, setTimePickerOpen] = useState(false);
 	const [tempTime, setTempTime] = useState<Date>(() => new Date());
 	const [note, setNote] = useState(initialValues?.note ?? "");
+	// 标签是交易的既有属性（如「智能」表示一句话识别生成），表单不提供编辑，原样带回去。
+	const [tags, setTags] = useState<string[]>(initialValues?.tags ?? []);
 	const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
 	const [submenu, setSubmenu] = useState<{
 		node: CategoryNode;
@@ -395,6 +400,7 @@ function TransactionFormComponent(
 		);
 		setTempTime(nextDate.toDate());
 		setNote(initialValues?.note ?? "");
+		setTags(initialValues?.tags ?? []);
 		setCurrency(initialValues?.currency ?? "CNY");
 		setDatePickerOpen(false);
 		setTimePickerOpen(false);
@@ -671,6 +677,7 @@ function TransactionFormComponent(
 				dateText,
 				timeText,
 				note,
+				tags,
 				currency,
 				exchangeRate: exchangeRateScaled,
 				clientTag,
@@ -686,6 +693,7 @@ function TransactionFormComponent(
 			feeText,
 			note,
 			projectId,
+			tags,
 			timeText,
 			toAccountId,
 			type,
@@ -1568,10 +1576,13 @@ function TransactionFormComponent(
 							</Animated.View>
 						)}
 
-						{/* 备注 */}
+						{/* 备注（标签为交易属性，只在此展示，不随备注编辑） */}
 						{editorStage >= noteStage && (
 							<Animated.View style={styles.card} entering={blockEntering}>
-								<Text style={styles.sectionLabel}>{zh.tx.note}</Text>
+								<View style={styles.noteHeaderRow}>
+									<Text style={styles.noteHeaderLabel}>{zh.tx.note}</Text>
+									<TagChips tags={tags} />
+								</View>
 								<SingleLineTextInput
 									ref={noteInputRef}
 									style={styles.textInput}
@@ -1976,6 +1987,13 @@ function makeStyles({ colors }: AppTheme) {
 			fontSize: 13,
 			marginBottom: 8,
 		},
+		noteHeaderRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 6,
+			marginBottom: 8,
+		},
+		noteHeaderLabel: { color: colors.textSecondary, fontSize: 13, flex: 1 },
 		categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
 		ruleHintRow: {
 			flexDirection: "row",

@@ -11,6 +11,7 @@ import { useTheme, type AppTheme } from '@/theme';
 import { usePrefetchTransaction } from '../hooks';
 import type { TxListItem } from '../repository';
 import { dashboardText as copy } from '@/features/dashboard/labels';
+import { TagChips } from './TagChips';
 
 type Props = {
   tx: TxListItem;
@@ -75,9 +76,12 @@ export function TransactionRow({ tx, showDivider = true, style, expenseContribut
         />
       )}
       <View style={{ flex: 1 }}>
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
+          <TagChips tags={tx.tags} />
+        </View>
         <Text style={styles.sub} numberOfLines={1}>
           {sub}
         </Text>
@@ -103,7 +107,8 @@ function makeStyles({ colors }: AppTheme) {
       borderBottomColor: colors.border,
     },
     leadIcon: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-    title: { color: colors.text, fontSize: 15, fontWeight: '500' },
+    titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    title: { color: colors.text, fontSize: 15, fontWeight: '500', flexShrink: 1 },
     sub: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
     amount: { fontSize: 16, fontWeight: '600', fontVariant: ['tabular-nums'] },
   });

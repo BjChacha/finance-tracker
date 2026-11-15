@@ -1,6 +1,10 @@
-export { useLLMUsageSummary } from "./hooks";
-export { llmUsageSummary, recordLLMUsage } from "./repository";
-export type { LLMUsageSummary, LLMUsageTotals } from "./repository";
+export { useSmartRecognitionSummary } from "./hooks";
+export { recordLLMUsage, smartRecognitionSummary } from "./repository";
+export type {
+  LLMUsageSummary,
+  LLMUsageTotals,
+  SmartRecognitionSummary,
+} from "./repository";
 export {
   PRICED_MODELS,
   costMicros,
