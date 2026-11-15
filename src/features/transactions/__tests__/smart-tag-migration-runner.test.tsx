@@ -21,6 +21,9 @@ jest.mock('../smart-tag-migration', () => ({
   setSmartTagMigrationDecision: jest.fn(async () => undefined),
 }));
 
+let mockPathname = "/";
+jest.mock('expo-router', () => ({ usePathname: () => mockPathname }));
+
 const copy = zh.tx.smartTagMigration;
 const dialog = jest.mocked(showDialog);
 const decision = jest.mocked(getSmartTagMigrationDecision);
@@ -29,10 +32,10 @@ const migrate = jest.mocked(migrateLegacySmartNotes);
 const recordDecision = jest.mocked(setSmartTagMigrationDecision);
 const invalidate = jest.mocked(invalidateTransactionData);
 
-/** 挂载 runner 并跑过启动延时 */
+/** 挂载 runner 并跑过启动延时；返回 render 结果与 client，便于改路由后重渲染 */
 async function mountRunner() {
   const client = new QueryClient();
-  render(
+  const view = render(
     <QueryClientProvider client={client}>
       <SmartTagMigrationRunner />
     </QueryClientProvider>,
@@ -40,6 +43,7 @@ async function mountRunner() {
   await act(async () => {
     jest.advanceTimersByTime(1000);
   });
+  return { view, client };
 }
 
 function buttonsOf(index = 0) {
@@ -49,6 +53,7 @@ function buttonsOf(index = 0) {
 beforeEach(() => {
   jest.useFakeTimers();
   jest.clearAllMocks();
+  mockPathname = "/";
   decision.mockResolvedValue(null);
   countLegacy.mockResolvedValue(0);
   migrate.mockResolvedValue(0);
@@ -125,4 +130,36 @@ it('迁移失败时报错，且不记录「已转换」', async () => {
 
   expect(recordDecision).not.toHaveBeenCalledWith('converted');
   expect(showDialog).toHaveBeenLastCalledWith(zh.common.error, 'disk full');
+});
+
+it('快捷方式直接进「记一笔」时完全不查不问：交接过程不能被弹窗打断', async () => {
+  mockPathname = '/quick-add-transaction';
+  countLegacy.mockResolvedValue(5);
+
+  await mountRunner();
+
+  expect(countLegacy).not.toHaveBeenCalled();
+  expect(dialog).not.toHaveBeenCalled();
+  expect(recordDecision).not.toHaveBeenCalled();
+});
+
+it('快捷方式流程结束、落到页签上之后才询问', async () => {
+  mockPathname = '/quick-add-transaction';
+  countLegacy.mockResolvedValue(5);
+  const { view, client } = await mountRunner();
+  expect(dialog).not.toHaveBeenCalled();
+
+  mockPathname = '/ledger';
+  await act(async () => {
+    view.rerender(
+      <QueryClientProvider client={client}>
+        <SmartTagMigrationRunner />
+      </QueryClientProvider>,
+    );
+  });
+  await act(async () => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  expect(dialog).toHaveBeenCalledTimes(1);
 });

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { usePathname } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { showDialog, showToast } from "@/components/dialog";
 import { zh } from "@/i18n/zh";
@@ -14,6 +15,16 @@ import { SMART_TAG } from "./tags";
 const copy = zh.tx.smartTagMigration;
 
 /**
+ * 只在应用常规页签上询问。
+ *
+ * 桌面快捷方式（记一笔 / 一句话记账）会把 App 拉起在一个透明弹层上，交接时序很敏感：
+ * 启动 800ms 插一个模态弹窗，用户再点「立即转换」跑几十条 UPDATE，就可能把交接打断，
+ * 留下半截布局（sheet 已是全高，表单内容还停在交接前的小尺寸）。
+ * 落到页签上再问；快捷方式里不问，留到下次正常启动。
+ */
+const ASKABLE_ROUTES = new Set(["/", "/ledger", "/personal-assets", "/profile"]);
+
+/**
  * 升级后的存量数据询问：旧版把「【智能识别】」写在备注里，新版改用交易标签。
  *
  * 只在还没做过决定、且库里确实存在旧文本时询问一次：用户选「立即转换」才改写数据，
@@ -22,8 +33,11 @@ const copy = zh.tx.smartTagMigration;
  */
 export function SmartTagMigrationRunner() {
 	const queryClient = useQueryClient();
+	const pathname = usePathname();
+	const askable = ASKABLE_ROUTES.has(pathname);
 
 	useEffect(() => {
+		if (!askable) return;
 		let cancelled = false;
 
 		const convert = () => {
@@ -78,7 +92,7 @@ export function SmartTagMigrationRunner() {
 			cancelled = true;
 			clearTimeout(timer);
 		};
-	}, [queryClient]);
+	}, [askable, queryClient]);
 
 	return null;
 }

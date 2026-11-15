@@ -73,6 +73,7 @@ EXPO_PUBLIC_DEEPSEEK_API_KEY=<key> GH_TOKEN=<token> npm run release
 - 写入走 `TxInput.tags`，经 `sanitizeTags()`（`src/features/transactions/tags.ts`）去空白/超长截断/去重；一句话识别的标签常量是 `SMART_TAG`（`preview-values.ts` 里注入）。
 - 备份 schema 升到 v12（`transactions.tags`），v11→v12 只补 `tags: []`，不改写备注；CSV 导出多一列「标签」。
 - 存量数据不静默改写：启动后 `SmartTagMigrationRunner` 检测备注里的旧前缀，弹窗问一次是否转成标签（`smart-tag-migration.ts`，决定存在 settings key `transactions.smartTagMigration.v1`，只问一次）。改回备注文本的实现是倒退。
+- **启动期弹窗不许落在快捷方式流程上**：`SmartTagMigrationRunner` 只在常规页签（`/`、`/ledger`、`/personal-assets`、`/profile`）上询问。桌面快捷方式（记一笔/一句话记账）会把 App 拉起到透明弹层，交接（原生键盘 → sheet → 表单）对时序极敏感：启动 800ms 插模态弹窗、用户再点「立即转换」跑几十条 UPDATE，会留下半截布局（sheet 已全高、表单内容仍停在交接前尺寸，分类卡被视口截断、保存按钮悬在屏幕中间）。新增任何启动期弹窗/重活都必须遵守这条。
 
 ## 智能识别统计卡（个人页）
 
