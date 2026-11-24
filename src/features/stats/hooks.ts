@@ -21,6 +21,7 @@ import {
 	type StatsRange,
 } from "./repository";
 import type { TrendGranularity } from "./transform";
+import { weekdayTotals } from "./weekday";
 
 /**
  * 派生统计的缓存策略：
@@ -181,11 +182,24 @@ export function useCategoryRank(
 	range: StatsRange,
 	type: BreakdownType,
 	limit = 10,
+	enabled = true,
 ) {
 	return useQuery({
 		queryKey: ["stats", "rank", { range, type, limit }],
 		queryFn: () => categoryRank(range, type, limit),
 		staleTime: STATS_STALE_TIME,
 		gcTime: STATS_GC_TIME,
+		enabled,
+	});
+}
+
+/** key: ['stats','weekday', ...] —— 按星期几的金额分布 */
+export function useWeekdayTotals(range: StatsRange, type: BreakdownType, enabled = true) {
+	return useQuery({
+		queryKey: ["stats", "weekday", { range, type }],
+		queryFn: () => weekdayTotals(range, type),
+		staleTime: STATS_STALE_TIME,
+		gcTime: STATS_GC_TIME,
+		enabled,
 	});
 }

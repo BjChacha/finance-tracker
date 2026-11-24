@@ -11,11 +11,16 @@ import {
   useCalendarHeatmap,
   useCategoryBreakdown,
   useTrend,
+  useWeekdayTotals,
 } from '@/features/stats/hooks';
+import { CategoryDetailCard } from '@/features/stats/cards/CategoryDetailCard';
+import { SpendingFlowCard } from '@/features/stats/cards/SpendingFlowCard';
+import { WeekdayBars } from '@/features/stats/charts/WeekdayBars';
+import { weekdaySummary } from '@/features/stats/weekday-model';
 import { transactionParams } from '@/features/transactions/filters';
 import { dayjs } from '@/lib/date';
+import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme } from '@/theme';
-import { CategoryList } from './category-list';
 import {
   Card,
   dashboardStyles,
@@ -33,20 +38,14 @@ export function StatsScreen() {
   const [type, setType] = useState<'expense' | 'income'>('expense');
   const [calendarMonth, setCalendarMonth] = useState('');
   const { range, comparison, granularity, comparisonClamped } = period;
-  const comparable = comparison !== null;
   const firstMonth = range.start.slice(0, 7);
   const lastMonth = range.end.slice(0, 7);
   const heatMonth =
     calendarMonth >= firstMonth && calendarMonth <= lastMonth
       ? calendarMonth
       : lastMonth;
+  // 构成环读这一份；「分类明细」卡内自行查询同一 key，命中同一份缓存
   const categories = useCategoryBreakdown(range, type);
-  const previous = useCategoryBreakdown(
-    comparison ?? range,
-    type,
-    undefined,
-    comparable,
-  );
   const trend = useTrend(granularity, range);
   const monthly = useTrend('month', range);
   // 最后一根月柱是否为进行中的当月（数据只走到今天）：降透明提示「未走完」
@@ -56,6 +55,8 @@ export function StatsScreen() {
     monthly.data[monthly.data.length - 1]!.key.slice(0, 7) ===
       period.today.slice(0, 7);
   const heat = useCalendarHeatmap(heatMonth);
+  const weekday = useWeekdayTotals(range, type);
+  const weekdayStat = weekday.data ? weekdaySummary(weekday.data) : null;
   const donut = useMemo(
     () =>
       (categories.data ?? []).map((item) => ({
@@ -127,22 +128,13 @@ export function StatsScreen() {
               />
             )}
           </Card>
-          <Card title={copy.categoryTotal}>
-            <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
-              {comparison
-                ? `${copy.versus} ${comparison.start} — ${comparison.end}${comparisonClamped ? copy.samePeriodSuffix : ''}`
-                : copy.allHistory}
-            </Text>
-            <QueryNotice queries={[categories, previous]} />
-            {categories.data && (
-              <CategoryList
-                items={categories.data}
-                previous={previous.data}
-                onPress={(item) => openCategory(item.categoryId)}
-                initiallyExpanded
-              />
-            )}
-          </Card>
+          <CategoryDetailCard
+            range={range}
+            type={type}
+            comparison={comparison}
+            comparisonClamped={comparisonClamped}
+            onOpenCategory={openCategory}
+          />
           <Card title={copy.cashTrend}>
             <QueryNotice queries={[trend]} />
             {trend.data && (
@@ -173,6 +165,40 @@ export function StatsScreen() {
                 expenseLabel={copy.expense}
                 dimLast={lastMonthInProgress}
               />
+            )}
+          </Card>
+          <Card title={copy.weekdayTitle}>
+            <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+              {copy.weekdayHint}
+            </Text>
+            <QueryNotice queries={[weekday]} />
+            {weekday.data && (
+              <>
+                {weekdayStat && (
+                  <View style={dashboardStyles.between}>
+                    <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+                      {copy.weekdayWorkday}{' '}
+                      {formatCentsWithSymbol(weekdayStat.weekdayAvg)}
+                    </Text>
+                    <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+                      {copy.weekdayWeekend}{' '}
+                      {formatCentsWithSymbol(weekdayStat.weekendAvg)}
+                    </Text>
+                  </View>
+                )}
+                <WeekdayBars
+                  data={weekday.data.map((item) => ({
+                    label: item.name,
+                    value: item.dailyAvg,
+                  }))}
+                  height={168}
+                />
+                {weekdayStat?.weekendShare != null && (
+                  <Text style={{ color: colors.textSecondary, fontSize: 11 }}>
+                    {`${copy.weekdayShare} ${Math.round(weekdayStat.weekendShare * 100)}%`}
+                  </Text>
+                )}
+              </>
             )}
           </Card>
           <Card title={copy.calendar}>
@@ -210,6 +236,7 @@ export function StatsScreen() {
               <CalendarHeat monthKey={heatMonth} cells={heat.data} />
             )}
           </Card>
+          <SpendingFlowCard range={range} />
         </>
       ) : null}
     </ScrollView>

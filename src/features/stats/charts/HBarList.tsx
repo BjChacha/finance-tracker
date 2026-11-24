@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatCentsWithSymbol } from '@/lib/money';
 import { useTheme } from '@/theme';
 import { ChartEmpty } from './ChartEmpty';
@@ -15,41 +15,61 @@ export type HBarItem = {
   pct: number;
 };
 
-type Props = { items: HBarItem[] };
+type Props = {
+  items: HBarItem[];
+  /** 传入即整行可点（如排行榜下钻到该分类的流水） */
+  onPress?: (id: string) => void;
+};
 
 /** 水平条列表（纯 View 自绘），用于账户分布/分类排行 */
-export function HBarList({ items }: Props) {
+export function HBarList({ items, onPress }: Props) {
   const theme = useTheme();
   if (items.length === 0) return <ChartEmpty />;
   const max = Math.max(...items.map((i) => i.total), 1);
 
   return (
     <View style={styles.list}>
-      {items.map((item) => (
-        <View key={item.id}>
-          <View style={styles.row}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 6 }} />
-            <Text style={[styles.name, { color: theme.colors.text }]} numberOfLines={1}>
-              {item.name}
-            </Text>
-            <Text style={[styles.pct, { color: theme.colors.textSecondary }]}>{item.pct}%</Text>
-            <Text style={[styles.amount, { color: theme.colors.text }]}>
-              {formatCentsWithSymbol(item.total)}
-            </Text>
-          </View>
-          <View style={[styles.track, { backgroundColor: theme.colors.border }]}>
-            <View
-              style={[
-                styles.fill,
-                {
-                  backgroundColor: item.color,
-                  width: `${Math.max((item.total / max) * 100, 2)}%`,
-                },
-              ]}
-            />
-          </View>
-        </View>
-      ))}
+      {items.map((item) => {
+        const body = (
+          <>
+            <View style={styles.row}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 6 }} />
+              <Text style={[styles.name, { color: theme.colors.text }]} numberOfLines={1}>
+                {item.name}
+              </Text>
+              <Text style={[styles.pct, { color: theme.colors.textSecondary }]}>
+                {`${item.pct}%`}
+              </Text>
+              <Text style={[styles.amount, { color: theme.colors.text }]}>
+                {formatCentsWithSymbol(item.total)}
+              </Text>
+            </View>
+            <View style={[styles.track, { backgroundColor: theme.colors.border }]}>
+              <View
+                style={[
+                  styles.fill,
+                  {
+                    backgroundColor: item.color,
+                    width: `${Math.max((item.total / max) * 100, 2)}%`,
+                  },
+                ]}
+              />
+            </View>
+          </>
+        );
+        return onPress ? (
+          <Pressable
+            key={item.id}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.name} ${formatCentsWithSymbol(item.total)} ${item.pct}%`}
+            onPress={() => onPress(item.id)}
+          >
+            {body}
+          </Pressable>
+        ) : (
+          <View key={item.id}>{body}</View>
+        );
+      })}
     </View>
   );
 }
